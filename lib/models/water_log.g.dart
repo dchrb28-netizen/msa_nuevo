@@ -20,19 +20,22 @@ class WaterLogAdapter extends TypeAdapter<WaterLog> {
       id: fields[0] as String,
       amount: fields[1] as double,
       timestamp: fields[2] as DateTime,
+      userId: fields[3] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, WaterLog obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.amount)
       ..writeByte(2)
-      ..write(obj.timestamp);
+      ..write(obj.timestamp)
+      ..writeByte(3)
+      ..write(obj.userId);
   }
 
   @override

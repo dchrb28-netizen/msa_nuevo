@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/screens/logs/food_history_screen.dart';
-import 'package:myapp/screens/logs/food_today_view.dart';
+import 'package:myapp/screens/logs/water_history_screen.dart';
+import 'package:myapp/screens/logs/water_today_view.dart';
 
-class FoodIntakeScreen extends StatefulWidget {
-  const FoodIntakeScreen({super.key});
+class WaterTodayScreen extends StatefulWidget {
+  const WaterTodayScreen({super.key});
 
   @override
-  State<FoodIntakeScreen> createState() => _FoodIntakeScreenState();
+  State<WaterTodayScreen> createState() => _WaterTodayScreenState();
 }
 
-class _FoodIntakeScreenState extends State<FoodIntakeScreen> with SingleTickerProviderStateMixin {
+class _WaterTodayScreenState extends State<WaterTodayScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -37,8 +37,8 @@ class _FoodIntakeScreenState extends State<FoodIntakeScreen> with SingleTickerPr
       body: TabBarView(
         controller: _tabController,
         children: const [
-          FoodTodayView(),
-          FoodHistoryScreen(),
+          WaterTodayView(),
+          WaterHistoryScreen(),
         ],
       ),
     );

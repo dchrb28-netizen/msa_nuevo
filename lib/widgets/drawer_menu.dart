@@ -3,14 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:provider/provider.dart';
 
+// Corrected screen imports to match the developed screens
+import 'package:myapp/screens/logs/activity_log_screen.dart';
+
 // New screen imports
 import 'package:myapp/screens/achievements/objectives_screen.dart';
 import 'package:myapp/screens/achievements/rewards_screen.dart';
 import 'package:myapp/screens/habits/intermittent_fasting_screen.dart';
 import 'package:myapp/screens/habits/reminders_screen.dart';
-import 'package:myapp/screens/logs/food_log_screen.dart';
-import 'package:myapp/screens/logs/measurement_log_screen.dart';
-import 'package:myapp/screens/logs/water_log_screen.dart';
 import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:myapp/screens/settings/theme_settings_screen.dart';
 import 'package:myapp/screens/settings/weight_goals_screen.dart';
@@ -64,11 +64,9 @@ class DrawerMenu extends StatelessWidget {
                   ),
                   currentAccountPicture: const CircleAvatar(
                     backgroundColor: Colors.white,
-                    // A colorful placeholder for the user
                     child: Icon(Icons.person, size: 40, color: Colors.deepPurple),
                   ),
                   decoration: const BoxDecoration(
-                    // Use a gradient for a more modern look
                     gradient: LinearGradient(
                       colors: [Colors.deepPurple, Colors.purpleAccent],
                       begin: Alignment.topLeft,
@@ -93,9 +91,9 @@ class DrawerMenu extends StatelessWidget {
             leading: const Icon(Icons.edit, color: Colors.purple),
             title: Text('Registro', style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
             children: <Widget>[
-              buildListTile(context, icon: Icons.water_drop, iconColor: Colors.purple.shade300, title: 'Ingesta de Agua', destination: const WaterLogScreen()),
-              buildListTile(context, icon: Icons.fastfood, iconColor: Colors.purple.shade300, title: 'Comidas', destination: const FoodLogScreen()),
-              buildListTile(context, icon: Icons.straighten, iconColor: Colors.purple.shade300, title: 'Medidas', destination: const MeasurementLogScreen()),
+              buildListTile(context, icon: Icons.water_drop, iconColor: Colors.purple.shade300, title: 'Ingesta de Agua', destination: const ActivityLogScreen(initialIndex: 0)),
+              buildListTile(context, icon: Icons.fastfood, iconColor: Colors.purple.shade300, title: 'Comidas', destination: const ActivityLogScreen(initialIndex: 1)),
+              buildListTile(context, icon: Icons.straighten, iconColor: Colors.purple.shade300, title: 'Medidas', destination: const ActivityLogScreen(initialIndex: 2)),
             ],
           ),
 
@@ -156,7 +154,6 @@ class DrawerMenu extends StatelessWidget {
             leading: const Icon(Icons.info_outline, color: Colors.lightBlue),
             title: Text('Acerca de', style: GoogleFonts.lato()),
             onTap: () {
-                // Could show an about dialog
                  showAboutDialog(
                     context: context,
                     applicationName: 'FitTrack AI',

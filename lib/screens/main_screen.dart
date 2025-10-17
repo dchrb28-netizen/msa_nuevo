@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/dashboard_screen.dart';
+import 'package:myapp/screens/logs/activity_log_screen.dart';
 import 'package:myapp/screens/progreso_screen.dart';
-import 'package:myapp/screens/records_screen.dart';
 import 'package:myapp/widgets/drawer_menu.dart';
 
 class MainScreen extends StatefulWidget {
@@ -14,10 +14,10 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    DashboardScreen(),
-    RecordsScreen(),
-    ProgresoScreen(),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const DashboardScreen(),
+    const ActivityLogScreen(),
+    const ProgresoScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -29,16 +29,35 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final String lunaImagePath = isDarkMode
+        ? 'assets/luna_png/luna_inicio_b.png'
+        : 'assets/luna_png/luna_inicio_w.png';
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('FitTrack AI'),
-        elevation: 4,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
       ),
+      extendBodyBehindAppBar: true,
       drawer: const DrawerMenu(),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _widgetOptions,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.05,
+              child: Image.asset(
+                lunaImagePath,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          IndexedStack(
+            index: _selectedIndex,
+            children: _widgetOptions,
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -48,8 +67,8 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.restaurant_menu_outlined),
-            activeIcon: Icon(Icons.restaurant_menu),
+            icon: Icon(Icons.menu_book_outlined),
+            activeIcon: Icon(Icons.menu_book),
             label: 'Menús',
           ),
           BottomNavigationBarItem(
@@ -60,10 +79,12 @@ class _MainScreenState extends State<MainScreen> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: colorScheme.primary,
-        unselectedItemColor: colorScheme.onSurface.withAlpha(153), // 0.6 * 255 = 153
+        unselectedItemColor: colorScheme.onSurface.withAlpha(153),
         onTap: _onItemTapped,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
+        backgroundColor: colorScheme.surface.withAlpha(204),
+        elevation: 0,
       ),
     );
   }

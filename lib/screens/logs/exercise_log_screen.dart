@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/widgets/ui/screen_background.dart';
 
-class FoodLogScreen extends StatelessWidget {
-  const FoodLogScreen({super.key});
+class ExerciseLogScreen extends StatelessWidget {
+  const ExerciseLogScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registrar Comida'),
+        title: const Text('Registrar Ejercicio'),
       ),
       body: Stack(
         children: [
-          const ScreenBackground(screenName: 'comida'),
+          const ScreenBackground(screenName: 'entrenamiento'),
           const Center(
-            child: Text('Aquí podrás registrar tus comidas.'),
+            child: Text('Aquí podrás registrar tus ejercicios.'),
           ),
         ],
       ),

@@ -28,6 +28,9 @@ class User extends HiveObject {
   @HiveField(7)
   final bool isGuest;
 
+  @HiveField(8) // Added back the daily water goal
+  final double dailyWaterGoal;
+
   User({
     required this.id,
     required this.name,
@@ -37,5 +40,6 @@ class User extends HiveObject {
     required this.weight,
     this.profileImagePath,
     this.isGuest = false,
+    this.dailyWaterGoal = 2000.0, // Default value
   });
 }

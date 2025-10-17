@@ -25,13 +25,14 @@ class UserAdapter extends TypeAdapter<User> {
       weight: fields[5] as double,
       profileImagePath: fields[6] as String?,
       isGuest: fields[7] as bool,
+      dailyWaterGoal: fields[8] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(6)
       ..write(obj.profileImagePath)
       ..writeByte(7)
-      ..write(obj.isGuest);
+      ..write(obj.isGuest)
+      ..writeByte(8)
+      ..write(obj.dailyWaterGoal);
   }
 
   @override

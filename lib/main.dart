@@ -10,7 +10,13 @@ import 'package:myapp/models/user.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/screens/logs/body_measurement_screen.dart';
+import 'package:myapp/screens/logs/exercise_log_screen.dart';
+import 'package:myapp/screens/logs/food_log_screen.dart';
 import 'package:myapp/screens/main_screen.dart'; // Import MainScreen
+import 'package:myapp/screens/progress_screen.dart';
+import 'package:myapp/screens/profile_screen.dart';
+import 'package:myapp/screens/settings_screen.dart';
 import 'package:myapp/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -105,6 +111,14 @@ class MyApp extends StatelessWidget {
           darkTheme: themeProvider.darkTheme,
           themeMode: themeProvider.themeMode,
           home: userProvider.user != null ? const MainScreen() : const WelcomeScreen(),
+          routes: {
+            '/food-log': (context) => const FoodLogScreen(),
+            '/exercise-log': (context) => const ExerciseLogScreen(),
+            '/body-measurement': (context) => const BodyMeasurementScreen(),
+            '/progress': (context) => const ProgressScreen(),
+            '/profile': (context) => const ProfileScreen(),
+            '/settings': (context) => const SettingsScreen(),
+          },
         );
       },
     );
