@@ -1,0 +1,47 @@
+name: myapp
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  intl: ^0.20.2
+  simple_animations: ^5.2.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.5
+  uuid: ^4.5.1
+  percent_indicator: ^4.2.5
+  image_picker: ^1.2.0
+  provider: ^6.0.0
+  google_fonts: ^6.3.2
+  flex_color_picker: ^3.7.1
+  flutter_colorpicker: ^1.1.0
+  flutter_staggered_animations: ^1.1.1
+  fl_chart: ^1.1.1
+  rive: ^0.13.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: any
+  hive_generator: any
+  build_runner: any
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/luna_png/
+    - assets/rive/
