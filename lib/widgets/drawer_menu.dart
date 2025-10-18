@@ -151,7 +151,7 @@ class DrawerMenu extends StatelessWidget {
             title: Text('Acerca de', style: GoogleFonts.lato()),
             onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const PantallaAcercaDe()));
             },
           ),
             ListTile(

@@ -1,94 +1,146 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class AboutScreen extends StatelessWidget {
-  const AboutScreen({super.key});
+class PantallaAcercaDe extends StatelessWidget {
+  const PantallaAcercaDe({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final colorScheme = Theme.of(context).colorScheme;
-
-    final String lunaImagePath = isDarkMode 
-        ? 'assets/luna_png/luna_logo_b.png' 
-        : 'assets/luna_png/luna_logo_w.png';
+    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Acerca de Salud Activa', style: GoogleFonts.montserrat(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        title: const Text('Acerca de Mi Salud Activa'),
       ),
-      extendBodyBehindAppBar: true,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              colorScheme.surface.withAlpha(230),
-              colorScheme.surface,
-            ],
-          ),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              children: <Widget>[
-                Image.asset(lunaImagePath, height: 120),
-                const SizedBox(height: 24),
-                Text(
-                  'Salud Activa',
-                  style: GoogleFonts.montserrat(fontSize: 28, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Versión 1.0.0',
-                  style: GoogleFonts.lato(fontSize: 16, color: Theme.of(context).textTheme.bodySmall?.color),
-                ),
-                const SizedBox(height: 32),
-                Text(
-                  'Tu compañero personal para una vida más saludable. Registra tus actividades, sigue tu progreso y alcanza tus metas con una interfaz diseñada para motivarte cada día.',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.lato(fontSize: 16, height: 1.5),
-                ),
-                const SizedBox(height: 40),
-                _buildSectionTitle(context, 'Construido con'),
-                const SizedBox(height: 16),
-                _buildTechnologyCard(context, 'Flutter', 'El framework de Google para crear hermosas apps, compiladas nativamente, desde una única base de código.', Icons.flutter_dash),
-                 _buildTechnologyCard(context, 'Firebase', 'La plataforma de Google que nos ayuda a construir y ejecutar aplicaciones exitosas.', Icons.local_fire_department_outlined),
-                _buildTechnologyCard(context, 'Google Fonts', 'Una librería de fuentes de código abierto para dar vida a nuestro diseño.', Icons.font_download_outlined),
-                const SizedBox(height: 24),
-                 Text(
-                  '© 2024 Luna Arts. Todos los derechos reservados.',
-                  style: GoogleFonts.lato(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color),
-                ),
-              ],
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Mi Salud Activa',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: colors.primary,
+              ),
             ),
-          ),
+            const SizedBox(height: 8),
+            Text(
+              'Tu compañero de bienestar personal.',
+              style: TextStyle(
+                fontSize: 18,
+                fontStyle: FontStyle.italic,
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Esta aplicación fue creada para ayudarte a tomar el control de tu salud y bienestar. Creemos que el progreso constante, por pequeño que sea, es la clave para un estilo de vida más saludable y activo.',
+              style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.justify,
+            ),
+            const SizedBox(height: 24),
+            
+            Text(
+              'Funcionalidades',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: colors.primary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildFeatureRow(context, Icons.fitness_center, 'Seguimiento de Entrenamientos'),
+            _buildFeatureRow(context, Icons.fastfood, 'Control de Nutrición e Hidratación'),
+            _buildFeatureRow(context, Icons.show_chart, 'Visualización de Progreso y Metas'),
+            _buildFeatureRow(context, Icons.emoji_events, 'Recompensas para mantener la motivación'),
+            
+            const SizedBox(height: 24),
+
+            Text(
+              'Contacto y Comentarios',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: colors.primary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              '¿Tienes alguna sugerencia, idea, o encontraste un error? ¡Me encantaría oírte!',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            ListTile(
+              leading: const Icon(Icons.email, color: Colors.blueAccent),
+              title: const Text('misaludactiva373@gmail.com'),
+              onTap: () => _launchUrl('mailto:misaludactiva373@gmail.com', context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.phone, color: Colors.green),
+              title: const Text('+56964022892'),
+              onTap: () => _launchUrl('tel:+56964022892', context),
+            ),
+             ListTile(
+              leading: const Icon(Icons.link, color: Colors.purple),
+              title: const Text('Instagram'),
+              onTap: () => _launchUrl('https://www.instagram.com/msa37_3', context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.facebook, color: Colors.indigo),
+              title: const Text('Facebook'),
+              onTap: () => _launchUrl('https://www.facebook.com/profile.php?id=61580423445819', context),
+            ),
+            
+            const SizedBox(height: 32),
+
+            const Center(
+              child: Column(
+                children: [
+                  Text(
+                    'Versión 1.0.0',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    '© 2025 Mi Salud Activa',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title) {
-    return Text(
-      title,
-      style: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
-    );
-  }
-
-  Widget _buildTechnologyCard(BuildContext context, String title, String subtitle, IconData icon) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        leading: Icon(icon, size: 40, color: Theme.of(context).colorScheme.primary),
-        title: Text(title, style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle, style: GoogleFonts.lato()),
+  Widget _buildFeatureRow(BuildContext context, IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Icon(icon, color: Theme.of(context).colorScheme.secondary, size: 28),
+          const SizedBox(width: 16),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 16))),
+        ],
       ),
     );
+  }
+  
+  Future<void> _launchUrl(String url, BuildContext context) async {
+    final Uri uri = Uri.parse(url);
+    try {
+       if (!await launchUrl(uri)) {
+         if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('No se pudo abrir $url')));
+         }
+       }
+    } catch (e) {
+       if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error al intentar abrir el enlace.')));
+       }
+    }
   }
 }
