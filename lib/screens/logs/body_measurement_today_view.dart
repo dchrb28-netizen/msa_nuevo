@@ -13,9 +13,9 @@ class BodyMeasurementTodayView extends StatelessWidget {
       builder: (context, Box<BodyMeasurement> box, _) {
         final today = DateTime.now();
         final todaysMeasurements = box.values.where((m) {
-          return m.date.year == today.year &&
-                 m.date.month == today.month &&
-                 m.date.day == today.day;
+          return m.timestamp.year == today.year &&
+                 m.timestamp.month == today.month &&
+                 m.timestamp.day == today.day;
         }).toList();
 
         if (todaysMeasurements.isEmpty) {
@@ -37,7 +37,7 @@ class BodyMeasurementTodayView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Última medición de hoy - ${DateFormat.yMd().add_jm().format(lastMeasurement.date)}',
+                    'Última medición de hoy - ${DateFormat.yMd().add_jm().format(lastMeasurement.timestamp)}',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 16),

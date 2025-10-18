@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/body_measurement.dart';
+import 'package:uuid/uuid.dart';
 
 class BodyMeasurementForm extends StatefulWidget {
   const BodyMeasurementForm({super.key});
@@ -17,11 +18,13 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
   final _waistController = TextEditingController();
   final _hipsController = TextEditingController();
   final _thighController = TextEditingController();
+  final _uuid = const Uuid();
 
   void _saveMeasurement() {
     if (_formKey.currentState!.validate()) {
       final newMeasurement = BodyMeasurement(
-        date: DateTime.now(),
+        id: _uuid.v4(),
+        timestamp: DateTime.now(),
         weight: double.tryParse(_weightController.text) ?? 0.0,
         chest: double.tryParse(_chestController.text) ?? 0.0,
         arm: double.tryParse(_armController.text) ?? 0.0,

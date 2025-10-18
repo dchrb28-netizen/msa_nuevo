@@ -19,7 +19,7 @@ class BodyMeasurementHistoryScreen extends StatelessWidget {
 
         // Ordenar las mediciones de la más reciente a la más antigua
         final sortedMeasurements = box.values.toList()
-          ..sort((a, b) => b.date.compareTo(a.date));
+          ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
         return ListView.builder(
           padding: const EdgeInsets.all(8.0),
@@ -31,7 +31,7 @@ class BodyMeasurementHistoryScreen extends StatelessWidget {
               margin: const EdgeInsets.symmetric(vertical: 8.0),
               child: ExpansionTile(
                 title: Text(
-                  DateFormat.yMMMMd('es').format(measurement.date),
+                  DateFormat.yMMMMd('es').format(measurement.timestamp),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 subtitle: Text('Peso: ${measurement.weight} kg'),
@@ -43,7 +43,7 @@ class BodyMeasurementHistoryScreen extends StatelessWidget {
                   _buildMeasurementRow('Muslo', '${measurement.thigh} cm'),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text('Registrado a las: ${DateFormat.jm().format(measurement.date)}'),
+                    child: Text('Registrado a las: ${DateFormat.jm().format(measurement.timestamp)}'),
                   )
                 ],
               ),
