@@ -19,8 +19,8 @@ class ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _ageController;
   late TextEditingController _heightController;
   late TextEditingController _weightController;
-  late TextEditingController _waterGoalController;
   String? _selectedGender;
+  String? _activityLevel;
 
   @override
   void initState() {
@@ -30,8 +30,8 @@ class ProfileScreenState extends State<ProfileScreen> {
     _ageController = TextEditingController(text: user?.age.toString() ?? '');
     _heightController = TextEditingController(text: user?.height.toString() ?? '');
     _weightController = TextEditingController(text: user?.weight.toString() ?? '');
-    _waterGoalController = TextEditingController(text: user?.dailyWaterGoal.toString() ?? '2000');
     _selectedGender = user?.gender;
+    _activityLevel = user?.activityLevel ?? 'Sedentaria';
   }
 
   @override
@@ -40,7 +40,6 @@ class ProfileScreenState extends State<ProfileScreen> {
     _ageController.dispose();
     _heightController.dispose();
     _weightController.dispose();
-    _waterGoalController.dispose();
     super.dispose();
   }
 
@@ -56,7 +55,7 @@ class ProfileScreenState extends State<ProfileScreen> {
         age: int.tryParse(_ageController.text) ?? 0,
         height: double.tryParse(_heightController.text) ?? 0,
         weight: double.tryParse(_weightController.text) ?? 0,
-        dailyWaterGoal: double.tryParse(_waterGoalController.text) ?? 2000,
+        activityLevel: _activityLevel ?? 'Sedentaria',
         isGuest: false, 
       );
 
@@ -119,7 +118,6 @@ class ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    // Corrected: Use initialValue instead of value
                     initialValue: _selectedGender,
                     hint: const Text('Género'),
                     onChanged: (String? newValue) {
@@ -157,18 +155,26 @@ class ProfileScreenState extends State<ProfileScreen> {
                     decoration: const InputDecoration(labelText: 'Peso (kg)'),
                     keyboardType: TextInputType.number,
                   ),
-                   const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _waterGoalController,
-                    decoration: const InputDecoration(labelText: 'Meta de Agua Diaria (ml)'),
-                    keyboardType: TextInputType.number,
-                     validator: (value) {
-                      final number = int.tryParse(value ?? '');
-                      if (number == null || number <= 0) {
-                        return 'Por favor, introduce una meta válida';
-                      }
-                      return null;
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    initialValue: _activityLevel,
+                    hint: const Text('Nivel de Actividad'),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _activityLevel = newValue!;
+                      });
                     },
+                    items: <String>['Sedentaria', 'Ligera', 'Moderada', 'Activa', 'Muy Activa']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(
+                      labelText: 'Nivel de Actividad',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton(

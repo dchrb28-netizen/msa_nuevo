@@ -7,6 +7,7 @@ import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/widgets/dashboard/aquarium_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WaterTodayView extends StatefulWidget {
   const WaterTodayView({super.key});
@@ -18,6 +19,28 @@ class WaterTodayView extends StatefulWidget {
 class _WaterTodayViewState extends State<WaterTodayView> {
   final Box<WaterLog> _waterLogBox = Hive.box<WaterLog>('water_logs');
   DateTime _selectedDate = DateTime.now();
+  double _dailyGoal = 2000.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDailyGoal();
+  }
+
+  Future<void> _loadDailyGoal() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _dailyGoal = prefs.getDouble('dailyWaterGoal') ?? 2000.0;
+    });
+  }
+
+  Future<void> _saveDailyGoal(double goal) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('dailyWaterGoal', goal);
+    setState(() {
+      _dailyGoal = goal;
+    });
+  }
 
   double _getWaterIntakeForDate(User? currentUser, DateTime date) {
     if (currentUser == null) return 0;
@@ -105,33 +128,45 @@ class _WaterTodayViewState extends State<WaterTodayView> {
   }
 
   void _deleteWaterLog(WaterLog log) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Confirmar'),
-          content: const Text('¿Estás seguro de que quieres eliminar este registro?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () {
-                log.delete();
-                Navigator.pop(context);
-              },
-              child: const Text('Eliminar'),
-            ),
-          ],
+    log.delete();
+  }
+
+  void _showEditGoalDialog() {
+    final TextEditingController controller = TextEditingController(text: _dailyGoal.toString());
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Editar Meta Diaria'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: 'Meta (ml)'),
+          autofocus: true,
         ),
-      );
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              final amount = double.tryParse(controller.text);
+              if (amount != null && amount > 0) {
+                _saveDailyGoal(amount);
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Guardar'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final currentUser = userProvider.user;
-    final waterGoal = currentUser?.dailyWaterGoal ?? 2000.0;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final String catImagePath = isDarkMode ? 'assets/images/gato_agua_dark.png' : 'assets/images/gato_agua_light.png';
 
@@ -170,7 +205,7 @@ class _WaterTodayViewState extends State<WaterTodayView> {
                     clipBehavior: Clip.antiAlias,
                     child: AquariumWidget(
                       totalWater: intakeForSelectedDate,
-                      dailyGoal: waterGoal,
+                      dailyGoal: _dailyGoal,
                     ),
                   ),
                 ),
@@ -185,9 +220,7 @@ class _WaterTodayViewState extends State<WaterTodayView> {
                 ),
                 const SizedBox(height: 10),
                 TextButton.icon(
-                  onPressed: () { 
-                    // TODO: Implement edit daily goal functionality
-                  },
+                  onPressed: _showEditGoalDialog,
                   icon: const Icon(Icons.edit, size: 16),
                   label: const Text('Editar meta diaria'),
                 ),

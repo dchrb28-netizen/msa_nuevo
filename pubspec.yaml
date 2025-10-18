@@ -43,6 +43,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/
+    - assets/acuario/
     - assets/luna_png/
-    - assets/rive/
+    - assets/icons/

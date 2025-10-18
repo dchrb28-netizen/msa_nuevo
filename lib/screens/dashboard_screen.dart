@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/body_measurement.dart';
 import 'package:myapp/models/food_log.dart';
-import 'package:myapp/widgets/ui/screen_background.dart';
 import 'package:myapp/widgets/dashboard/circular_progress_card.dart';
 
 class DashboardScreen extends StatelessWidget {

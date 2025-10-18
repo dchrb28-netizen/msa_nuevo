@@ -135,7 +135,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: lightColorScheme,
           textTheme: textTheme,
-          scaffoldBackgroundColor: lightColorScheme.background,
+          scaffoldBackgroundColor: lightColorScheme.surface,
           appBarTheme: AppBarTheme(
             backgroundColor: themeProvider.seedColor, // Use the exact seed color
             foregroundColor: textColorForBackground(themeProvider.seedColor), // Ensure text is readable
@@ -161,7 +161,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: darkColorScheme,
           textTheme: textTheme,
-          scaffoldBackgroundColor: darkColorScheme.background,
+          scaffoldBackgroundColor: darkColorScheme.surface,
           appBarTheme: AppBarTheme(
             backgroundColor: themeProvider.seedColor, // Use the exact seed color
             foregroundColor: textColorForBackground(themeProvider.seedColor), // Ensure text is readable

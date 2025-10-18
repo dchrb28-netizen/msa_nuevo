@@ -25,7 +25,7 @@ class UserAdapter extends TypeAdapter<User> {
       weight: fields[5] as double,
       profileImagePath: fields[6] as String?,
       isGuest: fields[7] as bool,
-      dailyWaterGoal: fields[8] as double,
+      activityLevel: fields[8] as String,
     );
   }
 
@@ -50,7 +50,7 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(7)
       ..write(obj.isGuest)
       ..writeByte(8)
-      ..write(obj.dailyWaterGoal);
+      ..write(obj.activityLevel);
   }
 
   @override
