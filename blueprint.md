@@ -27,46 +27,44 @@
     - `MenusScreen`: Una nueva sección dedicada a los menús, independiente de los registros.
     - `LogsScreen`: Una pantalla dedicada que contiene una `TabBar` para navegar entre los registros de Agua, Comida y Medidas.
     - `ProgresoScreen`: Pantalla dedicada a mostrar el progreso del usuario.
+    - `RecipesScreen`: Una pantalla dedicada para la gestión de recetas, con una `TabBar` para las pestañas "Recetas" y "Favoritas".
 
-## Plan de Implementación Actual: Reorganización de la Navegación y Menús
+## Plan de Implementación Actual: Nueva Sección "Mis Recetas"
 
 ### 1. Requisito del Usuario
 
-El usuario solicitó los siguientes cambios:
-- Modificar la barra de navegación inferior para que contenga "Inicio", "Menús" y "Progreso".
-- Mover la funcionalidad de registro (Agua, Comida, Medidas) fuera de la barra de navegación principal y ubicarla en una sección accesible desde un menú lateral o una acción en la pantalla principal.
-- Crear una nueva sección "Menús" que será desarrollada en el futuro.
+Añadir una nueva categoría "Mis Recetas" en el menú lateral. Esta categoría debe contener tres opciones:
+- Ver la lista de todas las recetas.
+- Ver las recetas marcadas como favoritas.
+- Una opción para añadir una nueva receta.
 
 ### 2. Solución Implementada
 
-- **Acción de Navegación:**
-    - Se actualizó la barra de navegación en `main_screen.dart` para mostrar las pestañas "Inicio", "Menús" y "Progreso".
-    - Se creó una nueva pantalla `MenusScreen` como un placeholder para el futuro contenido de esta sección.
-    - Se creó una pantalla `LogsScreen` dedicada para alojar la `TabBar` con los registros de "Agua", "Comida" y "Medidas".
-    - Se modificó el menú lateral (`drawer_menu.dart`) para que las opciones de registro ahora naveguen a la `LogsScreen`, pasando el índice de la pestaña correspondiente.
+Siguiendo las directrices de arquitectura de la aplicación, se implementó la nueva sección de la siguiente manera:
 
-- **Resultado:** La aplicación ahora tiene una estructura de navegación que separa claramente la sección "Menús" de la sección "Registros", mejorando la organización del código y la experiencia del usuario. El `blueprint.md` se ha actualizado para reflejar estos cambios.
+- **Pantalla Principal de Recetas (`recipes_screen.dart`):**
+    - Se ha creado una nueva pantalla que contiene una `TabBar` con dos pestañas: "Recetas" y "Recetas Favoritas".
+    - Se añadió un `FloatingActionButton` en esta pantalla que navega a la `AddRecipeScreen` para permitir al usuario añadir nuevas recetas.
 
-## Plan para la Sección de Medidas
+- **Nuevas Pantallas Placeholder:**
+    - `recipe_list_screen.dart`: Para mostrar la lista de todas las recetas.
+    - `favorite_recipes_screen.dart`: Para mostrar las recetas favoritas.
+    - `add_recipe_screen.dart`: Para el formulario de creación de recetas.
 
-### 1. Requisito del Usuario
+- **Actualización del Menú Lateral (`drawer_menu.dart`):**
+    - Se ha añadido una nueva sección desplegable titulada "Mis Recetas".
+    - Contiene enlaces a "Recetas" y "Recetas Favoritas" (que abren la `RecipesScreen` en la pestaña correspondiente) y un enlace directo a "Añadir Receta".
 
-Definir y construir la funcionalidad de la pantalla "Medidas", permitiendo al usuario registrar y visualizar sus medidas corporales. Las medidas a registrar son:
-- Peso (kg)
-- Pecho (cm)
-- Brazo (cm)
-- Cintura (cm)
-- Caderas (cm)
-- Muslo (cm)
+## Directrices de Diseño y Navegación Futura
 
-### 2. Plan de Implementación
+Para mantener la consistencia y una arquitectura limpia en la aplicación, cualquier nueva funcionalidad que agrupe varias subsecciones seguirá el siguiente patrón de diseño:
 
-- **Formulario de Entrada:**
-    - Se añadirá un `FloatingActionButton` a la pantalla `BodyMeasurementScreen`.
-    - Al tocarlo, se mostrará un `BottomSheet` con un formulario para introducir las seis medidas corporales.
-    - El formulario usará campos de texto numéricos con validación.
-- **Visualización de Datos:**
-    - La pestaña "Hoy" mostrará la medición más reciente del día actual.
-    - La pestaña "Historial" mostrará una lista de todas las mediciones anteriores, ordenadas por fecha.
-- **Almacenamiento:**
-    - Las mediciones se guardarán en la caja de Hive `body_measurements` utilizando el modelo `BodyMeasurement`.
+1.  **Pantalla Dedicada con `TabBar`:**
+    - Para funcionalidades agrupadas (por ejemplo, "Ejercicios" y "Biblioteca de Ejercicios"), se creará una pantalla principal dedicada.
+    - Esta pantalla utilizará una `TabBar` para permitir al usuario navegar fácilmente entre las subsecciones relacionadas.
+
+2.  **Integración en la Navegación Principal:**
+    - El acceso a esta nueva pantalla dedicada se integrará de forma lógica en el **menú lateral (`Drawer`)** o en otra ubicación secundaria de la interfaz de usuario.
+    - La **barra de navegación inferior** se mantendrá limpia y reservada exclusivamente para las secciones principales de la aplicación: "Inicio", "Menús" y "Progreso".
+
+Este enfoque garantiza que la aplicación siga siendo escalable y que la experiencia de usuario se mantenga intuitiva a medida que se añadan nuevas características.

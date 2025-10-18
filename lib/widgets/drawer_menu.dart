@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/providers/theme_provider.dart';
@@ -9,6 +10,8 @@ import 'package:myapp/screens/habits/reminders_screen.dart';
 import 'package:myapp/screens/logs_screen.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
+import 'package:myapp/screens/recipes/add_recipe_screen.dart';
+import 'package:myapp/screens/recipes/recipes_screen.dart';
 import 'package:myapp/screens/settings/about_screen.dart';
 import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:myapp/screens/settings/theme_settings_screen.dart';
@@ -41,7 +44,7 @@ class DrawerMenu extends StatelessWidget {
         leading: Icon(icon, color: iconColor),
         title: Text(title, style: GoogleFonts.lato()),
         onTap: () {
-          Navigator.pop(context); 
+          Navigator.pop(context);
           Navigator.push(context, MaterialPageRoute(builder: (context) => destination));
         },
       );
@@ -101,53 +104,63 @@ class DrawerMenu extends StatelessWidget {
           _buildExpansionTile(context,
             title: 'Registro', 
             icon: Icons.edit, 
-            iconColor: Colors.purple,
+            iconColor: Colors.deepPurple,
             children: [
-              buildListTile(context, icon: Icons.water_drop, iconColor: Colors.blue.shade300, title: 'Ingesta de Agua', destination: const LogsScreen(initialTabIndex: 0)),
-              buildListTile(context, icon: Icons.fastfood, iconColor: Colors.orange.shade300, title: 'Comidas', destination: const LogsScreen(initialTabIndex: 1)),
-              buildListTile(context, icon: Icons.straighten, iconColor: Colors.green.shade300, title: 'Medidas', destination: const LogsScreen(initialTabIndex: 2)),
+              buildListTile(context, icon: Icons.water_drop, iconColor: Colors.blue, title: 'Ingesta de Agua', destination: const LogsScreen(initialTabIndex: 0)),
+              buildListTile(context, icon: Icons.fastfood, iconColor: Colors.yellow[700]!, title: 'Comidas', destination: const LogsScreen(initialTabIndex: 1)),
+              buildListTile(context, icon: Icons.straighten, iconColor: Colors.teal, title: 'Medidas', destination: const LogsScreen(initialTabIndex: 2)),
+            ]
+          ),
+           _buildExpansionTile(context,
+            title: 'Mis Recetas', 
+            icon: Icons.menu_book, 
+            iconColor: Colors.brown[600]!,
+            children: [
+              buildListTile(context, icon: Icons.receipt_long, iconColor: Colors.orange[800]!, title: 'Recetas', destination: const RecipesScreen(initialTabIndex: 0)),
+              buildListTile(context, icon: Icons.favorite, iconColor: Colors.red[400]!, title: 'Recetas Favoritas', destination: const RecipesScreen(initialTabIndex: 1)),
+              buildListTile(context, icon: Icons.add_circle, iconColor: Colors.green[600]!, title: 'Añadir Receta', destination: const AddRecipeScreen()),
             ]
           ),
           _buildExpansionTile(context,
             title: 'Entrenamiento', 
             icon: Icons.fitness_center, 
-            iconColor: Colors.orange,
+            iconColor: Colors.red[700]!,
             children: [
-              buildListTile(context, icon: Icons.directions_run, iconColor: Colors.orange.shade300, title: 'Ejercicios', destination: const ExercisesScreen()),
-              buildListTile(context, icon: Icons.library_books, iconColor: Colors.orange.shade300, title: 'Biblioteca de Ejercicios', destination: const ExerciseLibraryScreen()),
+              buildListTile(context, icon: Icons.directions_run, iconColor: Colors.cyan[600]!, title: 'Ejercicios', destination: const ExercisesScreen()),
+              buildListTile(context, icon: Icons.library_books, iconColor: Colors.indigo[400]!, title: 'Biblioteca de Ejercicios', destination: const ExerciseLibraryScreen()),
             ]
           ),
           _buildExpansionTile(context,
             title: 'Hábitos', 
             icon: Icons.check_circle_outline, 
-            iconColor: Colors.green,
+            iconColor: Colors.lightGreen[800]!,
             children: [
-              buildListTile(context, icon: Icons.notifications, iconColor: Colors.green.shade300, title: 'Recordatorios', destination: const RemindersScreen()),
-              buildListTile(context, icon: Icons.hourglass_empty, iconColor: Colors.green.shade300, title: 'Ayuno Intermitente', destination: const IntermittentFastingScreen()),
+              buildListTile(context, icon: Icons.notifications, iconColor: Colors.amber[600]!, title: 'Recordatorios', destination: const RemindersScreen()),
+              buildListTile(context, icon: Icons.hourglass_empty, iconColor: Colors.lime[700]!, title: 'Ayuno Intermitente', destination: const IntermittentFastingScreen()),
             ]
           ),
           _buildExpansionTile(context,
             title: 'Logros', 
             icon: Icons.emoji_events, 
-            iconColor: Colors.amber,
+            iconColor: Colors.amber[900]!,
             children: [
-              buildListTile(context, icon: Icons.card_giftcard, iconColor: Colors.amber.shade300, title: 'Recompensas', destination: const RewardsScreen()),
-              buildListTile(context, icon: Icons.flag, iconColor: Colors.amber.shade300, title: 'Objetivos', destination: const ObjectivesScreen()),
+              buildListTile(context, icon: Icons.card_giftcard, iconColor: Colors.yellow[600]!, title: 'Recompensas', destination: const RewardsScreen()),
+              buildListTile(context, icon: Icons.flag, iconColor: Colors.deepOrange[400]!, title: 'Objetivos', destination: const ObjectivesScreen()),
             ]
           ),
           const Divider(),
           _buildExpansionTile(context,
             title: 'Configuración', 
             icon: Icons.settings, 
-            iconColor: Colors.grey,
+            iconColor: Colors.grey[700]!,
             children: [
-               buildListTile(context, icon: Icons.pie_chart, iconColor: Colors.blueGrey, title: 'Metas Calóricas', destination: const CaloricGoalsScreen()),
-               buildListTile(context, icon: Icons.monitor_weight, iconColor: Colors.blueGrey, title: 'Objetivos de Peso', destination: const WeightGoalsScreen()),
-               buildListTile(context, icon: Icons.palette, iconColor: Colors.blueGrey, title: 'Temas', destination: const PantallaTemas()),
+               buildListTile(context, icon: Icons.pie_chart, iconColor: Colors.pink[300]!, title: 'Metas Calóricas', destination: const CaloricGoalsScreen()),
+               buildListTile(context, icon: Icons.monitor_weight, iconColor: Colors.lightBlue[400]!, title: 'Objetivos de Peso', destination: const WeightGoalsScreen()),
+               buildListTile(context, icon: Icons.palette, iconColor: Colors.purple[300]!, title: 'Temas', destination: const PantallaTemas()),
             ]
           ),
           ListTile(
-            leading: const Icon(Icons.info_outline, color: Colors.lightBlue),
+            leading: Icon(Icons.info_outline, color: Colors.blueGrey[500]!),
             title: Text('Acerca de', style: GoogleFonts.lato()),
             onTap: () {
                 Navigator.pop(context);
@@ -155,7 +168,7 @@ class DrawerMenu extends StatelessWidget {
             },
           ),
             ListTile(
-            leading: const Icon(Icons.logout, color: Colors.redAccent),
+            leading: Icon(Icons.logout, color: Colors.red[800]!),
             title: Text('Cerrar Sesión', style: GoogleFonts.lato()),
             onTap: () {
               userProvider.logout();
