@@ -36,7 +36,8 @@ class DashboardScreen extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: Hive.box<FoodLog>('food_logs').listenable(),
       builder: (context, Box<FoodLog> box, _) {
-        final dailyLogs = box.values.where((log) => DateUtils.isSameDay(log.timestamp, DateTime.now()));
+        final now = DateTime.now();
+        final dailyLogs = box.values.where((log) => log.timestamp.year == now.year && log.timestamp.month == now.month && log.timestamp.day == now.day);
         final totalCalories = dailyLogs.fold<double>(0, (sum, log) => sum + (log.food.calories * log.quantity / 100));
         // TODO: This should come from user settings
         const caloricGoal = 2000;

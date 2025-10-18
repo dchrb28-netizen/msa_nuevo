@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/recipes/add_recipe_screen.dart';
 import 'package:myapp/screens/recipes/favorite_recipes_screen.dart';
@@ -6,7 +5,7 @@ import 'package:myapp/screens/recipes/recipe_list_screen.dart';
 
 class RecipesScreen extends StatefulWidget {
   final int initialTabIndex;
-  const RecipesScreen({Key? key, this.initialTabIndex = 0}) : super(key: key);
+  const RecipesScreen({super.key, this.initialTabIndex = 0});
 
   @override
   State<RecipesScreen> createState() => _RecipesScreenState();
@@ -31,12 +30,11 @@ class _RecipesScreenState extends State<RecipesScreen> with SingleTickerProvider
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mis Recetas'),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(text: 'Recetas'),
-            Tab(text: 'Favoritas'),
+            Tab(icon: Icon(Icons.book), text: 'Recetas'),
+            Tab(icon: Icon(Icons.favorite), text: 'Favoritas'),
           ],
         ),
       ),
@@ -54,8 +52,8 @@ class _RecipesScreenState extends State<RecipesScreen> with SingleTickerProvider
             MaterialPageRoute(builder: (context) => const AddRecipeScreen()),
           );
         },
-        child: const Icon(Icons.add),
         tooltip: 'Añadir Receta',
+        child: const Icon(Icons.add),
       ),
     );
   }

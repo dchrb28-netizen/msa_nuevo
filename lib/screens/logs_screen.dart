@@ -28,7 +28,6 @@ class LogsScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Mis Registros'),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight + 10),
             child: Theme(

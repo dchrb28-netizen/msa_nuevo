@@ -10,6 +10,10 @@
 - **Tipografía:** Se usa el paquete `google_fonts` con "Montserrat" para una apariencia limpia y moderna.
 - **UI:** El diseño es limpio, centrado y sigue las guías de Material Design, con botones claros, tarjetas y una navegación intuitiva.
 - **Activos:** La pantalla de bienvenida muestra una imagen (`luna_inicio_b.png` o `luna_inicio_w.png`) que se adapta al modo de tema actual (claro/oscuro).
+- **Navegación por Pestañas (`TabBar`):** Para mantener la consistencia en toda la aplicación, toda nueva implementación de `TabBar` debe seguir las siguientes reglas:
+    1.  **Componente:** Se debe utilizar un `TabBar` integrado en la propiedad `bottom` de una `AppBar`.
+    2.  **Contenido:** Cada `Tab` debe contener tanto un `Icon` como un `Text` para garantizar la máxima claridad para el usuario.
+    3.  **Estilo Centralizado:** El estilo visual (colores de los iconos y texto, color del indicador) se debe gestionar de forma global en `lib/main.dart` a través del `TabBarTheme` para asegurar una apariencia uniforme y una visibilidad correcta en los modos claro y oscuro.
 
 ## Características y Flujo de la Aplicación
 

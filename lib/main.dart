@@ -127,16 +127,18 @@ class MyApp extends StatelessWidget {
                 : Colors.black;
         }
 
+        final appBarTextColor = textColorForBackground(themeProvider.seedColor);
+
         final lightTheme = ThemeData(
           useMaterial3: true,
           colorScheme: lightColorScheme,
           textTheme: textTheme,
           scaffoldBackgroundColor: lightColorScheme.surface,
           appBarTheme: AppBarTheme(
-            backgroundColor: themeProvider.seedColor, // Use the exact seed color
-            foregroundColor: textColorForBackground(themeProvider.seedColor), // Ensure text is readable
+            backgroundColor: themeProvider.seedColor,
+            foregroundColor: appBarTextColor,
             elevation: 2,
-            titleTextStyle: textTheme.headlineSmall?.copyWith(color: textColorForBackground(themeProvider.seedColor)),
+            titleTextStyle: textTheme.headlineSmall?.copyWith(color: appBarTextColor),
           ),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             selectedItemColor: themeProvider.seedColor,
@@ -145,9 +147,9 @@ class MyApp extends StatelessWidget {
             showUnselectedLabels: true,
           ),
           tabBarTheme: TabBarThemeData(
-            labelColor: themeProvider.seedColor,
-            unselectedLabelColor: Colors.grey,
-            indicatorColor: themeProvider.seedColor,
+            labelColor: appBarTextColor,
+            unselectedLabelColor: appBarTextColor.withAlpha((255 * 0.7).round()),
+            indicatorColor: appBarTextColor,
           ),
         );
 
@@ -157,22 +159,22 @@ class MyApp extends StatelessWidget {
           textTheme: textTheme,
           scaffoldBackgroundColor: darkColorScheme.surface,
           appBarTheme: AppBarTheme(
-            backgroundColor: themeProvider.seedColor, // Use the exact seed color
-            foregroundColor: textColorForBackground(themeProvider.seedColor), // Ensure text is readable
+            backgroundColor: themeProvider.seedColor,
+            foregroundColor: appBarTextColor,
             elevation: 2,
-            titleTextStyle: textTheme.headlineSmall?.copyWith(color: textColorForBackground(themeProvider.seedColor)),
+            titleTextStyle: textTheme.headlineSmall?.copyWith(color: appBarTextColor),
           ),
            bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: darkColorScheme.surface,
-            selectedItemColor: themeProvider.seedColor, // Use the exact seed color
+            selectedItemColor: themeProvider.seedColor,
             unselectedItemColor: Colors.grey[400],
             type: BottomNavigationBarType.fixed,
             showUnselectedLabels: true,
           ),
            tabBarTheme: TabBarThemeData(
-            labelColor: themeProvider.seedColor,
-            unselectedLabelColor: Colors.grey[400],
-            indicatorColor: themeProvider.seedColor,
+            labelColor: appBarTextColor,
+            unselectedLabelColor: appBarTextColor.withAlpha((255 * 0.7).round()),
+            indicatorColor: appBarTextColor,
           ),
         );
 

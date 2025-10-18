@@ -26,12 +26,34 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  AppBar _buildAppBar() {
+    switch (_selectedIndex) {
+      case 0:
+        return AppBar(title: const Text('Salud Activa'));
+      case 1:
+        return AppBar(
+          title: const Text('Menús'),
+          bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(40.0),
+            child: TabBar(
+              tabs: [
+                Tab(icon: Icon(Icons.today), text: 'Hoy'),
+                Tab(icon: Icon(Icons.date_range), text: 'Semanal'),
+              ],
+            ),
+          ),
+        );
+      case 2:
+        return AppBar(title: const Text('Progreso'));
+      default:
+        return AppBar();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Salud Activa'),
-      ),
+    final scaffold = Scaffold(
+      appBar: _buildAppBar(),
       drawer: const DrawerMenu(),
       body: IndexedStack(
         index: _selectedIndex,
@@ -59,5 +81,14 @@ class _MainScreenState extends State<MainScreen> {
         onTap: _onItemTapped,
       ),
     );
+
+    if (_selectedIndex == 1) {
+      return DefaultTabController(
+        length: 2,
+        child: scaffold,
+      );
+    }
+
+    return scaffold;
   }
 }

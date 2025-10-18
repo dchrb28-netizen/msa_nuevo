@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/theme_provider.dart';
@@ -42,9 +41,7 @@ class PantallaTemas extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Temas'),
-      ),
+      appBar: AppBar(),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [

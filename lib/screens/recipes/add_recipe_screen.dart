@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 class AddRecipeScreen extends StatelessWidget {
-  const AddRecipeScreen({Key? key}) : super(key: key);
+  const AddRecipeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

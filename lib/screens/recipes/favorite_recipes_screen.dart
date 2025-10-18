@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 class FavoriteRecipesScreen extends StatelessWidget {
-  const FavoriteRecipesScreen({Key? key}) : super(key: key);
+  const FavoriteRecipesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
