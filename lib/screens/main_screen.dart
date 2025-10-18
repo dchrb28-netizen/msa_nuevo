@@ -29,12 +29,10 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // The AppBar is now styled by the global theme in main.dart
       appBar: AppBar(
-        title: const Text('FitTrack AI'),
+        title: const Text('Salud Activa'),
       ),
       drawer: const DrawerMenu(),
-      // Simplified the body to remove the background image and stack
       body: IndexedStack(
         index: _selectedIndex,
         children: _widgetOptions,
@@ -47,8 +45,8 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_outlined),
-            activeIcon: Icon(Icons.menu_book),
+            icon: Icon(Icons.restaurant_menu_outlined),
+            activeIcon: Icon(Icons.restaurant_menu),
             label: 'Menús',
           ),
           BottomNavigationBarItem(
@@ -58,10 +56,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        // Let the theme handle the selected and unselected item colors
         onTap: _onItemTapped,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
       ),
     );
   }

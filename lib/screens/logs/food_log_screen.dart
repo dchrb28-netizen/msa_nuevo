@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/widgets/ui/screen_background.dart';
+import 'package:myapp/screens/logs/food_history_screen.dart';
+import 'package:myapp/screens/logs/food_today_view.dart';
 
 class FoodLogScreen extends StatelessWidget {
   const FoodLogScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registrar Comida'),
-      ),
-      body: Stack(
-        children: [
-          const ScreenBackground(screenName: 'comida'),
-          const Center(
-            child: Text('Aquí podrás registrar tus comidas.'),
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: const [
+          TabBar(
+            tabs: [
+              Tab(text: 'Hoy'),
+              Tab(text: 'Historial'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                FoodTodayView(),
+                FoodHistoryScreen(),
+              ],
+            ),
           ),
         ],
       ),

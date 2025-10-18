@@ -9,22 +9,23 @@ class WaterLogScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Consumo de Agua'),
-          bottom: const TabBar(
+      child: Column(
+        children: const [
+          TabBar(
             tabs: [
               Tab(text: 'Hoy'),
               Tab(text: 'Historial'),
             ],
           ),
-        ),
-        body: const TabBarView(
-          children: [
-            WaterTodayView(),
-            WaterHistoryScreen(),
-          ],
-        ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                WaterTodayView(),
+                WaterHistoryScreen(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

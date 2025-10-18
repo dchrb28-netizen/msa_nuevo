@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/widgets/ui/screen_background.dart';
+import 'package:myapp/screens/logs/body_measurement_history_screen.dart';
+import 'package:myapp/screens/logs/body_measurement_today_view.dart';
 
 class BodyMeasurementScreen extends StatelessWidget {
   const BodyMeasurementScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Medición Corporal'),
-      ),
-      body: Stack(
+    return DefaultTabController(
+      length: 2,
+      child: Column(
         children: [
-          const ScreenBackground(screenName: 'medida'),
-          const Center(
-            child: Text('Aquí podrás registrar tus mediciones corporales.'),
+          const TabBar(
+            tabs: [
+              Tab(text: 'Hoy'),
+              Tab(text: 'Historial'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                BodyMeasurementTodayView(),
+                BodyMeasurementHistoryScreen(),
+              ],
+            ),
           ),
         ],
       ),

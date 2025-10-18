@@ -100,8 +100,8 @@ class MarineMist extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.white.withOpacity(0.4),
-              Colors.white.withOpacity(0.1),
+              Colors.white.withAlpha(102), // 0.4 opacity
+              Colors.white.withAlpha(26),  // 0.1 opacity
               Colors.transparent,
             ],
             stops: const [0.0, 0.2, 0.5],

@@ -11,13 +11,7 @@ import 'package:myapp/models/user.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
-import 'package:myapp/screens/logs/body_measurement_screen.dart';
-import 'package:myapp/screens/logs/exercise_log_screen.dart';
-import 'package:myapp/screens/logs/food_log_screen.dart';
 import 'package:myapp/screens/main_screen.dart';
-import 'package:myapp/screens/progress_screen.dart';
-import 'package:myapp/screens/profile_screen.dart';
-import 'package:myapp/screens/settings_screen.dart';
 import 'package:myapp/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -96,22 +90,24 @@ class MyApp extends StatelessWidget {
 
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
-        final textTheme = TextTheme(
-          displayLarge: GoogleFonts.montserrat(fontSize: 57, fontWeight: FontWeight.bold),
-          displayMedium: GoogleFonts.montserrat(fontSize: 45, fontWeight: FontWeight.bold),
-          displaySmall: GoogleFonts.montserrat(fontSize: 36, fontWeight: FontWeight.bold),
-          headlineLarge: GoogleFonts.montserrat(fontSize: 32, fontWeight: FontWeight.bold),
-          headlineMedium: GoogleFonts.montserrat(fontSize: 28, fontWeight: FontWeight.bold),
-          headlineSmall: GoogleFonts.montserrat(fontSize: 24, fontWeight: FontWeight.bold),
-          titleLarge: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold),
-          titleMedium: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.bold),
-          titleSmall: GoogleFonts.lato(fontSize: 14, fontWeight: FontWeight.w500),
-          bodyLarge: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.normal),
-          bodyMedium: GoogleFonts.lato(fontSize: 14, fontWeight: FontWeight.normal),
-          bodySmall: GoogleFonts.lato(fontSize: 12, fontWeight: FontWeight.normal),
-          labelLarge: GoogleFonts.lato(fontSize: 14, fontWeight: FontWeight.bold),
-          labelMedium: GoogleFonts.lato(fontSize: 12, fontWeight: FontWeight.bold),
-          labelSmall: GoogleFonts.lato(fontSize: 11, fontWeight: FontWeight.bold),
+        final textTheme = GoogleFonts.montserratTextTheme(
+          Theme.of(context).textTheme,
+        ).copyWith(
+          displayLarge: const TextStyle(fontSize: 57, fontWeight: FontWeight.bold),
+          displayMedium: const TextStyle(fontSize: 45, fontWeight: FontWeight.bold),
+          displaySmall: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+          headlineLarge: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          headlineMedium: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          headlineSmall: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          titleLarge: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          titleMedium: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          titleSmall: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          bodyLarge: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+          bodyMedium: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+          bodySmall: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+          labelLarge: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          labelMedium: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          labelSmall: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
         );
 
         final lightColorScheme = ColorScheme.fromSeed(
@@ -140,7 +136,7 @@ class MyApp extends StatelessWidget {
             backgroundColor: themeProvider.seedColor, // Use the exact seed color
             foregroundColor: textColorForBackground(themeProvider.seedColor), // Ensure text is readable
             elevation: 2,
-            titleTextStyle: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold, color: textColorForBackground(themeProvider.seedColor)),
+            titleTextStyle: textTheme.headlineSmall?.copyWith(color: textColorForBackground(themeProvider.seedColor)),
           ),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             selectedItemColor: themeProvider.seedColor,
@@ -151,9 +147,7 @@ class MyApp extends StatelessWidget {
           tabBarTheme: TabBarThemeData(
             labelColor: themeProvider.seedColor,
             unselectedLabelColor: Colors.grey,
-            indicator: BoxDecoration(
-              border: Border(bottom: BorderSide(color: themeProvider.seedColor, width: 2)),
-            ),
+            indicatorColor: themeProvider.seedColor,
           ),
         );
 
@@ -166,7 +160,7 @@ class MyApp extends StatelessWidget {
             backgroundColor: themeProvider.seedColor, // Use the exact seed color
             foregroundColor: textColorForBackground(themeProvider.seedColor), // Ensure text is readable
             elevation: 2,
-            titleTextStyle: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold, color: textColorForBackground(themeProvider.seedColor)),
+            titleTextStyle: textTheme.headlineSmall?.copyWith(color: textColorForBackground(themeProvider.seedColor)),
           ),
            bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: darkColorScheme.surface,
@@ -178,14 +172,12 @@ class MyApp extends StatelessWidget {
            tabBarTheme: TabBarThemeData(
             labelColor: themeProvider.seedColor,
             unselectedLabelColor: Colors.grey[400],
-            indicator: BoxDecoration(
-              border: Border(bottom: BorderSide(color: themeProvider.seedColor, width: 2)),
-            ),
+            indicatorColor: themeProvider.seedColor,
           ),
         );
 
         return MaterialApp(
-          title: 'FitTrack AI',
+          title: 'Salud Activa',
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
@@ -200,14 +192,6 @@ class MyApp extends StatelessWidget {
           darkTheme: darkTheme,
           themeMode: themeProvider.themeMode,
           home: userProvider.user != null ? const MainScreen() : const WelcomeScreen(),
-          routes: {
-            '/food-log': (context) => const FoodLogScreen(),
-            '/exercise-log': (context) => const ExerciseLogScreen(),
-            '/body-measurement': (context) => const BodyMeasurementScreen(),
-            '/progress': (context) => const ProgressScreen(),
-            '/profile': (context) => const ProfileScreen(),
-            '/settings': (context) => const SettingsScreen(),
-          },
         );
       },
     );

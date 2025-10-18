@@ -1,4 +1,3 @@
-
 # Blueprint: Salud Activa App
 
 ## Visión General
@@ -20,35 +19,30 @@
 - **Pantalla de Bienvenida (`welcome_screen.dart`):**
     - Ofrece dos opciones: "Crear Perfil" o "Continuar como Invitado".
     - Muestra una imagen de bienvenida que se adapta al tema.
-    - Navega a la `ProfileScreen` o `HomeScreen` según la elección.
+    - Navega a la `ProfileScreen` o `MainScreen` según la elección.
 - **Pantalla Principal (`main_screen.dart`):**
-    - Utiliza una `BottomNavigationBar` para navegar entre tres secciones principales: Inicio, Registros y Progreso.
-    - `MainScreen` actúa como el `Scaffold` principal de la aplicación, gestionando la barra de navegación y el cuerpo de la pantalla activa.
+    - Utiliza una `BottomNavigationBar` para navegar entre tres secciones principales: Inicio, Menús y Progreso.
 - **Estructura de Pantallas:**
     - `DashboardScreen`: Muestra un resumen general o pantalla de inicio.
-    - `RecordsScreen`: Contiene una `TabBar` para navegar entre el registro de Agua, Comida y Medidas. Cada una de estas pestañas, a su vez, tiene sub-pestañas para "Hoy" y "Historial".
+    - `MenusScreen`: Una nueva sección dedicada a los menús, independiente de los registros.
+    - `LogsScreen`: Una pantalla dedicada que contiene una `TabBar` para navegar entre los registros de Agua, Comida y Medidas.
     - `ProgresoScreen`: Pantalla dedicada a mostrar el progreso del usuario.
 - **Gestión de Perfil:**
     - `ProfileProvider` para gestionar el estado del perfil de usuario.
     - Lógica en `main.dart` para decidir si mostrar la `WelcomeScreen` (si no hay perfil) o la `MainScreen` (si ya existe un perfil).
 
-## Plan de Corrección Actual: Conflicto de `Scaffold` Anidados
+## Plan de Corrección Actual: Reestructuración de la Navegación
 
-Esta sección detalla el diagnóstico y la solución al problema de renderizado causado por múltiples `Scaffold` en el árbol de widgets.
+Esta sección detalla el diagnóstico y la solución a la reorganización de la navegación principal de la aplicación.
 
 ### 1. Diagnóstico
-- **Problema:** La aplicación mostraba errores visuales, como texto con subrayado amarillo y un comportamiento inesperado en la interfaz de usuario. Esto era especialmente visible en las pantallas de `RecordsScreen` y sus sub-pantallas.
-- **Causa Raíz:** Se descubrió que múltiples pantallas secundarias (ej. `WaterIntakeScreen`, `FoodHistoryScreen`, etc.) tenían su propio widget `Scaffold`. Esto creaba un conflicto con el `Scaffold` principal de `MainScreen`, que se supone que es el único andamiaje de la estructura de la aplicación en ese nivel. Tener `Scaffold` anidados de esta manera es una práctica incorrecta en Flutter y conduce a problemas con el `Theme`, el `MediaQuery` y el correcto renderizado de los widgets de Material Design.
+- **Problema de Navegación:** La barra de navegación inferior no reflejaba la estructura deseada. Mostraba "Registros" en lugar de "Menús", y la funcionalidad de registros estaba incorrectamente integrada en la pantalla principal.
 
 ### 2. Solución Implementada
-- **Acción:** Se llevó a cabo una refactorización exhaustiva para eliminar todos los `Scaffold` innecesarios de las pantallas secundarias.
-- **Archivos Modificados:**
-    - `lib/screens/records_screen.dart`: Se eliminaron los `Scaffold` que envolvían cada `TabBarView` de las pestañas de Agua, Comida y Medidas.
-    - `lib/screens/water_intake_screen.dart`: Se eliminó el `Scaffold` principal.
-    - `lib/screens/food_intake_screen.dart`: Se eliminó el `Scaffold` principal.
-    - `lib/screens/body_measurement_screen.dart`: Se eliminó el `Scaffold` principal.
-    - `lib/screens/water_history_screen.dart`: Se eliminó el `Scaffold` principal.
-    - `lib/screens/food_history_screen.dart`: Se eliminó el `Scaffold` principal.
-    - `lib/screens/body_measurement_history_screen.dart`: Se eliminó el `Scaffold` principal.
+- **Acción de Navegación:**
+    - Se actualizó la barra de navegación en `main_screen.dart` para mostrar las pestañas "Inicio", "Menús" y "Progreso".
+    - Se creó una nueva pantalla `MenusScreen` como un placeholder para el futuro contenido de esta sección.
+    - Se creó una pantalla `LogsScreen` dedicada para alojar la `TabBar` con los registros de "Agua", "Comida" y "Medidas".
+    - Se modificó el menú lateral (`drawer_menu.dart`) para que las opciones de registro ahora naveguen a la `LogsScreen`, pasando el índice de la pestaña correspondiente.
 
-- **Resultado:** Al eliminar los `Scaffold` anidados, el árbol de widgets se simplificó y se corrigió. `MainScreen` ahora proporciona el único `Scaffold` para la navegación principal, y todas las pantallas secundarias se renderizan correctamente dentro de su `body`. Esto resolvió los problemas de renderizado y restauró la integridad visual de la aplicación.
+- **Resultado:** La aplicación ahora tiene una estructura de navegación que separa claramente la sección "Menús" de la sección "Registros", mejorando la organización del código y la experiencia del usuario. El `blueprint.md` se ha actualizado para reflejar estos cambios.

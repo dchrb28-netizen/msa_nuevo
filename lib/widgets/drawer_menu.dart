@@ -6,7 +6,7 @@ import 'package:myapp/screens/achievements/objectives_screen.dart';
 import 'package:myapp/screens/achievements/rewards_screen.dart';
 import 'package:myapp/screens/habits/intermittent_fasting_screen.dart';
 import 'package:myapp/screens/habits/reminders_screen.dart';
-import 'package:myapp/screens/logs/activity_log_screen.dart';
+import 'package:myapp/screens/logs_screen.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/settings/about_screen.dart';
@@ -103,9 +103,9 @@ class DrawerMenu extends StatelessWidget {
             icon: Icons.edit, 
             iconColor: Colors.purple,
             children: [
-              buildListTile(context, icon: Icons.water_drop, iconColor: Colors.blue.shade300, title: 'Ingesta de Agua', destination: const ActivityLogScreen(initialIndex: 0)),
-              buildListTile(context, icon: Icons.fastfood, iconColor: Colors.orange.shade300, title: 'Comidas', destination: const ActivityLogScreen(initialIndex: 1)),
-              buildListTile(context, icon: Icons.straighten, iconColor: Colors.green.shade300, title: 'Medidas', destination: const ActivityLogScreen(initialIndex: 2)),
+              buildListTile(context, icon: Icons.water_drop, iconColor: Colors.blue.shade300, title: 'Ingesta de Agua', destination: const LogsScreen(initialTabIndex: 0)),
+              buildListTile(context, icon: Icons.fastfood, iconColor: Colors.orange.shade300, title: 'Comidas', destination: const LogsScreen(initialTabIndex: 1)),
+              buildListTile(context, icon: Icons.straighten, iconColor: Colors.green.shade300, title: 'Medidas', destination: const LogsScreen(initialTabIndex: 2)),
             ]
           ),
           _buildExpansionTile(context,
