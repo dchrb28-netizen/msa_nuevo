@@ -1,29 +1,30 @@
-import 'package:hive/hive.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'exercise.g.dart';
 
-@HiveType(typeId: 6) // Asignar un typeId único
-class Exercise extends HiveObject {
-  @HiveField(0)
+@JsonSerializable()
+class Exercise {
+  final String id;
   final String name;
-
-  @HiveField(1)
   final String description;
-
-  @HiveField(2)
-  final int sets;
-
-  @HiveField(3)
-  final String reps;
-
-  @HiveField(4)
+  final String type;
+  final String muscleGroup;
+  final String equipment;
   final String? imageUrl;
+  final String? videoUrl;
 
   Exercise({
+    required this.id,
     required this.name,
     required this.description,
-    required this.sets,
-    required this.reps,
+    required this.type,
+    required this.muscleGroup,
+    required this.equipment,
     this.imageUrl,
+    this.videoUrl,
   });
+
+  factory Exercise.fromJson(Map<String, dynamic> json) => _$ExerciseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExerciseToJson(this);
 }

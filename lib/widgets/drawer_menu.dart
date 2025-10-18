@@ -16,8 +16,7 @@ import 'package:myapp/screens/settings/about_screen.dart';
 import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:myapp/screens/settings/theme_settings_screen.dart';
 import 'package:myapp/screens/settings/weight_goals_screen.dart';
-import 'package:myapp/screens/training/exercise_library_screen.dart';
-import 'package:myapp/screens/training/exercises_screen.dart';
+import 'package:myapp/screens/training/training_main_screen.dart';
 import 'package:myapp/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -126,8 +125,8 @@ class DrawerMenu extends StatelessWidget {
             icon: Icons.fitness_center, 
             iconColor: Colors.red[700]!,
             children: [
-              buildListTile(context, icon: Icons.directions_run, iconColor: Colors.cyan[600]!, title: 'Ejercicios', destination: const ExercisesScreen()),
-              buildListTile(context, icon: Icons.library_books, iconColor: Colors.indigo[400]!, title: 'Biblioteca de Ejercicios', destination: const ExerciseLibraryScreen()),
+              buildListTile(context, icon: Icons.fitness_center, iconColor: Colors.red[700]!, title: 'Ejercicios', destination: const TrainingMainScreen(initialTabIndex: 0)),
+              buildListTile(context, icon: Icons.local_library, iconColor: Colors.blue[700]!, title: 'Biblioteca', destination: const TrainingMainScreen(initialTabIndex: 1)),
             ]
           ),
           _buildExpansionTile(context,

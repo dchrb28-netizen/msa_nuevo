@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:myapp/models/body_measurement.dart';
-import 'package:myapp/models/exercise.dart';
 import 'package:myapp/models/food.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/models/user.dart';
@@ -35,9 +34,6 @@ void main() async {
   if (!Hive.isAdapterRegistered(BodyMeasurementAdapter().typeId)) {
     Hive.registerAdapter(BodyMeasurementAdapter());
   }
-  if (!Hive.isAdapterRegistered(ExerciseAdapter().typeId)) {
-    Hive.registerAdapter(ExerciseAdapter());
-  }
   if (!Hive.isAdapterRegistered(UserAdapter().typeId)) {
     Hive.registerAdapter(UserAdapter());
   }
@@ -47,7 +43,6 @@ void main() async {
   await Hive.openBox<WaterLog>('water_logs');
   await Hive.openBox<FoodLog>('food_logs');
   await Hive.openBox<BodyMeasurement>('body_measurements');
-  await Hive.openBox<Exercise>('exercises');
   await Hive.openBox<User>('user_box');
   await Hive.openBox('settings');
 

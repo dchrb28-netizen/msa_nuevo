@@ -31,6 +31,7 @@ dependencies:
   rive: ^0.13.4
   shared_preferences: ^2.5.3
   url_launcher: ^6.3.2
+  json_annotation: ^4.9.0
 
 dev_dependencies:
   flutter_test:
@@ -39,6 +40,7 @@ dev_dependencies:
   flutter_lints: any
   hive_generator: any
   build_runner: any
+  json_serializable: ^6.8.0
 
 flutter:
   uses-material-design: true

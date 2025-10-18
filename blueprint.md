@@ -2,73 +2,60 @@
 
 ## Visión General
 
-"Salud Activa" es una aplicación de seguimiento de salud para Flutter, diseñada para ayudar a los usuarios a monitorear su ingesta de agua y alimentos, así como sus medidas corporales. La aplicación cuenta con una pantalla de bienvenida, perfiles de usuario (creación y modo invitado), y una pantalla principal con navegación por pestañas.
+"Salud Activa" es una aplicación de seguimiento de salud para Flutter, diseñada para ayudar a los usuarios a monitorear su ingesta de agua y alimentos, así como sus medidas corporales y rutinas de ejercicio. La aplicación cuenta con una pantalla de bienvenida, perfiles de usuario, y una pantalla principal con navegación por pestañas y un menú lateral.
 
 ## Estilo y Diseño
 
-- **Tema:** La aplicación utiliza un sistema de temas claro/oscuro basado en `ColorScheme.fromSeed` de Material 3, permitiendo una paleta de colores personalizable.
+- **Tema:** La aplicación utiliza un sistema de temas claro/oscuro basado en `ColorScheme.fromSeed` de Material 3.
 - **Tipografía:** Se usa el paquete `google_fonts` con "Montserrat" para una apariencia limpia y moderna.
 - **UI:** El diseño es limpio, centrado y sigue las guías de Material Design, con botones claros, tarjetas y una navegación intuitiva.
-- **Activos:** La pantalla de bienvenida muestra una imagen (`luna_inicio_b.png` o `luna_inicio_w.png`) que se adapta al modo de tema actual (claro/oscuro).
-- **Navegación por Pestañas (`TabBar`):** Para mantener la consistencia en toda la aplicación, toda nueva implementación de `TabBar` debe seguir las siguientes reglas:
-    1.  **Componente:** Se debe utilizar un `TabBar` integrado en la propiedad `bottom` de una `AppBar`.
-    2.  **Contenido:** Cada `Tab` debe contener tanto un `Icon` como un `Text` para garantizar la máxima claridad para el usuario.
-    3.  **Estilo Centralizado:** El estilo visual (colores de los iconos y texto, color del indicador) se debe gestionar de forma global en `lib/main.dart` a través del `TabBarTheme` para asegurar una apariencia uniforme y una visibilidad correcta en los modos claro y oscuro.
+- **Activos:** La pantalla de bienvenida muestra una imagen que se adapta al modo de tema actual.
+- **Navegación por Pestañas (`TabBar`):** Para mantener la consistencia, cualquier nueva implementación de `TabBar` debe:
+    1.  Estar integrada en la propiedad `bottom` de una `AppBar`.
+    2.  Contener un `Icon` y un `Text` en cada `Tab`.
+    3.  Gestionar su estilo de forma global en `lib/main.dart` a través del `TabBarTheme`.
 
 ## Características y Flujo de la Aplicación
 
-- **Gestión de Tema:**
-    - Un `ThemeProvider` gestiona el estado del tema (claro, oscuro, sistema).
-    - El color principal (`seedColor`) es personalizable.
-- **Pantalla de Bienvenida (`welcome_screen.dart`):**
-    - Ofrece dos opciones: "Crear Perfil" o "Continuar como Invitado".
-    - Muestra una imagen de bienvenida que se adapta al tema.
-    - Navega a la `ProfileScreen` o `MainScreen` según la elección.
-- **Pantalla Principal (`main_screen.dart`):**
-    - Utiliza una `BottomNavigationBar` para navegar entre tres secciones principales: Inicio, Menús y Progreso.
-- **Estructura de Pantallas:**
-    - `DashboardScreen`: Muestra un resumen general o pantalla de inicio.
-    - `MenusScreen`: Una nueva sección dedicada a los menús, independiente de los registros.
-    - `LogsScreen`: Una pantalla dedicada que contiene una `TabBar` para navegar entre los registros de Agua, Comida y Medidas.
-    - `ProgresoScreen`: Pantalla dedicada a mostrar el progreso del usuario.
-    - `RecipesScreen`: Una pantalla dedicada para la gestión de recetas, con una `TabBar` para las pestañas "Recetas" y "Favoritas".
+- **Gestión de Tema:** Un `ThemeProvider` gestiona el estado del tema (claro, oscuro, sistema).
+- **Pantalla de Bienvenida:** Ofrece "Crear Perfil" o "Continuar como Invitado".
+- **Pantalla Principal (`main_screen.dart`):** Utiliza una `BottomNavigationBar` para navegar entre: **Inicio**, **Entrenamiento**, **Menús** y **Progreso**.
+- **Menú Lateral (`drawer_menu.dart`):** Proporciona acceso a secciones secundarias como "Mis Recetas" y los registros de "Agua", "Comida" y "Medidas".
 
-## Plan de Implementación Actual: Nueva Sección "Mis Recetas"
+---
 
-### 1. Requisito del Usuario
+### Funcionalidad Actual: Gestión de Ejercicios (CRUD Completo)
 
-Añadir una nueva categoría "Mis Recetas" en el menú lateral. Esta categoría debe contener tres opciones:
-- Ver la lista de todas las recetas.
-- Ver las recetas marcadas como favoritas.
-- Una opción para añadir una nueva receta.
+Se ha implementado una sección completamente funcional para la gestión de ejercicios, permitiendo a los usuarios crear, ver, editar y eliminar sus propios ejercicios personalizados.
 
-### 2. Solución Implementada
+- **Integración en la Navegación Principal:**
+    - Se ha añadido una nueva sección **"Entrenamiento"** a la barra de navegación inferior (`BottomNavigationBar`) en `main_screen.dart`.
 
-Siguiendo las directrices de arquitectura de la aplicación, se implementó la nueva sección de la siguiente manera:
+- **Pantalla Principal de Entrenamiento (`training_main_screen.dart`):**
+    - Actúa como el centro de la sección de entrenamiento.
+    - Utiliza una `TabBar` con dos pestañas: "Ejercicios" (placeholder para futuras rutinas) y "Biblioteca".
+    - Incluye un `FloatingActionButton` (+) para navegar a la pantalla de añadir ejercicio.
 
-- **Pantalla Principal de Recetas (`recipes_screen.dart`):**
-    - Se ha creado una nueva pantalla que contiene una `TabBar` con dos pestañas: "Recetas" y "Recetas Favoritas".
-    - Se añadió un `FloatingActionButton` en esta pantalla que navega a la `AddRecipeScreen` para permitir al usuario añadir nuevas recetas.
+- **Biblioteca de Ejercicios (`exercise_library_screen.dart`):**
+    - Muestra una lista de todos los ejercicios que el usuario ha guardado.
+    - Cada ejercicio es una tarjeta clicable que navega a la pantalla de detalles.
+    - La lista se actualiza automáticamente cuando se añade, edita o elimina un ejercicio.
 
-- **Nuevas Pantallas Placeholder:**
-    - `recipe_list_screen.dart`: Para mostrar la lista de todas las recetas.
-    - `favorite_recipes_screen.dart`: Para mostrar las recetas favoritas.
-    - `add_recipe_screen.dart`: Para el formulario de creación de recetas.
+- **Crear, Editar y Eliminar Ejercicios (Flujo CRUD):**
+    - **`add_exercise_screen.dart`:** Un formulario para introducir los datos de un nuevo ejercicio.
+    - **`edit_exercise_screen.dart`:** Un formulario pre-rellenado para modificar un ejercicio existente.
+    - **`exercise_detail_screen.dart`:** Muestra la información completa de un ejercicio y contiene los botones de **Editar** y **Eliminar**. La eliminación está protegida por un diálogo de confirmación.
 
-- **Actualización del Menú Lateral (`drawer_menu.dart`):**
-    - Se ha añadido una nueva sección desplegable titulada "Mis Recetas".
-    - Contiene enlaces a "Recetas" y "Recetas Favoritas" (que abren la `RecipesScreen` en la pestaña correspondiente) y un enlace directo a "Añadir Receta".
+- **Persistencia de Datos (`exercise_service.dart`):**
+    - Un `ExerciseService` centraliza la lógica de guardado y carga de datos.
+    - Los ejercicios se guardan en un archivo `exercises.json` en el directorio de documentos de la aplicación, utilizando `path_provider`, asegurando la persistencia de los datos.
+
+- **Modelo de Datos (`exercise.dart`):**
+    - Se ha definido el modelo `Exercise` con todos los campos necesarios (`id`, `name`, `description`, etc.).
+    - El modelo incluye los métodos `fromJson` y `toJson` para una fácil serialización, lo que es clave para el `ExerciseService`.
+
+---
 
 ## Directrices de Diseño y Navegación Futura
 
-Para mantener la consistencia y una arquitectura limpia en la aplicación, cualquier nueva funcionalidad que agrupe varias subsecciones seguirá el siguiente patrón de diseño:
-
-1.  **Pantalla Dedicada con `TabBar`:**
-    - Para funcionalidades agrupadas (por ejemplo, "Ejercicios" y "Biblioteca de Ejercicios"), se creará una pantalla principal dedicada.
-    - Esta pantalla utilizará una `TabBar` para permitir al usuario navegar fácilmente entre las subsecciones relacionadas.
-
-2.  **Integración en la Navegación Principal:**
-    - El acceso a esta nueva pantalla dedicada se integrará de forma lógica en el **menú lateral (`Drawer`)** o en otra ubicación secundaria de la interfaz de usuario.
-    - La **barra de navegación inferior** se mantendrá limpia y reservada exclusivamente para las secciones principales de la aplicación: "Inicio", "Menús" y "Progreso".
-
-Este enfoque garantiza que la aplicación siga siendo escalable y que la experiencia de usuario se mantenga intuitiva a medida que se añadan nuevas características.
+Para mantener la consistencia, cualquier nueva funcionalidad que agrupe varias subsecciones seguirá el patrón de una **pantalla dedicada con `TabBar`**, cuyo acceso se integrará en el **menú lateral (`Drawer`)** o en la **barra de navegación inferior**, según su importancia y frecuencia de uso.

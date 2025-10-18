@@ -3,51 +3,27 @@
 part of 'exercise.dart';
 
 // **************************************************************************
-// TypeAdapterGenerator
+// JsonSerializableGenerator
 // **************************************************************************
 
-class ExerciseAdapter extends TypeAdapter<Exercise> {
-  @override
-  final int typeId = 6;
-
-  @override
-  Exercise read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return Exercise(
-      name: fields[0] as String,
-      description: fields[1] as String,
-      sets: fields[2] as int,
-      reps: fields[3] as String,
-      imageUrl: fields[4] as String?,
+Exercise _$ExerciseFromJson(Map<String, dynamic> json) => Exercise(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      type: json['type'] as String,
+      muscleGroup: json['muscleGroup'] as String,
+      equipment: json['equipment'] as String,
+      imageUrl: json['imageUrl'] as String?,
+      videoUrl: json['videoUrl'] as String?,
     );
-  }
 
-  @override
-  void write(BinaryWriter writer, Exercise obj) {
-    writer
-      ..writeByte(5)
-      ..writeByte(0)
-      ..write(obj.name)
-      ..writeByte(1)
-      ..write(obj.description)
-      ..writeByte(2)
-      ..write(obj.sets)
-      ..writeByte(3)
-      ..write(obj.reps)
-      ..writeByte(4)
-      ..write(obj.imageUrl);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ExerciseAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
+Map<String, dynamic> _$ExerciseToJson(Exercise instance) => <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'description': instance.description,
+      'type': instance.type,
+      'muscleGroup': instance.muscleGroup,
+      'equipment': instance.equipment,
+      'imageUrl': instance.imageUrl,
+      'videoUrl': instance.videoUrl,
+    };

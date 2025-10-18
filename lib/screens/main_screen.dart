@@ -32,14 +32,17 @@ class _MainScreenState extends State<MainScreen> {
         return AppBar(title: const Text('Salud Activa'));
       case 1:
         return AppBar(
-          title: const Text('Menús'),
+          // title: const Text('Menús'), // Removed title
           bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(40.0),
-            child: TabBar(
-              tabs: [
-                Tab(icon: Icon(Icons.today), text: 'Hoy'),
-                Tab(icon: Icon(Icons.date_range), text: 'Semanal'),
-              ],
+            preferredSize: Size.fromHeight(60.0), // Increased height
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: TabBar(
+                tabs: [
+                  Tab(icon: Icon(Icons.today), text: 'Hoy'),
+                  Tab(icon: Icon(Icons.date_range), text: 'Semanal'),
+                ],
+              ),
             ),
           ),
         );

@@ -10,7 +10,7 @@ class PantallaAcercaDe extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Acerca de Mi Salud Activa'),
+        // title: const Text('Acerca de Mi Salud Activa'), // Removed title
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
