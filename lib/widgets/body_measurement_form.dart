@@ -34,62 +34,84 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
       );
 
       Hive.box<BodyMeasurement>('body_measurements').add(newMeasurement);
-      Navigator.of(context).pop();
+      
+      // Clear the form
+      _formKey.currentState!.reset();
+      _weightController.clear();
+      _chestController.clear();
+      _armController.clear();
+      _waistController.clear();
+      _hipsController.clear();
+      _thighController.clear();
+
+      // Show a confirmation
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Medición guardada con éxito')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 20),
-      child: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Nueva Medición', style: Theme.of(context).textTheme.headlineSmall),
+              Text('Registrar Nueva Medición', style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
               const SizedBox(height: 20),
               TextFormField(
                 controller: _weightController,
-                decoration: const InputDecoration(labelText: 'Peso (kg)'),
+                decoration: const InputDecoration(labelText: 'Peso (kg)', border: OutlineInputBorder()),
                 keyboardType: TextInputType.number,
                 validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
               ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _chestController,
-                decoration: const InputDecoration(labelText: 'Pecho (cm)'),
+                decoration: const InputDecoration(labelText: 'Pecho (cm)', border: OutlineInputBorder()),
                 keyboardType: TextInputType.number,
                 validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
               ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _armController,
-                decoration: const InputDecoration(labelText: 'Brazo (cm)'),
+                decoration: const InputDecoration(labelText: 'Brazo (cm)', border: OutlineInputBorder()),
                 keyboardType: TextInputType.number,
                 validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
               ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _waistController,
-                decoration: const InputDecoration(labelText: 'Cintura (cm)'),
+                decoration: const InputDecoration(labelText: 'Cintura (cm)', border: OutlineInputBorder()),
                 keyboardType: TextInputType.number,
                 validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
               ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _hipsController,
-                decoration: const InputDecoration(labelText: 'Caderas (cm)'),
+                decoration: const InputDecoration(labelText: 'Caderas (cm)', border: OutlineInputBorder()),
                 keyboardType: TextInputType.number,
                 validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
               ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _thighController,
-                decoration: const InputDecoration(labelText: 'Muslo (cm)'),
+                decoration: const InputDecoration(labelText: 'Muslo (cm)', border: OutlineInputBorder()),
                 keyboardType: TextInputType.number,
                 validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveMeasurement,
-                child: const Text('Guardar'),
+                child: const Text('Guardar Medición'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
               ),
             ],
           ),
