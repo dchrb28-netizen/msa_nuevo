@@ -33,6 +33,12 @@ class _MainScreenState extends State<MainScreen> {
       case 1:
         return AppBar(
           title: const Text('Menús'),
+          bottom: const TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.today), text: 'Hoy'),
+              Tab(icon: Icon(Icons.calendar_today), text: 'Semanal'),
+            ],
+          ),
         );
       case 2:
         return AppBar(

@@ -11,6 +11,7 @@ import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/main_screen.dart';
+import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -188,7 +189,12 @@ class MyApp extends StatelessWidget {
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: themeProvider.themeMode,
-          home: userProvider.user != null ? const MainScreen() : const WelcomeScreen(),
+          initialRoute: userProvider.user != null ? '/' : '/welcome',
+          routes: {
+            '/': (context) => const MainScreen(),
+            '/welcome': (context) => const WelcomeScreen(),
+            '/profile': (context) => const ProfileScreen(),
+          },
         );
       },
     );

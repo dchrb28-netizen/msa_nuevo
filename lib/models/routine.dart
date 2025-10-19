@@ -1,9 +1,8 @@
 import 'package:hive/hive.dart';
-import 'package:myapp/models/exercise.dart';
 
 part 'routine.g.dart';
 
-@HiveType(typeId: 7) // Asignamos un nuevo typeId único
+@HiveType(typeId: 7)
 class Routine extends HiveObject {
   @HiveField(0)
   final String id;
@@ -15,7 +14,7 @@ class Routine extends HiveObject {
   String? description;
 
   @HiveField(3)
-  List<String> exerciseIds; // Almacenamos solo los IDs de los ejercicios
+  List<String> exerciseIds;
 
   Routine({
     required this.id,
@@ -23,7 +22,4 @@ class Routine extends HiveObject {
     this.description,
     required this.exerciseIds,
   });
-
-  // Nota: Para obtener los objetos Exercise completos, necesitaremos
-  // buscarlos en el ExerciseService usando los exerciseIds.
 }

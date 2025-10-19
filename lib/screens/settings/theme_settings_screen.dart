@@ -1,100 +1,83 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/theme_provider.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
-class PantallaTemas extends StatelessWidget {
-  const PantallaTemas({super.key});
+class ThemeSettingsScreen extends StatelessWidget {
+  const ThemeSettingsScreen({super.key});
 
-  // Function to show the color picker dialog
   void _showColorPicker(BuildContext context, ThemeProvider themeProvider) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Selecciona un color'),
-          content: SingleChildScrollView(
-            child: ColorPicker(
-              pickerColor: themeProvider.seedColor,
-              onColorChanged: (Color color) {
-                themeProvider.setSeedColor(color);
-              },
-              pickerAreaHeightPercent: 0.8,
-            ),
+      builder: (context) => AlertDialog(
+        title: const Text('Elige un color'),
+        content: SingleChildScrollView(
+          child: ColorPicker(
+            pickerColor: themeProvider.seedColor,
+            onColorChanged: (color) => themeProvider.setSeedColor(color),
+            pickerAreaHeightPercent: 0.8,
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Hecho'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Hecho'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
-    final theme = Theme.of(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(),
-      body: ListView(
+      appBar: AppBar(
+        title: const Text('Temas y Colores'),
+      ),
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
-        children: [
-          // --- Theme Mode Selection ---
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              'Modo de Tema',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
-              ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Apariencia',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
-          ),
-          SwitchListTile(
-            title: const Text('Tema oscuro'),
-            value: themeProvider.themeMode == ThemeMode.dark,
-            onChanged: (bool value) {
-              themeProvider.setThemeMode(value ? ThemeMode.dark : ThemeMode.light);
-            },
-            secondary: Icon(
-              themeProvider.themeMode == ThemeMode.dark ? Icons.nightlight_round : Icons.wb_sunny_outlined,
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: const Text('Tema oscuro'),
+              value: themeProvider.themeMode == ThemeMode.dark,
+              onChanged: (bool value) {
+                themeProvider.setThemeMode(value ? ThemeMode.dark : ThemeMode.light);
+              },
             ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.settings_system_daydream_outlined),
-            title: const Text('Seguir la configuración del sistema'),
-            onTap: () => themeProvider.setThemeMode(ThemeMode.system),
-            trailing: themeProvider.themeMode == ThemeMode.system ? const Icon(Icons.check) : null,
-          ),
-          const Divider(height: 32),
-
-          // --- Color Selection ---
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 24),
+            Text(
               'Color Principal',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              title: const Text('Selecciona un color principal'),
+              trailing: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: themeProvider.seedColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
+                ),
               ),
+              onTap: () => _showColorPicker(context, themeProvider),
             ),
-          ),
-          ListTile(
-            title: const Text('Selecciona un color principal'),
-            subtitle: const Text('Toca para abrir el selector de color'),
-            trailing: CircleAvatar(
-              backgroundColor: themeProvider.seedColor,
-              radius: 15,
-            ),
-            onTap: () => _showColorPicker(context, themeProvider),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

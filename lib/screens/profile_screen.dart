@@ -22,16 +22,45 @@ class ProfileScreenState extends State<ProfileScreen> {
   String? _selectedGender;
   String? _activityLevel;
 
+  final Map<String, String> _genderOptions = {
+    'male': 'Masculino',
+    'female': 'Femenino',
+    'other': 'Otro',
+  };
+
+  final Map<String, String> _activityLevelOptions = {
+    'sedentary': 'Sedentario',
+    'light': 'Ligero',
+    'moderate': 'Moderado',
+    'active': 'Activo',
+    'very_active': 'Muy Activo',
+  };
+
   @override
   void initState() {
     super.initState();
     final user = Provider.of<UserProvider>(context, listen: false).user;
+
     _nameController = TextEditingController(text: user?.name ?? '');
-    _ageController = TextEditingController(text: user?.age.toString() ?? '');
-    _heightController = TextEditingController(text: user?.height.toString() ?? '');
-    _weightController = TextEditingController(text: user?.weight.toString() ?? '');
-    _selectedGender = user?.gender;
-    _activityLevel = user?.activityLevel ?? 'Sedentaria';
+    _ageController = TextEditingController(text: user?.age.toString() ?? '0');
+    _heightController = TextEditingController(text: user?.height.toString() ?? '0');
+    _weightController = TextEditingController(text: user?.weight.toString() ?? '0');
+
+    // Safely set the initial gender
+    final gender = user?.gender;
+    if (gender != null && _genderOptions.containsKey(gender)) {
+      _selectedGender = gender;
+    } else {
+      _selectedGender = _genderOptions.keys.first; // Default to the first option
+    }
+
+    // Safely set the initial activity level
+    final activityLevel = user?.activityLevel;
+    if (activityLevel != null && _activityLevelOptions.containsKey(activityLevel)) {
+      _activityLevel = activityLevel;
+    } else {
+      _activityLevel = _activityLevelOptions.keys.first; // Default to the first option
+    }
   }
 
   @override
@@ -51,12 +80,12 @@ class ProfileScreenState extends State<ProfileScreen> {
       final updatedUser = User(
         id: oldUser?.id ?? DateTime.now().toString(),
         name: _nameController.text,
-        gender: _selectedGender ?? 'No especificado',
+        gender: _selectedGender ?? _genderOptions.keys.first,
         age: int.tryParse(_ageController.text) ?? 0,
         height: double.tryParse(_heightController.text) ?? 0,
         weight: double.tryParse(_weightController.text) ?? 0,
-        activityLevel: _activityLevel ?? 'Sedentaria',
-        isGuest: false, 
+        activityLevel: _activityLevel ?? _activityLevelOptions.keys.first,
+        isGuest: false,
       );
 
       userProvider.setUser(updatedUser);
@@ -73,13 +102,13 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _logout() async {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('onboarding_completed', false);
-      
-      if (!mounted) return;
-      Provider.of<UserProvider>(context, listen: false).logout();
-      
-      Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboarding_completed', false);
+
+    if (!mounted) return;
+    Provider.of<UserProvider>(context, listen: false).logout();
+
+    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
   }
 
   @override
@@ -119,17 +148,15 @@ class ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedGender,
-                    hint: const Text('Género'),
                     onChanged: (String? newValue) {
                       setState(() {
                         _selectedGender = newValue!;
                       });
                     },
-                    items: <String>['Masculino', 'Femenino', 'Otro', 'No especificado']
-                        .map<DropdownMenuItem<String>>((String value) {
+                    items: _genderOptions.keys.map<DropdownMenuItem<String>>((String key) {
                       return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
+                        value: key,
+                        child: Text(_genderOptions[key]!),
                       );
                     }).toList(),
                     decoration: const InputDecoration(
@@ -158,17 +185,15 @@ class ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     initialValue: _activityLevel,
-                    hint: const Text('Nivel de Actividad'),
                     onChanged: (String? newValue) {
                       setState(() {
                         _activityLevel = newValue!;
                       });
                     },
-                    items: <String>['Sedentaria', 'Ligera', 'Moderada', 'Activa', 'Muy Activa']
-                        .map<DropdownMenuItem<String>>((String value) {
+                    items: _activityLevelOptions.keys.map<DropdownMenuItem<String>>((String key) {
                       return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
+                        value: key,
+                        child: Text(_activityLevelOptions[key]!),
                       );
                     }).toList(),
                     decoration: const InputDecoration(

@@ -1,61 +1,64 @@
-# Blueprint: Salud Activa App
+# Blueprint de la Aplicación Salud Activa
 
-## Visión General
+## Descripción General
 
-"Salud Activa" es una aplicación de seguimiento de salud para Flutter, diseñada para ayudar a los usuarios a monitorear su ingesta de agua y alimentos, así como sus medidas corporales y rutinas de ejercicio. La aplicación cuenta con una pantalla de bienvenida, perfiles de usuario, y una pantalla principal con navegación por pestañas y un menú lateral.
+Salud Activa es una aplicación de seguimiento de salud y fitness diseñada para ayudar a los usuarios a registrar sus comidas, consumo de agua, medidas corporales y entrenamientos. La aplicación proporciona una visión integral del progreso del usuario y ofrece herramientas para establecer y alcanzar objetivos de salud.
+
+## Estructura del Proyecto
+
+El proyecto sigue una estructura de feature-first, donde cada característica principal (como registro de alimentos, perfil, etc.) tiene su propia carpeta dentro de `lib/screens`.
+
+- **`lib/`**
+  - **`models/`**: Contiene las clases del modelo de datos (User, Food, FoodLog, etc.).
+  - **`providers/`**: Gestiona el estado de la aplicación (ThemeProvider, UserProvider).
+  - **`screens/`**: Contiene las pantallas principales de la aplicación.
+    - **`achievements/`**: Pantallas relacionadas con logros y objetivos.
+    - **`food_logging/`**: Pantallas para el registro de alimentos.
+    - **`settings/`**: Pantallas de configuración.
+    - **`training/`**: Pantallas para el registro de entrenamientos.
+  - **`widgets/`**: Contiene widgets reutilizables.
+  - **`main.dart`**: Punto de entrada de la aplicación.
 
 ## Estilo y Diseño
 
-- **Tema:** La aplicación utiliza un sistema de temas claro/oscuro basado en `ColorScheme.fromSeed` de Material 3.
-- **Tipografía:** Se usa el paquete `google_fonts` con "Montserrat" para una apariencia limpia y moderna.
-- **UI:** El diseño es limpio, centrado y sigue las guías de Material Design, con botones claros, tarjetas y una navegación intuitiva.
-- **Activos:** La pantalla de bienvenida muestra una imagen que se adapta al modo de tema actual.
-- **Navegación por Pestañas (`TabBar`):** Para mantener la consistencia, cualquier nueva implementación de `TabBar` debe:
-    1.  Estar integrada en la propiedad `bottom` de una `AppBar`.
-    2.  Contener un `Icon` y un `Text` en cada `Tab`.
-    3.  Gestionar su estilo de forma global en `lib/main.dart` a través del `TabBarTheme`.
+- **Tema:** La aplicación utiliza un tema Material 3 personalizable, permitiendo al usuario elegir un color de semilla para generar el esquema de colores. Se admite tanto el modo claro como el oscuro.
+- **Tipografía:** Se utiliza `GoogleFonts.montserratTextTheme` para una apariencia de texto consistente y moderna.
+- **Navegación:** La navegación principal se realiza a través de un `BottomNavigationBar` en `MainScreen`. Las sub-secciones (como en "Registro") utilizan un `TabBar` integrado en la `AppBar`.
 
-## Características y Flujo de la Aplicación
+## Características Implementadas
 
-- **Gestión de Tema:** Un `ThemeProvider` gestiona el estado del tema (claro, oscuro, sistema).
-- **Pantalla de Bienvenida:** Ofrece "Crear Perfil" o "Continuar como Invitado".
-- **Pantalla Principal (`main_screen.dart`):** Utiliza una `BottomNavigationBar` para navegar entre: **Inicio**, **Entrenamiento**, **Menús** y **Progreso**.
-- **Menú Lateral (`drawer_menu.dart`):** Proporciona acceso a secciones secundarias como "Mis Recetas" y los registros de "Agua", "Comida" y "Medidas".
+### 1. Onboarding y Perfil de Usuario
 
----
+- **WelcomeScreen:** Pantalla de bienvenida para nuevos usuarios.
+- **ProfileScreen:** Permite a los usuarios introducir y guardar su información personal (nombre, género, edad, altura, peso, nivel de actividad). Los valores de género y nivel de actividad se guardan en inglés para facilitar los cálculos internos.
+- **UserProvider:** Gestiona el estado del usuario a lo largo de la aplicación, incluyendo la carga y guardado del usuario en la base de datos local (Hive).
 
-### Funcionalidad Actual: Gestión de Ejercicios (CRUD Completo)
+### 2. Registro de Actividades
 
-Se ha implementado una sección completamente funcional para la gestión de ejercicios, permitiendo a los usuarios crear, ver, editar y eliminar sus propios ejercicios personalizados.
+- **FoodLoggingMainScreen:** Pantalla principal para el registro de alimentos, con pestañas para el registro diario y la biblioteca de alimentos.
+- **WaterLogScreen:** Permite registrar el consumo de agua.
+- **BodyMeasurementsScreen:** Permite registrar medidas corporales (peso, IMC, etc.).
 
-- **Integración en la Navegación Principal:**
-    - Se ha añadido una nueva sección **"Entrenamiento"** a la barra de navegación inferior (`BottomNavigationBar`) en `main_screen.dart`.
+### 3. Entrenamiento
 
-- **Pantalla Principal de Entrenamiento (`training_main_screen.dart`):**
-    - Actúa como el centro de la sección de entrenamiento.
-    - Utiliza una `TabBar` con dos pestañas: "Ejercicios" (placeholder para futuras rutinas) y "Biblioteca".
-    - Incluye un `FloatingActionButton` (+) para navegar a la pantalla de añadir ejercicio.
+- **TrainingMainScreen:** Pantalla principal para el registro de entrenamientos, con pestañas para los ejercicios y la biblioteca de ejercicios. La navegación por pestañas (`TabBar`) está integrada en la `AppBar` para mantener la consistencia con otras secciones.
+- **AddExerciseScreen:** Permite a los usuarios añadir nuevos ejercicios a su biblioteca.
+- **ExerciseLibraryScreen:** Muestra la lista de ejercicios guardados.
 
-- **Biblioteca de Ejercicios (`exercise_library_screen.dart`):**
-    - Muestra una lista de todos los ejercicios que el usuario ha guardado.
-    - Cada ejercicio es una tarjeta clicable que navega a la pantalla de detalles.
-    - La lista se actualiza automáticamente cuando se añade, edita o elimina un ejercicio.
+### 4. Configuración
 
-- **Crear, Editar y Eliminar Ejercicios (Flujo CRUD):**
-    - **`add_exercise_screen.dart`:** Un formulario para introducir los datos de un nuevo ejercicio.
-    - **`edit_exercise_screen.dart`:** Un formulario pre-rellenado para modificar un ejercicio existente.
-    - **`exercise_detail_screen.dart`:** Muestra la información completa de un ejercicio y contiene los botones de **Editar** y **Eliminar**. La eliminación está protegida por un diálogo de confirmación.
+- **SettingsScreen:** Menú de configuración con opciones para ir a la pantalla de temas.
+- **ThemeSettingsScreen:** Permite al usuario personalizar el tema de la aplicación, incluyendo el color de semilla y el modo (claro/oscuro/sistema).
 
-- **Persistencia de Datos (`exercise_service.dart`):**
-    - Un `ExerciseService` centraliza la lógica de guardado y carga de datos.
-    - Los ejercicios se guardan en un archivo `exercises.json` en el directorio de documentos de la aplicación, utilizando `path_provider`, asegurando la persistencia de los datos.
+### 5. Metas y Objetivos
 
-- **Modelo de Datos (`exercise.dart`):**
-    - Se ha definido el modelo `Exercise` con todos los campos necesarios (`id`, `name`, `description`, etc.).
-    - El modelo incluye los métodos `fromJson` y `toJson` para una fácil serialización, lo que es clave para el `ExerciseService`.
+- **ObjectivesScreen:** Muestra el IMC del usuario y su rango de peso ideal.
+- **CaloricGoalsScreen:**
+    - **Informe automático:** Ya no es un formulario.
+    - **Lee datos del perfil:** Toma automáticamente la información del usuario (edad, peso, altura, género, nivel de actividad).
+    - **Calcula y muestra:** Presenta las calorías diarias recomendadas para tres objetivos: perder, mantener y ganar peso.
+    - **Manejo de perfil incompleto:** Si faltan datos en el perfil, muestra una advertencia y un botón para navegar a la pantalla de perfil.
 
----
+### 6. Navegación
 
-## Directrices de Diseño y Navegación Futura
-
-Para mantener la consistencia, cualquier nueva funcionalidad que agrupe varias subsecciones seguirá el patrón de una **pantalla dedicada con `TabBar`**, cuyo acceso se integrará en el **menú lateral (`Drawer`)** o en la **barra de navegación inferior**, según su importancia y frecuencia de uso.
+- Se utiliza un sistema de rutas nominadas en `main.dart` para una navegación más robusta. Se ha definido la ruta `/profile` para facilitar el acceso a la pantalla de perfil desde otras partes de la aplicación.
