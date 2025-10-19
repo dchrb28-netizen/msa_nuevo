@@ -39,19 +39,19 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     _weightController.addListener(_calculateIMC);
     _heightController.addListener(_calculateIMC);
   }
-  
+
   @override
   void didChangeDependencies() {
-      super.didChangeDependencies();
-      final user = Provider.of<UserProvider>(context, listen: false).user;
-       if (user != null && (user.weight > 0 && user.height > 0)) {
-         _updateControllers(user);
-        _calculateIMC();
-       } else {
-        setState(() {
-          _isEditing = true;
-        });
-       }
+    super.didChangeDependencies();
+    final user = Provider.of<UserProvider>(context, listen: false).user;
+    if (user != null && (user.weight > 0 && user.height > 0)) {
+      _updateControllers(user);
+      _calculateIMC();
+    } else {
+      setState(() {
+        _isEditing = true;
+      });
+    }
   }
 
   void _updateControllers(dynamic user) {
@@ -73,15 +73,19 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     final weight = double.tryParse(_weightController.text);
     if (height != null && height > 0 && weight != null && weight > 0) {
       final heightInMeters = height / 100;
-      setState(() {
-        _imc = weight / (heightInMeters * heightInMeters);
-        _imcCategory = _getImcCategory(_imc!);
-      });
+      if (mounted) {
+        setState(() {
+          _imc = weight / (heightInMeters * heightInMeters);
+          _imcCategory = _getImcCategory(_imc!);
+        });
+      }
     } else {
-      setState(() {
-        _imc = null;
-        _imcCategory = 'N/A';
-      });
+      if (mounted) {
+        setState(() {
+          _imc = null;
+          _imcCategory = 'N/A';
+        });
+      }
     }
   }
 
@@ -112,19 +116,55 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
       );
 
       userProvider.updateUser(updatedUser);
-      setState(() {
-        _isEditing = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isEditing = false;
+        });
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('¡Tus datos han sido actualizados!')),
       );
     }
   }
+  
+  void _showIMCInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.info_outline), 
+            SizedBox(width: 10),
+            Text('¿Qué es el IMC?'),
+            ],
+        ),
+        content: const SingleChildScrollView(
+          child: Text(
+            'El Índice de Masa Corporal (IMC) es una medida que relaciona el peso y la altura de una persona para estimar su grasa corporal.\n\n'
+            'Se calcula dividiendo el peso en kilogramos por el cuadrado de la altura en metros (kg/m²).\n\n'
+            'Categorías:\n'
+            '• Menos de 18.5: Bajo Peso\n'
+            '• 18.5 - 24.9: Peso Normal\n'
+            '• 25.0 - 29.9: Sobrepeso\n'
+            '• 30.0 o más: Obesidad\n\n'
+            'Importante: El IMC es una herramienta de referencia y no distingue entre grasa y masa muscular. Siempre es recomendable consultar a un profesional de la salud.',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Entendido'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _isEditing ? Theme.of(context).colorScheme.surface : null,
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: _isEditing ? _buildEditView() : _buildSummaryView(),
@@ -140,7 +180,6 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
   }
 
   Widget _buildSummaryView() {
-    final textTheme = Theme.of(context).textTheme;
     final user = Provider.of<UserProvider>(context).user!;
 
     return SingleChildScrollView(
@@ -154,21 +193,21 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
             elevation: 2,
             child: Column(
               children: [
-                 _buildSummaryTile(
+                _buildSummaryTile(
                   icon: Icons.monitor_weight_outlined,
                   title: 'Peso Actual',
                   value: '${user.weight.toStringAsFixed(1)} kg',
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 const Divider(height: 1, indent: 16, endIndent: 16),
-                 _buildSummaryTile(
+                _buildSummaryTile(
                   icon: Icons.height_outlined,
                   title: 'Altura',
                   value: '${user.height.toStringAsFixed(0)} cm',
                 ),
-                 if (user.weightGoal != null)
+                if (user.weightGoal != null && user.weightGoal! > 0)
                   const Divider(height: 1, indent: 16, endIndent: 16),
-                if (user.weightGoal != null)
+                if (user.weightGoal != null && user.weightGoal! > 0)
                   _buildSummaryTile(
                     icon: Icons.flag_outlined,
                     title: 'Meta de Peso',
@@ -187,7 +226,7 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
-      elevation: 4, 
+      elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -223,20 +262,33 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
                   widget: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text('IMC', style: Theme.of(context).textTheme.bodyLarge),
+                       Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text('IMC', style: Theme.of(context).textTheme.bodyLarge),
+                          IconButton(
+                            icon: Icon(Icons.info_outline, size: 20, color: Theme.of(context).textTheme.bodySmall?.color),
+                            onPressed: _showIMCInfoDialog,
+                            padding: const EdgeInsets.only(left: 8),
+                            constraints: const BoxConstraints(),
+                            splashRadius: 20,
+                          )
+                        ],
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         _imc?.toStringAsFixed(1) ?? '--',
                         style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold, color: _getCategoryColor(_imc)),
                       ),
-                       Text(
+                      Text(
                         _imcCategory,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(color: _getCategoryColor(_imc), fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                  angle: 90, 
-                  positionFactor: 0.1
+                  angle: 90,
+                  positionFactor: 0.1,
                 )
               ],
             ),
@@ -254,8 +306,10 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     );
   }
 
-
   Widget _buildEditView() {
+    final user = Provider.of<UserProvider>(context, listen: false).user;
+    final isMissingData = user == null || user.weight <= 0 || user.height <= 0;
+
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -296,8 +350,10 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
                 textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
+            if (!isMissingData)
             const SizedBox(height: 10),
-             TextButton(onPressed: ()=> setState(()=> _isEditing = false), child: const Text('Cancelar'))
+             if (!isMissingData)
+             TextButton(onPressed: () => setState(() => _isEditing = false), child: const Text('Cancelar'))
           ],
         ),
       ),
