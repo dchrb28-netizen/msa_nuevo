@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/dashboard_screen.dart';
 import 'package:myapp/screens/menus_screen.dart';
-import 'package:myapp/screens/progreso_screen.dart';
+import 'package:myapp/screens/training/training_screen.dart';
 import 'package:myapp/widgets/drawer_menu.dart';
 
 class MainScreen extends StatefulWidget {
@@ -17,7 +17,7 @@ class _MainScreenState extends State<MainScreen> {
   static final List<Widget> _widgetOptions = <Widget>[
     const DashboardScreen(),
     const MenusScreen(),
-    const ProgresoScreen(),
+    const TrainingScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -26,42 +26,43 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
     switch (_selectedIndex) {
       case 0:
         return AppBar(title: const Text('Salud Activa'));
       case 1:
         return AppBar(
-          // title: const Text('Menús'), // Removed title
-          bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(60.0), // Increased height
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: TabBar(
-                tabs: [
-                  Tab(icon: Icon(Icons.today), text: 'Hoy'),
-                  Tab(icon: Icon(Icons.date_range), text: 'Semanal'),
-                ],
-              ),
-            ),
-          ),
+          title: const Text('Menús'),
         );
       case 2:
-        return AppBar(title: const Text('Progreso'));
+        return AppBar(
+          // Se elimina el título para dar más espacio a las pestañas
+          // title: const Text('Entrenamiento'),
+          bottom: const TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.fitness_center), text: 'Mi Rutina'),
+              Tab(icon: Icon(Icons.library_books), text: 'Biblioteca'),
+            ],
+          ),
+        );
       default:
         return AppBar();
     }
   }
 
+  Widget _buildBody() {
+    return IndexedStack(
+      index: _selectedIndex,
+      children: _widgetOptions,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final scaffold = Scaffold(
-      appBar: _buildAppBar(),
+    Widget scaffold = Scaffold(
+      appBar: _buildAppBar(context),
       drawer: const DrawerMenu(),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _widgetOptions,
-      ),
+      body: _buildBody(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -75,9 +76,9 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Menús',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_outlined),
-            activeIcon: Icon(Icons.bar_chart),
-            label: 'Progreso',
+            icon: Icon(Icons.fitness_center_outlined),
+            activeIcon: Icon(Icons.fitness_center),
+            label: 'Entrenamiento',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -85,7 +86,7 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
 
-    if (_selectedIndex == 1) {
+    if (_selectedIndex == 1 || _selectedIndex == 2) {
       return DefaultTabController(
         length: 2,
         child: scaffold,

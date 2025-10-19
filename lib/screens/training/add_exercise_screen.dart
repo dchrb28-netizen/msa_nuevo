@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/exercise.dart';
 import 'package:myapp/services/exercise_service.dart';
-import 'package:uuid/uuid.dart';
 
 class AddExerciseScreen extends StatefulWidget {
   const AddExerciseScreen({super.key});
@@ -14,46 +13,27 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _typeController = TextEditingController();
+  final _muscleGroupController = TextEditingController();
+  final _equipmentController = TextEditingController();
 
-  String? _selectedType;
-  String? _selectedMuscleGroup;
-  String? _selectedEquipment;
+  final ExerciseService _exerciseService = ExerciseService();
 
-  final _exerciseService = ExerciseService();
-  final _uuid = const Uuid();
-
-  // Opciones para los desplegables
-  final List<String> _exerciseTypes = ['Fuerza', 'Cardio', 'Flexibilidad', 'Equilibrio'];
-  final List<String> _muscleGroups = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Brazos', 'Abdominales', 'Cuerpo Completo'];
-  final List<String> _equipmentTypes = ['Ninguno', 'Mancuernas', 'Barra', 'Kettlebell', 'Bandas de Resistencia', 'Máquina', 'Balón Medicinal'];
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _saveExercise() async {
+  void _saveExercise() async {
     if (_formKey.currentState!.validate()) {
       final newExercise = Exercise(
-        id: _uuid.v4(),
+        id: DateTime.now().toString(),
         name: _nameController.text,
         description: _descriptionController.text,
-        type: _selectedType!,
-        muscleGroup: _selectedMuscleGroup!,
-        equipment: _selectedEquipment!,
+        type: _typeController.text,
+        muscleGroup: _muscleGroupController.text,
+        equipment: _equipmentController.text,
       );
 
-      final exercises = await _exerciseService.loadExercises();
-      exercises.add(newExercise);
-      await _exerciseService.saveExercises(exercises);
+      await _exerciseService.addExercise(newExercise);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ejercicio "${newExercise.name}" guardado')),
-        );
-        Navigator.pop(context, true); // Signal a refresh
+        Navigator.pop(context, true);
       }
     }
   }
@@ -63,66 +43,48 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Añadir Ejercicio'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save_alt_rounded),
-            onPressed: _saveExercise,
-            tooltip: 'Guardar Ejercicio',
-          ),
-        ],
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(20.0),
-          children: [
-            _buildTextField(_nameController, 'Nombre del Ejercicio', Icons.fitness_center_rounded),
-            const SizedBox(height: 16),
-            _buildDropdown(_exerciseTypes, '¿Qué tipo de ejercicio es?', Icons.category_rounded, (value) => setState(() => _selectedType = value)),
-            const SizedBox(height: 16),
-             _buildDropdown(_muscleGroups, 'Grupo Muscular Principal', Icons.accessibility_new_rounded, (value) => setState(() => _selectedMuscleGroup = value)),
-            const SizedBox(height: 16),
-             _buildDropdown(_equipmentTypes, 'Equipamiento Necesario', Icons.build_rounded, (value) => setState(() => _selectedEquipment = value)),
-            const SizedBox(height: 24),
-            _buildTextField(_descriptionController, 'Descripción (opcional)', Icons.description_rounded, isRequired: false, maxLines: 4),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Nombre del Ejercicio'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, introduce un nombre';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(labelText: 'Descripción'),
+              ),
+              TextFormField(
+                controller: _typeController,
+                decoration: const InputDecoration(labelText: 'Tipo (e.g., Fuerza, Cardio)'),
+              ),
+              TextFormField(
+                controller: _muscleGroupController,
+                decoration: const InputDecoration(labelText: 'Grupo Muscular'),
+              ),
+              TextFormField(
+                controller: _equipmentController,
+                decoration: const InputDecoration(labelText: 'Equipamiento'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _saveExercise,
+                child: const Text('Guardar Ejercicio'),
+              ),
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, {bool isRequired = true, int maxLines = 1}) {
-    return TextFormField(
-      controller: controller,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        filled: true,
-      ),
-      validator: isRequired
-          ? (value) {
-              if (value == null || value.isEmpty) {
-                return 'Este campo es obligatorio';
-              }
-              return null;
-            }
-          : null,
-    );
-  }
-
-  Widget _buildDropdown(List<String> items, String label, IconData icon, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        filled: true,
-      ),
-      items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
-      onChanged: onChanged,
-      validator: (value) => value == null ? 'Por favor, selecciona una opción' : null,
     );
   }
 }

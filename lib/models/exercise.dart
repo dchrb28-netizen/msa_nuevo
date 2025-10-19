@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'exercise.g.dart';
@@ -12,6 +13,8 @@ class Exercise {
   final String equipment;
   final String? imageUrl;
   final String? videoUrl;
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final IconData? icon;
 
   Exercise({
     required this.id,
@@ -22,6 +25,7 @@ class Exercise {
     required this.equipment,
     this.imageUrl,
     this.videoUrl,
+    this.icon,
   });
 
   factory Exercise.fromJson(Map<String, dynamic> json) => _$ExerciseFromJson(json);

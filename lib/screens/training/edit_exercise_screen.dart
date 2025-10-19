@@ -13,28 +13,24 @@ class EditExerciseScreen extends StatefulWidget {
 
 class _EditExerciseScreenState extends State<EditExerciseScreen> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _nameController;
-  late TextEditingController _descriptionController;
-
-  String? _selectedType;
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
   String? _selectedMuscleGroup;
   String? _selectedEquipment;
+  String? _selectedType;
 
-  final _exerciseService = ExerciseService();
-
-  // Opciones para los desplegables
-  final List<String> _exerciseTypes = ['Fuerza', 'Cardio', 'Flexibilidad', 'Equilibrio'];
-  final List<String> _muscleGroups = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Brazos', 'Abdominales', 'Cuerpo Completo'];
-  final List<String> _equipmentTypes = ['Ninguno', 'Mancuernas', 'Barra', 'Kettlebell', 'Bandas de Resistencia', 'Máquina', 'Balón Medicinal'];
+  final _muscleGroups = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Brazos', 'Abdominales', 'Cuerpo Completo'];
+  final _equipmentTypes = ['Barra', 'Mancuernas', 'Peso Corporal', 'Máquina', 'Kettlebell', 'Otro'];
+  final _exerciseTypes = ['Fuerza', 'Cardio', 'Flexibilidad', 'Equilibrio'];
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.exercise.name);
-    _descriptionController = TextEditingController(text: widget.exercise.description);
-    _selectedType = widget.exercise.type;
+    _nameController.text = widget.exercise.name;
+    _descriptionController.text = widget.exercise.description;
     _selectedMuscleGroup = widget.exercise.muscleGroup;
     _selectedEquipment = widget.exercise.equipment;
+    _selectedType = widget.exercise.type;
   }
 
   @override
@@ -44,29 +40,22 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
     super.dispose();
   }
 
-  Future<void> _saveExercise() async {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final updatedExercise = Exercise(
         id: widget.exercise.id,
         name: _nameController.text,
-        description: _descriptionController.text,
         type: _selectedType!,
         muscleGroup: _selectedMuscleGroup!,
         equipment: _selectedEquipment!,
+        description: _descriptionController.text,
       );
-
-      final exercises = await _exerciseService.loadExercises();
-      final index = exercises.indexWhere((e) => e.id == widget.exercise.id);
-      if (index != -1) {
-        exercises[index] = updatedExercise;
-        await _exerciseService.saveExercises(exercises);
-      }
-
+      
+      final exerciseService = ExerciseService();
+      await exerciseService.updateExercise(updatedExercise);
+      
       if (mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ejercicio "${updatedExercise.name}" actualizado')),
-        );
-        Navigator.pop(context, true); // Signal a refresh
+        Navigator.of(context).pop(updatedExercise);
       }
     }
   }
@@ -78,65 +67,58 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
         title: const Text('Editar Ejercicio'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.save_alt_rounded),
-            onPressed: _saveExercise,
-            tooltip: 'Guardar Cambios',
-          ),
+            icon: const Icon(Icons.save),
+            onPressed: _submitForm,
+          )
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(20.0),
-          children: [
-            _buildTextField(_nameController, 'Nombre del Ejercicio', Icons.fitness_center_rounded),
-            const SizedBox(height: 16),
-            _buildDropdown(_selectedType, _exerciseTypes, 'Tipo de Ejercicio', Icons.category_rounded, (value) => setState(() => _selectedType = value)),
-            const SizedBox(height: 16),
-            _buildDropdown(_selectedMuscleGroup, _muscleGroups, 'Grupo Muscular', Icons.accessibility_new_rounded, (value) => setState(() => _selectedMuscleGroup = value)),
-            const SizedBox(height: 16),
-            _buildDropdown(_selectedEquipment, _equipmentTypes, 'Equipamiento', Icons.build_rounded, (value) => setState(() => _selectedEquipment = value)),
-            const SizedBox(height: 24),
-            _buildTextField(_descriptionController, 'Descripción (opcional)', Icons.description_rounded, isRequired: false, maxLines: 4),
-          ],
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Nombre del Ejercicio'),
+                validator: (value) => value!.isEmpty ? 'Este campo es obligatorio' : null,
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedMuscleGroup,
+                items: _muscleGroups.map((group) => DropdownMenuItem(value: group, child: Text(group))).toList(),
+                onChanged: (value) => setState(() => _selectedMuscleGroup = value),
+                decoration: const InputDecoration(labelText: 'Grupo Muscular'),
+                validator: (value) => value == null ? 'Selecciona un grupo' : null,
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedEquipment,
+                items: _equipmentTypes.map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(),
+                onChanged: (value) => setState(() => _selectedEquipment = value),
+                decoration: const InputDecoration(labelText: 'Equipamiento'),
+                validator: (value) => value == null ? 'Selecciona un tipo de equipamiento' : null,
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedType,
+                items: _exerciseTypes.map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(),
+                onChanged: (value) => setState(() => _selectedType = value),
+                decoration: const InputDecoration(labelText: 'Tipo de Ejercicio'),
+                validator: (value) => value == null ? 'Selecciona un tipo de ejercicio' : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(labelText: 'Descripción'),
+                maxLines: 4,
+                validator: (value) => value!.isEmpty ? 'Este campo es obligatorio' : null,
+              ),
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-   Widget _buildTextField(TextEditingController controller, String label, IconData icon, {bool isRequired = true, int maxLines = 1}) {
-    return TextFormField(
-      controller: controller,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        filled: true,
-      ),
-      validator: isRequired
-          ? (value) {
-              if (value == null || value.isEmpty) {
-                return 'Este campo es obligatorio';
-              }
-              return null;
-            }
-          : null,
-    );
-  }
-
-  Widget _buildDropdown(String? initialValue, List<String> items, String label, IconData icon, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      value: initialValue,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        filled: true,
-      ),
-      items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
-      onChanged: onChanged,
-      validator: (value) => value == null ? 'Por favor, selecciona una opción' : null,
     );
   }
 }
