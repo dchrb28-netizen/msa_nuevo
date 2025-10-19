@@ -1,16 +1,12 @@
-# myapp
+# Salud Activa
 
-A new Flutter project.
+Salud Activa es una aplicación de seguimiento de salud y fitness diseñada para ayudar a los usuarios a registrar sus comidas, consumo de agua, medidas corporales y entrenamientos. La aplicación proporciona una visión integral del progreso del usuario y ofrece herramientas para establecer y alcanzar objetivos de salud.
 
-## Getting Started
+## Características
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+*   **Registro de Comidas:** Busca alimentos en una base de datos y registra tus comidas diarias.
+*   **Seguimiento de Agua:** Controla tu consumo diario de agua.
+*   **Metas de Peso y Calorías:** Establece y sigue tus objetivos de peso y calorías con cálculos personalizados basados en tu perfil.
+*   **Perfil de Usuario:** Personaliza tu perfil con tus datos corporales, nivel de actividad y metas.
+*   **Visualización de Progreso:** Gráficos y medidores para seguir tu progreso a lo largo del tiempo.
+*   **Tema Personalizable:** Soporte para modo claro y oscuro con colores de semilla personalizables.

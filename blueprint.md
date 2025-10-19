@@ -24,6 +24,7 @@ El proyecto sigue una estructura de feature-first, donde cada característica pr
 - **Tema:** La aplicación utiliza un tema Material 3 personalizable, permitiendo al usuario elegir un color de semilla para generar el esquema de colores. Se admite tanto el modo claro como el oscuro.
 - **Tipografía:** Se utiliza `GoogleFonts.montserratTextTheme` para una apariencia de texto consistente y moderna.
 - **Navegación:** La navegación principal se realiza a través de un `BottomNavigationBar` en `MainScreen`. Las sub-secciones (como en "Registro") utilizan un `TabBar` integrado en la `AppBar`.
+- **Diseño de Pestañas Unificado:** En secciones complejas como "Configuración" o "Registro", se utiliza un diseño de `TabBar` integrado en la `AppBar` principal. Las pantallas contenidas dentro de la `TabBarView` son widgets simples sin su propia `AppBar`, garantizando una experiencia de usuario limpia y sin barras de navegación duplicadas.
 
 ## Características Implementadas
 
@@ -45,10 +46,14 @@ El proyecto sigue una estructura de feature-first, donde cada característica pr
 - **AddExerciseScreen:** Permite a los usuarios añadir nuevos ejercicios a su biblioteca.
 - **ExerciseLibraryScreen:** Muestra la lista de ejercicios guardados.
 
-### 4. Configuración
+### 4. Configuración Unificada
 
-- **SettingsScreen:** Menú de configuración con opciones para ir a la pantalla de temas.
-- **ThemeSettingsScreen:** Permite al usuario personalizar el tema de la aplicación, incluyendo el color de semilla y el modo (claro/oscuro/sistema).
+- **SettingsScreen:** Pantalla de configuración rediseñada que unifica varias opciones en una sola interfaz con pestañas para una navegación más intuitiva.
+- **Estructura de Pestañas:**
+    - **Pestaña "Metas":** Muestra el contenido de `CaloricGoalsScreen`.
+    - **Pestaña "Peso":** Muestra el contenido de `WeightGoalsScreen`.
+    - **Pestaña "Tema":** Muestra el contenido de `ThemeSettingsScreen`.
+- **Diseño Limpio:** Cada una de las pantallas de las pestañas (`CaloricGoalsScreen`, `WeightGoalsScreen`, `ThemeSettingsScreen`) ha sido modificada para no tener su propia `AppBar`, eliminando la redundancia visual y creando una experiencia de usuario fluida dentro de la pantalla de configuración.
 
 ### 5. Metas y Objetivos
 

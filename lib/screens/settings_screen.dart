@@ -15,7 +15,6 @@ class SettingsScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Configuración'),
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.flag), text: 'Metas'),

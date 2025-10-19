@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:myapp/models/user.dart';
 
 class UserProvider with ChangeNotifier {
-  static const String _userKey = 'currentUser'; // Clave única y fija
+  static const String _userKey = 'currentUser'; 
   User? _user;
   final Box<User> _userBox = Hive.box<User>('user_box');
 
@@ -13,7 +13,6 @@ class UserProvider with ChangeNotifier {
     _loadUser();
   }
 
-  // Carga al usuario desde Hive usando la clave fija.
   void _loadUser() {
     if (_userBox.containsKey(_userKey)) {
       _user = _userBox.get(_userKey);
@@ -23,14 +22,20 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Guarda o actualiza al usuario en Hive usando la clave fija.
+  // Sets or creates a user
   void setUser(User user) {
     _user = user;
     _userBox.put(_userKey, user);
     notifyListeners();
   }
 
-  // Crea un usuario invitado y LO GUARDA en la base de datos.
+  // Updates the current user
+  Future<void> updateUser(User updatedUser) async {
+    _user = updatedUser;
+    await _userBox.put(_userKey, updatedUser);
+    notifyListeners();
+  }
+
   void setGuestUser() {
     final guestUser = User(
         id: 'guest',
@@ -39,14 +44,13 @@ class UserProvider with ChangeNotifier {
         age: 0,
         height: 0,
         weight: 0,
-        isGuest: true, // Marcar explícitamente como invitado
+        isGuest: true,
     );
     _user = guestUser;
-    _userBox.put(_userKey, guestUser); // Guardar el invitado
+    _userBox.put(_userKey, guestUser);
     notifyListeners();
   }
 
-  // Elimina al usuario actual de la base de datos.
   void logout() {
     _user = null;
     if (_userBox.containsKey(_userKey)) {

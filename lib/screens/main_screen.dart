@@ -32,7 +32,6 @@ class _MainScreenState extends State<MainScreen> {
         return AppBar(title: const Text('Salud Activa'));
       case 1:
         return AppBar(
-          title: const Text('Menús'),
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.today), text: 'Hoy'),
