@@ -162,22 +162,40 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _isEditing ? Theme.of(context).colorScheme.surface : null,
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: _isEditing ? _buildEditView() : _buildSummaryView(),
-      ),
-      floatingActionButton: !_isEditing
-          ? FloatingActionButton.extended(
+Widget build(BuildContext context) {
+  final appBarColor = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).primaryColor;
+
+  return Scaffold(
+    backgroundColor: _isEditing ? Theme.of(context).colorScheme.surface : null,
+    body: AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: _isEditing ? _buildEditView() : _buildSummaryView(),
+    ),
+    floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    floatingActionButton: !_isEditing
+        ? Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: ElevatedButton.icon(
               onPressed: () => setState(() => _isEditing = true),
               icon: const Icon(Icons.edit_outlined),
-              label: const Text('Editar Datos'),
-            )
-          : null,
-    );
-  }
+              label: const Text('Establece objetivo de peso'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: appBarColor, // Use AppBar color
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                minimumSize: const Size(double.infinity, 50), // Make button wider
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16), // Rounded corners
+                ),
+                textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold, // Bold text
+                    ),
+              ),
+            ),
+          )
+        : null,
+  );
+}
+
 
   Widget _buildSummaryView() {
     final user = Provider.of<UserProvider>(context).user!;
