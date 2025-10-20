@@ -13,7 +13,7 @@ class DashboardScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
-        _buildWelcomeHeader(),
+        _buildWelcomeHeader(context), // Pass context
         const SizedBox(height: 24),
         _buildCaloriesCard(),
         const SizedBox(height: 24),
@@ -22,13 +22,51 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildWelcomeHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Hola de nuevo,', style: GoogleFonts.lato(fontSize: 18)),
-        Text('¿Listo para Conquistar tu Día?', style: GoogleFonts.montserrat(fontSize: 24, fontWeight: FontWeight.bold)),
-      ],
+  Widget _buildWelcomeHeader(BuildContext context) {
+    // Wrap the row in a Container and give it a subtle background color
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          const CircleAvatar(
+            radius: 30,
+            backgroundColor: Colors.white70,
+            child: Icon(Icons.person, size: 40, color: Colors.grey),
+          ),
+          const SizedBox(width: 16),
+          // Use Expanded to allow the text to take up available space and wrap
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Invitado', 
+                  style: GoogleFonts.montserrat(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Toca para crear o editar tu perfil', 
+                  style: GoogleFonts.lato(
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8)
+                  ),
+                  // Allow text to wrap to the next line
+                  softWrap: true,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

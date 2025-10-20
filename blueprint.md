@@ -1,69 +1,42 @@
-# Blueprint de la Aplicación Salud Activa
+# Plan de Desarrollo de la Aplicación de Salud y Fitness
 
-## Descripción General
+## Visión General
 
-Salud Activa es una aplicación de seguimiento de salud y fitness diseñada para ayudar a los usuarios a registrar sus comidas, consumo de agua, medidas corporales y entrenamientos. La aplicación proporciona una visión integral del progreso del usuario y ofrece herramientas para establecer y alcanzar objetivos de salud.
-
-## Estructura del Proyecto
-
-El proyecto sigue una estructura de feature-first, donde cada característica principal (como registro de alimentos, perfil, etc.) tiene su propia carpeta dentro de `lib/screens`.
-
-- **`lib/`**
-  - **`models/`**: Contiene las clases del modelo de datos (User, Food, FoodLog, etc.).
-  - **`providers/`**: Gestiona el estado de la aplicación (ThemeProvider, UserProvider).
-  - **`screens/`**: Contiene las pantallas principales de la aplicación.
-    - **`achievements/`**: Pantallas relacionadas con logros y objetivos.
-    - **`food_logging/`**: Pantallas para el registro de alimentos.
-    - **`settings/`**: Pantallas de configuración.
-    - **`training/`**: Pantallas para el registro de entrenamientos.
-  - **`widgets/`**: Contiene widgets reutilizables.
-  - **`main.dart`**: Punto de entrada de la aplicación.
-
-## Estilo y Diseño
-
-- **Tema:** La aplicación utiliza un tema Material 3 personalizable, permitiendo al usuario elegir un color de semilla para generar el esquema de colores. Se admite tanto el modo claro como el oscuro.
-- **Tipografía:** Se utiliza `GoogleFonts.montserratTextTheme` para una apariencia de texto consistente y moderna.
-- **Navegación:** La navegación principal se realiza a través de un `BottomNavigationBar` en `MainScreen`. Las sub-secciones (como en "Registro") utilizan un `TabBar` integrado en la `AppBar`.
-- **Diseño de Pestañas Unificado:** En secciones complejas como "Configuración" o "Registro", se utiliza un diseño de `TabBar` integrado en la `AppBar` principal. Las pantallas contenidas dentro de la `TabBarView` son widgets simples sin su propia `AppBar`, garantizando una experiencia de usuario limpia y sin barras de navegación duplicadas.
+Esta aplicación está diseñada para ser un asistente integral de salud y fitness, permitiendo a los usuarios registrar sus comidas, planificar sus menús semanales, seguir sus rutinas de entrenamiento y monitorizar su progreso físico. La aplicación contará con una interfaz moderna, intuitiva y personalizable, con un fuerte enfoque en la experiencia de usuario y la accesibilidad.
 
 ## Características Implementadas
 
-### 1. Onboarding y Perfil de Usuario
+### Estilo y Diseño
 
-- **WelcomeScreen:** Pantalla de bienvenida para nuevos usuarios.
-- **ProfileScreen:** Permite a los usuarios introducir y guardar su información personal (nombre, género, edad, altura, peso, nivel de actividad). Los valores de género y nivel de actividad se guardan en inglés para facilitar los cálculos internos.
-- **UserProvider:** Gestiona el estado del usuario a lo largo de la aplicación, incluyendo la carga y guardado del usuario en la base de datos local (Hive).
+*   **Tema Moderno y Personalizable**: Uso de `ColorScheme.fromSeed`, `google_fonts`, y componentes de Material 3 para una estética moderna y coherente.
+*   **Interfaz de Usuario Atractiva**: Diseño limpio, con tarjetas, iconografía clara y una buena organización visual.
 
-### 2. Registro de Actividades
+### Funcionalidades Clave
 
-- **FoodLoggingMainScreen:** Pantalla principal para el registro de alimentos, con pestañas para el registro diario y la biblioteca de alimentos.
-- **WaterLogScreen:** Permite registrar el consumo de agua.
-- **BodyMeasurementsScreen:** Permite registrar medidas corporales (peso, IMC, etc.).
+*   **Navegación Principal**:
+    *   Barra de navegación inferior y menú lateral (Drawer) para un acceso rápido a todas las secciones.
+    *   Sistema de pestañas (`TabBar`) en Menús y Entrenamiento.
+*   **Dashboard (Pantalla de Inicio)**:
+    *   Saludo de bienvenida atractivo y tarjetas de resumen para calorías y peso.
+*   **Gestión de Perfil de Usuario**:
+    *   Modelo de datos (`User`), pantalla de edición de perfil y persistencia con `shared_preferences`.
+*   **Planificación de Comidas**:
+    *   **Menú del Día (`TodayMenuScreen`)**: Vista detallada de las comidas del día con sus alimentos y total de calorías.
+    *   **Planificador Semanal (`WeeklyPlannerScreen`)**: Calendario interactivo para planificar las comidas de la semana.
+    *   **Detalle de Comida (`MealDetailScreen`)**:
+        *   Muestra un desglose de los alimentos de una comida específica.
+        *   Calcula y presenta un resumen de macronutrientes (calorías, proteínas, carbohidratos, grasas).
+    *   **Edición de Comida (`EditMealScreen`)**:
+        *   Permite al usuario añadir o eliminar alimentos de una comida (funcionalidad simulada por ahora).
 
-### 3. Entrenamiento
+## Plan de Trabajo Reciente
 
-- **TrainingMainScreen:** Pantalla principal para el registro de entrenamientos, con pestañas para los ejercicios y la biblioteca de ejercicios. La navegación por pestañas (`TabBar`) está integrada en la `AppBar` para mantener la consistencia con otras secciones.
-- **AddExerciseScreen:** Permite a los usuarios añadir nuevos ejercicios a su biblioteca.
-- **ExerciseLibraryScreen:** Muestra la lista de ejercicios guardados.
-
-### 4. Configuración Unificada
-
-- **SettingsScreen:** Pantalla de configuración rediseñada que unifica varias opciones en una sola interfaz con pestañas para una navegación más intuitiva.
-- **Estructura de Pestañas:**
-    - **Pestaña "Metas":** Muestra el contenido de `CaloricGoalsScreen`.
-    - **Pestaña "Peso":** Muestra el contenido de `WeightGoalsScreen`.
-    - **Pestaña "Tema":** Muestra el contenido de `ThemeSettingsScreen`.
-- **Diseño Limpio:** Cada una de las pantallas de las pestañas (`CaloricGoalsScreen`, `WeightGoalsScreen`, `ThemeSettingsScreen`) ha sido modificada para no tener su propia `AppBar`, eliminando la redundancia visual y creando una experiencia de usuario fluida dentro de la pantalla de configuración.
-
-### 5. Metas y Objetivos
-
-- **ObjectivesScreen:** Muestra el IMC del usuario y su rango de peso ideal.
-- **CaloricGoalsScreen:**
-    - **Informe automático:** Ya no es un formulario.
-    - **Lee datos del perfil:** Toma automáticamente la información del usuario (edad, peso, altura, género, nivel de actividad).
-    - **Calcula y muestra:** Presenta las calorías diarias recomendadas para tres objetivos: perder, mantener y ganar peso.
-    - **Manejo de perfil incompleto:** Si faltan datos en el perfil, muestra una advertencia y un botón para navegar a la pantalla de perfil.
-
-### 6. Navegación
-
-- Se utiliza un sistema de rutas nominadas en `main.dart` para una navegación más robusta. Se ha definido la ruta `/profile` para facilitar el acceso a la pantalla de perfil desde otras partes de la aplicación.
+1.  **Rediseño de Pantallas de Menús**: Se ha mejorado la estructura y el diseño de `today_menu_screen.dart` y `weekly_planner_screen.dart` para una mejor experiencia de usuario.
+2.  **Implementación de Calendario Semanal**: Se ha integrado el paquete `table_calendar` para ofrecer una vista de planificación semanal interactiva y navegable.
+3.  **Corrección de Errores y Advertencias**:
+    *   Se han solucionado errores de modelos de datos y advertencias de funciones obsoletas.
+    *   Se ha corregido un error de desbordamiento visual (overflow) en el Dashboard, mejorando el diseño del saludo.
+4.  **Implementación de la funcionalidad "Ver" y "Editar" en el Planificador Semanal**:
+    *   **Creación de la Pantalla de Detalles (`meal_details_screen.dart`)**: Para mostrar un resumen detallado de una comida.
+    *   **Creación de la Pantalla de Edición (`edit_meal_screen.dart`)**: Para (simular) la edición de los alimentos de una comida.
+    *   **Integración de la Navegación**: Se han conectado los botones "Ver" y "Editar" del planificador para que naveguen a las nuevas pantallas, pasando el tipo de comida y la fecha correspondiente.

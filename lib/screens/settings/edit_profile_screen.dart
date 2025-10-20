@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -159,7 +158,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SizedBox(height: 24),
               _buildDropdown(
                 label: 'Género',
-                value: _selectedGender,
+                initialValue: _selectedGender,
                 items: _genderOptions,
                 onChanged: (value) {
                   if (value != null) setState(() => _selectedGender = value);
@@ -168,7 +167,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SizedBox(height: 24),
               _buildDropdown(
                 label: 'Nivel de Actividad',
-                value: _activityLevel,
+                initialValue: _activityLevel,
                 items: _activityLevelOptions,
                 onChanged: (value) {
                   if (value != null) setState(() => _activityLevel = value);
@@ -236,12 +235,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildDropdown<T>({
     required String label,
-    required T value,
+    T? initialValue,
     required Map<T, String> items,
     required ValueChanged<T?> onChanged,
   }) {
     return DropdownButtonFormField<T>(
-      value: value,
+      value: initialValue,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
