@@ -243,7 +243,7 @@ class ProfileScreenState extends State<ProfileScreen> {
             children: [
               CircleAvatar(
                 radius: 100,
-                backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                backgroundColor: Theme.of(context).colorScheme.surface.withAlpha((255 * 0.8).round()),
                 backgroundImage: _profileImagePath != null ? FileImage(File(_profileImagePath!)) : null,
                 child: _profileImagePath == null
                     ? Icon(Icons.person, size: 100, color: Theme.of(context).colorScheme.primary)
@@ -377,7 +377,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           borderSide: BorderSide.none,
         ),
         filled: true,
-        fillColor: Theme.of(context).colorScheme.surface.withOpacity(0.7),
+        fillColor: Theme.of(context).colorScheme.surface.withAlpha((255 * 0.7).round()),
       ),
       validator: validator,
     );
@@ -408,8 +408,8 @@ class ProfileScreenState extends State<ProfileScreen> {
               onSelected: (bool selected) {
                 if (selected) onSelected(key);
               },
-              backgroundColor: isSelected ? Theme.of(context).colorScheme.primary.withOpacity(0.1) : Colors.transparent,
-              selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              backgroundColor: isSelected ? Theme.of(context).colorScheme.primary.withAlpha((255 * 0.1).round()) : Colors.transparent,
+              selectedColor: Theme.of(context).colorScheme.primary.withAlpha((255 * 0.1).round()),
               labelStyle: TextStyle(
                 color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).textTheme.bodyLarge?.color,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -419,7 +419,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                 borderRadius: BorderRadius.circular(30),
                 side: BorderSide(
                   width: isSelected ? 2.0 : 1.0,
-                  color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline.withOpacity(0.4),
+                  color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline.withAlpha((255 * 0.4).round()),
                 ),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

@@ -12,6 +12,7 @@ import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/recipes/add_recipe_screen.dart';
 import 'package:myapp/screens/recipes/recipes_screen.dart';
 import 'package:myapp/screens/settings/about_screen.dart';
+import 'package:myapp/screens/settings/edit_profile_screen.dart';
 import 'package:myapp/screens/settings_screen.dart';
 import 'package:myapp/screens/training/training_main_screen.dart';
 import 'package:myapp/screens/welcome_screen.dart';
@@ -59,7 +60,11 @@ class DrawerMenu extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+                if (user != null && !user.isGuest) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const EditProfileScreen()));
+                } else {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+                }
               },
               child: Container(
                 padding: const EdgeInsets.all(16.0),
@@ -80,7 +85,7 @@ class DrawerMenu extends StatelessWidget {
                           style: GoogleFonts.montserrat(fontSize: 22, fontWeight: FontWeight.bold, color: headerTextColor),
                         ),
                         Text(
-                          'Toca para editar tu perfil',
+                          'Toca para crear o editar tu perfil',
                           style: GoogleFonts.lato(fontSize: 14, color: headerTextColor.withAlpha(204)),
                         ),
                       ],
@@ -109,7 +114,7 @@ class DrawerMenu extends StatelessWidget {
             buildListTile(context, icon: Icons.add_circle, iconColor: Colors.green[600]!, title: 'Añadir Receta', destination: const AddRecipeScreen()),
           ]),
           _buildExpansionTile(context, title: 'Entrenamiento', icon: Icons.fitness_center, iconColor: Colors.red[700]!, children: [
-            buildListTile(context, icon: Icons.fitness_center, iconColor: Colors.red[700]!, title: 'Ejercicios', destination: const TrainingMainScreen(initialTabIndex: 0)),
+            buildListTile(context, icon: Icons.directions_run, iconColor: Colors.blue[700]!, title: 'Ejercicios', destination: const TrainingMainScreen(initialTabIndex: 0)),
             buildListTile(context, icon: Icons.local_library, iconColor: Colors.blue[700]!, title: 'Biblioteca', destination: const TrainingMainScreen(initialTabIndex: 1)),
           ]),
           _buildExpansionTile(context, title: 'Hábitos', icon: Icons.check_circle_outline, iconColor: Colors.lightGreen[800]!, children: [

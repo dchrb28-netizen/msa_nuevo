@@ -47,7 +47,7 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
     final user = Provider.of<UserProvider>(context, listen: false).user;
     if (user != null && user.age > 0 && user.height > 0 && user.weight > 0) {
       double bmr;
-      if (user.gender.toLowerCase() == 'masculino') {
+      if (user.gender.toLowerCase() == 'male') {
         bmr = (10 * user.weight) + (6.25 * user.height) - (5 * user.age) + 5;
       } else {
         bmr = (10 * user.weight) + (6.25 * user.height) - (5 * user.age) - 161;

@@ -9,11 +9,11 @@ class BodyMeasurementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // The DefaultTabController manages the state of the tabs.
-    return DefaultTabController(
+    return const DefaultTabController(
       length: 2,
       // A Column is used to place the TabBar above the TabBarView.
       child: Column(
-        children: const [
+        children: [
           // This is the TabBar for 'Hoy' and 'Historial'.
           // It will now correctly inherit the background from the parent screen.
           TabBar(

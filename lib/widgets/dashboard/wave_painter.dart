@@ -10,19 +10,19 @@ class WavePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..shader = LinearGradient(
+      ..shader = const LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          const Color.fromRGBO(68, 138, 255, 0.5),
-          const Color.fromRGBO(30, 136, 229, 0.5),
+          Color.fromRGBO(68, 138, 255, 0.5),
+          Color.fromRGBO(30, 136, 229, 0.5),
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
     final path = Path();
     final waveHeight = 20 + 20 * waterHeight;
-    final waveFrequency = 0.02;
-    final waveSpeed = 1.5;
+    const waveFrequency = 0.02;
+    const waveSpeed = 1.5;
 
     path.moveTo(0, size.height);
     path.lineTo(0, size.height * (1 - waterHeight));

@@ -4,8 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:myapp/models/body_measurement.dart';
+import 'package:myapp/models/daily_meal_plan.dart';
 import 'package:myapp/models/food.dart';
 import 'package:myapp/models/food_log.dart';
+import 'package:myapp/models/meal_type.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/theme_provider.dart';
@@ -38,6 +40,12 @@ void main() async {
   if (!Hive.isAdapterRegistered(UserAdapter().typeId)) {
     Hive.registerAdapter(UserAdapter());
   }
+  if (!Hive.isAdapterRegistered(MealTypeAdapter().typeId)) {
+    Hive.registerAdapter(MealTypeAdapter());
+  }
+  if (!Hive.isAdapterRegistered(DailyMealPlanAdapter().typeId)) {
+    Hive.registerAdapter(DailyMealPlanAdapter());
+  }
 
   // Open boxes
   await Hive.openBox<Food>('foods');
@@ -45,6 +53,7 @@ void main() async {
   await Hive.openBox<FoodLog>('food_logs');
   await Hive.openBox<BodyMeasurement>('body_measurements');
   await Hive.openBox<User>('user_box');
+  await Hive.openBox<DailyMealPlan>('daily_meal_plans');
   await Hive.openBox('settings');
 
   await _populateInitialFoodData();

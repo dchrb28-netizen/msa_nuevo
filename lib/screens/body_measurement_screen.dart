@@ -7,10 +7,10 @@ class BodyMeasurementScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
+    return const DefaultTabController(
       length: 2,
       child: Column(
-        children: const [
+        children: [
           TabBar(
             tabs: [
               Tab(text: 'Hoy'),
