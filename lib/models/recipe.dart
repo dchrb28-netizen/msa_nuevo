@@ -1,9 +1,20 @@
+import 'package:hive/hive.dart';
 
-class Recipe {
+part 'recipe.g.dart';
+
+@HiveType(typeId: 10) // Unique ID for the Recipe adapter
+class Recipe extends HiveObject {
+  @HiveField(0)
   final String title;
+
+  @HiveField(1)
   final String link;
+
+  @HiveField(2)
   final String snippet;
-  final String? imageUrl; 
+
+  @HiveField(3)
+  final String? imageUrl;
 
   Recipe({
     required this.title,
@@ -26,7 +37,6 @@ class Recipe {
                json['pagemap']['metatags'][0].containsKey('og:image')) {
       imageUrl = json['pagemap']['metatags'][0]['og:image'];
     }
-
 
     return Recipe(
       title: json['title'] ?? 'Sin título',

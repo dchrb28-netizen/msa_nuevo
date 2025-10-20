@@ -8,6 +8,7 @@ import 'package:myapp/models/daily_meal_plan.dart';
 import 'package:myapp/models/food.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/models/meal_type.dart';
+import 'package:myapp/models/recipe.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/theme_provider.dart';
@@ -17,8 +18,12 @@ import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 void main() async {
+  // Remove the # from the URL
+  setPathUrlStrategy();
+
   WidgetsFlutterBinding.ensureInitialized();
 
   await initializeDateFormatting('es', null);
@@ -46,6 +51,9 @@ void main() async {
   if (!Hive.isAdapterRegistered(DailyMealPlanAdapter().typeId)) {
     Hive.registerAdapter(DailyMealPlanAdapter());
   }
+  if (!Hive.isAdapterRegistered(RecipeAdapter().typeId)) {
+    Hive.registerAdapter(RecipeAdapter());
+  }
 
   // Open boxes
   await Hive.openBox<Food>('foods');
@@ -55,6 +63,8 @@ void main() async {
   await Hive.openBox<User>('user_box');
   await Hive.openBox<DailyMealPlan>('daily_meal_plans');
   await Hive.openBox('settings');
+  await Hive.openBox<Recipe>('favorite_recipes');
+
 
   await _populateInitialFoodData();
 
