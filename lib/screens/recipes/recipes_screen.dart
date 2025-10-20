@@ -1,8 +1,8 @@
 
-import 'dart:ui';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:myapp/screens/recipes/add_recipe_screen.dart';
 import 'package:myapp/services/recipe_service.dart';
 import 'package:myapp/models/recipe.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -489,10 +489,62 @@ class _CategoryButton extends StatelessWidget {
 
 
 
-class FavoriteRecipesTab extends StatelessWidget {
+class FavoriteRecipesTab extends StatefulWidget {
   const FavoriteRecipesTab({super.key});
 
   @override
+  State<FavoriteRecipesTab> createState() => _FavoriteRecipesTabState();
+}
+
+class _FavoriteRecipesTabState extends State<FavoriteRecipesTab> with SingleTickerProviderStateMixin {
+  late TabController _innerTabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _innerTabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _innerTabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: TabBar(
+          controller: _innerTabController,
+          tabs: const [
+            Tab(icon: Icon(Icons.public), text: 'De la Web'),
+            Tab(icon: Icon(Icons.my_library_books), text: 'Creadas'),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _innerTabController,
+        children: const [
+          WebFavoritesTab(),
+          CreatedRecipesTab(),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddRecipeScreen()));
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class WebFavoritesTab extends StatelessWidget {
+  const WebFavoritesTab({super.key});
+
+ @override
   Widget build(BuildContext context) {
     final favoritesBox = Hive.box<Recipe>('favorite_recipes');
 
@@ -608,6 +660,22 @@ class FavoriteRecipesTab extends StatelessWidget {
           },
         );
       },
+    );
+  }
+}
+
+class CreatedRecipesTab extends StatelessWidget {
+  const CreatedRecipesTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: Implement the list of created recipes
+    return const Center(
+      child: Text(
+        'Aquí verás las recetas que has creado.\n¡Usa el botón + para añadir una!',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 18, color: Colors.grey),
+      ),
     );
   }
 }

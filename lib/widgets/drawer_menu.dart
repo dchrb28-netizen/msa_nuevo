@@ -10,7 +10,6 @@ import 'package:myapp/screens/habits/reminders_screen.dart';
 import 'package:myapp/screens/logs_screen.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
-import 'package:myapp/screens/recipes/add_recipe_screen.dart';
 import 'package:myapp/screens/recipes/recipes_screen.dart';
 import 'package:myapp/screens/settings/about_screen.dart';
 import 'package:myapp/screens/settings/edit_profile_screen.dart';
@@ -111,10 +110,9 @@ class DrawerMenu extends StatelessWidget {
             buildListTile(context, icon: Icons.fastfood, iconColor: Colors.yellow[700]!, title: 'Comidas', destination: const LogsScreen(initialTabIndex: 1)),
             buildListTile(context, icon: Icons.straighten, iconColor: Colors.teal, title: 'Medidas', destination: const LogsScreen(initialTabIndex: 2)),
           ]),
-           _buildExpansionTile(context, title: 'Mis Recetas', icon: Icons.menu_book, iconColor: Colors.brown[600]!, children: [
-            buildListTile(context, icon: Icons.receipt_long, iconColor: Colors.orange[800]!, title: 'Recetas', destination: const RecipesScreen(initialTabIndex: 0)),
+          _buildExpansionTile(context, title: 'Mis Recetas', icon: Icons.menu_book, iconColor: Colors.brown[600]!, children: [
+            buildListTile(context, icon: Icons.receipt_long, iconColor: Colors.orange[800]!, title: 'Buscar Recetas', destination: const RecipesScreen(initialTabIndex: 0)),
             buildListTile(context, icon: Icons.favorite, iconColor: Colors.red[400]!, title: 'Recetas Favoritas', destination: const RecipesScreen(initialTabIndex: 1)),
-            buildListTile(context, icon: Icons.add_circle, iconColor: Colors.green[600]!, title: 'Añadir Receta', destination: const AddRecipeScreen()),
           ]),
           _buildExpansionTile(context, title: 'Entrenamiento', icon: Icons.fitness_center, iconColor: Colors.red[700]!, children: [
             buildListTile(context, icon: Icons.directions_run, iconColor: Colors.blue[700]!, title: 'Ejercicios', destination: const TrainingMainScreen(initialTabIndex: 0)),
