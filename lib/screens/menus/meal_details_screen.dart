@@ -93,7 +93,7 @@ class MealDetailScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withAlpha((255 * 0.2).round()),
             borderRadius: BorderRadius.circular(15),
           ),
           child: Text(value, style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.bold, color: color)),

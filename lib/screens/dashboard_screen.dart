@@ -27,7 +27,7 @@ class DashboardScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.primaryContainer.withAlpha((255 * 0.3).round()),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -57,7 +57,7 @@ class DashboardScreen extends StatelessWidget {
                   'Toca para crear o editar tu perfil', 
                   style: GoogleFonts.lato(
                     fontSize: 16,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8)
+                    color: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha((255 * 0.8).round())
                   ),
                   // Allow text to wrap to the next line
                   softWrap: true,

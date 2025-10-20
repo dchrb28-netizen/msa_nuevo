@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/providers/theme_provider.dart';
@@ -27,7 +28,6 @@ class DrawerMenu extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final user = userProvider.user;
 
-    // Function to determine text color based on background brightness
     Color textColorForBackground(Color backgroundColor) {
       return ThemeData.estimateBrightnessForColor(backgroundColor) ==
               Brightness.dark
@@ -37,12 +37,12 @@ class DrawerMenu extends StatelessWidget {
 
     final headerTextColor = textColorForBackground(themeProvider.seedColor);
 
-    Widget buildListTile(BuildContext context, {required IconData icon, required Color iconColor, required String title, required Widget destination}) {
+    Widget buildListTile(BuildContext context, {required IconData icon, required Color iconColor, required String title, required Widget destination, int? initialTabIndex}) {
       return ListTile(
         leading: Icon(icon, color: iconColor),
         title: Text(title, style: GoogleFonts.lato()),
         onTap: () {
-          Navigator.pop(context); // Close the drawer
+          Navigator.pop(context);
           Navigator.push(context, MaterialPageRoute(builder: (context) => destination));
         },
       );
@@ -76,19 +76,22 @@ class DrawerMenu extends StatelessWidget {
                       child: Icon(Icons.person, size: 40, color: themeProvider.seedColor),
                     ),
                     const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          user?.name ?? 'Invitado',
-                          style: GoogleFonts.montserrat(fontSize: 22, fontWeight: FontWeight.bold, color: headerTextColor),
-                        ),
-                        Text(
-                          'Toca para crear o editar tu perfil',
-                          style: GoogleFonts.lato(fontSize: 14, color: headerTextColor.withAlpha(204)),
-                        ),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            user?.name ?? 'Invitado',
+                            style: GoogleFonts.montserrat(fontSize: 22, fontWeight: FontWeight.bold, color: headerTextColor),
+                          ),
+                          Text(
+                            'Toca para crear o editar tu perfil',
+                             style: GoogleFonts.lato(fontSize: 14, color: headerTextColor.withAlpha(204)),
+                            softWrap: true,
+                          ),
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -108,7 +111,7 @@ class DrawerMenu extends StatelessWidget {
             buildListTile(context, icon: Icons.fastfood, iconColor: Colors.yellow[700]!, title: 'Comidas', destination: const LogsScreen(initialTabIndex: 1)),
             buildListTile(context, icon: Icons.straighten, iconColor: Colors.teal, title: 'Medidas', destination: const LogsScreen(initialTabIndex: 2)),
           ]),
-          _buildExpansionTile(context, title: 'Mis Recetas', icon: Icons.menu_book, iconColor: Colors.brown[600]!, children: [
+           _buildExpansionTile(context, title: 'Mis Recetas', icon: Icons.menu_book, iconColor: Colors.brown[600]!, children: [
             buildListTile(context, icon: Icons.receipt_long, iconColor: Colors.orange[800]!, title: 'Recetas', destination: const RecipesScreen(initialTabIndex: 0)),
             buildListTile(context, icon: Icons.favorite, iconColor: Colors.red[400]!, title: 'Recetas Favoritas', destination: const RecipesScreen(initialTabIndex: 1)),
             buildListTile(context, icon: Icons.add_circle, iconColor: Colors.green[600]!, title: 'Añadir Receta', destination: const AddRecipeScreen()),

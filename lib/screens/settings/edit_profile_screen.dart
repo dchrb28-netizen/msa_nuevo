@@ -240,7 +240,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required ValueChanged<T?> onChanged,
   }) {
     return DropdownButtonFormField<T>(
-      value: initialValue,
+      initialValue: initialValue,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
