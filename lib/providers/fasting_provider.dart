@@ -31,6 +31,25 @@ class FastingProvider with ChangeNotifier {
       ..sort((a, b) => b.endTime!.compareTo(a.endTime!));
   }
 
+  FastingLog? get longestFastLog {
+    if (fastingHistory.isEmpty) return null;
+    return fastingHistory.reduce((a, b) {
+      final aDuration = a.endTime!.difference(a.startTime);
+      final bDuration = b.endTime!.difference(b.startTime);
+      return aDuration.inSeconds > bDuration.inSeconds ? a : b;
+    });
+  }
+
+  Duration get averageFastDuration {
+    if (fastingHistory.isEmpty) return Duration.zero;
+    final totalDuration = fastingHistory.fold<Duration>(
+      Duration.zero,
+      (previous, log) => previous + log.endTime!.difference(log.startTime),
+    );
+    return Duration(seconds: totalDuration.inSeconds ~/ fastingHistory.length);
+  }
+
+
   void _loadCurrentFast() {
     try {
       _currentFast =
@@ -74,7 +93,7 @@ class FastingProvider with ChangeNotifier {
     } else {
       _currentFast!.endTime = endTime;
       _currentFast!.save();
-       _notificationService.showNotification(0, '¡Ayuno Completado!', 'Has completado un ayuno de ${formattedDuration}. ¡Felicidades!');
+       _notificationService.showNotification(0, '¡Ayuno Completado!', 'Has completado un ayuno de $formattedDuration. ¡Felicidades!');
     }
     
     _timer?.cancel();
@@ -100,6 +119,16 @@ class FastingProvider with ChangeNotifier {
     });
   }
 
+  Future<void> deleteFastingLog(String logId) async {
+    await _fastingBox.delete(logId);
+    notifyListeners();
+  }
+
+  Future<void> updateFastingLog(FastingLog updatedLog) async {
+    await _fastingBox.put(updatedLog.id, updatedLog);
+    notifyListeners();
+  }
+
   String get formattedDuration {
     if (_currentFast == null) return '00:00:00';
     final duration = _currentFast!.endTime == null
@@ -111,6 +140,14 @@ class FastingProvider with ChangeNotifier {
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     return '$hours:$minutes:$seconds';
   }
+
+  String formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = twoDigits(duration.inHours);
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    return '${hours}h ${minutes}m';
+  }
+
 
   @override
   void dispose() {
