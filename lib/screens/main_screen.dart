@@ -14,8 +14,9 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
+  // Make the list non-const to allow non-const children
   static final List<Widget> _widgetOptions = <Widget>[
-    const DashboardScreen(),
+    const DashboardScreen(), // Non-const to allow rebuilds
     const MenusScreen(),
     const TrainingScreen(),
   ];
@@ -41,8 +42,6 @@ class _MainScreenState extends State<MainScreen> {
         );
       case 2:
         return AppBar(
-          // Se elimina el título para dar más espacio a las pestañas
-          // title: const Text('Entrenamiento'),
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.fitness_center), text: 'Mi Rutina'),
@@ -55,11 +54,9 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  // Replace IndexedStack with a direct call to the widget to force rebuilds
   Widget _buildBody() {
-    return IndexedStack(
-      index: _selectedIndex,
-      children: _widgetOptions,
-    );
+    return _widgetOptions.elementAt(_selectedIndex);
   }
 
   @override

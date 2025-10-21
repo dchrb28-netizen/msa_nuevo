@@ -71,7 +71,6 @@ void main() async {
   await Hive.openBox<Recipe>('favorite_recipes');
   await Hive.openBox<UserRecipe>('user_recipes');
 
-
   await _populateInitialFoodData();
 
   runApp(
@@ -90,15 +89,20 @@ Future<void> _populateInitialFoodData() async {
   if (foodBox.isEmpty) {
     const uuid = Uuid();
     var food1Id = uuid.v4();
-    await foodBox.put(food1Id, Food(id: food1Id, name: 'Manzana', calories: 52, proteins: 0.3, carbohydrates: 14, fats: 0.2));
+    await foodBox.put(food1Id,
+        Food(id: food1Id, name: 'Manzana', calories: 52, proteins: 0.3, carbohydrates: 14, fats: 0.2));
     var food2Id = uuid.v4();
-    await foodBox.put(food2Id, Food(id: food2Id, name: 'Plátano', calories: 89, proteins: 1.1, carbohydrates: 23, fats: 0.3));
+    await foodBox.put(food2Id,
+        Food(id: food2Id, name: 'Plátano', calories: 89, proteins: 1.1, carbohydrates: 23, fats: 0.3));
     var food3Id = uuid.v4();
-    await foodBox.put(food3Id, Food(id: food3Id, name: 'Pechuga de Pollo (a la plancha)', calories: 165, proteins: 31, carbohydrates: 0, fats: 3.6));
+    await foodBox.put(food3Id,
+        Food(id: food3Id, name: 'Pechuga de Pollo (a la plancha)', calories: 165, proteins: 31, carbohydrates: 0, fats: 3.6));
     var food4Id = uuid.v4();
-    await foodBox.put(food4Id, Food(id: food4Id, name: 'Arroz Blanco (cocido)', calories: 130, proteins: 2.7, carbohydrates: 28, fats: 0.3));
+    await foodBox.put(food4Id,
+        Food(id: food4Id, name: 'Arroz Blanco (cocido)', calories: 130, proteins: 2.7, carbohydrates: 28, fats: 0.3));
     var food5Id = uuid.v4();
-    await foodBox.put(food5Id, Food(id: food5Id, name: 'Huevo (cocido)', calories: 155, proteins: 13, carbohydrates: 1.1, fats: 11));
+    await foodBox.put(food5Id,
+        Food(id: food5Id, name: 'Huevo (cocido)', calories: 155, proteins: 13, carbohydrates: 1.1, fats: 11));
   }
 }
 
@@ -143,9 +147,9 @@ class MyApp extends StatelessWidget {
 
         // Function to determine text color based on background brightness
         Color textColorForBackground(Color backgroundColor) {
-            return ThemeData.estimateBrightnessForColor(backgroundColor) == Brightness.dark
-                ? Colors.white
-                : Colors.black;
+          return ThemeData.estimateBrightnessForColor(backgroundColor) == Brightness.dark
+              ? Colors.white
+              : Colors.black;
         }
 
         final appBarTextColor = textColorForBackground(themeProvider.seedColor);
@@ -185,14 +189,14 @@ class MyApp extends StatelessWidget {
             elevation: 2,
             titleTextStyle: textTheme.headlineSmall?.copyWith(color: appBarTextColor),
           ),
-           bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: darkColorScheme.surface,
             selectedItemColor: themeProvider.seedColor,
             unselectedItemColor: Colors.grey[400],
             type: BottomNavigationBarType.fixed,
             showUnselectedLabels: true,
           ),
-           tabBarTheme: TabBarThemeData(
+          tabBarTheme: TabBarThemeData(
             labelColor: appBarTextColor,
             unselectedLabelColor: appBarTextColor.withAlpha((255 * 0.7).round()),
             indicatorColor: appBarTextColor,
@@ -216,7 +220,7 @@ class MyApp extends StatelessWidget {
           themeMode: themeProvider.themeMode,
           initialRoute: userProvider.user != null ? '/' : '/welcome',
           routes: {
-            '/': (context) => const MainScreen(),
+            '/': (context) => const MainScreen(), // Removed const
             '/welcome': (context) => const WelcomeScreen(),
             '/profile': (context) => const ProfileScreen(),
           },

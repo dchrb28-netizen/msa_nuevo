@@ -3,17 +3,18 @@ import 'package:hive/hive.dart';
 import 'package:myapp/models/user.dart';
 
 class UserProvider with ChangeNotifier {
-  static const String _userKey = 'currentUser'; 
+  static const String _userKey = 'currentUser';
   User? _user;
   final Box<User> _userBox = Hive.box<User>('user_box');
 
   User? get user => _user;
 
   UserProvider() {
-    _loadUser();
+    loadUser(); // Use the public method
   }
 
-  void _loadUser() {
+  // Now public, so it can be called from other parts of the app
+  void loadUser() {
     if (_userBox.containsKey(_userKey)) {
       _user = _userBox.get(_userKey);
     } else {
@@ -38,13 +39,13 @@ class UserProvider with ChangeNotifier {
 
   void setGuestUser() {
     final guestUser = User(
-        id: 'guest',
-        name: 'Invitado',
-        gender: 'No especificado',
-        age: 0,
-        height: 0,
-        weight: 0,
-        isGuest: true,
+      id: 'guest',
+      name: 'Invitado',
+      gender: 'No especificado',
+      age: 0,
+      height: 0,
+      weight: 0,
+      isGuest: true,
     );
     _user = guestUser;
     _userBox.put(_userKey, guestUser);

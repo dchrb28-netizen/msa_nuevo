@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -43,9 +42,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final user = Provider.of<UserProvider>(context, listen: false).user!;
 
     _nameController = TextEditingController(text: user.name);
-    _ageController = TextEditingController(text: user.age > 0 ? user.age.toString() : '');
-    _heightController = TextEditingController(text: user.height > 0 ? user.height.toString() : '');
-    _weightController = TextEditingController(text: user.weight > 0 ? user.weight.toString() : '');
+    _ageController =
+        TextEditingController(text: user.age > 0 ? user.age.toString() : '');
+    _heightController = TextEditingController(
+        text: user.height > 0 ? user.height.toString() : '');
+    _weightController = TextEditingController(
+        text: user.weight > 0 ? user.weight.toString() : '');
     _selectedGender = user.gender;
     _activityLevel = user.activityLevel;
     _profileImageBytes = user.profileImageBytes;
@@ -62,7 +64,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final XFile? image =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
 
     if (image != null) {
       final bytes = await image.readAsBytes();
@@ -72,7 +75,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  void _saveProfile() {
+  // Make the function async to handle the await keyword
+  Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final oldUser = userProvider.user!;
@@ -87,7 +91,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         profileImageBytes: _profileImageBytes,
       );
 
-      userProvider.updateUser(updatedUser);
+      // Wait for the user to be updated before proceeding
+      await userProvider.updateUser(updatedUser);
+
+      // This check is a good practice in async methods
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('¡Perfil actualizado con éxito!')),
@@ -114,7 +122,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 controller: _nameController,
                 label: 'Nombre',
                 icon: Icons.person_outline,
-                validator: (value) => (value == null || value.isEmpty) ? 'Introduce tu nombre' : null,
+                validator: (value) =>
+                    (value == null || value.isEmpty) ? 'Introduce tu nombre' : null,
               ),
               const SizedBox(height: 20),
               _buildTextField(
@@ -124,7 +133,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Introduce tu edad';
-                  if (int.tryParse(value) == null || int.parse(value) <= 0) return 'Introduce una edad válida';
+                  if (int.tryParse(value) == null || int.parse(value) <= 0) {
+                    return 'Introduce una edad válida';
+                  }
                   return null;
                 },
               ),
@@ -136,7 +147,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Introduce tu altura';
-                  if (double.tryParse(value) == null || double.parse(value) <= 0) return 'Introduce una altura válida';
+                  if (double.tryParse(value) == null ||
+                      double.parse(value) <= 0) {
+                    return 'Introduce una altura válida';
+                  }
                   return null;
                 },
               ),
@@ -148,7 +162,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Introduce tu peso';
-                  if (double.tryParse(value) == null || double.parse(value) <= 0) return 'Introduce un peso válido';
+                  if (double.tryParse(value) == null ||
+                      double.parse(value) <= 0) {
+                    return 'Introduce un peso válido';
+                  }
                   return null;
                 },
               ),
@@ -177,7 +194,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 label: const Text('Guardar Cambios'),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
-                  textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  textStyle: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -194,12 +212,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         children: [
           CircleAvatar(
             radius: 80,
-            backgroundImage: _profileImageBytes != null
-                ? MemoryImage(_profileImageBytes!)
-                : null,
-            child: _profileImageBytes == null
-                ? const Icon(Icons.person, size: 80)
-                : null,
+            backgroundImage:
+                _profileImageBytes != null ? MemoryImage(_profileImageBytes!) : null,
+            child:
+                _profileImageBytes == null ? const Icon(Icons.person, size: 80) : null,
           ),
           FloatingActionButton(
             onPressed: _pickImage,
