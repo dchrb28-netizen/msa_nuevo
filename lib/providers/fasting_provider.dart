@@ -63,8 +63,20 @@ class FastingProvider with ChangeNotifier {
   void stopFasting() {
     if (!isFasting) return;
 
-    _currentFast!.endTime = DateTime.now();
-    _currentFast!.save();
+    final endTime = DateTime.now();
+    final duration = endTime.difference(_currentFast!.startTime);
+
+    if (duration.inHours < 1) {
+      // If the fast is less than an hour, delete it.
+      _fastingBox.delete(_currentFast!.id);
+      _notificationService.showNotification(
+          0, 'Ayuno Cancelado', 'El ayuno fue demasiado corto para ser registrado.');
+    } else {
+      _currentFast!.endTime = endTime;
+      _currentFast!.save();
+       _notificationService.showNotification(0, '¡Ayuno Completado!', 'Has completado un ayuno de ${formattedDuration}. ¡Felicidades!');
+    }
+    
     _timer?.cancel();
     _currentFast = null;
     _previousPhase = null; 
@@ -89,8 +101,10 @@ class FastingProvider with ChangeNotifier {
   }
 
   String get formattedDuration {
-    if (!isFasting) return '00:00:00';
-    final duration = Duration(seconds: _currentFast!.durationInSeconds);
+    if (_currentFast == null) return '00:00:00';
+    final duration = _currentFast!.endTime == null
+        ? Duration(seconds: _currentFast!.durationInSeconds)
+        : _currentFast!.endTime!.difference(_currentFast!.startTime);
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final hours = twoDigits(duration.inHours);
     final minutes = twoDigits(duration.inMinutes.remainder(60));
