@@ -1,10 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/reminder.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:uuid/uuid.dart';
-import 'package:timezone/timezone.dart' as tz;
 
 class AddReminderScreen extends StatefulWidget {
   final Reminder? reminder;
@@ -28,7 +26,8 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
     super.initState();
     if (isEditing) {
       _titleController = TextEditingController(text: widget.reminder!.title);
-      _selectedTime = TimeOfDay(hour: widget.reminder!.hour, minute: widget.reminder!.minute);
+      _selectedTime =
+          TimeOfDay(hour: widget.reminder!.hour, minute: widget.reminder!.minute);
       _selectedDays = List.from(widget.reminder!.days);
     } else {
       _titleController = TextEditingController();
@@ -97,8 +96,8 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         Text(
           'Repetir en:',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -133,16 +132,6 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
     }
   }
 
-  tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduledDate =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
-    }
-    return scheduledDate;
-  }
-
   void _saveReminder() async {
     if (_formKey.currentState!.validate()) {
       final notificationService = NotificationService();
@@ -150,12 +139,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
 
       // Cancel old notifications if editing
       if (isEditing) {
-        final oldReminder = widget.reminder!;
-        for (int i = 0; i < oldReminder.days.length; i++) {
-          if (oldReminder.days[i]) {
-            notificationService.flutterLocalNotificationsPlugin.cancel(oldReminder.id.hashCode + i);
-          }
-        }
+        await notificationService.cancelNotification(widget.reminder!.id.hashCode);
       }
 
       final reminderId = isEditing ? widget.reminder!.id : const Uuid().v4();
@@ -174,24 +158,16 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
 
       // Schedule new notifications if active
       if (reminder.isActive) {
-        final scheduledDate = _nextInstanceOfTime(_selectedTime.hour, _selectedTime.minute);
-        for (int i = 0; i < _selectedDays.length; i++) {
-          if (_selectedDays[i]) {
-            // The notification service will match the time component daily.
-            // We schedule it for the next upcoming time.
-            await notificationService.scheduleDailyNotification(
-              id: reminder.id.hashCode + i,
-              title: 'Recordatorio de Hábito',
-              body: title,
-              scheduledDate: scheduledDate,
-            );
-          }
-        }
+        await notificationService.scheduleDailyNotification(
+            reminder.id.hashCode, reminder.title, 'Es hora de tu hábito diario.', _selectedTime);
       }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(isEditing ? 'Recordatorio actualizado' : 'Recordatorio guardado')),
+          SnackBar(
+              content: Text(isEditing
+                  ? 'Recordatorio actualizado'
+                  : 'Recordatorio guardado')),
         );
         Navigator.pop(context);
       }
@@ -222,7 +198,8 @@ class _DayButton extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: isSelected ? colorScheme.primary : colorScheme.surfaceVariant.withAlpha(100),
+          color:
+              isSelected ? colorScheme.primary : colorScheme.surfaceContainerHighest.withAlpha(100),
           borderRadius: BorderRadius.circular(12),
           boxShadow: isSelected
               ? [
@@ -238,7 +215,9 @@ class _DayButton extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+              color: isSelected
+                  ? colorScheme.onPrimary
+                  : colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.bold,
             ),
           ),
