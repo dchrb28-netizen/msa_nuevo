@@ -6,8 +6,6 @@ import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/achievements/goals_screen.dart';
 import 'package:myapp/screens/achievements/rewards_screen.dart';
 import 'package:myapp/screens/habits/habits_screen.dart';
-import 'package:myapp/screens/habits/intermittent_fasting_screen.dart';
-import 'package:myapp/screens/habits/reminders_screen.dart';
 import 'package:myapp/screens/logs_screen.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
@@ -73,7 +71,12 @@ class DrawerMenu extends StatelessWidget {
                     CircleAvatar(
                       radius: 30,
                       backgroundColor: headerTextColor,
-                      child: Icon(Icons.person, size: 40, color: themeProvider.seedColor),
+                      backgroundImage: user?.profileImageBytes != null
+                          ? MemoryImage(user!.profileImageBytes!)
+                          : null,
+                      child: user?.profileImageBytes == null
+                          ? Icon(Icons.person, size: 40, color: themeProvider.seedColor)
+                          : null,
                     ),
                     const SizedBox(width: 16),
                     Expanded(

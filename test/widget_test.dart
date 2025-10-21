@@ -12,7 +12,7 @@ import 'package:myapp/screens/welcome_screen.dart';
 void main() {
   testWidgets('Welcome screen smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const MyApp(profileExists: false));
 
     // Verify that the WelcomeScreen is displayed.
     expect(find.byType(WelcomeScreen), findsOneWidget);

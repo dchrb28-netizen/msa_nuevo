@@ -107,7 +107,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       userProvider.setUser(updatedUser);
 
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('onboarding_completed', true);
+      await prefs.setBool('profile_exists', true);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -126,12 +126,12 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   void _logout() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('onboarding_completed', false);
+    await prefs.setBool('profile_exists', false);
 
     if (!mounted) return;
     Provider.of<UserProvider>(context, listen: false).logout();
 
-    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+    Navigator.of(context).pushNamedAndRemoveUntil('/welcome', (route) => false);
   }
 
   @override

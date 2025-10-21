@@ -23,7 +23,7 @@ class LogsScreen extends StatelessWidget {
           bottom: TabBar(
             indicatorColor: tabColor,
             labelColor: tabColor,
-            unselectedLabelColor: tabColor.withOpacity(0.7),
+            unselectedLabelColor: tabColor.withAlpha((255 * 0.7).round()),
             tabs: const [
               Tab(icon: Icon(Icons.local_drink), text: 'Agua'),
               Tab(icon: Icon(Icons.fastfood), text: 'Comida'),

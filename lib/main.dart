@@ -21,6 +21,7 @@ import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/welcome_screen.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:url_strategy/url_strategy.dart';
 
@@ -82,6 +83,9 @@ void main() async {
   await Hive.openBox<Reminder>('reminders'); // Open the new box
 
   await _populateInitialFoodData();
+  
+  final prefs = await SharedPreferences.getInstance();
+  final bool profileExists = prefs.getBool('profile_exists') ?? false;
 
   runApp(
     MultiProvider(
@@ -89,7 +93,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
       ],
-      child: const MyApp(),
+      child: MyApp(profileExists: profileExists),
     ),
   );
 }
@@ -117,12 +121,11 @@ Future<void> _populateInitialFoodData() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool profileExists;
+  const MyApp({super.key, required this.profileExists});
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         final textTheme = GoogleFonts.montserratTextTheme(
@@ -228,9 +231,9 @@ class MyApp extends StatelessWidget {
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: themeProvider.themeMode,
-          initialRoute: userProvider.user != null ? '/' : '/welcome',
+          initialRoute: profileExists ? '/' : '/welcome',
           routes: {
-            '/': (context) => const MainScreen(), // Removed const
+            '/': (context) => const MainScreen(),
             '/welcome': (context) => const WelcomeScreen(),
             '/profile': (context) => const ProfileScreen(),
           },

@@ -48,7 +48,7 @@ class _RecipesScreenState extends State<RecipesScreen> with SingleTickerProvider
           controller: _tabController,
           indicatorColor: tabColor,
           labelColor: tabColor,
-          unselectedLabelColor: tabColor.withOpacity(0.7),
+          unselectedLabelColor: tabColor.withAlpha((255 * 0.7).round()),
           tabs: const [
             Tab(icon: Icon(Icons.search), text: 'Buscar'),
             Tab(icon: Icon(Icons.favorite), text: 'Favoritas'),
@@ -501,7 +501,7 @@ class _FavoriteRecipesTabState extends State<FavoriteRecipesTab> with SingleTick
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     // Use the primary color from the theme for a consistent look
-    final tabBackgroundColor = themeProvider.seedColor.withOpacity(isDarkMode ? 0.3 : 0.1);
+    final tabBackgroundColor = themeProvider.seedColor.withAlpha(isDarkMode ? 77 : 26);
     final tabLabelColor = Theme.of(context).colorScheme.onSurface;
 
     return Scaffold(
@@ -513,7 +513,7 @@ class _FavoriteRecipesTabState extends State<FavoriteRecipesTab> with SingleTick
             controller: _innerTabController,
             indicatorColor: themeProvider.seedColor,
             labelColor: tabLabelColor, // Use a readable color on the surface
-            unselectedLabelColor: tabLabelColor.withOpacity(0.7),
+            unselectedLabelColor: tabLabelColor.withAlpha((255 * 0.7).round()),
             tabs: const [
               Tab(icon: Icon(Icons.public), text: 'De la Web'),
               Tab(icon: Icon(Icons.my_library_books), text: 'Creadas'),
