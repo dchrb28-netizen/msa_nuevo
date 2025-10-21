@@ -17,19 +17,21 @@ class UserRecipeAdapter extends TypeAdapter<UserRecipe> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UserRecipe(
-      id: fields[0] as String,
       title: fields[1] as String,
-      description: fields[2] as String,
-      imagePath: fields[3] as String?,
-      ingredients: (fields[4] as List).cast<String>(),
-      steps: (fields[5] as List).cast<String>(),
-    );
+      description: fields[2] as String?,
+      ingredients: (fields[3] as List).cast<String>(),
+      instructions: (fields[4] as List).cast<String>(),
+      imageBytes: fields[5] as Uint8List?,
+      category: fields[6] as String?,
+      cookingTime: fields[7] as int?,
+      servings: fields[8] as int?,
+    )..id = fields[0] as String;
   }
 
   @override
   void write(BinaryWriter writer, UserRecipe obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -37,11 +39,17 @@ class UserRecipeAdapter extends TypeAdapter<UserRecipe> {
       ..writeByte(2)
       ..write(obj.description)
       ..writeByte(3)
-      ..write(obj.imagePath)
-      ..writeByte(4)
       ..write(obj.ingredients)
+      ..writeByte(4)
+      ..write(obj.instructions)
       ..writeByte(5)
-      ..write(obj.steps);
+      ..write(obj.imageBytes)
+      ..writeByte(6)
+      ..write(obj.category)
+      ..writeByte(7)
+      ..write(obj.cookingTime)
+      ..writeByte(8)
+      ..write(obj.servings);
   }
 
   @override

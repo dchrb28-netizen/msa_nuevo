@@ -1,9 +1,8 @@
-import 'dart:io';
+
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myapp/providers/user_provider.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -22,7 +21,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _weightController;
   String? _selectedGender;
   String? _activityLevel;
-  String? _profileImagePath;
+  Uint8List? _profileImageBytes;
 
   final Map<String, String> _genderOptions = {
     'male': 'Masculino',
@@ -49,7 +48,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _weightController = TextEditingController(text: user.weight > 0 ? user.weight.toString() : '');
     _selectedGender = user.gender;
     _activityLevel = user.activityLevel;
-    _profileImagePath = user.profileImagePath;
+    _profileImageBytes = user.profileImageBytes;
   }
 
   @override
@@ -66,11 +65,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
 
     if (image != null) {
-      final Directory appDir = await getApplicationDocumentsDirectory();
-      final String fileName = path.basename(image.path);
-      final File newImage = await File(image.path).copy('${appDir.path}/$fileName');
+      final bytes = await image.readAsBytes();
       setState(() {
-        _profileImagePath = newImage.path;
+        _profileImageBytes = bytes;
       });
     }
   }
@@ -87,7 +84,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         height: double.tryParse(_heightController.text) ?? oldUser.height,
         weight: double.tryParse(_weightController.text) ?? oldUser.weight,
         activityLevel: _activityLevel,
-        profileImagePath: _profileImagePath,
+        profileImageBytes: _profileImageBytes,
       );
 
       userProvider.updateUser(updatedUser);
@@ -197,10 +194,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         children: [
           CircleAvatar(
             radius: 80,
-            backgroundImage: _profileImagePath != null && _profileImagePath!.isNotEmpty
-                ? FileImage(File(_profileImagePath!))
+            backgroundImage: _profileImageBytes != null
+                ? MemoryImage(_profileImageBytes!)
                 : null,
-            child: _profileImagePath == null || _profileImagePath!.isEmpty
+            child: _profileImageBytes == null
                 ? const Icon(Icons.person, size: 80)
                 : null,
           ),

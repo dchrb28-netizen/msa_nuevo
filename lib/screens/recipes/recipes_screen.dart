@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:myapp/models/user_recipe.dart';
 import 'package:myapp/screens/recipes/add_recipe_screen.dart';
 import 'package:myapp/services/recipe_service.dart';
 import 'package:myapp/models/recipe.dart';
@@ -71,7 +72,6 @@ class SearchRecipesTab extends StatefulWidget {
 class _SearchRecipesTabState extends State<SearchRecipesTab> {
   final RecipeService _recipeService = RecipeService();
   final TextEditingController _searchController = TextEditingController();
-  late Box<Recipe> _favoritesBox;
 
   List<Recipe> _recipes = [];
   bool _isLoading = false;
@@ -94,11 +94,6 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
   ];
   int? _selectedCategoryIndex;
 
-  @override
-  void initState() {
-    super.initState();
-    _favoritesBox = Hive.box<Recipe>('favorite_recipes');
-  }
 
   void _searchRecipes(String query) async {
     String finalQuery = query.trim();
@@ -246,24 +241,16 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
     );
   }
 
-  void _toggleFavorite(Recipe recipe) {
-    if (_favoritesBox.containsKey(recipe.link)) {
-      _favoritesBox.delete(recipe.link);
-    } else {
-      _favoritesBox.put(recipe.link, recipe);
-    }
-  }
-
   Widget _buildSearchPanel() {
     return Container(
       margin: const EdgeInsets.all(12.0),
       padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+        color: Theme.of(context).colorScheme.surface.withAlpha(128),
         borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(13),
             blurRadius: 10,
             offset: const Offset(0, 4),
           )
@@ -327,16 +314,11 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
                         ),
                       ),
                     )
-                  : ValueListenableBuilder(
-                      valueListenable: _favoritesBox.listenable(),
-                      builder: (context, Box<Recipe> box, _) {
-                        return ListView.builder(
+                  : ListView.builder(
                           padding: const EdgeInsets.only(top: 0),
                           itemCount: _recipes.length,
                           itemBuilder: (context, index) {
                             final recipe = _recipes[index];
-                            final isFavorite = box.containsKey(recipe.link);
-
                             return Card(
                               margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               elevation: 4,
@@ -349,42 +331,29 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Stack(
-                                      alignment: Alignment.topRight,
-                                      children: [
-                                        if (recipe.imageUrl != null)
-                                          Image.network(
-                                            recipe.imageUrl!,
+                                    if (recipe.imageUrl != null)
+                                      Image.network(
+                                        recipe.imageUrl!,
+                                        width: double.infinity,
+                                        height: 180,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            height: 180,
                                             width: double.infinity,
-                                            height: 180,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) {
-                                              return Container(
-                                                height: 180,
-                                                width: double.infinity,
-                                                color: Colors.grey[300],
-                                                child: const Icon(Icons.restaurant_menu, color: Colors.grey, size: 50),
-                                              );
-                                            },
-                                          )
-                                        else
-                                          Container(
-                                            height: 180,
                                             color: Colors.grey[300],
-                                            child: const Center(
-                                              child: Icon(Icons.restaurant_menu, size: 50, color: Colors.grey),
-                                            ),
-                                          ),
-                                        IconButton(
-                                          icon: Icon(
-                                            isFavorite ? Icons.favorite : Icons.favorite_border,
-                                            color: isFavorite ? Colors.red : Colors.white,
-                                            size: 30,
-                                          ),
-                                          onPressed: () => _toggleFavorite(recipe),
+                                            child: const Icon(Icons.restaurant_menu, color: Colors.grey, size: 50),
+                                          );
+                                        },
+                                      )
+                                    else
+                                      Container(
+                                        height: 180,
+                                        color: Colors.grey[300],
+                                        child: const Center(
+                                          child: Icon(Icons.restaurant_menu, size: 50, color: Colors.grey),
                                         ),
-                                      ],
-                                    ),
+                                      ),
                                     Padding(
                                       padding: const EdgeInsets.all(16.0),
                                       child: Column(
@@ -413,9 +382,7 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
                               ),
                             );
                           },
-                        );
-                      },
-                    ),
+                        ),
         ),
       ],
     );
@@ -444,8 +411,8 @@ class _CategoryButton extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12.0),
-        splashColor: colorScheme.primary.withOpacity(0.2),
-        highlightColor: colorScheme.primary.withOpacity(0.1),
+        splashColor: colorScheme.primary.withAlpha(51),
+        highlightColor: colorScheme.primary.withAlpha(26),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
@@ -460,7 +427,7 @@ class _CategoryButton extends StatelessWidget {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: colorScheme.primary.withOpacity(0.3),
+                      color: colorScheme.primary.withAlpha(77),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     )
@@ -487,8 +454,6 @@ class _CategoryButton extends StatelessWidget {
   }
 }
 
-
-
 class FavoriteRecipesTab extends StatefulWidget {
   const FavoriteRecipesTab({super.key});
 
@@ -498,11 +463,19 @@ class FavoriteRecipesTab extends StatefulWidget {
 
 class _FavoriteRecipesTabState extends State<FavoriteRecipesTab> with SingleTickerProviderStateMixin {
   late TabController _innerTabController;
+  int _currentTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _innerTabController = TabController(length: 2, vsync: this);
+    _innerTabController.addListener(() {
+      if (_innerTabController.index != _currentTabIndex) {
+        setState(() {
+          _currentTabIndex = _innerTabController.index;
+        });
+      }
+    });
   }
 
   @override
@@ -531,12 +504,14 @@ class _FavoriteRecipesTabState extends State<FavoriteRecipesTab> with SingleTick
           CreatedRecipesTab(),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddRecipeScreen()));
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _currentTabIndex == 1
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const AddRecipeScreen()));
+              },
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 }
@@ -556,7 +531,7 @@ class WebFavoritesTab extends StatelessWidget {
         if (favoriteRecipes.isEmpty) {
           return const Center(
             child: Text(
-              'Aún no tienes recetas favoritas.\n¡Anímate a guardar una!',
+              'Aún no tienes recetas favoritas de la web.\n¡Anímate a guardar una!',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),
@@ -669,13 +644,84 @@ class CreatedRecipesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Implement the list of created recipes
-    return const Center(
-      child: Text(
-        'Aquí verás las recetas que has creado.\n¡Usa el botón + para añadir una!',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 18, color: Colors.grey),
-      ),
+    final userRecipesBox = Hive.box<UserRecipe>('user_recipes');
+
+    return ValueListenableBuilder(
+      valueListenable: userRecipesBox.listenable(),
+      builder: (context, Box<UserRecipe> box, _) {
+        final userRecipes = box.values.toList().cast<UserRecipe>();
+
+        if (userRecipes.isEmpty) {
+          return const Center(
+            child: Text(
+              'Aún no has creado ninguna receta.\n¡Usa el botón + para añadir una!',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+          );
+        }
+
+        return ListView.builder(
+          itemCount: userRecipes.length,
+          itemBuilder: (context, index) {
+            final recipe = userRecipes[index];
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (recipe.imageBytes != null)
+                      Image.memory(
+                        recipe.imageBytes!,
+                        width: double.infinity,
+                        height: 180,
+                        fit: BoxFit.cover,
+                      )
+                    else
+                      Container(
+                        height: 180,
+                        color: Colors.grey[300],
+                        child: const Center(
+                          child: Icon(Icons.restaurant_menu, size: 50, color: Colors.grey),
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            recipe.title,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (recipe.description != null && recipe.description!.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top:8.0),
+                            child: Text(
+                              recipe.description!,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+            );
+          },
+        );
+      },
     );
   }
 }

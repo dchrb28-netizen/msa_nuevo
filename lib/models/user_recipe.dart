@@ -1,5 +1,7 @@
 
+import 'dart:typed_data';
 import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 
 part 'user_recipe.g.dart';
 
@@ -9,26 +11,39 @@ class UserRecipe extends HiveObject {
   late String id;
 
   @HiveField(1)
-  late String title;
+  final String title;
 
   @HiveField(2)
-  late String description;
+  final String? description;
 
   @HiveField(3)
-  late String? imagePath;
+  final List<String> ingredients;
 
   @HiveField(4)
-  late List<String> ingredients;
+  final List<String> instructions;
 
   @HiveField(5)
-  late List<String> steps;
+  final Uint8List? imageBytes; 
+  
+  @HiveField(6)
+  final String? category;
+
+  @HiveField(7)
+  final int? cookingTime; // in minutes
+
+  @HiveField(8)
+  final int? servings;
 
   UserRecipe({
-    required this.id,
     required this.title,
-    required this.description,
-    this.imagePath,
+    this.description,
     required this.ingredients,
-    required this.steps,
-  });
+    required this.instructions,
+    this.imageBytes,
+    this.category,
+    this.cookingTime,
+    this.servings,
+  }) {
+    id = const Uuid().v4();
+  }
 }

@@ -23,7 +23,7 @@ class UserAdapter extends TypeAdapter<User> {
       age: fields[3] as int,
       height: fields[4] as double,
       weight: fields[5] as double,
-      profileImagePath: fields[6] as String?,
+      profileImageBytes: fields[6] as Uint8List?,
       isGuest: fields[7] as bool,
       activityLevel: fields[8] as String,
       calorieGoal: fields[9] as double?,
@@ -52,7 +52,7 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(5)
       ..write(obj.weight)
       ..writeByte(6)
-      ..write(obj.profileImagePath)
+      ..write(obj.profileImageBytes)
       ..writeByte(7)
       ..write(obj.isGuest)
       ..writeByte(8)

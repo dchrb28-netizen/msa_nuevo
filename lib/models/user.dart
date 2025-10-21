@@ -1,3 +1,5 @@
+
+import 'dart:typed_data';
 import 'package:hive/hive.dart';
 
 part 'user.g.dart';
@@ -23,7 +25,7 @@ class User extends HiveObject {
   double weight;
 
   @HiveField(6)
-  String? profileImagePath;
+  Uint8List? profileImageBytes; // Changed from String? profileImagePath
 
   @HiveField(7)
   bool isGuest;
@@ -56,7 +58,7 @@ class User extends HiveObject {
     required this.age,
     required this.height,
     required this.weight,
-    this.profileImagePath,
+    this.profileImageBytes, // Changed from profileImagePath
     this.isGuest = false,
     this.activityLevel = 'Sedentaria',
     this.calorieGoal,
@@ -74,7 +76,7 @@ class User extends HiveObject {
     int? age,
     double? height,
     double? weight,
-    String? profileImagePath,
+    Uint8List? profileImageBytes, // Changed from profileImagePath
     bool? isGuest,
     String? activityLevel,
     double? calorieGoal,
@@ -91,7 +93,7 @@ class User extends HiveObject {
       age: age ?? this.age,
       height: height ?? this.height,
       weight: weight ?? this.weight,
-      profileImagePath: profileImagePath ?? this.profileImagePath,
+      profileImageBytes: profileImageBytes ?? this.profileImageBytes, // Changed from profileImagePath
       isGuest: isGuest ?? this.isGuest,
       activityLevel: activityLevel ?? this.activityLevel,
       calorieGoal: calorieGoal ?? this.calorieGoal,

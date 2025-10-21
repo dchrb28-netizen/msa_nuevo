@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,6 +11,7 @@ import 'package:myapp/models/food_log.dart';
 import 'package:myapp/models/meal_type.dart';
 import 'package:myapp/models/recipe.dart';
 import 'package:myapp/models/user.dart';
+import 'package:myapp/models/user_recipe.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
@@ -54,6 +56,9 @@ void main() async {
   if (!Hive.isAdapterRegistered(RecipeAdapter().typeId)) {
     Hive.registerAdapter(RecipeAdapter());
   }
+  if (!Hive.isAdapterRegistered(UserRecipeAdapter().typeId)) {
+    Hive.registerAdapter(UserRecipeAdapter());
+  }
 
   // Open boxes
   await Hive.openBox<Food>('foods');
@@ -64,6 +69,7 @@ void main() async {
   await Hive.openBox<DailyMealPlan>('daily_meal_plans');
   await Hive.openBox('settings');
   await Hive.openBox<Recipe>('favorite_recipes');
+  await Hive.openBox<UserRecipe>('user_recipes');
 
 
   await _populateInitialFoodData();

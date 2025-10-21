@@ -1,14 +1,13 @@
-import 'dart:io';
+
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/widgets/ui/screen_background.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path/path.dart' as path;
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -29,7 +28,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _weightController;
   String? _selectedGender;
   String? _activityLevel;
-  String? _profileImagePath;
+  Uint8List? _profileImageBytes;
 
   final Map<String, String> _genderOptions = {
     'male': 'Masculino',
@@ -54,7 +53,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     _ageController = TextEditingController(text: user?.age.toString() ?? '0');
     _heightController = TextEditingController(text: user?.height.toString() ?? '0');
     _weightController = TextEditingController(text: user?.weight.toString() ?? '0');
-    _profileImagePath = user?.profileImagePath;
+    _profileImageBytes = user?.profileImageBytes;
 
     _selectedGender = user?.gender ?? _genderOptions.keys.first;
     _activityLevel = user?.activityLevel ?? _activityLevelOptions.keys.first;
@@ -81,12 +80,9 @@ class ProfileScreenState extends State<ProfileScreen> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
 
     if (image != null) {
-      final Directory appDir = await getApplicationDocumentsDirectory();
-      final String fileName = path.basename(image.path);
-      final File newImage = await File(image.path).copy('${appDir.path}/$fileName');
-
+      final bytes = await image.readAsBytes();
       setState(() {
-        _profileImagePath = newImage.path;
+        _profileImageBytes = bytes;
       });
     }
   }
@@ -104,7 +100,7 @@ class ProfileScreenState extends State<ProfileScreen> {
         height: double.tryParse(_heightController.text) ?? 0,
         weight: double.tryParse(_weightController.text) ?? 0,
         activityLevel: _activityLevel!,
-        profileImagePath: _profileImagePath,
+        profileImageBytes: _profileImageBytes,
         isGuest: false,
       );
 
@@ -244,8 +240,8 @@ class ProfileScreenState extends State<ProfileScreen> {
               CircleAvatar(
                 radius: 100,
                 backgroundColor: Theme.of(context).colorScheme.surface.withAlpha((255 * 0.8).round()),
-                backgroundImage: _profileImagePath != null ? FileImage(File(_profileImagePath!)) : null,
-                child: _profileImagePath == null
+                backgroundImage: _profileImageBytes != null ? MemoryImage(_profileImageBytes!) : null,
+                child: _profileImageBytes == null
                     ? Icon(Icons.person, size: 100, color: Theme.of(context).colorScheme.primary)
                     : null,
               ),
