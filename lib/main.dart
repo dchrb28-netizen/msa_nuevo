@@ -205,14 +205,25 @@ class MyApp extends StatelessWidget {
               const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
         );
 
-        final lightColorScheme = ColorScheme.fromSeed(
+        // Generate the base color scheme from the seed color
+        var lightColorScheme = ColorScheme.fromSeed(
           seedColor: themeProvider.seedColor,
           brightness: Brightness.light,
         );
 
-        final darkColorScheme = ColorScheme.fromSeed(
+        // Force the primary color to be the vibrant seed color
+        lightColorScheme = lightColorScheme.copyWith(
+          primary: themeProvider.seedColor,
+        );
+
+        var darkColorScheme = ColorScheme.fromSeed(
           seedColor: themeProvider.seedColor,
           brightness: Brightness.dark,
+        );
+
+        // Force the primary color to be the vibrant seed color
+        darkColorScheme = darkColorScheme.copyWith(
+          primary: themeProvider.seedColor,
         );
 
         // Function to determine text color based on background brightness
@@ -223,8 +234,8 @@ class MyApp extends StatelessWidget {
               : Colors.black;
         }
 
-        final appBarTextColor =
-            textColorForBackground(themeProvider.seedColor);
+        final lightAppBarTextColor = textColorForBackground(lightColorScheme.primary);
+        final darkAppBarTextColor = textColorForBackground(darkColorScheme.primary);
 
         final lightTheme = ThemeData(
           useMaterial3: true,
@@ -232,23 +243,33 @@ class MyApp extends StatelessWidget {
           textTheme: textTheme,
           scaffoldBackgroundColor: lightColorScheme.surface,
           appBarTheme: AppBarTheme(
-            backgroundColor: themeProvider.seedColor,
-            foregroundColor: appBarTextColor,
+            backgroundColor: lightColorScheme.primary, // Use scheme's primary color
+            foregroundColor: lightAppBarTextColor,
             elevation: 2,
             titleTextStyle:
-                textTheme.headlineSmall?.copyWith(color: appBarTextColor),
+                textTheme.headlineSmall?.copyWith(color: lightAppBarTextColor),
           ),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
-            selectedItemColor: themeProvider.seedColor,
+            selectedItemColor: lightColorScheme.primary, // Use scheme's primary color
             unselectedItemColor: Colors.grey,
             type: BottomNavigationBarType.fixed,
             showUnselectedLabels: true,
           ),
           tabBarTheme: TabBarThemeData(
-            labelColor: appBarTextColor,
+            labelColor: lightAppBarTextColor,
             unselectedLabelColor:
-                appBarTextColor.withAlpha((255 * 0.7).round()),
-            indicatorColor: appBarTextColor,
+                lightAppBarTextColor.withAlpha((255 * 0.7).round()),
+            indicatorColor: lightAppBarTextColor,
+          ),
+           elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: lightColorScheme.primary,
+              foregroundColor: lightColorScheme.onPrimary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
           ),
         );
 
@@ -258,24 +279,34 @@ class MyApp extends StatelessWidget {
           textTheme: textTheme,
           scaffoldBackgroundColor: darkColorScheme.surface,
           appBarTheme: AppBarTheme(
-            backgroundColor: themeProvider.seedColor,
-            foregroundColor: appBarTextColor,
+            backgroundColor: darkColorScheme.primary, // Use scheme's primary color
+            foregroundColor: darkAppBarTextColor,
             elevation: 2,
             titleTextStyle:
-                textTheme.headlineSmall?.copyWith(color: appBarTextColor),
+                textTheme.headlineSmall?.copyWith(color: darkAppBarTextColor),
           ),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: darkColorScheme.surface,
-            selectedItemColor: themeProvider.seedColor,
+            selectedItemColor: darkColorScheme.primary, // Use scheme's primary color
             unselectedItemColor: Colors.grey[400],
             type: BottomNavigationBarType.fixed,
             showUnselectedLabels: true,
           ),
           tabBarTheme: TabBarThemeData(
-            labelColor: appBarTextColor,
+            labelColor: darkAppBarTextColor,
             unselectedLabelColor:
-                appBarTextColor.withAlpha((255 * 0.7).round()),
-            indicatorColor: appBarTextColor,
+                darkAppBarTextColor.withAlpha((255 * 0.7).round()),
+            indicatorColor: darkAppBarTextColor,
+          ),
+           elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: darkColorScheme.primary,
+              foregroundColor: darkColorScheme.onPrimary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
           ),
         );
 

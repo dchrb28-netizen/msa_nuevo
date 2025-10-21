@@ -1,13 +1,116 @@
+import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/fasting_log.dart';
 import 'package:myapp/models/fasting_phase.dart';
+import 'package:myapp/models/fasting_plan.dart';
 import 'package:myapp/providers/fasting_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:timeline_tile/timeline_tile.dart';
 
-class IntermittentFastingScreen extends StatelessWidget {
+
+class IntermittentFastingScreen extends StatefulWidget {
   const IntermittentFastingScreen({super.key});
+
+  @override
+  State<IntermittentFastingScreen> createState() =>
+      _IntermittentFastingScreenState();
+}
+
+class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
+  late ScrollController _scrollController;
+  FastingPhase? _lastScrolledPhase;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final provider = Provider.of<FastingProvider>(context);
+    if (provider.isFasting && provider.currentPhase != _lastScrolledPhase) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToCurrentPhase(provider);
+      });
+      _lastScrolledPhase = provider.currentPhase;
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+
+  void _scrollToCurrentPhase(FastingProvider provider) {
+    if (provider.currentPhase == null || !_scrollController.hasClients) return;
+
+    final currentPhaseIndex = FastingPhase.phases.indexWhere(
+      (p) => p.name == provider.currentPhase!.name,
+    );
+
+    if (currentPhaseIndex != -1) {
+      const itemWidth = 120.0; // Approximate width of a timeline item
+      final screenWidth = MediaQuery.of(context).size.width;
+      final scrollPosition =
+          (itemWidth * currentPhaseIndex) - (screenWidth / 2) + (itemWidth / 2);
+
+      _scrollController.animateTo(
+        scrollPosition.clamp(
+          0.0,
+          _scrollController.position.maxScrollExtent,
+        ),
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+
+  Future<void> _showPhaseInfoDialog(
+      BuildContext context, FastingPhase phase, ThemeData theme) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          title: Row(
+            children: [
+              Icon(phase.icon, color: theme.colorScheme.primary, size: 28),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  phase.name,
+                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Text(
+              phase.description,
+              style: theme.textTheme.bodyLarge,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cerrar'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Future<void> _showEditDialog(
       BuildContext context, FastingLog log, FastingProvider provider) async {
@@ -29,6 +132,7 @@ class IntermittentFastingScreen extends StatelessWidget {
                         'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(editedStartTime)}'),
                     trailing: const Icon(Icons.edit_calendar),
                     onTap: () async {
+                      if (!context.mounted) return;
                       final date = await showDatePicker(
                         context: context,
                         initialDate: editedStartTime,
@@ -37,6 +141,7 @@ class IntermittentFastingScreen extends StatelessWidget {
                       );
                       if (date == null) return;
 
+                      if (!context.mounted) return;
                       final time = await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay.fromDateTime(editedStartTime),
@@ -54,6 +159,7 @@ class IntermittentFastingScreen extends StatelessWidget {
                         'Fin:      ${DateFormat('dd/MM/yy HH:mm').format(editedEndTime)}'),
                     trailing: const Icon(Icons.edit_calendar),
                     onTap: () async {
+                      if (!context.mounted) return;
                       final date = await showDatePicker(
                         context: context,
                         initialDate: editedEndTime,
@@ -62,6 +168,7 @@ class IntermittentFastingScreen extends StatelessWidget {
                       );
                       if (date == null) return;
 
+                      if (!context.mounted) return;
                       final time = await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay.fromDateTime(editedEndTime),
@@ -86,7 +193,7 @@ class IntermittentFastingScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 if (editedEndTime.isBefore(editedStartTime)) {
-                   if (dialogContext.mounted) {
+                  if (dialogContext.mounted) {
                     ScaffoldMessenger.of(dialogContext).showSnackBar(
                       const SnackBar(
                         content: Text(
@@ -115,7 +222,8 @@ class IntermittentFastingScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _showStopFastingDialog(BuildContext context, FastingProvider provider) async {
+  Future<void> _showStopFastingDialog(
+      BuildContext context, FastingProvider provider) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -136,7 +244,7 @@ class IntermittentFastingScreen extends StatelessWidget {
                 Navigator.of(dialogContext).pop();
               },
             ),
-            TextButton(
+            ElevatedButton(
               child: const Text('Finalizar'),
               onPressed: () {
                 provider.stopFasting();
@@ -148,7 +256,6 @@ class IntermittentFastingScreen extends StatelessWidget {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -204,11 +311,54 @@ class IntermittentFastingScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
+          _buildPlanSelector(theme, fastingProvider),
+          const SizedBox(height: 24),
           _buildCircularTimer(theme, fastingProvider, context),
           const SizedBox(height: 24),
           const Divider(),
-          _buildFastingPhases(fastingProvider, theme),
+          const SizedBox(height: 16),
+          _buildFastingTimeline(fastingProvider, theme),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPlanSelector(ThemeData theme, FastingProvider provider) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: FastingPlan.defaultPlans.map((plan) {
+          final isSelected = provider.selectedPlan.name == plan.name;
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: ChoiceChip(
+              label: Text(plan.name),
+              selected: isSelected,
+              onSelected: provider.isFasting
+                  ? null
+                  : (selected) {
+                      if (selected) {
+                        provider.setPlan(plan);
+                      }
+                    },
+              selectedColor: theme.colorScheme.primary,
+              labelStyle: TextStyle(
+                color: isSelected
+                    ? theme.colorScheme.onPrimary
+                    : theme.textTheme.bodyLarge?.color,
+              ),
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                    color: isSelected
+                        ? theme.colorScheme.primary
+                        : Colors.grey.shade300),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -217,8 +367,8 @@ class IntermittentFastingScreen extends StatelessWidget {
       ThemeData theme, FastingProvider provider, BuildContext context) {
     final isFasting = provider.isFasting;
     final duration = provider.currentFast?.durationInSeconds ?? 0;
-    const goal = 16 * 3600; // 16 hours goal
-    final progress = (duration / goal).clamp(0.0, 1.0);
+    final goal = provider.goalInSeconds;
+    final progress = goal > 0 ? (duration / goal).clamp(0.0, 1.0) : 0.0;
 
     return SizedBox(
       width: 280,
@@ -230,22 +380,37 @@ class IntermittentFastingScreen extends StatelessWidget {
             value: progress,
             strokeWidth: 12,
             backgroundColor: theme.colorScheme.surfaceContainerHighest,
-            valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+            valueColor:
+                AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
           ),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  provider.formattedDuration,
-                  style: theme.textTheme.headlineLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
+                if (isFasting)
+                  Text(
+                    provider.formattedFastingDuration,
+                    style: theme.textTheme.headlineLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  )
+                else
+                  Text(
+                    provider.formattedFeedingWindowDuration,
+                    style: theme.textTheme.headlineLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
                 const SizedBox(height: 8),
-                Text(
-                  provider.currentPhase?.name ?? (isFasting ? 'Comenzando...' : 'En espera'),
-                  style: theme.textTheme.titleMedium,
-                ),
+                if (isFasting)
+                  Text(
+                    provider.currentPhase?.name ?? 'Comenzando...',
+                    style: theme.textTheme.titleMedium,
+                  )
+                else
+                  Text('Ventana de alimentación',
+                      style: theme.textTheme.titleMedium),
+                const SizedBox(height: 8),
+                Text('Objetivo: ${provider.selectedPlan.fastingHours} horas',
+                    style: theme.textTheme.titleSmall),
                 const SizedBox(height: 16),
                 if (isFasting)
                   ElevatedButton.icon(
@@ -259,14 +424,10 @@ class IntermittentFastingScreen extends StatelessWidget {
                   )
                 else
                   ElevatedButton.icon(
-                    onPressed: () => provider.startFasting(),
-                    icon: const Icon(Icons.play_arrow),
-                    label: const Text('Empezar'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
+                      onPressed: () => provider.startFasting(),
+                      icon: const Icon(Icons.play_arrow),
+                      label: const Text('Empezar'),
                     ),
-                  ),
               ],
             ),
           ),
@@ -312,13 +473,13 @@ class IntermittentFastingScreen extends StatelessWidget {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: const Text("Confirmar"),
-                  content:
-                      const Text("¿Estás seguro de que quieres eliminar este ayuno?"),
+                  content: const Text(
+                      "¿Estás seguro de que quieres eliminar este ayuno?"),
                   actions: <Widget>[
                     TextButton(
                         onPressed: () => Navigator.of(context).pop(false),
                         child: const Text("CANCELAR")),
-                    TextButton(
+                    ElevatedButton(
                         onPressed: () => Navigator.of(context).pop(true),
                         child: const Text("ELIMINAR")),
                   ],
@@ -328,7 +489,7 @@ class IntermittentFastingScreen extends StatelessWidget {
           },
           onDismissed: (direction) async {
             await provider.deleteFastingLog(log.id);
-             if (context.mounted) {
+            if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Ayuno eliminado')),
               );
@@ -348,8 +509,7 @@ class IntermittentFastingScreen extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text(
-                'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(log.startTime)}\n'
-                'Fin:      ${DateFormat('dd/MM/yy HH:mm').format(log.endTime!)}',
+                'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(log.startTime)}\nFin:      ${DateFormat('dd/MM/yy HH:mm').format(log.endTime!)}',
                 style: const TextStyle(fontSize: 12),
               ),
               trailing: IconButton(
@@ -360,6 +520,110 @@ class IntermittentFastingScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildFastingTimeline(FastingProvider provider, ThemeData theme) {
+    final currentDurationHours = (provider.currentFast?.durationInSeconds ?? 0) / 3600;
+    const phases = FastingPhase.phases;
+
+    return SizedBox(
+      height: 150,
+      child: ListView.builder(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: phases.length,
+        itemBuilder: (context, index) {
+          final phase = phases[index];
+          final isFirst = index == 0;
+          final isLast = index == phases.length - 1;
+
+          bool isCompleted = currentDurationHours >= phase.endHour;
+          bool isCurrent =
+              provider.currentPhase != null && provider.currentPhase == phase;
+          bool isFuture = currentDurationHours < phase.startHour;
+
+          Color lineColor = isCompleted
+              ? theme.colorScheme.primary
+              : Colors.grey.shade300;
+          Widget indicator;
+
+          if (isCompleted) {
+            indicator =
+                Icon(Icons.check_circle, color: theme.colorScheme.primary);
+          } else if (isCurrent) {
+            indicator = Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: theme.colorScheme.primary,
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.colorScheme.primary.withAlpha(128),
+                    blurRadius: 10.0,
+                    spreadRadius: 2.0,
+                  ),
+                ],
+              ),
+              child:
+                  Icon(phase.icon, color: theme.colorScheme.onPrimary, size: 20),
+            );
+          } else {
+            indicator = Icon(phase.icon, color: Colors.grey.shade400, size: 20);
+          }
+
+          return TimelineTile(
+            axis: TimelineAxis.horizontal,
+            alignment: TimelineAlign.center,
+            isFirst: isFirst,
+            isLast: isLast,
+            beforeLineStyle: LineStyle(color: lineColor, thickness: 3),
+            afterLineStyle: LineStyle(
+                color: index < phases.length - 1 &&
+                        currentDurationHours >= phases[index + 1].startHour
+                    ? theme.colorScheme.primary
+                    : Colors.grey.shade300,
+                thickness: 3),
+            indicatorStyle: IndicatorStyle(
+              width: 35,
+              height: 35,
+              indicator: indicator,
+            ),
+            endChild: InkWell(
+              onTap: () => _showPhaseInfoDialog(context, phase, theme),
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 100, minHeight: 120),
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      phase.name,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight:
+                            isCurrent ? FontWeight.bold : FontWeight.normal,
+                        color: isFuture
+                            ? Colors.grey.shade500
+                            : (isCurrent
+                                ? theme.colorScheme.primary
+                                : theme.textTheme.bodyMedium?.color),
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${phase.startHour}h',
+                      style:
+                          TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -380,7 +644,8 @@ class IntermittentFastingScreen extends StatelessWidget {
                   icon: Icons.star_border,
                   title: 'Ayuno Más Largo',
                   value: longestFast != null
-                      ? provider.formatDuration(longestFast.endTime!.difference(longestFast.startTime))
+                      ? provider.formatDuration(
+                          longestFast.endTime!.difference(longestFast.startTime))
                       : 'N/A',
                 ),
               ),
@@ -412,7 +677,10 @@ class IntermittentFastingScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(ThemeData theme, {required IconData icon, required String title, required String value}) {
+  Widget _buildStatCard(ThemeData theme,
+      {required IconData icon,
+      required String title,
+      required String value}) {
     return Card(
       elevation: 2,
       child: Padding(
@@ -422,9 +690,17 @@ class IntermittentFastingScreen extends StatelessWidget {
           children: [
             Icon(icon, size: 32, color: theme.colorScheme.primary),
             const SizedBox(height: 8),
-            Text(title, style: theme.textTheme.titleMedium, textAlign: TextAlign.center,),
+            Text(
+              title,
+              style: theme.textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 4),
-            Text(value, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),),
+            Text(
+              value,
+              style: theme.textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
           ],
         ),
       ),
@@ -462,7 +738,8 @@ class IntermittentFastingScreen extends StatelessWidget {
             showTitles: true,
             reservedSize: 40,
             getTitlesWidget: (value, meta) {
-              return Text('${value.toInt()}h', style: const TextStyle(fontSize: 10));
+              return Text('${value.toInt()}h',
+                  style: const TextStyle(fontSize: 10));
             },
           ),
         ),
@@ -503,7 +780,8 @@ class IntermittentFastingScreen extends StatelessWidget {
           ),
         ),
         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles:
+            const AxisTitles(sideTitles: SideTitles(showTitles: false)),
       ),
       gridData: FlGridData(
         show: true,
@@ -521,61 +799,12 @@ class IntermittentFastingScreen extends StatelessWidget {
               toY: entry.value,
               color: theme.colorScheme.primary,
               width: 16,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(4)),
             ),
           ],
         );
       }).toList(),
-    );
-  }
-
-  Widget _buildFastingPhases(FastingProvider provider, ThemeData theme) {
-    final currentPhase = provider.currentPhase;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4.0, bottom: 8.0),
-          child: Text(
-            'Fases del Ayuno',
-            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-        ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: FastingPhase.phases.length,
-          itemBuilder: (context, index) {
-            final phase = FastingPhase.phases[index];
-            final isCurrent = phase.name == currentPhase?.name;
-
-            return Card(
-              elevation: isCurrent ? 4 : 1,
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              color: isCurrent
-                  ? theme.colorScheme.secondaryContainer.withAlpha(178)
-                  : theme.cardColor,
-              child: ListTile(
-                leading: Icon(
-                  phase.icon,
-                  color: isCurrent
-                      ? theme.colorScheme.primary
-                      : theme.iconTheme.color,
-                ),
-                title: Text(
-                  phase.name,
-                  style: TextStyle(
-                    fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-                    color: isCurrent ? theme.colorScheme.primary : null,
-                  ),
-                ),
-                subtitle: Text(phase.description),
-              ),
-            );
-          },
-        ),
-      ],
     );
   }
 }

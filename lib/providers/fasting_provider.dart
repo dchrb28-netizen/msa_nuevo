@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/fasting_log.dart';
 import 'package:myapp/models/fasting_phase.dart';
+import 'package:myapp/models/fasting_plan.dart';
 import 'package:myapp/services/notification_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 class FastingProvider with ChangeNotifier {
@@ -12,18 +14,54 @@ class FastingProvider with ChangeNotifier {
   Timer? _timer;
   FastingLog? _currentFast;
   FastingPhase? _previousPhase;
+  FastingPlan _selectedPlan = FastingPlan.defaultPlans.first;
+  Duration _feedingWindowDuration = Duration.zero;
 
   FastingLog? get currentFast => _currentFast;
   bool get isFasting => _currentFast != null && _currentFast!.endTime == null;
+  FastingPlan get selectedPlan => _selectedPlan;
+  int get goalInSeconds => _selectedPlan.fastingHours * 3600;
+  Duration get feedingWindowDuration => _feedingWindowDuration;
 
   FastingProvider() {
+    _loadPreferences();
     _loadCurrentFast();
+    _initializeTimer();
   }
+
+  void _initializeTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (isFasting) {
+        final newPhase = currentPhase;
+        if (_previousPhase?.name != newPhase?.name) {
+          if (newPhase != null) {
+            _notificationService.showNotification(0, '¡Nueva Fase Alcanzada!',
+                'Has entrado en la fase: ${newPhase.name}');
+            _previousPhase = newPhase;
+          }
+        }
+
+        if (_currentFast!.durationInSeconds >= goalInSeconds) {
+          _notificationService.showNotification(0, '¡Objetivo Cumplido!', 'Has alcanzado tu meta de ${_selectedPlan.fastingHours} horas. ¡Excelente!');
+          stopFasting(); 
+        }
+      } else {
+          _updateFeedingWindow();
+      }
+      notifyListeners();
+    });
+  }
+
 
   FastingPhase? get currentPhase {
     if (!isFasting) return null;
     final hours = _currentFast!.durationInSeconds / 3600;
-    return FastingPhase.phases.lastWhere((phase) => hours >= phase.startHour);
+    for (var i = FastingPhase.phases.length - 1; i >= 0; i--) {
+      if (hours >= FastingPhase.phases[i].startHour) {
+        return FastingPhase.phases[i];
+      }
+    }
+    return null;
   }
 
   List<FastingLog> get fastingHistory {
@@ -49,16 +87,45 @@ class FastingProvider with ChangeNotifier {
     return Duration(seconds: totalDuration.inSeconds ~/ fastingHistory.length);
   }
 
-
   void _loadCurrentFast() {
     try {
-      _currentFast =
-          _fastingBox.values.firstWhere((log) => log.endTime == null);
-      if (_currentFast != null) {
-        _startTimer();
-      }
+      _currentFast = _fastingBox.values.firstWhere((log) => log.endTime == null);
+       _previousPhase = currentPhase;
     } catch (e) {
       _currentFast = null;
+    }
+    notifyListeners();
+  }
+
+   void _updateFeedingWindow() {
+    if (fastingHistory.isNotEmpty) {
+      final lastFast = fastingHistory.first;
+      _feedingWindowDuration = DateTime.now().difference(lastFast.endTime!);
+    } else {
+      _feedingWindowDuration = Duration.zero;
+    }
+  }
+
+  Future<void> setPlan(FastingPlan newPlan) async {
+    _selectedPlan = newPlan;
+    await _savePreferences();
+    notifyListeners();
+  }
+
+  Future<void> _savePreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedPlan', _selectedPlan.name);
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final planName = prefs.getString('selectedPlan');
+    if (planName != null) {
+      try {
+        _selectedPlan = FastingPlan.defaultPlans.firstWhere((p) => p.name == planName);
+      } catch (e) {
+        _selectedPlan = FastingPlan.defaultPlans.first;
+      }
     }
     notifyListeners();
   }
@@ -73,9 +140,10 @@ class FastingProvider with ChangeNotifier {
     );
     _fastingBox.put(newFast.id, newFast);
     _currentFast = newFast;
+     _previousPhase = null;
+    _feedingWindowDuration = Duration.zero;
     _notificationService.showNotification(
         0, 'Ayuno Iniciado', '¡Tu ayuno ha comenzado! Buen trabajo.');
-    _startTimer();
     notifyListeners();
   }
 
@@ -86,54 +154,51 @@ class FastingProvider with ChangeNotifier {
     final duration = endTime.difference(_currentFast!.startTime);
 
     if (duration.inHours < 1) {
-      // If the fast is less than an hour, delete it.
       _fastingBox.delete(_currentFast!.id);
       _notificationService.showNotification(
           0, 'Ayuno Cancelado', 'El ayuno fue demasiado corto para ser registrado.');
     } else {
       _currentFast!.endTime = endTime;
       _currentFast!.save();
-       _notificationService.showNotification(0, '¡Ayuno Completado!', 'Has completado un ayuno de $formattedDuration. ¡Felicidades!');
+       final formatted = _formatDuration(duration);
+       _notificationService.showNotification(0, '¡Ayuno Completado!', 'Has completado un ayuno de $formatted. ¡Felicidades!');
     }
     
-    _timer?.cancel();
     _currentFast = null;
     _previousPhase = null; 
+    _updateFeedingWindow();
     notifyListeners();
   }
 
-  void _startTimer() {
-    _timer?.cancel(); // Cancel any existing timer
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!isFasting) {
-        timer.cancel();
-      } else {
-        final newPhase = currentPhase;
-        if (_previousPhase?.name != newPhase?.name) {
-          _notificationService.showNotification(0, '¡Nueva Fase Alcanzada!',
-              'Has entrado en la fase: ${newPhase?.name}');
-          _previousPhase = newPhase;
-        }
-        notifyListeners(); // Notify listeners every second to update UI
-      }
-    });
-  }
 
   Future<void> deleteFastingLog(String logId) async {
     await _fastingBox.delete(logId);
+    if (logId == fastingHistory.first.id) {
+       _updateFeedingWindow();
+    }
     notifyListeners();
   }
 
   Future<void> updateFastingLog(FastingLog updatedLog) async {
     await _fastingBox.put(updatedLog.id, updatedLog);
+     if (updatedLog.id == fastingHistory.first.id) {
+       _updateFeedingWindow();
+    }
     notifyListeners();
   }
 
-  String get formattedDuration {
-    if (_currentFast == null) return '00:00:00';
-    final duration = _currentFast!.endTime == null
-        ? Duration(seconds: _currentFast!.durationInSeconds)
-        : _currentFast!.endTime!.difference(_currentFast!.startTime);
+  String get formattedFastingDuration {
+    if (_currentFast == null || isFasting == false) return '00:00:00';
+    final duration = Duration(seconds: _currentFast!.durationInSeconds);
+    return _formatDuration(duration);
+  }
+
+  String get formattedFeedingWindowDuration {
+    if (isFasting || _feedingWindowDuration == Duration.zero) return '00:00:00';
+    return _formatDuration(_feedingWindowDuration);
+  }
+
+  String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final hours = twoDigits(duration.inHours);
     final minutes = twoDigits(duration.inMinutes.remainder(60));
