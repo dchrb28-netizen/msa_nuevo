@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 
 part 'reminder.g.dart';
 
-@HiveType(typeId: 10) // New unique typeId
+@HiveType(typeId: 12) // New unique typeId
 class Reminder extends HiveObject {
   @HiveField(0)
   String id;

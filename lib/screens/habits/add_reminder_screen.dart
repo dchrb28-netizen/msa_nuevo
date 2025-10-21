@@ -76,7 +76,6 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                 onTap: _pickTime,
               ),
               const SizedBox(height: 20),
-              const Text('Repetir en:'),
               _buildDaySelector(),
               const SizedBox(height: 40),
               ElevatedButton(
@@ -91,20 +90,34 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   }
 
   Widget _buildDaySelector() {
-    final days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(7, (index) {
-        return ChoiceChip(
-          label: Text(days[index]),
-          selected: _selectedDays[index],
-          onSelected: (selected) {
-            setState(() {
-              _selectedDays[index] = selected;
-            });
-          },
-        );
-      }),
+    final daysOfWeek = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Repetir en:',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8.0,
+          runSpacing: 8.0,
+          alignment: WrapAlignment.spaceEvenly,
+          children: List.generate(7, (index) {
+            return _DayButton(
+              label: daysOfWeek[index],
+              isSelected: _selectedDays[index],
+              onTap: () {
+                setState(() {
+                  _selectedDays[index] = !_selectedDays[index];
+                });
+              },
+            );
+          }),
+        ),
+      ],
     );
   }
 
@@ -183,5 +196,54 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         Navigator.pop(context);
       }
     }
+  }
+}
+
+class _DayButton extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _DayButton({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: isSelected ? colorScheme.primary : colorScheme.surfaceVariant.withAlpha(100),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: colorScheme.primary.withAlpha(100),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  )
+                ]
+              : [],
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'meal_entry.g.dart';
 
-@HiveType(typeId: 3) // New typeId for MealEntry
+@HiveType(typeId: 11) // New typeId for MealEntry
 class MealEntry extends HiveObject {
   @HiveField(0)
   final String id;
