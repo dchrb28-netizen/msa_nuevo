@@ -14,8 +14,8 @@ class WelcomeScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     final lunaImagePath = isDarkMode
-        ? 'assets/luna_png/luna_inicio_b.png'
-        : 'assets/luna_png/luna_inicio_w.png';
+        ? 'assets/luna_png/luna_splash_b.png'
+        : 'assets/luna_png/luna_splash_w.png';
 
     return Scaffold(
       backgroundColor: isDarkMode ? Colors.black : Colors.white,
