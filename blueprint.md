@@ -1,42 +1,57 @@
-# Plan de Desarrollo de la Aplicación de Salud y Fitness
+# Blueprint de la Aplicación de Salud y Bienestar
 
-## Visión General
+## Descripción General
 
-Esta aplicación está diseñada para ser un asistente integral de salud y fitness, permitiendo a los usuarios registrar sus comidas, planificar sus menús semanales, seguir sus rutinas de entrenamiento y monitorizar su progreso físico. La aplicación contará con una interfaz moderna, intuitiva y personalizable, con un fuerte enfoque en la experiencia de usuario y la accesibilidad.
+Esta es una aplicación de Flutter diseñada para el seguimiento de la salud y el bienestar. Permite a los usuarios registrar y visualizar su consumo de agua y alimentos, así como sus medidas corporales. La app cuenta con un diseño moderno, temas claro y oscuro, y una navegación intuitiva.
+
+## Estilo y Diseño
+
+- **Tema:** Material 3, con un esquema de color dinámico basado en un color semilla (`seedColor`).
+- **Tipografía:** Se utiliza el paquete `google_fonts` para una apariencia visual consistente y moderna.
+- **Componentes:**
+  - **`AppBar` principal:** Muestra el título de la pantalla actual y un menú de opciones.
+  - **`BottomNavigationBar`:** Permite la navegación entre las secciones principales: "Registros", "Favoritos" y "Ejercicios".
+  - **`TabBar` secundaria:** Utilizada en las secciones de "Registros" y "Favoritos" para navegar entre vistas como "Hoy" e "Historial", o "De la Web" y "Creadas". Estas barras de pestañas tienen un fondo de color distintivo e iconos para mejorar la usabilidad.
 
 ## Características Implementadas
 
-### Estilo y Diseño
+- **Tema Dinámico:**
+  - El tema de la aplicación (claro/oscuro) se gestiona con el paquete `provider`.
+  - El color principal de la app se puede cambiar dinámicamente, y todos los componentes se adaptan a él.
 
-*   **Tema Moderno y Personalizable**: Uso de `ColorScheme.fromSeed`, `google_fonts`, y componentes de Material 3 para una estética moderna y coherente.
-*   **Interfaz de Usuario Atractiva**: Diseño limpio, con tarjetas, iconografía clara y una buena organización visual.
+- **Navegación Principal (BottomNavigationBar):**
+  - **Registros:** Pantalla principal para el seguimiento de agua, comida y medidas.
+  - **Favoritos:** Sección para gestionar rutinas o alimentos preferidos.
+  - **Ejercicios:** Espacio dedicado al registro de actividad física.
 
-### Funcionalidades Clave
+- **Sección de Registros (`LogsScreen`):
+  - Contiene una `TabBar` para navegar entre las sub-secciones: "Agua", "Comida" y "Medidas".
+  - Cada sub-sección tiene su propia `TabBar` interna para ver los datos de "Hoy" y el "Historial", con iconos y un fondo de color para una mejor experiencia de usuario.
 
-*   **Navegación Principal**:
-    *   Barra de navegación inferior y menú lateral (Drawer) para un acceso rápido a todas las secciones.
-    *   Sistema de pestañas (`TabBar`) en Menús y Entrenamiento.
-*   **Dashboard (Pantalla de Inicio)**:
-    *   Saludo de bienvenida atractivo y tarjetas de resumen para calorías y peso.
-*   **Gestión de Perfil de Usuario**:
-    *   Modelo de datos (`User`), pantalla de edición de perfil y persistencia con `shared_preferences`.
-*   **Planificación de Comidas**:
-    *   **Menú del Día (`TodayMenuScreen`)**: Vista detallada de las comidas del día con sus alimentos y total de calorías.
-    *   **Planificador Semanal (`WeeklyPlannerScreen`)**: Calendario interactivo para planificar las comidas de la semana.
-    *   **Detalle de Comida (`MealDetailScreen`)**:
-        *   Muestra un desglose de los alimentos de una comida específica.
-        *   Calcula y presenta un resumen de macronutrientes (calorías, proteínas, carbohidratos, grasas).
-    *   **Edición de Comida (`EditMealScreen`)**:
-        *   Permite al usuario añadir o eliminar alimentos de una comida (funcionalidad simulada por ahora).
+- **Sección de Favoritos (`FavoritesScreen`):
+  - Similar a la sección de registros, utiliza una `TabBar` con iconos y fondo de color para diferenciar entre rutinas "De la Web" y "Creadas".
 
-## Plan de Trabajo Reciente
+- **Sección de Ejercicios (`WorkoutsScreen`):
+  - Pantalla dedicada a las rutinas de ejercicio, con una `TabBar` para cambiar entre "De la Web" y "Creadas".
 
-1.  **Rediseño de Pantallas de Menús**: Se ha mejorado la estructura y el diseño de `today_menu_screen.dart` y `weekly_planner_screen.dart` para una mejor experiencia de usuario.
-2.  **Implementación de Calendario Semanal**: Se ha integrado el paquete `table_calendar` para ofrecer una vista de planificación semanal interactiva y navegable.
-3.  **Corrección de Errores y Advertencias**:
-    *   Se han solucionado errores de modelos de datos y advertencias de funciones obsoletas.
-    *   Se ha corregido un error de desbordamiento visual (overflow) en el Dashboard, mejorando el diseño del saludo.
-4.  **Implementación de la funcionalidad "Ver" y "Editar" en el Planificador Semanal**:
-    *   **Creación de la Pantalla de Detalles (`meal_details_screen.dart`)**: Para mostrar un resumen detallado de una comida.
-    *   **Creación de la Pantalla de Edición (`edit_meal_screen.dart`)**: Para (simular) la edición de los alimentos de una comida.
-    *   **Integración de la Navegación**: Se han conectado los botones "Ver" y "Editar" del planificador para que naveguen a las nuevas pantallas, pasando el tipo de comida y la fecha correspondiente.
+## Plan Actual (Última Petición)
+
+**Petición del Usuario:** "Como pusiste la barra en favorito hazlo en agua, comida, medidas... eso y los iconos con texto"
+
+**Plan de Ejecución:**
+
+1.  **Analizar la petición:** El usuario quiere que las `TabBar` de las secciones "Agua", "Comida" y "Medidas" tengan el mismo estilo que la de "Favoritos", lo que implica añadir un fondo de color e iconos a las pestañas "Hoy" e "Historial".
+
+2.  **Modificar `water_log_screen.dart`:**
+    - Envolver la `TabBar` en un `Container` para aplicarle un color de fondo (`seedColor` con opacidad).
+    - Añadir un `Icon` a cada `Tab` (`Icons.today` para "Hoy" y `Icons.history` para "Historial").
+
+3.  **Modificar `food_log_screen.dart`:**
+    - Replicar el mismo cambio: añadir un `Container` con color de fondo y los `Icon` correspondientes a la `TabBar`.
+
+4.  **Modificar `body_measurement_screen.dart`:**
+    - Aplicar la misma estructura: un `Container` para el color y los `Icon` para las pestañas.
+
+5.  **Confirmar y Subir Cambios:**
+    - Crear un commit con un mensaje descriptivo de los cambios realizados.
+    - Subir el commit al repositorio remoto en GitHub.

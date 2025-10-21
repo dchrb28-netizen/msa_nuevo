@@ -1,35 +1,35 @@
-
 import 'package:flutter/material.dart';
+import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/screens/logs/body_measurement_history_screen.dart';
 import 'package:myapp/screens/logs/body_measurement_today_view.dart';
+import 'package:provider/provider.dart';
 
 class BodyMeasurementScreen extends StatelessWidget {
   const BodyMeasurementScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final primaryColor = theme.colorScheme.primary;
-    final onSurfaceColor = theme.colorScheme.onSurface;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final tabBackgroundColor = themeProvider.seedColor.withOpacity(isDarkMode ? 0.3 : 0.1);
+    final tabLabelColor = Theme.of(context).colorScheme.onSurface;
 
-    // The DefaultTabController manages the state of the tabs.
     return DefaultTabController(
       length: 2,
-      // A Column is used to place the TabBar above the TabBarView.
       child: Column(
         children: [
-          // This is the TabBar for 'Hoy' and 'Historial'.
-          // It will now correctly inherit the background from the parent screen.
-          TabBar(
-            indicatorColor: primaryColor,
-            labelColor: onSurfaceColor,
-            unselectedLabelColor: onSurfaceColor.withOpacity(0.7),
-            tabs: const [
-              Tab(text: 'Hoy'),
-              Tab(text: 'Historial'),
-            ],
+          Container(
+            color: tabBackgroundColor,
+            child: TabBar(
+              indicatorColor: themeProvider.seedColor,
+              labelColor: tabLabelColor,
+              unselectedLabelColor: tabLabelColor.withOpacity(0.7),
+              tabs: const [
+                Tab(icon: Icon(Icons.today), text: 'Hoy'),
+                Tab(icon: Icon(Icons.history), text: 'Historial'),
+              ],
+            ),
           ),
-          // Expanded ensures that the TabBarView takes up all the remaining screen space.
           const Expanded(
             child: TabBarView(
               children: [
