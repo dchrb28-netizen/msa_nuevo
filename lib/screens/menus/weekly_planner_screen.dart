@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:myapp/providers/meal_plan_provider.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/screens/menus/edit_meal_screen.dart';
 import 'package:myapp/screens/menus/meal_details_screen.dart';
@@ -28,6 +29,7 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final mealPlanProvider = Provider.of<MealPlanProvider>(context);
 
     return Scaffold(
       body: Column(
@@ -86,6 +88,7 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
                 minimumSize: const Size(double.infinity, 40), 
               ),
               onPressed: () {
+                mealPlanProvider.repeatWeek(_focusedDay);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Plan de la semana copiado a la siguiente.')),
                 );
@@ -93,42 +96,45 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              itemCount: 7, 
-              itemBuilder: (context, index) {
-                // Calculate the day of the week based on the focused day
-                final firstDayOfWeek = _focusedDay.subtract(Duration(days: _focusedDay.weekday - 1));
-                final day = firstDayOfWeek.add(Duration(days: index));
-                final formattedDay = DateFormat('EEEE, d MMMM', 'es_ES').format(day);
-                final isSelected = isSameDay(day, _selectedDay);
+            child: Consumer<MealPlanProvider>(
+              builder: (context, mealPlan, child) {
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  itemCount: 7, 
+                  itemBuilder: (context, index) {
+                    final firstDayOfWeek = _focusedDay.subtract(Duration(days: _focusedDay.weekday - 1));
+                    final day = firstDayOfWeek.add(Duration(days: index));
+                    final formattedDay = DateFormat('EEEE, d MMMM', 'es_ES').format(day);
+                    final isSelected = isSameDay(day, _selectedDay);
 
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  elevation: isSelected ? 6 : 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  color: isSelected ? themeProvider.seedColor.withAlpha(26) : null,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          formattedDay,
-                          style: GoogleFonts.lato(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: themeProvider.seedColor
-                          ),
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      elevation: isSelected ? 6 : 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      color: isSelected ? themeProvider.seedColor.withAlpha(26) : null,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              formattedDay,
+                              style: GoogleFonts.lato(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: themeProvider.seedColor
+                              ),
+                            ),
+                            const Divider(height: 20),
+                            _buildMealRow(context, 'Desayuno', Icons.free_breakfast, day, mealPlan),
+                            _buildMealRow(context, 'Almuerzo', Icons.lunch_dining, day, mealPlan),
+                            _buildMealRow(context, 'Cena', Icons.dinner_dining, day, mealPlan),
+                            _buildMealRow(context, 'Snacks', Icons.fastfood, day, mealPlan),
+                          ],
                         ),
-                        const Divider(height: 20),
-                        _buildMealRow(context, 'Desayuno', Icons.free_breakfast, day),
-                        _buildMealRow(context, 'Almuerzo', Icons.lunch_dining, day),
-                        _buildMealRow(context, 'Cena', Icons.dinner_dining, day),
-                        _buildMealRow(context, 'Snacks', Icons.fastfood, day),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -138,7 +144,11 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
     );
   }
 
-  Widget _buildMealRow(BuildContext context, String meal, IconData icon, DateTime day) {
+  Widget _buildMealRow(BuildContext context, String meal, IconData icon, DateTime day, MealPlanProvider mealPlan) {
+    final foods = mealPlan.getMealsForDay(day, meal);
+    final totalCalories = foods.fold(0.0, (sum, food) => sum + food.calories);
+    final bool isMealPlanned = foods.isNotEmpty;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -146,7 +156,16 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
           Icon(icon, color: Theme.of(context).colorScheme.primary.withAlpha(204), size: 20),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(meal, style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w600)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(meal, style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w600)),
+                if (isMealPlanned)
+                  Text('${totalCalories.toStringAsFixed(0)} kcal', style: GoogleFonts.lato(fontSize: 14, color: Colors.grey[600]))
+                else
+                   Text('No planificado', style: GoogleFonts.lato(fontSize: 14, color: Colors.grey[500], fontStyle: FontStyle.italic)),
+              ],
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.visibility_outlined, size: 20),

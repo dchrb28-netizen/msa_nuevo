@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/models/food.dart';
+import 'package:myapp/providers/meal_plan_provider.dart';
+import 'package:provider/provider.dart';
 
 class EditMealScreen extends StatefulWidget {
   final String mealType;
@@ -12,11 +15,16 @@ class EditMealScreen extends StatefulWidget {
 }
 
 class _EditMealScreenState extends State<EditMealScreen> {
-  // Dummy data for demonstration
-  final List<Food> _foods = [
-    Food(id: '1', name: 'Tostada con Aguacate', calories: 250, proteins: 8, carbohydrates: 25, fats: 15),
-    Food(id: '2', name: 'Huevo Cocido', calories: 78, proteins: 6, carbohydrates: 0.6, fats: 5),
-  ];
+  late List<Food> _plannedFoods;
+
+  @override
+  void initState() {
+    super.initState();
+    // Clone the list from the provider to allow local modifications before saving.
+    _plannedFoods = List<Food>.from(
+      Provider.of<MealPlanProvider>(context, listen: false).getMealsForDay(widget.date, widget.mealType),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +33,20 @@ class _EditMealScreenState extends State<EditMealScreen> {
         title: Text('Editar ${widget.mealType}'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.save), 
+            icon: const Icon(Icons.save),
+            tooltip: 'Guardar Cambios',
             onPressed: () {
-              // TODO: Implement save logic
+              // Save the changes back to the provider
+              Provider.of<MealPlanProvider>(context, listen: false).updateMeal(
+                widget.date,
+                widget.mealType,
+                _plannedFoods,
+              );
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Cambios guardados (simulado)')),
+                const SnackBar(content: Text('Plan de comidas actualizado')),
               );
               Navigator.of(context).pop();
-            }
+            },
           ),
         ],
       ),
@@ -40,43 +54,64 @@ class _EditMealScreenState extends State<EditMealScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: _foods.length,
-                itemBuilder: (context, index) {
-                  final food = _foods[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 5),
-                    child: ListTile(
-                      title: Text(food.name),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.red),
-                        onPressed: () {
-                          setState(() {
-                            _foods.removeAt(index);
-                          });
-                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Alimento eliminado (simulado)')),
-                          );
-                        },
+            if (_plannedFoods.isEmpty)
+              const Expanded(
+                child: Center(
+                  child: Text(
+                    'No hay alimentos en esta comida. \n¡Añade uno para empezar!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                ),
+              )
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _plannedFoods.length,
+                  itemBuilder: (context, index) {
+                    final food = _plannedFoods[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 5),
+                      child: ListTile(
+                        title: Text(food.name, style: GoogleFonts.lato()),
+                        subtitle: Text('${food.calories.toStringAsFixed(0)} kcal'),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                          tooltip: 'Eliminar Alimento',
+                          onPressed: () {
+                            setState(() {
+                              _plannedFoods.removeAt(index);
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add_shopping_cart),
               label: const Text('Añadir Alimento'),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
               ),
               onPressed: () {
-                  // TODO: Implement add food functionality
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Función de añadir próximamente')),
-                  );
+                // TODO: Implement navigation to a proper food search/selection screen.
+                // For now, we'll add a sample food to demonstrate functionality.
+                setState(() {
+                  _plannedFoods.add(Food(
+                    id: 'sample',
+                    name: 'Yogur Natural',
+                    calories: 95,
+                    proteins: 9,
+                    carbohydrates: 7,
+                    fats: 3.5,
+                  ));
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Alimento de ejemplo añadido. Pulsa Guardar.')),
+                );
               },
             ),
           ],

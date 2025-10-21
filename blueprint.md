@@ -38,31 +38,30 @@ Esta es una aplicación de Flutter diseñada para el seguimiento de la salud y e
     - Una sección para el historial de ayunos.
   - **Persistencia:** La app recuerda el estado del ayuno incluso después de cerrarla y volverla a abrir.
 
+- **Sección de Menús:**
+    - **Planificador Semanal:** Vista de calendario para planificar comidas.
+    - **Vista Diaria:** Resumen de las comidas del día.
+    - **Edición de Comidas:** Pantalla para añadir/eliminar alimentos de una comida específica.
+    - **Detalles Nutricionales:** Vista detallada de los macros y calorías de cada comida.
+
 ## Plan Actual (Última Petición)
 
-**Petición del Usuario:** "vamos a trabajar en ayuno intermitente, solo hay que actualizar el archivo existente, ya esta en la barra lateral en habitos y ya tiene una barra superior junto a recordatorios, quiero que me des sugerencias de como trabajaremos alli y que tambien muestre las fases del ayuno, como por ejemplo en las primeras 4 horas sucede esto, no se que pero seguramente tu si sabes"
+**Petición del Usuario:** "revisa TODOS los botones de la app tomando esos de ejemplo y mejoralos todos incluyendo los de esa pantalla"
 
 **Plan de Ejecución:**
 
-1.  **Proponer Diseño:** Sugerir una estructura para la pantalla de ayuno intermitente, incluyendo un panel de control con temporizador, una sección para las fases del ayuno y un historial.
-2.  **Crear Modelo de Datos (`FastingLog`):**
-    - Definir la clase `FastingLog` con `startTime`, `endTime` y un `typeId` de Hive.
-    - Añadir el `part 'fasting_log.g.dart';`.
-3.  **Registrar Modelo en `main.dart`:**
-    - Importar `FastingLog`.
-    - Registrar el `FastingLogAdapter`.
-    - Abrir la caja `fasting_logs`.
-4.  **Generar Adaptador de Hive:**
-    - Ejecutar `dart run build_runner build --delete-conflicting-outputs` para crear `fasting_log.g.dart`.
-5.  **Construir Interfaz Inicial:**
-    - Crear la estructura visual de `IntermittentFastingScreen` con placeholders para el temporizador, las fases y el historial.
-6.  **Crear `FastingProvider`:**
-    - Implementar la lógica para iniciar, detener y cargar el estado del ayuno.
-    - Añadir un `Timer` para actualizar la duración cada segundo.
-    - Crear un getter `formattedDuration` para mostrar el tiempo en formato `HH:MM:SS`.
-7.  **Integrar Provider con la UI:**
-    - Añadir `FastingProvider` al `MultiProvider` en `main.dart`.
-    - Usar un `Consumer<FastingProvider>` en `IntermittentFastingScreen` para conectar la UI a los datos y acciones del proveedor.
-    - Vincular los botones "Empezar" y "Parar" a los métodos `startFasting()` y `stopFasting()`.
-    - Mostrar la duración del ayuno usando `formattedDuration`.
-8.  **Actualizar Documentación:** Modificar el `blueprint.md` para reflejar los cambios y el nuevo plan.
+1.  **Analizar Botones Actuales:** Realizar una revisión exhaustiva de todos los botones de la aplicación, incluyendo `ElevatedButton`, `TextButton`, `IconButton` y los botones de la barra de navegación.
+2.  **Proponer Estilo Unificado:** Definir un estilo de botón moderno y consistente que se alinee con la identidad visual de la aplicación. Esto incluye:
+    - **`ElevatedButton`:** Botones primarios con una sombra sutil, esquinas redondeadas y un efecto de "glow" al interactuar.
+    - **`TextButton`:** Botones secundarios o de menor énfasis, con un color de texto claro y sin fondo.
+    - **`IconButton`:** Iconos limpios y consistentes, con un área táctil adecuada para una buena experiencia de usuario.
+3.  **Implementar Mejoras (Archivo por Archivo):**
+    - **`weekly_planner_screen.dart`:**
+        - Rediseñar los `IconButton` de "Ver" y "Editar" para que sean más prominentes y visualmente atractivos.
+        - Mejorar el estilo del botón "Repetir Semana".
+    - **`today_menu_screen.dart`:**
+        - Aplicar el nuevo estilo a los botones "Editar" y "Ver".
+    - **Otras pantallas:**
+        - Recorrer sistemáticamente el resto de la aplicación y aplicar los nuevos estilos de botones para garantizar la coherencia.
+4.  **Actualizar `blueprint.md`:** Documentar los cambios de diseño y el nuevo estilo de los botones.
+5.  **Verificación Final:** Realizar una última revisión visual y de `flutter analyze` para asegurar que todo funciona como se espera.

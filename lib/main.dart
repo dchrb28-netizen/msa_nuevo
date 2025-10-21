@@ -15,6 +15,7 @@ import 'package:myapp/models/user.dart';
 import 'package:myapp/models/user_recipe.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/fasting_provider.dart';
+import 'package:myapp/providers/meal_plan_provider.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/main_screen.dart';
@@ -99,6 +100,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => FastingProvider()),
+        ChangeNotifierProvider(create: (context) => MealPlanProvider()),
       ],
       child: MyApp(profileExists: profileExists),
     ),
