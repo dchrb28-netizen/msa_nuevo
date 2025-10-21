@@ -63,12 +63,6 @@ class _RemindersScreenState extends State<RemindersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Recordatorios'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 0,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-      ),
       body: _reminders.isEmpty
           ? const Center(child: Text('Aún no tienes recordatorios.'))
           : AnimatedList(

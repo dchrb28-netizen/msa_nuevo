@@ -5,6 +5,7 @@ import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/achievements/goals_screen.dart';
 import 'package:myapp/screens/achievements/rewards_screen.dart';
+import 'package:myapp/screens/habits/habits_screen.dart';
 import 'package:myapp/screens/habits/intermittent_fasting_screen.dart';
 import 'package:myapp/screens/habits/reminders_screen.dart';
 import 'package:myapp/screens/logs_screen.dart';
@@ -119,8 +120,8 @@ class DrawerMenu extends StatelessWidget {
             buildListTile(context, icon: Icons.local_library, iconColor: Colors.pink, title: 'Biblioteca', destination: const TrainingMainScreen(initialTabIndex: 1)),
           ]),
           _buildExpansionTile(context, title: 'Hábitos', icon: Icons.check_circle_outline, iconColor: Colors.lightGreen[800]!, children: [
-            buildListTile(context, icon: Icons.notifications, iconColor: Colors.amber[600]!, title: 'Recordatorios', destination: const RemindersScreen()),
-            buildListTile(context, icon: Icons.hourglass_empty, iconColor: Colors.lime[700]!, title: 'Ayuno Intermitente', destination: const IntermittentFastingScreen()),
+            buildListTile(context, icon: Icons.notifications, iconColor: Colors.amber[600]!, title: 'Recordatorios', destination: const HabitsScreen(initialTabIndex: 0)),
+            buildListTile(context, icon: Icons.hourglass_empty, iconColor: Colors.lime[700]!, title: 'Ayuno Intermitente', destination: const HabitsScreen(initialTabIndex: 1)),
           ]),
           _buildExpansionTile(context, title: 'Logros', icon: Icons.emoji_events, iconColor: Colors.amber[900]!, children: [
             buildListTile(context, icon: Icons.card_giftcard, iconColor: Colors.yellow[600]!, title: 'Recompensas', destination: const RewardsScreen()),

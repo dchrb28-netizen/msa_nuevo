@@ -5,13 +5,8 @@ class IntermittentFastingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ayuno Intermitente'),
-      ),
-      body: const Center(
-        child: Text('Pantalla de Ayuno Intermitente'),
-      ),
+    return const Center(
+      child: Text('Pantalla de Ayuno Intermitente'),
     );
   }
 }
