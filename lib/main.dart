@@ -10,6 +10,7 @@ import 'package:myapp/models/food.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/models/meal_type.dart';
 import 'package:myapp/models/recipe.dart';
+import 'package:myapp/models/reminder.dart'; // Import the new model
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/user_recipe.dart';
 import 'package:myapp/models/water_log.dart';
@@ -18,15 +19,20 @@ import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/welcome_screen.dart';
+import 'package:myapp/services/notification_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 void main() async {
+  // Ensure Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize notification service
+  await NotificationService().init();
+
   // Remove the # from the URL
   setPathUrlStrategy();
-
-  WidgetsFlutterBinding.ensureInitialized();
 
   await initializeDateFormatting('es', null);
   await Hive.initFlutter();
@@ -59,6 +65,9 @@ void main() async {
   if (!Hive.isAdapterRegistered(UserRecipeAdapter().typeId)) {
     Hive.registerAdapter(UserRecipeAdapter());
   }
+  if (!Hive.isAdapterRegistered(ReminderAdapter().typeId)) { // Register the new adapter
+    Hive.registerAdapter(ReminderAdapter());
+  }
 
   // Open boxes
   await Hive.openBox<Food>('foods');
@@ -70,6 +79,7 @@ void main() async {
   await Hive.openBox('settings');
   await Hive.openBox<Recipe>('favorite_recipes');
   await Hive.openBox<UserRecipe>('user_recipes');
+  await Hive.openBox<Reminder>('reminders'); // Open the new box
 
   await _populateInitialFoodData();
 

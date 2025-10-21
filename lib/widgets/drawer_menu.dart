@@ -116,7 +116,7 @@ class DrawerMenu extends StatelessWidget {
           ]),
           _buildExpansionTile(context, title: 'Entrenamiento', icon: Icons.fitness_center, iconColor: Colors.red[700]!, children: [
             buildListTile(context, icon: Icons.directions_run, iconColor: Colors.blue[700]!, title: 'Ejercicios', destination: const TrainingMainScreen(initialTabIndex: 0)),
-            buildListTile(context, icon: Icons.local_library, iconColor: Colors.blue[700]!, title: 'Biblioteca', destination: const TrainingMainScreen(initialTabIndex: 1)),
+            buildListTile(context, icon: Icons.local_library, iconColor: Colors.pink, title: 'Biblioteca', destination: const TrainingMainScreen(initialTabIndex: 1)),
           ]),
           _buildExpansionTile(context, title: 'Hábitos', icon: Icons.check_circle_outline, iconColor: Colors.lightGreen[800]!, children: [
             buildListTile(context, icon: Icons.notifications, iconColor: Colors.amber[600]!, title: 'Recordatorios', destination: const RemindersScreen()),
