@@ -7,17 +7,24 @@ class WaterLogScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DefaultTabController(
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final onSurfaceColor = theme.colorScheme.onSurface;
+
+    return DefaultTabController(
       length: 2,
       child: Column(
         children: [
           TabBar(
-            tabs: [
+            indicatorColor: primaryColor,
+            labelColor: onSurfaceColor,
+            unselectedLabelColor: onSurfaceColor.withOpacity(0.7),
+            tabs: const [
               Tab(text: 'Hoy'),
               Tab(text: 'Historial'),
             ],
           ),
-          Expanded(
+          const Expanded(
             child: TabBarView(
               children: [
                 WaterTodayView(),

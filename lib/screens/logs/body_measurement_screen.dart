@@ -8,8 +8,12 @@ class BodyMeasurementScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final onSurfaceColor = theme.colorScheme.onSurface;
+
     // The DefaultTabController manages the state of the tabs.
-    return const DefaultTabController(
+    return DefaultTabController(
       length: 2,
       // A Column is used to place the TabBar above the TabBarView.
       child: Column(
@@ -17,13 +21,16 @@ class BodyMeasurementScreen extends StatelessWidget {
           // This is the TabBar for 'Hoy' and 'Historial'.
           // It will now correctly inherit the background from the parent screen.
           TabBar(
-            tabs: [
+            indicatorColor: primaryColor,
+            labelColor: onSurfaceColor,
+            unselectedLabelColor: onSurfaceColor.withOpacity(0.7),
+            tabs: const [
               Tab(text: 'Hoy'),
               Tab(text: 'Historial'),
             ],
           ),
           // Expanded ensures that the TabBarView takes up all the remaining screen space.
-          Expanded(
+          const Expanded(
             child: TabBarView(
               children: [
                 BodyMeasurementTodayView(),
