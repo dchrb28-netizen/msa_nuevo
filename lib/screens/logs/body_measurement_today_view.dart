@@ -14,14 +14,7 @@ class BodyMeasurementTodayView extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
-        // 1. Resumen del objetivo de peso
-        _buildWeightGoalSummary(),
-        
-        const SizedBox(height: 24),
-        const Divider(),
-        const SizedBox(height: 24),
-
-        // 2. Formulario para añadir nueva medición
+        // 1. Formulario para añadir nueva medición
         const Text('Registra tus medidas de hoy', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
         const BodyMeasurementForm(),
@@ -30,10 +23,16 @@ class BodyMeasurementTodayView extends StatelessWidget {
         const Divider(),
         const SizedBox(height: 24),
 
-        // 3. Historial de mediciones de hoy
-        const Text('Mediciones registradas hoy', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        _buildWeightGoalSummary(),
+
+        const SizedBox(height: 24),
+        const Divider(),
+        const SizedBox(height: 24),
+
+        // 2. Última medición registrada hoy
+        const Text('Última medición de hoy', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
-        _buildTodayMeasurementsHistory(),
+        _buildLastMeasurementCard(),
       ],
     );
   }
@@ -44,7 +43,6 @@ class BodyMeasurementTodayView extends StatelessWidget {
         final user = userProvider.user;
         final weightGoal = user?.weightGoal;
 
-        // No mostrar nada si no hay objetivo de peso
         if (weightGoal == null || weightGoal <= 0) {
           return const SizedBox.shrink();
         }
@@ -52,17 +50,16 @@ class BodyMeasurementTodayView extends StatelessWidget {
         return ValueListenableBuilder(
           valueListenable: Hive.box<BodyMeasurement>('body_measurements').listenable(),
           builder: (context, Box<BodyMeasurement> box, _) {
-            // Buscar la última medición con un peso válido
             final lastMeasurementWithWeight = box.values.lastWhere(
               (m) => m.weight != null && m.weight! > 0,
-              orElse: () => BodyMeasurement(id: '', timestamp: DateTime.now()), // Corregido: Añadido id
+              orElse: () => BodyMeasurement(id: '', timestamp: DateTime.now()),
             );
             final lastWeight = lastMeasurementWithWeight.weight;
 
             if (lastWeight == null) {
               return const Card(
                 elevation: 4,
-                 margin: EdgeInsets.only(bottom: 16),
+                margin: EdgeInsets.only(bottom: 16),
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
                   child: Text('Aún no has registrado ningún peso para ver tu progreso.', textAlign: TextAlign.center,),
@@ -112,8 +109,8 @@ class BodyMeasurementTodayView extends StatelessWidget {
       },
     );
   }
-  
-  Widget _buildTodayMeasurementsHistory() {
+
+  Widget _buildLastMeasurementCard() {
      return ValueListenableBuilder(
           valueListenable: Hive.box<BodyMeasurement>('body_measurements').listenable(),
           builder: (context, Box<BodyMeasurement> box, _) {
@@ -122,7 +119,7 @@ class BodyMeasurementTodayView extends StatelessWidget {
               return m.timestamp.year == today.year &&
                   m.timestamp.month == today.month &&
                   m.timestamp.day == today.day;
-            }).toList()..sort((a, b) => b.timestamp.compareTo(a.timestamp)); // Ordenar descendente
+            }).toList()..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
             if (todaysMeasurements.isEmpty) {
               return const Center(
@@ -132,38 +129,31 @@ class BodyMeasurementTodayView extends StatelessWidget {
                 ),
               );
             }
+            
+            final lastMeasurement = todaysMeasurements.first;
 
-            return ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: todaysMeasurements.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                 final measurement = todaysMeasurements[index];
-                 return Card(
-                    elevation: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Medición a las ${DateFormat.jm().format(measurement.timestamp)}',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          const Divider(height: 20),
-                          if (measurement.weight != null) _buildMeasurementRow('Peso', '${measurement.weight} kg'),
-                          if (measurement.chest != null) _buildMeasurementRow('Pecho', '${measurement.chest} cm'),
-                          if (measurement.arm != null) _buildMeasurementRow('Brazo', '${measurement.arm} cm'),
-                          if (measurement.waist != null) _buildMeasurementRow('Cintura', '${measurement.waist} cm'),
-                          if (measurement.hips != null) _buildMeasurementRow('Caderas', '${measurement.hips} cm'),
-                          if (measurement.thigh != null) _buildMeasurementRow('Muslo', '${measurement.thigh} cm'),
-                        ],
+            return Card(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Medición a las ${DateFormat.jm().format(lastMeasurement.timestamp)}',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                       ),
-                    ),
-                  );
-              },
-            );
+                      const Divider(height: 20),
+                      if (lastMeasurement.weight != null) _buildMeasurementRow('Peso', '${lastMeasurement.weight} kg'),
+                      if (lastMeasurement.chest != null) _buildMeasurementRow('Pecho', '${lastMeasurement.chest} cm'),
+                      if (lastMeasurement.arm != null) _buildMeasurementRow('Brazo', '${lastMeasurement.arm} cm'),
+                      if (lastMeasurement.waist != null) _buildMeasurementRow('Cintura', '${lastMeasurement.waist} cm'),
+                      if (lastMeasurement.hips != null) _buildMeasurementRow('Caderas', '${lastMeasurement.hips} cm'),
+                      if (lastMeasurement.thigh != null) _buildMeasurementRow('Muslo', '${lastMeasurement.thigh} cm'),
+                    ],
+                  ),
+                ),
+              );
           },
         );
   }

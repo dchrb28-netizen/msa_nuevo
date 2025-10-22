@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/providers/theme_provider.dart';
-import 'package:myapp/screens/logs/body_measurement_history_screen.dart';
+import 'package:myapp/screens/logs/body_measurement_history_view.dart';
 import 'package:myapp/screens/logs/body_measurement_today_view.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +33,7 @@ class BodyMeasurementScreen extends StatelessWidget {
             child: TabBarView(
               children: [
                 BodyMeasurementTodayView(),
-                BodyMeasurementHistoryScreen(),
+                BodyMeasurementHistoryView(),
               ],
             ),
           ),
