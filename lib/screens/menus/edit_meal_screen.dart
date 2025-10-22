@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/models/food.dart';
 import 'package:myapp/providers/meal_plan_provider.dart';
+import 'package:myapp/screens/register_food_screen.dart';
 import 'package:provider/provider.dart';
 
 class EditMealScreen extends StatefulWidget {
@@ -20,7 +21,6 @@ class _EditMealScreenState extends State<EditMealScreen> {
   @override
   void initState() {
     super.initState();
-    // Clone the list from the provider to allow local modifications before saving.
     _plannedFoods = List<Food>.from(
       Provider.of<MealPlanProvider>(context, listen: false).getMealsForDay(widget.date, widget.mealType),
     );
@@ -36,7 +36,6 @@ class _EditMealScreenState extends State<EditMealScreen> {
             icon: const Icon(Icons.save),
             tooltip: 'Guardar Cambios',
             onPressed: () {
-              // Save the changes back to the provider
               Provider.of<MealPlanProvider>(context, listen: false).updateMeal(
                 widget.date,
                 widget.mealType,
@@ -91,27 +90,21 @@ class _EditMealScreenState extends State<EditMealScreen> {
               ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
-              icon: const Icon(Icons.add_shopping_cart),
-              label: const Text('Añadir Alimento'),
+              icon: const Icon(Icons.add),
+              label: const Text('Añadir Plato'),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
               ),
-              onPressed: () {
-                // TODO: Implement navigation to a proper food search/selection screen.
-                // For now, we'll add a sample food to demonstrate functionality.
-                setState(() {
-                  _plannedFoods.add(Food(
-                    id: 'sample',
-                    name: 'Yogur Natural',
-                    calories: 95,
-                    proteins: 9,
-                    carbohydrates: 7,
-                    fats: 3.5,
-                  ));
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Alimento de ejemplo añadido. Pulsa Guardar.')),
+              onPressed: () async {
+                final newFood = await Navigator.push<Food>(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegisterFoodScreen()),
                 );
+                if (newFood != null) {
+                  setState(() {
+                    _plannedFoods.add(newFood);
+                  });
+                }
               },
             ),
           ],

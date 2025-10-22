@@ -48,15 +48,7 @@ class WelcomeScreen extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          'Bienvenido a Salud Activa',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.montserrat(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: isDarkMode ? Colors.white : Colors.black,
-          ),
-        ),
+        
         const SizedBox(height: 16),
         Text(
           'Tu compañero personal de salud',
