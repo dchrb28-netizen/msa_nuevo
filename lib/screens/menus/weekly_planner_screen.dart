@@ -146,7 +146,7 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
 
   Widget _buildMealRow(BuildContext context, String meal, IconData icon, DateTime day, MealPlanProvider mealPlan) {
     final foods = mealPlan.getMealsForDay(day, meal);
-    final totalCalories = foods.fold(0.0, (sum, food) => sum + food.calories);
+    final totalCalories = foods.fold(0.0, (sum, food) => sum + (food.calories ?? 0));
     final bool isMealPlanned = foods.isNotEmpty;
 
     return Padding(

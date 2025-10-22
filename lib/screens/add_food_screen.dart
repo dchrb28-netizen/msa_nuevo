@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/food.dart';
+import 'package:myapp/screens/register_food_screen.dart';
 
 class AddFoodScreen extends StatefulWidget {
   const AddFoodScreen({super.key});
@@ -39,6 +40,19 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
             .toList();
       }
     });
+  }
+
+  void _navigateAndRegisterFood() async {
+    final newFood = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const RegisterFoodScreen()),
+    );
+
+    if (newFood != null) {
+      setState(() {
+        _searchResults = _foodBox.values.toList();
+      });
+    }
   }
 
   @override
@@ -81,6 +95,11 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _navigateAndRegisterFood,
+        label: const Text('Registrar Nueva Comida'),
+        icon: const Icon(Icons.add),
       ),
     );
   }

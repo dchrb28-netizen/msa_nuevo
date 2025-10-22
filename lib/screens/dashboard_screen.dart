@@ -90,7 +90,7 @@ class DashboardScreen extends StatelessWidget {
             log.timestamp.month == now.month &&
             log.timestamp.day == now.day);
         final totalCalories = dailyLogs.fold<double>(
-            0, (sum, log) => sum + (log.food.calories * log.quantity / 100));
+            0, (sum, log) => sum + ((log.food.calories ?? 0) * log.quantity / 100));
         // TODO: This should come from user settings
         const caloricGoal = 2000;
 

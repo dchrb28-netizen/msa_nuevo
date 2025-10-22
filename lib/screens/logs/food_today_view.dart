@@ -29,7 +29,7 @@ class _FoodTodayViewState extends State<FoodTodayView> {
       valueListenable: Hive.box<FoodLog>('food_logs').listenable(),
       builder: (context, Box<FoodLog> box, _) {
         final dailyLogs = box.values.where((log) => DateUtils.isSameDay(log.timestamp, _selectedDate)).toList();
-        final totalCalories = dailyLogs.fold<double>(0, (sum, log) => sum + (log.food.calories * log.quantity / 100));
+        final totalCalories = dailyLogs.fold<double>(0, (sum, log) => sum + ((log.food.calories ?? 0) * log.quantity / 100));
 
         return Column(
           children: [
@@ -62,7 +62,7 @@ class _FoodTodayViewState extends State<FoodTodayView> {
                             leading: _getMealIcon(log.mealType),
                             title: Text(log.food.name, style: const TextStyle(fontWeight: FontWeight.bold)),
                             subtitle: Text('${log.quantity}g'),
-                            trailing: Text('${(log.food.calories * log.quantity / 100).toInt()} kcal'),
+                            trailing: Text('${((log.food.calories ?? 0) * log.quantity / 100).toInt()} kcal'),
                             onLongPress: () => log.delete(),
                           ),
                         );

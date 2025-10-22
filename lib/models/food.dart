@@ -13,24 +13,24 @@ class Food extends HiveObject {
   late String name;
 
   @HiveField(2)
-  late double calories;
+  double? calories;
 
   @HiveField(3)
-  late double proteins;
+  double? proteins;
 
   @HiveField(4)
-  late double carbohydrates;
+  double? carbohydrates;
 
   @HiveField(5)
-  late double fats;
+  double? fats;
 
   Food({
     required this.id,
     required this.name,
-    required this.calories,
-    required this.proteins,
-    required this.carbohydrates,
-    required this.fats,
+    this.calories,
+    this.proteins,
+    this.carbohydrates,
+    this.fats,
   });
 
   factory Food.fromJson(Map<String, dynamic> json) => _$FoodFromJson(json);

@@ -54,7 +54,7 @@ class TodayMenuScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final mealType = activeMealTypes[index];
             final foods = dailyMenu[mealType]!;
-            final totalCalories = foods.fold(0.0, (sum, food) => sum + food.calories);
+            final totalCalories = foods.fold(0.0, (sum, food) => sum + (food.calories ?? 0));
 
             return Card(
               elevation: 4,
@@ -89,7 +89,7 @@ class TodayMenuScreen extends StatelessWidget {
                     const Divider(height: 20, thickness: 1),
                     ...foods.map((food) => ListTile(
                           title: Text(food.name, style: GoogleFonts.lato(fontWeight: FontWeight.w500)),
-                          subtitle: Text('${food.calories.toStringAsFixed(0)} kcal'),
+                          subtitle: Text('${(food.calories ?? 0).toStringAsFixed(0)} kcal'),
                           dense: true,
                         )),
                     const SizedBox(height: 10),

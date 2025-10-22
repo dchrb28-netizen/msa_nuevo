@@ -19,10 +19,10 @@ class FoodAdapter extends TypeAdapter<Food> {
     return Food(
       id: fields[0] as String,
       name: fields[1] as String,
-      calories: fields[2] as double,
-      proteins: fields[3] as double,
-      carbohydrates: fields[4] as double,
-      fats: fields[5] as double,
+      calories: fields[2] as double?,
+      proteins: fields[3] as double?,
+      carbohydrates: fields[4] as double?,
+      fats: fields[5] as double?,
     );
   }
 
@@ -62,10 +62,10 @@ class FoodAdapter extends TypeAdapter<Food> {
 Food _$FoodFromJson(Map<String, dynamic> json) => Food(
       id: json['id'] as String,
       name: json['name'] as String,
-      calories: (json['calories'] as num).toDouble(),
-      proteins: (json['proteins'] as num).toDouble(),
-      carbohydrates: (json['carbohydrates'] as num).toDouble(),
-      fats: (json['fats'] as num).toDouble(),
+      calories: (json['calories'] as num?)?.toDouble(),
+      proteins: (json['proteins'] as num?)?.toDouble(),
+      carbohydrates: (json['carbohydrates'] as num?)?.toDouble(),
+      fats: (json['fats'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$FoodToJson(Food instance) => <String, dynamic>{

@@ -16,10 +16,10 @@ class MealDetailScreen extends StatelessWidget {
       builder: (context, mealPlanProvider, child) {
         final foods = mealPlanProvider.getMealsForDay(date, mealType);
 
-        final totalCalories = foods.fold(0.0, (sum, food) => sum + food.calories);
-        final totalProteins = foods.fold(0.0, (sum, food) => sum + food.proteins);
-        final totalCarbs = foods.fold(0.0, (sum, food) => sum + food.carbohydrates);
-        final totalFats = foods.fold(0.0, (sum, food) => sum + food.fats);
+        final totalCalories = foods.fold(0.0, (sum, food) => sum + (food.calories ?? 0));
+        final totalProteins = foods.fold(0.0, (sum, food) => sum + (food.proteins ?? 0));
+        final totalCarbs = foods.fold(0.0, (sum, food) => sum + (food.carbohydrates ?? 0));
+        final totalFats = foods.fold(0.0, (sum, food) => sum + (food.fats ?? 0));
         final formattedDate = DateFormat('d MMMM y', 'es_ES').format(date);
 
         return Scaffold(
@@ -54,15 +54,15 @@ class MealDetailScreen extends StatelessWidget {
                           margin: const EdgeInsets.symmetric(vertical: 5),
                           child: ListTile(
                             title: Text(food.name, style: GoogleFonts.lato(fontWeight: FontWeight.w500)),
-                            subtitle: Text('${food.calories.toStringAsFixed(0)} kcal'),
+                            subtitle: Text('${(food.calories ?? 0).toStringAsFixed(0)} kcal'),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('P: ${food.proteins.toStringAsFixed(1)}g', style: const TextStyle(fontSize: 12, color: Colors.green)),
+                                Text('P: ${(food.proteins ?? 0).toStringAsFixed(1)}g', style: const TextStyle(fontSize: 12, color: Colors.green)),
                                 const SizedBox(width: 8),
-                                Text('C: ${food.carbohydrates.toStringAsFixed(1)}g', style: const TextStyle(fontSize: 12, color: Colors.blue)),
+                                Text('C: ${(food.carbohydrates ?? 0).toStringAsFixed(1)}g', style: const TextStyle(fontSize: 12, color: Colors.blue)),
                                 const SizedBox(width: 8),
-                                Text('G: ${food.fats.toStringAsFixed(1)}g', style: const TextStyle(fontSize: 12, color: Colors.red)),
+                                Text('G: ${(food.fats ?? 0).toStringAsFixed(1)}g', style: const TextStyle(fontSize: 12, color: Colors.red)),
                               ],
                             ),
                           ),

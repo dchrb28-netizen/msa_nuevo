@@ -74,7 +74,7 @@ class _EditMealScreenState extends State<EditMealScreen> {
                       margin: const EdgeInsets.symmetric(vertical: 5),
                       child: ListTile(
                         title: Text(food.name, style: GoogleFonts.lato()),
-                        subtitle: Text('${food.calories.toStringAsFixed(0)} kcal'),
+                        subtitle: Text('${(food.calories ?? 0).toStringAsFixed(0)} kcal'),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                           tooltip: 'Eliminar Alimento',
