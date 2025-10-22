@@ -29,11 +29,11 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     _heightController = TextEditingController();
     _weightGoalController = TextEditingController();
 
-    if (user == null || user.weight <= 0 || user.height <= 0) {
-      _isEditing = true;
-    } else {
+    if (user != null && user.weight > 0 && user.height > 0) {
       _updateControllers(user);
       _calculateIMC();
+    } else {
+      _isEditing = true;
     }
 
     _weightController.addListener(_calculateIMC);
@@ -43,14 +43,18 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final user = Provider.of<UserProvider>(context, listen: false).user;
-    if (user != null && (user.weight > 0 && user.height > 0)) {
-      _updateControllers(user);
-      _calculateIMC();
+    final user = Provider.of<UserProvider>(context, listen: true).user;
+    if (user != null && user.weight > 0 && user.height > 0) {
+      if (!_isEditing) {
+        _updateControllers(user);
+        _calculateIMC();
+      }
     } else {
-      setState(() {
-        _isEditing = true;
-      });
+      if (!_isEditing) {
+        setState(() {
+          _isEditing = true;
+        });
+      }
     }
   }
 
@@ -62,6 +66,8 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
 
   @override
   void dispose() {
+    _weightController.removeListener(_calculateIMC);
+    _heightController.removeListener(_calculateIMC);
     _weightController.dispose();
     _heightController.dispose();
     _weightGoalController.dispose();
@@ -116,6 +122,8 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
       );
 
       userProvider.updateUser(updatedUser);
+      _calculateIMC(); 
+      
       if (mounted) {
         setState(() {
           _isEditing = false;
@@ -161,33 +169,37 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     );
   }
 
-  @override
+@override
 Widget build(BuildContext context) {
+  final user = Provider.of<UserProvider>(context).user;
   final appBarColor = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).primaryColor;
+  
+  // Comprueba si falta información esencial del perfil
+  final isProfileIncomplete = user == null || user.weight <= 0 || user.height <= 0;
 
   return Scaffold(
     backgroundColor: _isEditing ? Theme.of(context).colorScheme.surface : null,
     body: AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      child: _isEditing ? _buildEditView() : _buildSummaryView(),
+        duration: const Duration(milliseconds: 300),
+        child: _isEditing
+            ? _buildEditView()
+            : (isProfileIncomplete ? _buildProfileCompletionMessage(context) : _buildSummaryView()),
     ),
     floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    floatingActionButton: !_isEditing
+    floatingActionButton: !_isEditing && !isProfileIncomplete
         ? Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: ElevatedButton.icon(
               onPressed: () => setState(() => _isEditing = true),
               icon: const Icon(Icons.edit_outlined),
-              label: const Text('Establece objetivo de peso'),
+              label: const Text('Actualizar Mis Datos'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: appBarColor, // Use AppBar color
+                backgroundColor: appBarColor,
                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                minimumSize: const Size(double.infinity, 50), // Make button wider
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16), // Rounded corners
-                ),
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold, // Bold text
+                      fontWeight: FontWeight.bold,
                     ),
               ),
             ),
@@ -326,7 +338,7 @@ Widget build(BuildContext context) {
 
   Widget _buildEditView() {
     final user = Provider.of<UserProvider>(context, listen: false).user;
-    final isMissingData = user == null || user.weight <= 0 || user.height <= 0;
+    final isInitialSetup = user == null || user.weight <= 0 || user.height <= 0;
 
     return Form(
       key: _formKey,
@@ -336,7 +348,18 @@ Widget build(BuildContext context) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Mis Datos Corporales', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              isInitialSetup ? 'Completa tu Perfil' : 'Actualiza tus Datos',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)
+            ),
+            if (isInitialSetup)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                child: Text(
+                  'Necesitamos tu peso y altura para calcular tu IMC y establecer metas realistas.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
             const SizedBox(height: 20),
             _buildTextField(
               controller: _weightController,
@@ -362,15 +385,15 @@ Widget build(BuildContext context) {
             ElevatedButton.icon(
               onPressed: _saveGoals,
               icon: const Icon(Icons.save_outlined),
-              label: const Text('Guardar Mis Datos'),
+              label: Text(isInitialSetup ? 'Guardar y Continuar' : 'Guardar Cambios'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-            if (!isMissingData)
+            if (!isInitialSetup)
             const SizedBox(height: 10),
-             if (!isMissingData)
+             if (!isInitialSetup)
              TextButton(onPressed: () => setState(() => _isEditing = false), child: const Text('Cancelar'))
           ],
         ),
@@ -400,6 +423,43 @@ Widget build(BuildContext context) {
         if (double.tryParse(value.replaceAll(',', '.')) == null) return 'Introduce un número válido';
         return null;
       },
+    );
+  }
+
+  Widget _buildProfileCompletionMessage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.person_pin_circle_outlined, size: 80, color: Colors.blueGrey),
+            const SizedBox(height: 20),
+            Text(
+              'Completa tu Perfil',
+              style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Por favor, añade tu peso y altura para poder calcular tu IMC y establecer tus objetivos de peso.',
+              textAlign: TextAlign.center,
+              style: textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.edit_note_rounded),
+              onPressed: () {
+                setState(() {
+                  _isEditing = true;
+                });
+              },
+              label: const Text('Añadir Mis Datos'),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

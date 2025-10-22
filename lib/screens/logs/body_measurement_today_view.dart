@@ -14,17 +14,18 @@ class BodyMeasurementTodayView extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
+        // Resumen de progreso de peso
+        _buildWeightGoalSummary(),
+
+        const SizedBox(height: 24),
+        const Divider(),
+        const SizedBox(height: 24),
+
         // 1. Formulario para añadir nueva medición
         const Text('Registra tus medidas de hoy', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
         const BodyMeasurementForm(),
         
-        const SizedBox(height: 24),
-        const Divider(),
-        const SizedBox(height: 24),
-
-        _buildWeightGoalSummary(),
-
         const SizedBox(height: 24),
         const Divider(),
         const SizedBox(height: 24),
