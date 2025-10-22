@@ -5,8 +5,15 @@ import 'package:myapp/models/food_log.dart';
 
 class DailyFoodLogView extends StatelessWidget {
   final DateTime date;
+  final double? calorieGoal;
+  final String? dietPlan;
 
-  const DailyFoodLogView({super.key, required this.date});
+  const DailyFoodLogView({
+    super.key,
+    required this.date,
+    this.calorieGoal,
+    this.dietPlan,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +40,7 @@ class DailyFoodLogView extends StatelessWidget {
 
         return Column(
           children: [
-            _buildNutritionSummary(totalCalories, totalProteins, totalCarbs, totalFats),
+            _buildNutritionSummary(context, totalCalories, totalProteins, totalCarbs, totalFats),
             const SizedBox(height: 10),
             Expanded(
               child: dailyLogs.isEmpty
@@ -89,18 +96,89 @@ class DailyFoodLogView extends StatelessWidget {
     );
   }
 
-  Widget _buildNutritionSummary(double calories, double proteins, double carbs, double fats) {
+  Widget _buildNutritionSummary(BuildContext context, double calories, double proteins, double carbs, double fats) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Column(
         children: [
-          _nutritionIndicator('Calorías', calories.toInt().toString(), 'kcal', Colors.orange),
-          _nutritionIndicator('Proteínas', proteins.toInt().toString(), 'g', Colors.green),
-          _nutritionIndicator('Carbs', carbs.toInt().toString(), 'g', Colors.blue),
-          _nutritionIndicator('Grasas', fats.toInt().toString(), 'g', Colors.red),
+          _buildCalorieEquation(context, calories),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _nutritionIndicator('Proteínas', proteins.toInt().toString(), 'g', Colors.green),
+              _nutritionIndicator('Carbs', carbs.toInt().toString(), 'g', Colors.blue),
+              _nutritionIndicator('Grasas', fats.toInt().toString(), 'g', Colors.red),
+            ],
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCalorieEquation(BuildContext context, double consumedCalories) {
+    final textTheme = Theme.of(context).textTheme;
+    final remainingCalories = (calorieGoal ?? 0) - consumedCalories;
+    final planDisplayName = _getPlanDisplayName(dietPlan);
+
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+        child: Column(
+          children: [
+            if (planDisplayName != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  'Plan: $planDisplayName',
+                   style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+                ),
+              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _calorieComponent('Meta', (calorieGoal ?? 0).toInt(), textTheme, isGoal: true),
+                const Text('-', style: TextStyle(fontSize: 28)),
+                _calorieComponent('Consumidas', consumedCalories.toInt(), textTheme),
+                const Text('=', style: TextStyle(fontSize: 28)),
+                _calorieComponent('Restantes', remainingCalories.toInt(), textTheme, isRemaining: true),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String? _getPlanDisplayName(String? plan) {
+    switch (plan) {
+      case 'Perder':
+        return 'Pérdida de Peso';
+      case 'Mantener':
+        return 'Mantenimiento';
+      case 'Ganar':
+        return 'Aumento de Masa';
+      case 'Personalizado':
+        return 'Personalizado';
+      default:
+        return null;
+    }
+  }
+
+  Widget _calorieComponent(String label, int value, TextTheme textTheme, {bool isGoal = false, bool isRemaining = false}) {
+    Color valueColor = isRemaining ? (value < 0 ? Colors.red.shade400 : Colors.green.shade400) : (isGoal ? Colors.orange.shade400 : Colors.blue.shade400);
+    
+    return Column(
+      children: [
+        Text(
+          value.toString(),
+          style: textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: valueColor),
+        ),
+        const SizedBox(height: 2),
+        Text(label, style: textTheme.labelLarge),
+      ],
     );
   }
 

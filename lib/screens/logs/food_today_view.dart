@@ -3,9 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/food.dart';
 import 'package:myapp/models/food_log.dart';
+import 'package:myapp/models/user.dart';
+import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/add_food_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/widgets/daily_food_log_view.dart';
+import 'package:provider/provider.dart';
 
 class FoodTodayView extends StatefulWidget {
   const FoodTodayView({super.key});
@@ -26,6 +29,9 @@ class _FoodTodayViewState extends State<FoodTodayView> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final userProvider = Provider.of<UserProvider>(context);
+    final User? user = userProvider.user;
+
     return Column(
       children: [
         Padding(
@@ -40,7 +46,11 @@ class _FoodTodayViewState extends State<FoodTodayView> {
           ),
         ),
         Expanded(
-          child: DailyFoodLogView(date: _selectedDate),
+          child: DailyFoodLogView(
+            date: _selectedDate,
+            calorieGoal: user?.calorieGoal,
+            dietPlan: user?.dietPlan,
+          ),
         ),
         Padding(
           padding: const EdgeInsets.all(16.0),

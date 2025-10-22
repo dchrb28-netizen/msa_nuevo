@@ -5,7 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class WeightGoalsScreen extends StatefulWidget {
-  const WeightGoalsScreen({super.key});
+  final VoidCallback? onProfileUpdated;
+  const WeightGoalsScreen({super.key, this.onProfileUpdated});
 
   @override
   State<WeightGoalsScreen> createState() => _WeightGoalsScreenState();
@@ -111,7 +112,10 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
         weightGoal: double.tryParse(_weightGoalController.text.replaceAll(',', '.')),
       );
 
-      userProvider.updateUser(updatedUser);
+      userProvider.updateUser(updatedUser).then((_) {
+        widget.onProfileUpdated?.call();
+      });
+
       _calculateIMC(); 
       
       if (mounted) {

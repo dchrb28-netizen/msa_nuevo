@@ -12,7 +12,8 @@ class CaloricGoalsScreen extends StatefulWidget {
 class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
   double? _tdee;
   late List<bool> _isSelected;
-  final List<String> _plans = const ['Perder', 'Mantener', 'Ganar'];
+  final List<String> _plans = const ['Perder', 'Mantener', 'Ganar', 'Personalizado'];
+  final TextEditingController _customGoalController = TextEditingController();
 
   final Map<String, double> _activityMultipliers = const {
     'Sedentaria': 1.2,
@@ -27,7 +28,10 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
     super.initState();
     final user = Provider.of<UserProvider>(context, listen: false).user;
     final planIndex = _plans.indexOf(user?.dietPlan ?? 'Mantener');
-    _isSelected = List.generate(3, (index) => index == planIndex);
+    _isSelected = List.generate(4, (index) => index == planIndex);
+    if (planIndex == 3) {
+      _customGoalController.text = user?.calorieGoal?.toStringAsFixed(0) ?? '';
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _calculateTDEE();
@@ -35,12 +39,18 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
   }
 
   @override
+  void dispose() {
+    _customGoalController.dispose();
+    super.dispose();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _calculateTDEE();
-     final user = Provider.of<UserProvider>(context, listen: false).user;
+    final user = Provider.of<UserProvider>(context, listen: false).user;
     final planIndex = _plans.indexOf(user?.dietPlan ?? 'Mantener');
-    _isSelected = List.generate(3, (index) => index == planIndex);
+    _isSelected = List.generate(4, (index) => index == planIndex);
   }
 
   void _calculateTDEE() {
@@ -120,13 +130,8 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final goals = {
-      'Perder': _tdee! - 500,
-      'Mantener': _tdee!,
-      'Ganar': _tdee! + 500,
-    };
-    final selectedPlan = _plans[_isSelected.indexOf(true)];
-    final selectedCalorieGoal = goals[selectedPlan]!;
+    final selectedPlanIndex = _isSelected.indexOf(true);
+    final selectedPlan = _plans[selectedPlanIndex];
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
@@ -139,7 +144,7 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
-           Padding(
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
               'Tu meta calórica se ajustará según el plan que elijas. Tu gasto diario estimado es de ${_tdee!.toStringAsFixed(0)} kcal.',
@@ -157,19 +162,23 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
               selectedColor: colorScheme.onPrimary,
               fillColor: colorScheme.primary,
               color: colorScheme.onSurfaceVariant,
-              constraints: BoxConstraints(minWidth: (MediaQuery.of(context).size.width - 48) / 3, minHeight: 50),
+              constraints: BoxConstraints(minWidth: (MediaQuery.of(context).size.width - 50) / 4, minHeight: 50),
               children: const [
                 Padding(padding: EdgeInsets.all(8), child: Text('Perder')),
                 Padding(padding: EdgeInsets.all(8), child: Text('Mantener')),
                 Padding(padding: EdgeInsets.all(8), child: Text('Ganar')),
+                Padding(padding: EdgeInsets.all(8), child: Text('Personalizado')),
               ],
             ),
           ),
           const SizedBox(height: 24),
-          _buildGoalCard(
-            plan: selectedPlan,
-            calories: selectedCalorieGoal,
-          ),
+          if (selectedPlan != 'Personalizado')
+            _buildGoalCard(
+              plan: selectedPlan,
+              calories: (_tdee! + (selectedPlan == 'Perder' ? -500 : selectedPlan == 'Ganar' ? 500 : 0)),
+            )
+          else
+            _buildCustomGoalCard(),
         ],
       ),
     );
@@ -177,7 +186,7 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
 
   Widget _buildGoalCard({required String plan, required double calories}) {
     final textTheme = Theme.of(context).textTheme;
-    
+
     final Map<String, dynamic> planDetails = {
       'Perder': {
         'title': 'Pérdida de Peso',
@@ -208,14 +217,14 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
       elevation: 4,
       margin: const EdgeInsets.symmetric(horizontal: 4),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-       color: details['color'].withAlpha(50),
+      color: details['color'].withAlpha(50),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
             Row(
               children: [
-                Icon(details['icon'], size: 40, color: details['darkColor']), 
+                Icon(details['icon'], size: 40, color: details['darkColor']),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -252,38 +261,105 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
       ),
     );
   }
-  
+
+  Widget _buildCustomGoalCard() {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: colorScheme.surfaceVariant.withAlpha(50),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Icon(Icons.edit, size: 40, color: colorScheme.primary),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Meta Personalizada', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary)),
+                      const SizedBox(height: 4),
+                      Text('Define tu propio objetivo calórico diario.', style: textTheme.bodyMedium),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _customGoalController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Tu Meta de Calorías (kcal)',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                suffixText: 'kcal',
+              ),
+              style: textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                final customGoal = double.tryParse(_customGoalController.text);
+                if (customGoal != null && customGoal > 0) {
+                  _applyCalorieGoal(customGoal);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Por favor, introduce un número válido para las calorías.')),
+                  );
+                }
+              },
+              icon: const Icon(Icons.check_circle_outline),
+              label: const Text('Aplicar Meta Personalizada'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildProfileCompletionMessage(BuildContext context) {
-      final textTheme = Theme.of(context).textTheme;
-       return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.warning_amber_rounded, size: 60, color: Colors.amber),
-              const SizedBox(height: 20),
-              Text(
-                'Faltan datos en tu perfil',
-                style: textTheme.headlineSmall, textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Por favor, completa tu peso, altura y edad en la sección "Mis Datos Corporales" para poder calcular tus metas calóricas.',
-                textAlign: TextAlign.center,
-                style: textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                   DefaultTabController.of(context).animateTo(0);
-                },
-                child: const Text('Completar mi Perfil'),
-              )
-            ],
-          ),
+    final textTheme = Theme.of(context).textTheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.warning_amber_rounded, size: 60, color: Colors.amber),
+            const SizedBox(height: 20),
+            Text(
+              'Faltan datos en tu perfil',
+              style: textTheme.headlineSmall, textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Por favor, completa tu peso, altura y edad en la sección "Peso" para poder calcular tus metas calóricas.',
+              textAlign: TextAlign.center,
+              style: textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                DefaultTabController.of(context).animateTo(1);
+              },
+              child: const Text('Completar mi Perfil'),
+            )
+          ],
         ),
-      );
-    }
+      ),
+    );
+  }
 }
