@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/dashboard_screen.dart';
 import 'package:myapp/screens/menus_screen.dart';
-import 'package:myapp/screens/training/training_screen.dart';
+import 'package:myapp/screens/progreso_screen.dart';
 import 'package:myapp/widgets/drawer_menu.dart';
 
 class MainScreen extends StatefulWidget {
@@ -18,7 +18,7 @@ class _MainScreenState extends State<MainScreen> {
   static final List<Widget> _widgetOptions = <Widget>[
     const DashboardScreen(), // Non-const to allow rebuilds
     const MenusScreen(),
-    const TrainingScreen(),
+    const ProgresoScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -42,12 +42,7 @@ class _MainScreenState extends State<MainScreen> {
         );
       case 2:
         return AppBar(
-          bottom: const TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.fitness_center), text: 'Mi Rutina'),
-              Tab(icon: Icon(Icons.library_books), text: 'Biblioteca'),
-            ],
-          ),
+          title: const Text('Progreso'),
         );
       default:
         return AppBar();
@@ -78,9 +73,9 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Menús',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center_outlined),
-            activeIcon: Icon(Icons.fitness_center),
-            label: 'Entrenamiento',
+            icon: Icon(Icons.show_chart_outlined),
+            activeIcon: Icon(Icons.show_chart),
+            label: 'Progreso',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -88,7 +83,7 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
 
-    if (_selectedIndex == 1 || _selectedIndex == 2) {
+    if (_selectedIndex == 1) {
       return DefaultTabController(
         length: 2,
         child: scaffold,
