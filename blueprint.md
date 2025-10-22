@@ -25,10 +25,6 @@ Esta es una aplicación de Flutter diseñada para el seguimiento de la salud y e
   - **Ejercicios:** Espacio dedicado al registro de actividad física.
   - **Hábitos:** Nueva sección que incluye el seguimiento de "Ayuno Intermitente".
 
-- **Sección de Registros (`LogsScreen`):**
-  - Contiene una `TabBar` para navegar entre "Agua", "Comida" y "Medidas".
-  - Cada sub-sección tiene su propia `TabBar` para "Hoy" e "Historial".
-
 - **Seguimiento de Ayuno Intermitente:**
   - **Modelo de Datos:** `FastingLog` para almacenar el inicio y fin de cada ayuno en Hive.
   - **Gestor de Estado:** `FastingProvider` para manejar la lógica del temporizador y el estado del ayuno (activo/inactivo).
@@ -38,30 +34,60 @@ Esta es una aplicación de Flutter diseñada para el seguimiento de la salud y e
     - Una sección para el historial de ayunos.
   - **Persistencia:** La app recuerda el estado del ayuno incluso después de cerrarla y volverla a abrir.
 
-- **Sección de Menús:**
+- **Sección de Menús (Planificación):**
     - **Planificador Semanal:** Vista de calendario para planificar comidas.
     - **Vista Diaria:** Resumen de las comidas del día.
     - **Edición de Comidas:** Pantalla para añadir/eliminar alimentos de una comida específica.
     - **Detalles Nutricionales:** Vista detallada de los macros y calorías de cada comida.
 
-## Plan Actual (Última Petición)
+- **Registro Básico de Comidas (Diario):**
+    - Flujo completo para buscar un alimento de la base de datos local.
+    - Diálogo para introducir cantidad y tipo de comida.
+    - Guardado en la base de datos de registros (`food_logs`).
+    - Visualización de la lista de comidas y total de calorías en la vista "Hoy".
 
-**Petición del Usuario:** "revisa TODOS los botones de la app tomando esos de ejemplo y mejoralos todos incluyendo los de esa pantalla"
+## Plan de Desarrollo: Módulo de Registro de Comidas
 
-**Plan de Ejecución:**
+**Objetivo Principal:** Permitir al usuario buscar, registrar y revisar las comidas que consume diariamente para llevar un control preciso de sus calorías y macronutrientes.
 
-1.  **Analizar Botones Actuales:** Realizar una revisión exhaustiva de todos los botones de la aplicación, incluyendo `ElevatedButton`, `TextButton`, `IconButton` y los botones de la barra de navegación.
-2.  **Proponer Estilo Unificado:** Definir un estilo de botón moderno y consistente que se alinee con la identidad visual de la aplicación. Esto incluye:
-    - **`ElevatedButton`:** Botones primarios con una sombra sutil, esquinas redondeadas y un efecto de "glow" al interactuar.
-    - **`TextButton`:** Botones secundarios o de menor énfasis, con un color de texto claro y sin fondo.
-    - **`IconButton`:** Iconos limpios y consistentes, con un área táctil adecuada para una buena experiencia de usuario.
-3.  **Implementar Mejoras (Archivo por Archivo):**
-    - **`weekly_planner_screen.dart`:**
-        - Rediseñar los `IconButton` de "Ver" y "Editar" para que sean más prominentes y visualmente atractivos.
-        - Mejorar el estilo del botón "Repetir Semana".
-    - **`today_menu_screen.dart`:**
-        - Aplicar el nuevo estilo a los botones "Editar" y "Ver".
-    - **Otras pantallas:**
-        - Recorrer sistemáticamente el resto de la aplicación y aplicar los nuevos estilos de botones para garantizar la coherencia.
-4.  **Actualizar `blueprint.md`:** Documentar los cambios de diseño y el nuevo estilo de los botones.
-5.  **Verificación Final:** Realizar una última revisión visual y de `flutter analyze` para asegurar que todo funciona como se espera.
+--- 
+
+**Paso 1: Finalizar el Flujo Básico de Registro (¡Completado!)**
+
+*   **Tarea:** Asegurar que un usuario pueda seleccionar un alimento de la base de datos local y registrarlo en su diario de hoy.
+*   **Estado:** **¡Hecho!**
+
+---
+
+**Paso 2: Mejorar el Registro de "Nuevos Alimentos"**
+
+*   **Tarea:** Enriquecer la pantalla `RegisterFoodScreen` para que los usuarios puedan añadir alimentos a la base de datos con información nutricional completa.
+*   **Implementación:**
+    1.  Modificar `RegisterFoodScreen` para que, además del nombre, el usuario pueda introducir:
+        *   **Calorías** (por 100g).
+        *   **Proteínas** (por 100g).
+        *   **Carbohidratos** (por 100g).
+        *   **Grasas** (por 100g).
+    2.  Actualizar el modelo `Food` para incluir estos campos de macronutrientes.
+    3.  Guardar el nuevo alimento con toda su información en la base de datos `foods`.
+*   **Justificación:** Una base de datos más rica es fundamental para poder ofrecer un seguimiento nutricional completo más allá de las calorías.
+
+---
+
+**Paso 3: Visualización Avanzada en la Pantalla "Hoy"**
+
+*   **Tarea:** Mejorar `FoodTodayView` para ofrecer una vista más organizada y detallada de la ingesta del día.
+*   **Implementación:**
+    1.  **Agrupar por Comida:** En lugar de una lista simple, agrupar las entradas por "Desayuno", "Almuerzo", "Cena" y "Snack", cada una con su propio subtítulo y subtotal de calorías.
+    2.  **Resumen de Macronutrientes:** Mostrar un resumen total del día no solo de calorías, sino también de **Proteínas, Carbohidratos y Grasas** consumidos.
+*   **Justificación:** Proporciona al usuario una visión clara y organizada de su nutrición, facilitando la toma de decisiones.
+
+---
+
+**Paso 4: Implementar el "Historial de Comidas"**
+
+*   **Tarea:** Construir la pantalla `FoodHistoryScreen` para que el usuario pueda revisar su consumo en días anteriores.
+*   **Implementación:**
+    1.  Mostrar una vista de calendario o una lista de fechas pasadas.
+    2.  Al seleccionar un día, mostrar un resumen de ese día, similar a la vista "Hoy", con el total de calorías, macros y la lista de alimentos consumidos.
+*   **Justificación:** Esencial para que el usuario pueda seguir su progreso y analizar sus hábitos alimenticios a lo largo del tiempo.
