@@ -29,11 +29,9 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     _heightController = TextEditingController();
     _weightGoalController = TextEditingController();
 
-    if (user != null && user.weight > 0 && user.height > 0) {
+    if (user != null) {
       _updateControllers(user);
       _calculateIMC();
-    } else {
-      _isEditing = true;
     }
 
     _weightController.addListener(_calculateIMC);
@@ -44,24 +42,16 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final user = Provider.of<UserProvider>(context, listen: true).user;
-    if (user != null && user.weight > 0 && user.height > 0) {
-      if (!_isEditing) {
-        _updateControllers(user);
-        _calculateIMC();
-      }
-    } else {
-      if (!_isEditing) {
-        setState(() {
-          _isEditing = true;
-        });
-      }
+    if (user != null && !_isEditing) {
+      _updateControllers(user);
+      _calculateIMC();
     }
   }
-
+  
   void _updateControllers(dynamic user) {
-    _weightController.text = user.weight.toStringAsFixed(1);
-    _heightController.text = user.height.toStringAsFixed(0);
-    _weightGoalController.text = user.weightGoal?.toStringAsFixed(1) ?? '';
+    _weightController.text = user.weight > 0 ? user.weight.toStringAsFixed(1) : '';
+    _heightController.text = user.height > 0 ? user.height.toStringAsFixed(0) : '';
+    _weightGoalController.text = user.weightGoal != null && user.weightGoal! > 0 ? user.weightGoal!.toStringAsFixed(1) : '';
   }
 
   @override
@@ -169,52 +159,58 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     );
   }
 
-@override
-Widget build(BuildContext context) {
-  final user = Provider.of<UserProvider>(context).user;
-  final appBarColor = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).primaryColor;
-  
-  // Comprueba si falta información esencial del perfil
-  final isProfileIncomplete = user == null || user.weight <= 0 || user.height <= 0;
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<UserProvider>(context).user;
+    final appBarColor = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).primaryColor;
+    
+    final isProfileIncomplete = user == null || user.weight <= 0 || user.height <= 0;
 
-  return Scaffold(
-    backgroundColor: _isEditing ? Theme.of(context).colorScheme.surface : null,
-    body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: _isEditing
-            ? _buildEditView()
-            : (isProfileIncomplete ? _buildProfileCompletionMessage(context) : _buildSummaryView()),
-    ),
-    floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    floatingActionButton: !_isEditing && !isProfileIncomplete
-        ? Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: ElevatedButton.icon(
-              onPressed: () => setState(() => _isEditing = true),
-              icon: const Icon(Icons.edit_outlined),
-              label: const Text('Actualizar Mis Datos'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: appBarColor,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+    Widget currentView;
+
+    if (isProfileIncomplete && !_isEditing) {
+      currentView = _buildProfileCompletionMessage(context);
+    } else if (_isEditing) {
+      currentView = _buildEditView();
+    } else {
+      currentView = _buildSummaryView();
+    }
+
+    return Scaffold(
+      backgroundColor: _isEditing ? Theme.of(context).colorScheme.surface : null,
+      body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: currentView,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: !_isEditing && !isProfileIncomplete
+          ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: ElevatedButton.icon(
+                onPressed: () => setState(() => _isEditing = true),
+                icon: const Icon(Icons.edit_outlined),
+                label: const Text('Actualizar Mis Datos'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: appBarColor,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
               ),
-            ),
-          )
-        : null,
-  );
-}
-
+            )
+          : null,
+    );
+  }
 
   Widget _buildSummaryView() {
     final user = Provider.of<UserProvider>(context).user!;
 
     return SingleChildScrollView(
       key: const ValueKey('summaryView'),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 80), // Padding for FAB
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 80), 
       child: Column(
         children: [
           _buildIMCGauge(),
@@ -235,15 +231,15 @@ Widget build(BuildContext context) {
                   title: 'Altura',
                   value: '${user.height.toStringAsFixed(0)} cm',
                 ),
-                if (user.weightGoal != null && user.weightGoal! > 0)
+                if (user.weightGoal != null && user.weightGoal! > 0) ...[
                   const Divider(height: 1, indent: 16, endIndent: 16),
-                if (user.weightGoal != null && user.weightGoal! > 0)
                   _buildSummaryTile(
                     icon: Icons.flag_outlined,
                     title: 'Meta de Peso',
                     value: '${user.weightGoal!.toStringAsFixed(1)} kg',
                     color: Theme.of(context).colorScheme.secondary,
                   ),
+                ]
               ],
             ),
           ),
@@ -391,10 +387,10 @@ Widget build(BuildContext context) {
                 textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-            if (!isInitialSetup)
-            const SizedBox(height: 10),
-             if (!isInitialSetup)
-             TextButton(onPressed: () => setState(() => _isEditing = false), child: const Text('Cancelar'))
+             if (!isInitialSetup) ...[
+                const SizedBox(height: 10),
+                TextButton(onPressed: () => setState(() => _isEditing = false), child: const Text('Cancelar'))
+             ]
           ],
         ),
       ),
@@ -420,7 +416,9 @@ Widget build(BuildContext context) {
       validator: (value) {
         if (!isRequired && (value == null || value.isEmpty)) return null;
         if (value == null || value.isEmpty) return 'Este campo es obligatorio';
-        if (double.tryParse(value.replaceAll(',', '.')) == null) return 'Introduce un número válido';
+        final number = double.tryParse(value.replaceAll(',', '.'));
+        if (number == null) return 'Introduce un número válido';
+        if (number <= 0) return 'El valor debe ser mayor que cero';
         return null;
       },
     );
@@ -429,21 +427,23 @@ Widget build(BuildContext context) {
   Widget _buildProfileCompletionMessage(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Center(
+      key: const ValueKey('completionMessage'),
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(Icons.person_pin_circle_outlined, size: 80, color: Colors.blueGrey),
+            const Icon(Icons.warning_amber_rounded, size: 60, color: Colors.amber),
             const SizedBox(height: 20),
             Text(
-              'Completa tu Perfil',
+              'Faltan datos en tu perfil',
               style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
             Text(
-              'Por favor, añade tu peso y altura para poder calcular tu IMC y establecer tus objetivos de peso.',
+              'Por favor, completa tu peso y altura para poder calcular tu IMC y establecer tus objetivos de peso.',
               textAlign: TextAlign.center,
               style: textTheme.bodyLarge,
             ),
@@ -455,7 +455,7 @@ Widget build(BuildContext context) {
                   _isEditing = true;
                 });
               },
-              label: const Text('Añadir Mis Datos'),
+              label: const Text('Completar mi Perfil'),
             )
           ],
         ),

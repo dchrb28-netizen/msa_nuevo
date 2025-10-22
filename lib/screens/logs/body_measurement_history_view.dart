@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/body_measurement.dart';
 import 'package:intl/intl.dart';
-import 'package:myapp/providers/user_provider.dart';
-import 'package:provider/provider.dart';
 
 class BodyMeasurementHistoryView extends StatelessWidget {
   const BodyMeasurementHistoryView({super.key});

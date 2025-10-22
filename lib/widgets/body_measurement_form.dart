@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/body_measurement.dart';
+import 'package:myapp/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class BodyMeasurementForm extends StatefulWidget {
@@ -62,6 +64,14 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
       );
 
       Hive.box<BodyMeasurement>('body_measurements').add(newMeasurement);
+
+      // Actualizar el peso del usuario en el perfil
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final currentUser = userProvider.user;
+      if (currentUser != null) {
+        final updatedUser = currentUser.copyWith(weight: weight);
+        userProvider.updateUser(updatedUser);
+      }
       
       // Limpiar los campos
       _formKey.currentState!.reset();
