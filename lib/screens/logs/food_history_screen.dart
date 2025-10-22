@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/widgets/daily_food_log_view.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class FoodHistoryScreen extends StatefulWidget {
@@ -53,13 +54,9 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
           ),
           const Divider(),
           Expanded(
-            child: Center(
-              child: Text(
-                _selectedDay != null
-                    ? 'Mostrando datos para el: ${_selectedDay!.toLocal().toString().split(' ')[0]}'
-                    : 'Selecciona un día',
-              ),
-            ),
+            child: _selectedDay == null
+                ? const Center(child: Text('Selecciona un día para ver el detalle'))
+                : DailyFoodLogView(date: _selectedDay!),
           ),
         ],
       ),
