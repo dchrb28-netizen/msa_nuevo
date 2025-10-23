@@ -270,7 +270,7 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
       elevation: 4,
       margin: const EdgeInsets.symmetric(horizontal: 4),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: colorScheme.surfaceVariant.withAlpha(50),
+      color: colorScheme.surfaceContainerHighest.withAlpha(50),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(

@@ -10,7 +10,7 @@ import 'package:myapp/models/food.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/models/meal_type.dart';
 import 'package:myapp/models/recipe.dart';
-import 'package:myapp/models/reminder.dart'; // Import the new model
+import 'package:myapp/models/reminder.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/user_recipe.dart';
 import 'package:myapp/models/water_log.dart';
@@ -26,6 +26,13 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:url_strategy/url_strategy.dart';
+
+// Import the new models and providers
+import 'package:myapp/models/routine.dart';
+import 'package:myapp/models/set_log.dart';
+import 'package:myapp/models/exercise_log.dart';
+import 'package:myapp/models/routine_log.dart';
+import 'package:myapp/providers/routine_provider.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized
@@ -69,11 +76,24 @@ void main() async {
     Hive.registerAdapter(UserRecipeAdapter());
   }
   if (!Hive.isAdapterRegistered(ReminderAdapter().typeId)) {
-    // Register the new adapter
     Hive.registerAdapter(ReminderAdapter());
   }
   if (!Hive.isAdapterRegistered(FastingLogAdapter().typeId)) {
     Hive.registerAdapter(FastingLogAdapter());
+  }
+
+  // Register the new training adapters
+  if (!Hive.isAdapterRegistered(RoutineAdapter().typeId)) {
+    Hive.registerAdapter(RoutineAdapter());
+  }
+  if (!Hive.isAdapterRegistered(SetLogAdapter().typeId)) {
+    Hive.registerAdapter(SetLogAdapter());
+  }
+  if (!Hive.isAdapterRegistered(ExerciseLogAdapter().typeId)) {
+    Hive.registerAdapter(ExerciseLogAdapter());
+  }
+  if (!Hive.isAdapterRegistered(RoutineLogAdapter().typeId)) {
+    Hive.registerAdapter(RoutineLogAdapter());
   }
 
   // Open boxes
@@ -86,8 +106,12 @@ void main() async {
   await Hive.openBox('settings');
   await Hive.openBox<Recipe>('favorite_recipes');
   await Hive.openBox<UserRecipe>('user_recipes');
-  await Hive.openBox<Reminder>('reminders'); // Open the new box
+  await Hive.openBox<Reminder>('reminders');
   await Hive.openBox<FastingLog>('fasting_logs');
+
+  // Open the new training boxes
+  await Hive.openBox<Routine>('routines');
+  await Hive.openBox<RoutineLog>('routine_logs');
 
   await _populateInitialFoodData();
 
@@ -101,6 +125,8 @@ void main() async {
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => FastingProvider()),
         ChangeNotifierProvider(create: (context) => MealPlanProvider()),
+        // Add the RoutineProvider
+        ChangeNotifierProvider(create: (context) => RoutineProvider()),
       ],
       child: MyApp(profileExists: profileExists),
     ),

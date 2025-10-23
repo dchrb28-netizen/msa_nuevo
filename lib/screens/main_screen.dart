@@ -14,9 +14,8 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  // Make the list non-const to allow non-const children
   static final List<Widget> _widgetOptions = <Widget>[
-    const DashboardScreen(), // Non-const to allow rebuilds
+    const DashboardScreen(),
     const MenusScreen(),
     const ProgresoScreen(),
   ];
@@ -33,6 +32,7 @@ class _MainScreenState extends State<MainScreen> {
         return AppBar(title: const Text('Salud Activa'));
       case 1:
         return AppBar(
+          title: const Text('Plan de Comidas'),
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.today), text: 'Hoy'),
@@ -49,7 +49,6 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  // Replace IndexedStack with a direct call to the widget to force rebuilds
   Widget _buildBody() {
     return _widgetOptions.elementAt(_selectedIndex);
   }

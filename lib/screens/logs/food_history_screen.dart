@@ -43,7 +43,7 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
             ),
             calendarStyle: CalendarStyle(
               todayDecoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.primary.withAlpha(128),
                 shape: BoxShape.circle,
               ),
               selectedDecoration: BoxDecoration(

@@ -1,26 +1,30 @@
+import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'set_log.g.dart';
 
 @JsonSerializable()
-class SetLog {
-  final int? reps;
-  final double? weight;
-  final Duration? time;
-  final double? distance;
+@HiveType(typeId: 15)
+class SetLog extends HiveObject {
+  @HiveField(0)
+  final int reps;
 
-  SetLog({this.reps, this.weight, this.time, this.distance});
+  @HiveField(1)
+  final double weight;
+
+  @HiveField(2)
+  final Duration duration;
+
+  @HiveField(3)
+  final String notes;
+
+  SetLog({
+    this.reps = 0,
+    this.weight = 0.0,
+    this.duration = Duration.zero,
+    this.notes = '',
+  });
 
   factory SetLog.fromJson(Map<String, dynamic> json) => _$SetLogFromJson(json);
   Map<String, dynamic> toJson() => _$SetLogToJson(this);
-
-  @override
-  String toString() {
-    final parts = <String>[];
-    if (reps != null) parts.add('$reps reps');
-    if (weight != null) parts.add('$weight kg');
-    if (time != null) parts.add('${time!.inMinutes} min');
-    if (distance != null) parts.add('$distance km');
-    return parts.join(' - ');
-  }
 }

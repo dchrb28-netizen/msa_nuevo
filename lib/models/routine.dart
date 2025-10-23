@@ -1,25 +1,32 @@
 import 'package:hive/hive.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:myapp/models/exercise.dart';
 
 part 'routine.g.dart';
 
+@JsonSerializable(explicitToJson: true)
 @HiveType(typeId: 13)
 class Routine extends HiveObject {
   @HiveField(0)
-  final String id;
+  String id;
 
   @HiveField(1)
   String name;
 
   @HiveField(2)
-  String? description;
+  String description;
 
   @HiveField(3)
-  List<String> exerciseIds;
+  @JsonKey(name: 'exercises') // Asegúrate de que el nombre coincida con el JSON
+  List<Exercise> exercises;
 
   Routine({
     required this.id,
     required this.name,
-    this.description,
-    required this.exerciseIds,
+    this.description = '',
+    required this.exercises,
   });
+
+  factory Routine.fromJson(Map<String, dynamic> json) => _$RoutineFromJson(json);
+  Map<String, dynamic> toJson() => _$RoutineToJson(this);
 }

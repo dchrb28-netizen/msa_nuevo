@@ -83,7 +83,7 @@ class DailyFoodLogView extends StatelessWidget {
                                   trailing: Text('${((log.food.calories ?? 0) * log.quantity / 100).toInt()} kcal'),
                                   onLongPress: () => log.delete(),
                                 );
-                              }).toList(),
+                              }),
                             ],
                           ),
                         );

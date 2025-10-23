@@ -87,7 +87,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
               ),
               const SizedBox(height: 20),
               DropdownButtonFormField<String>(
-                value: _selectedMealType,
+                initialValue: _selectedMealType,
                 decoration: const InputDecoration(
                   labelText: 'Tipo de Comida',
                   filled: true,
