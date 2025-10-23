@@ -1,6 +1,7 @@
+
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:myapp/models/exercise.dart';
+import 'package:myapp/models/routine_exercise.dart';
 
 part 'routine.g.dart';
 
@@ -18,7 +19,7 @@ class Routine extends HiveObject {
 
   @HiveField(3)
   @JsonKey(name: 'exercises') // Asegúrate de que el nombre coincida con el JSON
-  List<Exercise> exercises;
+  List<RoutineExercise> exercises;
 
   Routine({
     required this.id,

@@ -1,3 +1,4 @@
+
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:myapp/models/exercise_log.dart';
@@ -5,29 +6,29 @@ import 'package:myapp/models/exercise_log.dart';
 part 'routine_log.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-@HiveType(typeId: 14)
+@HiveType(typeId: 8)
 class RoutineLog extends HiveObject {
   @HiveField(0)
-  final String routineName;
+  DateTime date;
 
   @HiveField(1)
-  final DateTime date;
+  String routineName;
 
   @HiveField(2)
-  final List<ExerciseLog> exerciseLogs;
+  List<ExerciseLog> exerciseLogs;
 
   @HiveField(3)
-  final Duration duration;
+  String? notes;
 
   @HiveField(4)
-  final String notes;
+  Duration? duration;
 
   RoutineLog({
-    required this.routineName,
     required this.date,
+    required this.routineName,
     required this.exerciseLogs,
-    this.duration = Duration.zero,
-    this.notes = '',
+    this.notes,
+    this.duration,
   });
 
   factory RoutineLog.fromJson(Map<String, dynamic> json) => _$RoutineLogFromJson(json);

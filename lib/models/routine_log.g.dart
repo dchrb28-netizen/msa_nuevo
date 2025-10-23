@@ -8,7 +8,7 @@ part of 'routine_log.dart';
 
 class RoutineLogAdapter extends TypeAdapter<RoutineLog> {
   @override
-  final int typeId = 14;
+  final int typeId = 8;
 
   @override
   RoutineLog read(BinaryReader reader) {
@@ -17,11 +17,11 @@ class RoutineLogAdapter extends TypeAdapter<RoutineLog> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return RoutineLog(
-      routineName: fields[0] as String,
-      date: fields[1] as DateTime,
+      date: fields[0] as DateTime,
+      routineName: fields[1] as String,
       exerciseLogs: (fields[2] as List).cast<ExerciseLog>(),
-      duration: fields[3] as Duration,
-      notes: fields[4] as String,
+      notes: fields[3] as String?,
+      duration: fields[4] as Duration?,
     );
   }
 
@@ -30,15 +30,15 @@ class RoutineLogAdapter extends TypeAdapter<RoutineLog> {
     writer
       ..writeByte(5)
       ..writeByte(0)
-      ..write(obj.routineName)
-      ..writeByte(1)
       ..write(obj.date)
+      ..writeByte(1)
+      ..write(obj.routineName)
       ..writeByte(2)
       ..write(obj.exerciseLogs)
       ..writeByte(3)
-      ..write(obj.duration)
+      ..write(obj.notes)
       ..writeByte(4)
-      ..write(obj.notes);
+      ..write(obj.duration);
   }
 
   @override
@@ -57,22 +57,22 @@ class RoutineLogAdapter extends TypeAdapter<RoutineLog> {
 // **************************************************************************
 
 RoutineLog _$RoutineLogFromJson(Map<String, dynamic> json) => RoutineLog(
-      routineName: json['routineName'] as String,
       date: DateTime.parse(json['date'] as String),
+      routineName: json['routineName'] as String,
       exerciseLogs: (json['exerciseLogs'] as List<dynamic>)
           .map((e) => ExerciseLog.fromJson(e as Map<String, dynamic>))
           .toList(),
+      notes: json['notes'] as String?,
       duration: json['duration'] == null
-          ? Duration.zero
+          ? null
           : Duration(microseconds: (json['duration'] as num).toInt()),
-      notes: json['notes'] as String? ?? '',
     );
 
 Map<String, dynamic> _$RoutineLogToJson(RoutineLog instance) =>
     <String, dynamic>{
-      'routineName': instance.routineName,
       'date': instance.date.toIso8601String(),
+      'routineName': instance.routineName,
       'exerciseLogs': instance.exerciseLogs.map((e) => e.toJson()).toList(),
-      'duration': instance.duration.inMicroseconds,
       'notes': instance.notes,
+      'duration': instance.duration?.inMicroseconds,
     };

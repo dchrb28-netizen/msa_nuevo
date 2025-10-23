@@ -1,3 +1,5 @@
+
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:myapp/models/routine.dart';
 import 'package:myapp/models/routine_log.dart';
@@ -17,40 +19,106 @@ class WorkoutScreen extends StatefulWidget {
 
 class _WorkoutScreenState extends State<WorkoutScreen> {
   late List<ExerciseLog> _exerciseLogs;
-  final _notesController = TextEditingController();
+  late DateTime _startTime;
+  int _currentExerciseIndex = 0;
+  bool _isResting = false;
+  Timer? _restTimer;
+  int _restTimeRemaining = 0;
 
   @override
   void initState() {
     super.initState();
-    _exerciseLogs = widget.routine.exercises.map((exercise) {
-      return ExerciseLog(exercise: exercise, sets: [SetLog(reps: 0, weight: 0)]);
+    _startTime = DateTime.now();
+    _exerciseLogs = widget.routine.exercises.map((routineExercise) {
+      return ExerciseLog(
+        exercise: routineExercise.exercise,
+        sets: List.generate(
+          routineExercise.sets,
+          (index) => SetLog(reps: 0, weight: 0), // Initialize with 0 or planned values
+        ),
+      );
     }).toList();
   }
 
   void _finishWorkout() {
+    final duration = DateTime.now().difference(_startTime);
     final routineLog = RoutineLog(
-      date: DateTime.now(),
+      date: _startTime,
       routineName: widget.routine.name,
       exerciseLogs: _exerciseLogs,
-      notes: _notesController.text,
+      duration: duration,
     );
     Provider.of<RoutineProvider>(context, listen: false).addRoutineLog(routineLog);
-
-    // Pop until we get back to the main screen
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
-  void _addSet(int exerciseIndex) {
+  void _completeSet(int setIndex) {
     setState(() {
-      _exerciseLogs[exerciseIndex].sets.add(SetLog(reps: 0, weight: 0));
+      _exerciseLogs[_currentExerciseIndex].sets[setIndex].isCompleted = true;
+      _startRestTimer();
     });
+  }
+
+  void _startRestTimer() {
+    final restTime = widget.routine.exercises[_currentExerciseIndex].restTime ?? 60;
+    _restTimeRemaining = restTime;
+    setState(() {
+      _isResting = true;
+    });
+    _restTimer?.cancel();
+    _restTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_restTimeRemaining > 0) {
+        setState(() {
+          _restTimeRemaining--;
+        });
+      } else {
+        _restTimer?.cancel();
+        setState(() {
+          _isResting = false;
+        });
+      }
+    });
+  }
+
+  void _nextExercise() {
+    if (_currentExerciseIndex < widget.routine.exercises.length - 1) {
+      setState(() {
+        _currentExerciseIndex++;
+        _isResting = false;
+        _restTimer?.cancel();
+      });
+    }
+  }
+
+  void _previousExercise() {
+    if (_currentExerciseIndex > 0) {
+      setState(() {
+        _currentExerciseIndex--;
+        _isResting = false;
+        _restTimer?.cancel();
+      });
+    }
+  }
+  
+  @override
+  void dispose() {
+    _restTimer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final currentRoutineExercise = widget.routine.exercises[_currentExerciseIndex];
+    final currentExerciseLog = _exerciseLogs[_currentExerciseIndex];
+
+    if (_isResting) {
+      return _buildRestScreen();
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.routine.name),
+        title: Text('${_currentExerciseIndex + 1}/${widget.routine.exercises.length}'),
+        centerTitle: true,
         actions: [
           TextButton(
             onPressed: _finishWorkout,
@@ -59,105 +127,102 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          itemCount: _exerciseLogs.length + 1, // +1 for the notes field
-          itemBuilder: (context, index) {
-            if (index == _exerciseLogs.length) {
-              // This is the last item, show the notes field
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TextField(
-                  controller: _notesController,
-                  decoration: const InputDecoration(
-                    labelText: 'Notas del entrenamiento (opcional)',
-                    border: OutlineInputBorder(),
-                  ),
-                  maxLines: 3,
-                ),
-              );
-            }
-
-            // Exercise log item
-            final exerciseLog = _exerciseLogs[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
-              child: ExpansionTile(
-                title: Text(exerciseLog.exercise.name, style: Theme.of(context).textTheme.titleLarge),
-                children: [
-                  _buildSetList(index),
-                  TextButton(
-                    onPressed: () => _addSet(index),
-                    child: const Text('Añadir Serie'),
-                  ),
-                ],
-              ),
-            );
-          },
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(currentRoutineExercise.exercise.name, style: Theme.of(context).textTheme.headlineMedium, textAlign: TextAlign.center),
+            const SizedBox(height: 8),
+            Text('${currentRoutineExercise.sets} series x ${currentRoutineExercise.reps} reps', style: Theme.of(context).textTheme.titleMedium, textAlign: TextAlign.center),
+            const SizedBox(height: 24),
+            _buildSetList(currentExerciseLog),
+            const Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (_currentExerciseIndex > 0)
+                  ElevatedButton(onPressed: _previousExercise, child: const Text('Anterior')),
+                if (_currentExerciseIndex < widget.routine.exercises.length - 1)
+                  ElevatedButton(onPressed: _nextExercise, child: const Text('Siguiente')),
+              ],
+            )
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildSetList(int exerciseIndex) {
-    final sets = _exerciseLogs[exerciseIndex].sets;
-    return ListView.builder(
-      shrinkWrap: true, // Important to make it work inside ExpansionTile
-      physics: const NeverScrollableScrollPhysics(), // Disable scrolling of the inner list
-      itemCount: sets.length,
-      itemBuilder: (context, setIndex) {
-        final currentSet = sets[setIndex];
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+  Widget _buildSetList(ExerciseLog exerciseLog) {
+  return ListView.builder(
+    shrinkWrap: true,
+    itemCount: exerciseLog.sets.length,
+    itemBuilder: (context, index) {
+      final set = exerciseLog.sets[index];
+      return Card(
+        color: set.isCompleted ? Colors.green[100] : null,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Serie ${setIndex + 1}'),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 80,
-                    child: TextFormField(
-                      initialValue: currentSet.reps.toString(),
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Reps'),
-                      onChanged: (value) {
-                        setState(() {
-                          final reps = int.tryParse(value) ?? 0;
-                          sets[setIndex] = SetLog(reps: reps, weight: currentSet.weight);
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  SizedBox(
-                    width: 80,
-                    child: TextFormField(
-                      initialValue: currentSet.weight.toString(),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(labelText: 'Peso (kg)'),
-                      onChanged: (value) {
-                        setState(() {
-                          final weight = double.tryParse(value) ?? 0;
-                          sets[setIndex] = SetLog(reps: currentSet.reps, weight: weight);
-                        });
-                      },
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.redAccent),
-                    onPressed: () {
-                      setState(() {
-                        _exerciseLogs[exerciseIndex].sets.removeAt(setIndex);
-                      });
-                    },
-                  )
-                ],
+              Text('Serie ${index + 1}', style: const TextStyle(fontSize: 16)),
+              SizedBox(
+                width: 80,
+                child: TextFormField(
+                  initialValue: set.weight.toString(),
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Peso'),
+                  onChanged: (value) => set.weight = double.tryParse(value) ?? 0,
+                ),
+              ),
+              SizedBox(
+                width: 80,
+                child: TextFormField(
+                  initialValue: set.reps.toString(),
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Reps'),
+                  onChanged: (value) => set.reps = int.tryParse(value) ?? 0,
+                ),
+              ),
+              IconButton(
+                icon: Icon(set.isCompleted ? Icons.check_circle : Icons.check_circle_outline),
+                color: set.isCompleted ? Colors.green : Colors.grey,
+                onPressed: () => _completeSet(index),
               ),
             ],
           ),
-        );
-      },
+        ),
+      );
+    },
+  );
+}
+
+
+  Widget _buildRestScreen() {
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('DESCANSO', style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white)),
+            const SizedBox(height: 20),
+            Text('${_restTimeRemaining}s', style: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                _restTimer?.cancel();
+                setState(() {
+                  _isResting = false;
+                });
+              },
+              child: const Text('Saltar Descanso'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

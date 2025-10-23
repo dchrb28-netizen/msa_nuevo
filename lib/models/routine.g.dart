@@ -20,7 +20,7 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       id: fields[0] as String,
       name: fields[1] as String,
       description: fields[2] as String,
-      exercises: (fields[3] as List).cast<Exercise>(),
+      exercises: (fields[3] as List).cast<RoutineExercise>(),
     );
   }
 
@@ -58,7 +58,7 @@ Routine _$RoutineFromJson(Map<String, dynamic> json) => Routine(
       name: json['name'] as String,
       description: json['description'] as String? ?? '',
       exercises: (json['exercises'] as List<dynamic>)
-          .map((e) => Exercise.fromJson(e as Map<String, dynamic>))
+          .map((e) => RoutineExercise.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 

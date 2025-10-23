@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/routine_log.dart';
@@ -22,8 +23,16 @@ class WorkoutLogDetailScreen extends StatelessWidget {
               DateFormat.yMMMMd('es').add_jm().format(log.date),
               style: Theme.of(context).textTheme.titleMedium,
             ),
+            if (log.duration != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'Duración: ${_formatDuration(log.duration!)}',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
             const SizedBox(height: 24),
-            if (log.notes.isNotEmpty)
+            if (log.notes != null && log.notes!.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: 24.0),
                 child: Column(
@@ -31,7 +40,7 @@ class WorkoutLogDetailScreen extends StatelessWidget {
                   children: [
                     Text('Notas:', style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 8),
-                    Text(log.notes, style: Theme.of(context).textTheme.bodyLarge),
+                    Text(log.notes!, style: Theme.of(context).textTheme.bodyLarge),
                   ],
                 ),
               ),
@@ -78,5 +87,13 @@ class WorkoutLogDetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = twoDigits(duration.inHours);
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return [if (duration.inHours > 0) hours, minutes, seconds].join(':');
   }
 }

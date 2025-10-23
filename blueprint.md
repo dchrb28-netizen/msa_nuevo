@@ -1,93 +1,89 @@
-# Blueprint de la Aplicación de Salud y Bienestar
+# Blueprint de la Aplicación de Fitness y Salud
 
 ## Descripción General
 
-Esta es una aplicación de Flutter diseñada para el seguimiento de la salud y el bienestar. Permite a los usuarios registrar y visualizar su consumo de agua y alimentos, así como sus medidas corporales y progreso en ayuno intermitente. La app cuenta con un diseño moderno, temas claro y oscuro, y una navegación intuitiva.
+Esta es una aplicación de Flutter diseñada para ser un asistente de fitness y salud todo en uno. Permite a los usuarios crear y seguir rutinas de entrenamiento personalizadas, registrar su progreso detalladamente y, en futuras versiones, monitorizar otros aspectos de su bienestar como la nutrición y los hábitos. La app se centra en una experiencia de usuario guiada, moderna y motivadora.
 
 ## Estilo y Diseño
 
-- **Tema:** Material 3, con un esquema de color dinámico basado en un color semilla (`seedColor`).
-- **Tipografía:** Se utiliza el paquete `google_fonts` para una apariencia visual consistente y moderna.
+- **Tema:** Material 3, con un esquema de color dinámico y soporte para modo claro y oscuro gestionado a través de `provider`.
+- **Tipografía:** Uso del paquete `google_fonts` para una identidad visual consistente y legible.
+- **Iconografía:** Iconos claros y funcionales para una navegación intuitiva.
 - **Componentes:**
-  - **`AppBar` principal:** Muestra el título de la pantalla actual y un menú de opciones.
-  - **`BottomNavigationBar`:** Permite la navegación entre las secciones principales: "Registros", "Favoritos" y "Ejercicios".
-  - **`TabBar` secundaria:** Utilizada en las secciones de "Registros" y "Favoritos" para navegar entre vistas. Estas barras de pestañas tienen un fondo de color distintivo e iconos para mejorar la usabilidad.
+  - **`AppBar` principal:** Título de la pantalla y acciones contextuales.
+  - **`BottomNavigationBar`:** Navegación principal entre "Entrenamiento", "Historial" y "Ejercicios".
+  - **Tarjetas (`Card`):** Usadas extensivamente para presentar información de forma limpia y organizada (rutinas, ejercicios, registros).
+  - **Componentes Interactivos:** Uso de `TextFormField` para la entrada de datos, `IconButton` para acciones rápidas y `ElevatedButton` para acciones principales.
 
 ## Características Implementadas
 
-- **Tema Dinámico:**
-  - El tema de la aplicación (claro/oscuro) se gestiona con el paquete `provider`.
-  - El color principal de la app se puede cambiar dinámicamente.
+### Módulo de Entrenamiento y Rutinas
 
-- **Navegación Principal (BottomNavigationBar):**
-  - **Registros:** Pantalla principal para el seguimiento de agua, comida y medidas.
-  - **Favoritos:** Sección para gestionar rutinas o alimentos preferidos.
-  - **Ejercicios:** Espacio dedicado al registro de actividad física.
-  - **Hábitos:** Nueva sección que incluye el seguimiento de "Ayuno Intermitente".
+Este es el núcleo de la aplicación. Proporciona un flujo completo desde la creación de un plan hasta la ejecución y el registro del mismo.
 
-- **Seguimiento de Ayuno Intermitente:**
-  - **Modelo de Datos:** `FastingLog` para almacenar el inicio y fin de cada ayuno en Hive.
-  - **Gestor de Estado:** `FastingProvider` para manejar la lógica del temporizador y el estado del ayuno (activo/inactivo).
-  - **Interfaz de Usuario:** Una pantalla dedicada (`IntermittentFastingScreen`) con:
-    - Un panel de control con un temporizador y botones para iniciar/detener el ayuno.
-    - Una lista informativa de las fases del ayuno.
-    - Una sección para el historial de ayunos.
-  - **Persistencia:** La app recuerda el estado del ayuno incluso después de cerrarla y volverla a abrir.
+- **Gestión de Ejercicios (CRUD):**
+  - Los usuarios pueden crear, ver, editar y eliminar ejercicios en una base de datos persistente (`Hive`).
+  - Cada ejercicio tiene un nombre, descripción y un tipo asignado.
 
-- **Sección de Menús (Planificación):**
-    - **Planificador Semanal:** Vista de calendario para planificar comidas.
-    - **Vista Diaria:** Resumen de las comidas del día.
-    - **Edición de Comidas:** Pantalla para añadir/eliminar alimentos de una comida específica.
-    - **Detalles Nutricionales:** Vista detallada de los macros y calorías de cada comida.
+- **Gestión de Rutinas (CRUD):**
+  - Los usuarios pueden crear, ver, editar y eliminar rutinas.
+  - Cada rutina tiene un nombre y una descripción.
 
-- **Registro Básico de Comidas (Diario):**
-    - Flujo completo para buscar un alimento de la base de datos local.
-    - Diálogo para introducir cantidad y tipo de comida.
-    - Guardado en la base de datos de registros (`food_logs`).
-    - Visualización de la lista de comidas y total de calorías en la vista "Hoy".
+- **Composición de Rutinas:**
+  - **Añadir Ejercicios:** Los usuarios pueden añadir ejercicios de su base de datos a cualquier rutina.
+  - **Personalización de Series:** Para cada ejercicio dentro de una rutina, se puede especificar:
+    - Número de **series**.
+    - Número de **repeticiones** objetivo.
+    - **Peso** inicial recomendado.
+    - **Tiempo de descanso** en segundos después de cada serie.
+  - **Reordenamiento:** Los ejercicios dentro de una rutina se pueden reordenar fácilmente mediante una interfaz de arrastrar y soltar (`ReorderableListView`).
 
-## Plan de Desarrollo: Módulo de Registro de Comidas
+- **Flujo de Entrenamiento Guiado (`WorkoutScreen`):**
+  - **Inicio de Sesión:** El usuario selecciona una rutina para comenzar una sesión de entrenamiento.
+  - **Vista por Ejercicio:** La pantalla se centra en un solo ejercicio a la vez para minimizar distracciones.
+  - **Registro de Series:** El usuario puede registrar los datos reales de cada serie:
+    - **Peso** levantado.
+    - **Repeticiones** completadas.
+  - **Marcar como Completado:** Un botón de check permite marcar cada serie como finalizada.
+  - **Temporizador de Descanso Automático:** Tras completar una serie, se muestra una pantalla de descanso con una cuenta atrás visual, utilizando el tiempo definido en la rutina. El usuario puede saltar el descanso.
+  - **Navegación:** Botones para moverse al ejercicio "Siguiente" o "Anterior".
 
-**Objetivo Principal:** Permitir al usuario buscar, registrar y revisar las comidas que consume diariamente para llevar un control preciso de sus calorías y macronutrientes.
+- **Persistencia de Datos (`Hive`):**
+  - Se utiliza Hive para el almacenamiento local y eficiente de:
+    - `Exercise`: La base de datos de todos los ejercicios.
+    - `Routine`: Todas las rutinas creadas por el usuario.
+    - `RoutineLog`: El historial de todos los entrenamientos completados.
 
---- 
+### Módulo de Historial
 
-**Paso 1: Finalizar el Flujo Básico de Registro (¡Completado!)**
+- **Vista de Historial (`WorkoutLogScreen`):**
+  - Muestra una lista cronológica de todos los entrenamientos guardados.
+  - Cada entrada muestra el nombre de la rutina, la fecha y la duración.
+- **Detalle del Entrenamiento (`WorkoutLogDetailScreen`):**
+  - Al seleccionar un registro del historial, se muestra una vista detallada con:
+    - Resumen (fecha, duración, notas).
+    - Una tabla detallada para cada ejercicio, mostrando las repeticiones y el peso de cada serie registrada.
 
-*   **Tarea:** Asegurar que un usuario pueda seleccionar un alimento de la base de datos local y registrarlo en su diario de hoy.
-*   **Estado:** **¡Hecho!**
+## Estructura del Código y Proveedores
 
----
+- **`Provider` para State Management:**
+  - **`ExerciseProvider`:** Gestiona el estado y las operaciones CRUD de los ejercicios.
+  - **`RoutineProvider`:** Gestiona el estado y las operaciones CRUD de las rutinas y los registros de historial (`RoutineLog`).
+- **Modelos de Datos:**
+  - Clases bien definidas (`Exercise`, `Routine`, `RoutineExercise`, `RoutineLog`, `ExerciseLog`, `SetLog`) con adaptadores de `Hive` para la persistencia.
+  - Se utiliza `json_serializable` para facilitar la conversión de objetos a JSON si fuera necesario en el futuro (e.g., para APIs o backups).
 
-**Paso 2: Mejorar el Registro de "Nuevos Alimentos"**
+## Plan de Desarrollo Actual
 
-*   **Tarea:** Enriquecer la pantalla `RegisterFoodScreen` para que los usuarios puedan añadir alimentos a la base de datos con información nutricional completa.
-*   **Implementación:**
-    1.  Modificar `RegisterFoodScreen` para que, además del nombre, el usuario pueda introducir:
-        *   **Calorías** (por 100g).
-        *   **Proteínas** (por 100g).
-        *   **Carbohidratos** (por 100g).
-        *   **Grasas** (por 100g).
-    2.  Actualizar el modelo `Food` para incluir estos campos de macronutrientes.
-    3.  Guardar el nuevo alimento con toda su información en la base de datos `foods`.
-*   **Justificación:** Una base de datos más rica es fundamental para poder ofrecer un seguimiento nutricional completo más allá de las calorías.
+**Objetivo:** Revisión y consolidación de la aplicación.
 
----
+**Acciones:**
+- El usuario (`revisare`) está actualmente probando la aplicación para evaluar la funcionalidad y la experiencia de usuario.
+- El `blueprint.md` ha sido actualizado para reflejar el estado actual y completo del desarrollo.
 
-**Paso 3: Visualización Avanzada en la Pantalla "Hoy"**
+**Próximos Pasos Potenciales (A discutir):**
 
-*   **Tarea:** Mejorar `FoodTodayView` para ofrecer una vista más organizada y detallada de la ingesta del día.
-*   **Implementación:**
-    1.  **Agrupar por Comida:** En lugar de una lista simple, agrupar las entradas por "Desayuno", "Almuerzo", "Cena" y "Snack", cada una con su propio subtítulo y subtotal de calorías.
-    2.  **Resumen de Macronutrientes:** Mostrar un resumen total del día no solo de calorías, sino también de **Proteínas, Carbohidratos y Grasas** consumidos.
-*   **Justificación:** Proporciona al usuario una visión clara y organizada de su nutrición, facilitando la toma de decisiones.
-
----
-
-**Paso 4: Implementar el "Historial de Comidas"**
-
-*   **Tarea:** Construir la pantalla `FoodHistoryScreen` para que el usuario pueda revisar su consumo en días anteriores.
-*   **Implementación:**
-    1.  Mostrar una vista de calendario o una lista de fechas pasadas.
-    2.  Al seleccionar un día, mostrar un resumen de ese día, similar a la vista "Hoy", con el total de calorías, macros y la lista de alimentos consumidos.
-*   **Justificación:** Esencial para que el usuario pueda seguir su progreso y analizar sus hábitos alimenticios a lo largo del tiempo.
+1.  **Visualización Gráfica del Progreso:** Añadir gráficos que muestren la evolución del peso levantado o las repeticiones para ejercicios específicos a lo largo del tiempo.
+2.  **Mejoras de UI/UX:** Pulir animaciones, mejorar la retroalimentación visual durante el entrenamiento o refinar el diseño de alguna pantalla.
+3.  **Metas y Objetivos:** Permitir a los usuarios establecer metas (e.g., "levantar X peso en 3 meses").
+4.  **Módulo de Nutrición:** Integrar el seguimiento de comidas y macronutrientes.
