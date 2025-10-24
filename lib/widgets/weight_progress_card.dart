@@ -100,7 +100,7 @@ class WeightProgressCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: cappedProgress,
                 minHeight: 12,
-                backgroundColor: theme.colorScheme.surfaceVariant,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
                 valueColor: AlwaysStoppedAnimation<Color>(progressColor),
               ),
             ),
@@ -136,7 +136,7 @@ class WeightProgressCard extends StatelessWidget {
         const SizedBox(height: 4),
         Row(
           children: [
-            if (isGoal) Icon(Icons.flag_outlined, color: Colors.blueAccent, size: 28),
+            if (isGoal) const Icon(Icons.flag_outlined, color: Colors.blueAccent, size: 28),
             if (!isGoal) Icon(Icons.monitor_weight_outlined, color: theme.colorScheme.primary, size: 28),
             const SizedBox(width: 8),
             Text(

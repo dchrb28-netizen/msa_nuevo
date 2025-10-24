@@ -11,7 +11,6 @@ import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/recipes/recipes_screen.dart';
 import 'package:myapp/screens/settings/about_screen.dart';
-import 'package:myapp/screens/settings/edit_profile_screen.dart';
 import 'package:myapp/screens/settings_screen.dart';
 import 'package:myapp/screens/training/exercise_library_screen.dart';
 import 'package:myapp/screens/training/routines_screen.dart';
@@ -59,11 +58,7 @@ class DrawerMenu extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 Navigator.pop(context);
-                if (user != null && !user.isGuest) {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const EditProfileScreen()));
-                } else {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
-                }
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
               },
               child: Container(
                 padding: const EdgeInsets.all(16.0),
@@ -90,7 +85,7 @@ class DrawerMenu extends StatelessWidget {
                             style: GoogleFonts.montserrat(fontSize: 22, fontWeight: FontWeight.bold, color: headerTextColor),
                           ),
                           Text(
-                            'Toca para crear o editar tu perfil',
+                            'Toca para ver o editar tu perfil',
                              style: GoogleFonts.lato(fontSize: 14, color: headerTextColor.withAlpha(204)),
                             softWrap: true,
                           ),

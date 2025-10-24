@@ -26,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  AppBar _buildAppBar(BuildContext context) {
+  AppBar? _buildAppBar(BuildContext context) {
     switch (_selectedIndex) {
       case 0:
         return AppBar(title: const Text('Salud Activa'));
@@ -50,7 +50,10 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildBody() {
-    return _widgetOptions.elementAt(_selectedIndex);
+    return IndexedStack(
+      index: _selectedIndex,
+      children: _widgetOptions,
+    );
   }
 
   @override
@@ -79,12 +82,13 @@ class _MainScreenState extends State<MainScreen> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed, // To show all labels
       ),
     );
 
     if (_selectedIndex == 1) {
       return DefaultTabController(
-        length: 2,
+        length: 2, // Corresponds to the number of tabs in MenusScreen AppBar
         child: scaffold,
       );
     }
