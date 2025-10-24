@@ -11,14 +11,21 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   int _selectedIndex = 0;
+  late final TabController _tabController;
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const DashboardScreen(),
-    const MenusScreen(),
-    const ProgresoScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -33,10 +40,11 @@ class _MainScreenState extends State<MainScreen> {
       case 1:
         return AppBar(
           title: const Text('Plan de Comidas'),
-          bottom: const TabBar(
-            tabs: [
+          bottom: TabBar(
+            controller: _tabController,
+            tabs: const [
               Tab(icon: Icon(Icons.today), text: 'Hoy'),
-              Tab(icon: Icon(Icons.calendar_today), text: 'Semanal'),
+              Tab(icon: Icon(Icons.date_range), text: 'Semanal'),
             ],
           ),
         );
@@ -45,20 +53,24 @@ class _MainScreenState extends State<MainScreen> {
           title: const Text('Progreso'),
         );
       default:
-        return AppBar();
+        return null;
     }
   }
 
   Widget _buildBody() {
     return IndexedStack(
       index: _selectedIndex,
-      children: _widgetOptions,
+      children: <Widget>[
+        const DashboardScreen(),
+        MenusScreen(tabController: _tabController),
+        const ProgresoScreen(),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget scaffold = Scaffold(
+    return Scaffold(
       appBar: _buildAppBar(context),
       drawer: const DrawerMenu(),
       body: _buildBody(),
@@ -82,17 +94,8 @@ class _MainScreenState extends State<MainScreen> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed, // To show all labels
+        type: BottomNavigationBarType.fixed,
       ),
     );
-
-    if (_selectedIndex == 1) { // Adjusted index for MenusScreen
-      return DefaultTabController(
-        length: 2, // Corresponds to the number of tabs in MenusScreen AppBar
-        child: scaffold,
-      );
-    }
-
-    return scaffold;
   }
 }

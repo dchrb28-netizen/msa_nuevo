@@ -7,20 +7,26 @@ import 'package:myapp/models/food_log.dart';
 import 'package:myapp/widgets/dashboard/circular_progress_card.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/widgets/ui/watermark_image.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16.0),
+    return Stack(
       children: [
-        _buildWelcomeHeader(context),
-        const SizedBox(height: 24),
-        _buildCaloriesCard(),
-        const SizedBox(height: 24),
-        _buildWeightProgressCard(),
+        const WatermarkImage(imageName: 'inicio'),
+        ListView(
+          padding: const EdgeInsets.all(16.0),
+          children: [
+            _buildWelcomeHeader(context),
+            const SizedBox(height: 24),
+            _buildCaloriesCard(),
+            const SizedBox(height: 24),
+            _buildWeightProgressCard(),
+          ],
+        ),
       ],
     );
   }

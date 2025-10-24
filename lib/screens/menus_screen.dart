@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/menus/today_menu_screen.dart';
 import 'package:myapp/screens/menus/weekly_planner_screen.dart';
+import 'package:myapp/widgets/ui/watermark_image.dart';
 
 class MenusScreen extends StatelessWidget {
-  const MenusScreen({super.key});
+  final TabController tabController;
+
+  const MenusScreen({super.key, required this.tabController});
 
   @override
   Widget build(BuildContext context) {
-    return const TabBarView(
+    return Stack(
       children: [
-        TodayMenuScreen(),
-        WeeklyPlannerScreen(),
+        const WatermarkImage(imageName: 'comida'),
+        TabBarView(
+          controller: tabController,
+          children: const [
+            TodayMenuScreen(),
+            WeeklyPlannerScreen(),
+          ],
+        ),
       ],
     );
   }

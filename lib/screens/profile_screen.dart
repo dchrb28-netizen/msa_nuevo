@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
-import 'package:myapp/widgets/ui/screen_background.dart';
+import 'package:myapp/widgets/ui/watermark_image.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -151,7 +151,6 @@ class ProfileScreenState extends State<ProfileScreen> {
         title: Text(profileExists ? 'Mi Perfil' : 'Crea tu Perfil'),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.transparent,
         actions: [
           if (profileExists && !_isEditing)
             IconButton(
@@ -171,10 +170,9 @@ class ProfileScreenState extends State<ProfileScreen> {
             ),
         ],
       ),
-      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          const ScreenBackground(screenName: 'perfil'),
+          const WatermarkImage(imageName: 'perfil'),
           _isLoading
               ? const Center(child: CircularProgressIndicator())
               : SafeArea(

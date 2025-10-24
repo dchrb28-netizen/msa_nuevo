@@ -10,34 +10,38 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final colorScheme = Theme.of(context).colorScheme;
-
-    final lunaImagePath = isDarkMode
-        ? 'assets/luna_png/luna_splash_b.png'
-        : 'assets/luna_png/luna_splash_w.png';
-
     return Scaffold(
-      backgroundColor: isDarkMode ? Colors.black : Colors.white,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  lunaImagePath,
-                  height: 180,
-                  fit: BoxFit.contain,
+      body: Builder(builder: (context) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+        final colorScheme = Theme.of(context).colorScheme;
+
+        final lunaImagePath = isDarkMode
+            ? 'assets/luna_png/luna_splash_b.png'
+            : 'assets/luna_png/luna_splash_w.png';
+
+        return Container(
+          color: isDarkMode ? Colors.black : Colors.white,
+          child: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      lunaImagePath,
+                      height: 180,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(height: 40),
+                    _buildContent(context, colorScheme),
+                  ],
                 ),
-                const SizedBox(height: 40),
-                _buildContent(context, colorScheme),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
