@@ -25,26 +25,29 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
   @override
   void initState() {
     super.initState();
-    final user = Provider.of<UserProvider>(context, listen: false).user;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    
     _weightController = TextEditingController();
     _heightController = TextEditingController();
     _weightGoalController = TextEditingController();
 
-    if (user != null) {
-      _updateControllers(user);
+    // Initialize controllers with existing data if available
+    if (userProvider.user != null) {
+      _updateControllers(userProvider.user);
       _calculateIMC();
     }
 
     _weightController.addListener(_calculateIMC);
     _heightController.addListener(_calculateIMC);
   }
-
+  
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final user = Provider.of<UserProvider>(context, listen: true).user;
-    if (user != null && !_isEditing) {
-      _updateControllers(user);
+    // Update controllers when user data changes and not in edit mode
+    final userProvider = Provider.of<UserProvider>(context, listen: true);
+    if (userProvider.user != null && !_isEditing) {
+      _updateControllers(userProvider.user);
       _calculateIMC();
     }
   }
