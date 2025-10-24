@@ -11,6 +11,7 @@ class Exercise {
   final String type;
   final String muscleGroup;
   final String equipment;
+  final String measurement; // 'reps' or 'time'
   final String? imageUrl;
   final String? videoUrl;
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -23,6 +24,7 @@ class Exercise {
     required this.type,
     required this.muscleGroup,
     required this.equipment,
+    required this.measurement,
     this.imageUrl,
     this.videoUrl,
     this.icon,

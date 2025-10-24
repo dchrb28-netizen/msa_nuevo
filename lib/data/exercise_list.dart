@@ -9,6 +9,7 @@ final List<Exercise> exerciseList = [
     type: 'Strength',
     muscleGroup: 'Chest',
     equipment: 'None',
+    measurement: 'reps',
     icon: Icons.fitness_center,
   ),
   Exercise(
@@ -18,6 +19,7 @@ final List<Exercise> exerciseList = [
     type: 'Strength',
     muscleGroup: 'Legs',
     equipment: 'None',
+    measurement: 'reps',
     icon: Icons.fitness_center,
   ),
   Exercise(
@@ -27,6 +29,7 @@ final List<Exercise> exerciseList = [
     type: 'Strength',
     muscleGroup: 'Back',
     equipment: 'Pull-up bar',
+    measurement: 'reps',
     icon: Icons.fitness_center,
   ),
   Exercise(
@@ -36,6 +39,7 @@ final List<Exercise> exerciseList = [
     type: 'Strength',
     muscleGroup: 'Core',
     equipment: 'None',
+    measurement: 'time',
     icon: Icons.fitness_center,
   ),
   Exercise(
@@ -45,6 +49,7 @@ final List<Exercise> exerciseList = [
     type: 'Cardio',
     muscleGroup: 'Legs',
     equipment: 'None',
+    measurement: 'time',
     icon: Icons.directions_run,
   ),
 ];

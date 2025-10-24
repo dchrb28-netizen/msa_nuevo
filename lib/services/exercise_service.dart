@@ -76,6 +76,7 @@ class ExerciseService {
         equipment: 'Barra',
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
+        measurement: 'reps',
         icon: Icons.fitness_center,
       ),
       Exercise(
@@ -85,6 +86,7 @@ class ExerciseService {
         equipment: 'Barra',
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
+        measurement: 'reps',
         icon: Icons.fitness_center,
       ),
       Exercise(
@@ -94,6 +96,7 @@ class ExerciseService {
         equipment: 'Barra',
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
+        measurement: 'reps',
         icon: Icons.fitness_center,
       ),
       Exercise(
@@ -103,6 +106,7 @@ class ExerciseService {
         equipment: 'Barra',
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
+        measurement: 'reps',
         icon: Icons.fitness_center,
       ),
       Exercise(
@@ -112,6 +116,7 @@ class ExerciseService {
         equipment: 'Barra',
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
+        measurement: 'reps',
         icon: Icons.fitness_center,
       ),
       Exercise(
@@ -121,6 +126,7 @@ class ExerciseService {
         equipment: 'Mancuernas',
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
+        measurement: 'reps',
         icon: Icons.fitness_center,
       ),
       Exercise(
@@ -130,6 +136,7 @@ class ExerciseService {
         equipment: 'Mancuernas',
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
+        measurement: 'reps',
         icon: Icons.fitness_center,
       ),
       Exercise(
@@ -139,6 +146,7 @@ class ExerciseService {
         equipment: 'Mancuernas',
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
+        measurement: 'reps',
         icon: Icons.fitness_center,
       ),
       Exercise(
@@ -148,6 +156,7 @@ class ExerciseService {
         equipment: 'Mancuernas',
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
+        measurement: 'reps',
         icon: Icons.fitness_center,
       ),
       Exercise(
@@ -157,6 +166,7 @@ class ExerciseService {
         equipment: 'Peso corporal',
         description: 'Descripción del ejercicio...',
         type: 'Resistencia',
+        measurement: 'time',
         icon: Icons.fitness_center,
       ),
     ];

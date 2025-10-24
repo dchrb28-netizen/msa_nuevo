@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/screens/training/exercise_library_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/screens/training/edit_routine_screen.dart';
@@ -11,6 +12,9 @@ class RoutinesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Rutinas'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -39,6 +43,17 @@ class RoutinesScreen extends StatelessWidget {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => const EditRoutineScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                   ActionChip(
+                    avatar: const Icon(Icons.library_books),
+                    label: const Text('Biblioteca de Ejercicios'),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const ExerciseLibraryScreen(),
                         ),
                       );
                     },

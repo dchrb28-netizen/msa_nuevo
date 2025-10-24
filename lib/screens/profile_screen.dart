@@ -410,7 +410,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     required void Function(String?)? onChanged,
   }) {
     return DropdownButtonFormField<String>(
-      value: initialValue,
+      initialValue: initialValue,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),

@@ -16,6 +16,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
   final _typeController = TextEditingController();
   final _muscleGroupController = TextEditingController();
   final _equipmentController = TextEditingController();
+  String _measurement = 'reps';
 
   final ExerciseService _exerciseService = ExerciseService();
 
@@ -28,6 +29,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
         type: _typeController.text,
         muscleGroup: _muscleGroupController.text,
         equipment: _equipmentController.text,
+        measurement: _measurement,
       );
 
       await _exerciseService.addExercise(newExercise);
@@ -75,6 +77,21 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
               TextFormField(
                 controller: _equipmentController,
                 decoration: const InputDecoration(labelText: 'Equipamiento'),
+              ),
+              DropdownButtonFormField<String>(
+                initialValue: _measurement,
+                decoration: const InputDecoration(labelText: 'Medición'),
+                items: ['reps', 'time'].map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _measurement = newValue!;
+                  });
+                },
               ),
               const SizedBox(height: 20),
               ElevatedButton(

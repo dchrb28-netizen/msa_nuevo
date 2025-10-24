@@ -11,7 +11,7 @@ Esta es una aplicación de Flutter diseñada para ser un asistente de fitness y 
 - **Iconografía:** Iconos claros y funcionales para una navegación intuitiva.
 - **Componentes:**
   - **`AppBar` principal:** Título de la pantalla y acciones contextuales.
-  - **`BottomNavigationBar`:** Navegación principal entre "Entrenamiento", "Historial" y "Ejercicios".
+  - **`BottomNavigationBar`:** Navegación principal de la aplicación. **(No modificar)**. Las secciones definidas son: "Inicio", "Menús" y "Progreso".
   - **Tarjetas (`Card`):** Usadas extensivamente para presentar información de forma limpia y organizada (rutinas, ejercicios, registros).
   - **Componentes Interactivos:** Uso de `TextFormField` para la entrada de datos, `IconButton` para acciones rápidas y `ElevatedButton` para acciones principales.
 

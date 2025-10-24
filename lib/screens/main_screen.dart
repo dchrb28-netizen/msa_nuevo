@@ -86,7 +86,7 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
 
-    if (_selectedIndex == 1) {
+    if (_selectedIndex == 1) { // Adjusted index for MenusScreen
       return DefaultTabController(
         length: 2, // Corresponds to the number of tabs in MenusScreen AppBar
         child: scaffold,
