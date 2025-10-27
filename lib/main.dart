@@ -30,8 +30,11 @@ import 'package:url_strategy/url_strategy.dart';
 // Import the new models and providers
 import 'package:myapp/models/routine.dart';
 import 'package:myapp/models/set_log.dart';
+import 'package:myapp/models/exercise.dart';
 import 'package:myapp/models/exercise_log.dart';
+import 'package:myapp/models/routine_exercise.dart';
 import 'package:myapp/models/routine_log.dart';
+import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/providers/routine_provider.dart';
 
 void main() async {
@@ -95,6 +98,12 @@ void main() async {
   if (!Hive.isAdapterRegistered(RoutineLogAdapter().typeId)) {
     Hive.registerAdapter(RoutineLogAdapter());
   }
+  if (!Hive.isAdapterRegistered(ExerciseAdapter().typeId)) {
+    Hive.registerAdapter(ExerciseAdapter());
+  }
+  if (!Hive.isAdapterRegistered(RoutineExerciseAdapter().typeId)) {
+    Hive.registerAdapter(RoutineExerciseAdapter());
+  }
 
   // Open boxes
   await Hive.openBox<Food>('foods');
@@ -112,6 +121,8 @@ void main() async {
   // Open the new training boxes
   await Hive.openBox<Routine>('routines');
   await Hive.openBox<RoutineLog>('routine_logs');
+  await Hive.openBox<Exercise>('exercises');
+  await Hive.openBox<RoutineExercise>('routine_exercises');
 
   await _populateInitialFoodData();
 
@@ -125,8 +136,8 @@ void main() async {
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => FastingProvider()),
         ChangeNotifierProvider(create: (context) => MealPlanProvider()),
-        // Add the RoutineProvider
         ChangeNotifierProvider(create: (context) => RoutineProvider()),
+        ChangeNotifierProvider(create: (context) => ExerciseProvider()),
       ],
       child: MyApp(profileExists: profileExists),
     ),

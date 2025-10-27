@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/models/exercise.dart';
-import 'package:myapp/services/exercise_service.dart';
+import 'package:myapp/providers/exercise_provider.dart';
+import 'package:provider/provider.dart';
 
 class SelectExerciseScreen extends StatefulWidget {
   const SelectExerciseScreen({super.key});
@@ -10,48 +10,16 @@ class SelectExerciseScreen extends StatefulWidget {
 }
 
 class _SelectExerciseScreenState extends State<SelectExerciseScreen> {
-  final ExerciseService _exerciseService = ExerciseService();
-  List<Exercise> _allExercises = [];
-  List<Exercise> _filteredExercises = [];
   final TextEditingController _searchController = TextEditingController();
-  bool _isLoading = true;
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _loadExercises();
     _searchController.addListener(() {
-      _filterExercises();
-    });
-  }
-
-  Future<void> _loadExercises() async {
-    try {
-      final exercises = await _exerciseService.loadExercises();
-      if (!mounted) return;
       setState(() {
-        _allExercises = exercises;
-        _filteredExercises = exercises;
-        _isLoading = false;
+        _searchQuery = _searchController.text;
       });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cargar los ejercicios: $e')),
-      );
-    }
-  }
-
-  void _filterExercises() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredExercises = _allExercises.where((exercise) {
-        return exercise.name.toLowerCase().contains(query) ||
-               exercise.muscleGroup.toLowerCase().contains(query);
-      }).toList();
     });
   }
 
@@ -80,28 +48,38 @@ class _SelectExerciseScreenState extends State<SelectExerciseScreen> {
               ),
             ),
           ),
-          if (_isLoading)
-            const Expanded(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            )
-          else
-            Expanded(
-              child: ListView.builder(
-                itemCount: _filteredExercises.length,
-                itemBuilder: (context, index) {
-                  final exercise = _filteredExercises[index];
-                  return ListTile(
-                    title: Text(exercise.name),
-                    subtitle: Text('${exercise.muscleGroup} | ${exercise.equipment}'),
-                    onTap: () {
-                      Navigator.of(context).pop(exercise); // Return the selected exercise
-                    },
+          Expanded(
+            child: Consumer<ExerciseProvider>(
+              builder: (context, exerciseProvider, child) {
+                final allExercises = exerciseProvider.exercises;
+                final filteredExercises = allExercises.where((exercise) {
+                  final query = _searchQuery.toLowerCase();
+                  return exercise.name.toLowerCase().contains(query) ||
+                         exercise.muscleGroup.toLowerCase().contains(query);
+                }).toList();
+
+                if (filteredExercises.isEmpty) {
+                  return const Center(
+                    child: Text('No se encontraron ejercicios. Puedes añadirlos en la biblioteca.'),
                   );
-                },
-              ),
+                }
+
+                return ListView.builder(
+                  itemCount: filteredExercises.length,
+                  itemBuilder: (context, index) {
+                    final exercise = filteredExercises[index];
+                    return ListTile(
+                      title: Text(exercise.name),
+                      subtitle: Text('${exercise.muscleGroup} | ${exercise.equipment}'),
+                      onTap: () {
+                        Navigator.of(context).pop(exercise); // Return the selected exercise
+                      },
+                    );
+                  },
+                );
+              },
             ),
+          ),
         ],
       ),
     );

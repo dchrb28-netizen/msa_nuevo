@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/exercise.dart';
-import 'package:myapp/screens/training/edit_exercise_screen.dart'; // Import the new screen
-import 'package:myapp/services/exercise_service.dart';
+import 'package:myapp/providers/exercise_provider.dart';
+import 'package:myapp/screens/training/edit_exercise_screen.dart';
+import 'package:provider/provider.dart';
 
 class ExerciseLibraryScreen extends StatefulWidget {
   const ExerciseLibraryScreen({super.key});
@@ -11,23 +12,11 @@ class ExerciseLibraryScreen extends StatefulWidget {
 }
 
 class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
-  final ExerciseService _exerciseService = ExerciseService();
-  late Future<List<Exercise>> _exercisesFuture;
   String _searchQuery = '';
 
-  @override
-  void initState() {
-    super.initState();
-    _loadExercises();
-  }
-
-  void _loadExercises() {
-    setState(() {
-      _exercisesFuture = _exerciseService.loadExercises();
-    });
-  }
-
   Future<void> _navigateAndSaveChanges(Exercise? exercise) async {
+    final exerciseProvider = Provider.of<ExerciseProvider>(context, listen: false);
+
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -37,17 +26,16 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
 
     if (result is Exercise) {
       if (exercise == null) {
-        // This is a new exercise
-        await _exerciseService.addExercise(result);
+        await exerciseProvider.addExercise(result);
       } else {
-        // This is an existing exercise
-        await _exerciseService.updateExercise(result);
+        await exerciseProvider.updateExercise(result);
       }
-      _loadExercises(); // Refresh the list
     }
   }
 
-    Future<void> _deleteExercise(Exercise exercise) async {
+  Future<void> _deleteExercise(Exercise exercise) async {
+    final exerciseProvider = Provider.of<ExerciseProvider>(context, listen: false);
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -67,15 +55,13 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
     );
 
     if (confirm == true) {
-      await _exerciseService.deleteExercise(exercise.id);
-       if (!mounted) return; // Check if the widget is still in the tree
+      await exerciseProvider.deleteExercise(exercise.id);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Ejercicio eliminado correctamente')),
       );
-      _loadExercises(); // Refresh the list
     }
   }
-
 
   IconData _getIconForMuscleGroup(String muscleGroup) {
     switch (muscleGroup.toLowerCase()) {
@@ -120,28 +106,17 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<Exercise>>(
-              future: _exercisesFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error al cargar los ejercicios: ${snapshot.error}'));
-                }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No hay ejercicios. ¡Añade uno!'));
-                }
-
-                final filteredExercises = snapshot.data!.where((exercise) {
+            child: Consumer<ExerciseProvider>(
+              builder: (context, provider, child) {
+                final filteredExercises = provider.exercises.where((exercise) {
                   final query = _searchQuery.toLowerCase();
                   return exercise.name.toLowerCase().contains(query) ||
                       exercise.muscleGroup.toLowerCase().contains(query) ||
                       exercise.equipment.toLowerCase().contains(query);
                 }).toList();
 
-                 if (filteredExercises.isEmpty) {
-                   return const Center(child: Text('No se encontraron ejercicios.'));
+                if (filteredExercises.isEmpty) {
+                  return const Center(child: Text('No se encontraron ejercicios.'));
                 }
 
                 final groupedExercises = <String, List<Exercise>>{};
@@ -176,7 +151,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                             title: Text(exercise.name),
                             subtitle: Text(exercise.equipment),
                             onTap: () => _navigateAndSaveChanges(exercise),
-                             trailing: IconButton(
+                            trailing: IconButton(
                               icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                               onPressed: () => _deleteExercise(exercise),
                             ),
@@ -192,7 +167,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateAndSaveChanges(null), // Pass null for a new exercise
+        onPressed: () => _navigateAndSaveChanges(null),
         tooltip: 'Añadir Ejercicio',
         child: const Icon(Icons.add),
       ),

@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:myapp/models/exercise.dart';
 import 'package:myapp/models/routine.dart';
 import 'package:myapp/models/routine_exercise.dart';
@@ -21,35 +21,55 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
   final _formKey = GlobalKey<FormState>();
   late String _routineName;
   late String _routineDescription;
-  late List<RoutineExercise> _routineExercises;
+  late HiveList<RoutineExercise> _routineExercises;
 
   @override
   void initState() {
     super.initState();
     _routineName = widget.routine?.name ?? '';
     _routineDescription = widget.routine?.description ?? '';
-    _routineExercises = widget.routine?.exercises.toList() ?? [];
+    _routineExercises = widget.routine?.exercises ?? HiveList(Hive.box<RoutineExercise>('routine_exercises'));
   }
 
   void _saveRoutine() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
-      final newRoutine = Routine(
-        id: widget.routine?.id ?? const Uuid().v4(),
-        name: _routineName,
-        description: _routineDescription,
-        exercises: _routineExercises,
-      );
+      final routineBox = Hive.box<Routine>('routines');
 
       if (widget.routine == null) {
-        routineProvider.addRoutine(newRoutine);
+        // Creating a new routine
+        final newRoutine = Routine(
+          id: const Uuid().v4(),
+          name: _routineName,
+          description: _routineDescription,
+        );
+        // The HiveList needs to be associated with a saved routine
+        routineBox.put(newRoutine.id, newRoutine).then((_){
+            newRoutine.exercises.addAll(_routineExercises);
+            newRoutine.save();
+            routineProvider.addRoutine(newRoutine);
+        });
+
       } else {
-        routineProvider.updateRoutine(newRoutine.id, newRoutine);
+        // Updating an existing routine
+        final existingRoutine = widget.routine!;
+        existingRoutine.name = _routineName;
+        existingRoutine.description = _routineDescription;
+        
+        // Clear and add new exercises to handle updates, additions, and deletions
+        existingRoutine.exercises.clear();
+        existingRoutine.exercises.addAll(_routineExercises);
+        
+        routineProvider.updateRoutine(existingRoutine.id, existingRoutine);
       }
-      Navigator.of(context).pop();
+
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
   }
+
 
   void _navigateAndSelectExercise() async {
     final selectedExercise = await Navigator.of(context).push<Exercise>(
@@ -71,6 +91,9 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
           exercise: exercise,
           routineExercise: routineExercise,
           onSave: (newRoutineExercise) {
+             final routineExerciseBox = Hive.box<RoutineExercise>('routine_exercises');
+             routineExerciseBox.add(newRoutineExercise); // Save to its own box first
+
             setState(() {
               if (index != null) {
                 _routineExercises[index] = newRoutineExercise;
@@ -136,14 +159,15 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
                         itemBuilder: (context, index) {
                           final routineExercise = _routineExercises[index];
                           return ListTile(
-                            key: ValueKey(routineExercise.exercise.id),
+                            key: ValueKey(routineExercise.key),
                             title: Text(routineExercise.exercise.name),
                             subtitle: Text('${routineExercise.sets} series x ${routineExercise.reps} reps'),
                             trailing: IconButton(
                               icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                               onPressed: () {
                                 setState(() {
-                                  _routineExercises.removeAt(index);
+                                  final item = _routineExercises.removeAt(index);
+                                  item.delete(); // Remove from Hive box
                                 });
                               },
                             ),
@@ -210,17 +234,19 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
     _restTime = widget.routineExercise?.restTime;
   }
 
-  void _onSave() {
+ void _onSave() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      final newRoutineExercise = RoutineExercise(
-        exercise: widget.exercise,
-        sets: _sets,
-        reps: _reps,
-        weight: _weight,
-        restTime: _restTime,
-      );
-      widget.onSave(newRoutineExercise);
+      
+      // For updates, we modify the existing object. For new, we create one.
+      final routineExercise = widget.routineExercise ?? RoutineExercise(exercise: widget.exercise, reps: _reps, sets: _sets);
+
+      routineExercise.sets = _sets;
+      routineExercise.reps = _reps;
+      routineExercise.weight = _weight;
+      routineExercise.restTime = _restTime;
+
+      widget.onSave(routineExercise);
       Navigator.of(context).pop();
     }
   }
@@ -240,7 +266,7 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
                 decoration: const InputDecoration(labelText: 'Series'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || int.tryParse(value) == null) {
+                  if (value == null || value.isEmpty || int.tryParse(value) == null) {
                     return 'Introduce un número válido';
                   }
                   return null;
@@ -259,16 +285,34 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
                 onSaved: (value) => _reps = value!,
               ),
               TextFormField(
-                initialValue: _weight?.toString(),
+                initialValue: _weight?.toString() ?? '',
                 decoration: const InputDecoration(labelText: 'Peso (opcional)'),
-                keyboardType: TextInputType.number,
-                onSaved: (value) => _weight = value != null && value.isNotEmpty ? double.parse(value) : null,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                 validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return null; // Optional field
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Introduce un número válido';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _weight = (value == null || value.isEmpty) ? null : double.tryParse(value),
               ),
               TextFormField(
-                initialValue: _restTime?.toString(),
+                initialValue: _restTime?.toString() ?? '',
                 decoration: const InputDecoration(labelText: 'Descanso (segundos, opcional)'),
                 keyboardType: TextInputType.number,
-                onSaved: (value) => _restTime = value != null && value.isNotEmpty ? int.parse(value) : null,
+                 validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return null; // Optional field
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Introduce un número válido';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _restTime = (value == null || value.isEmpty) ? null : int.tryParse(value),
               ),
             ],
           ),

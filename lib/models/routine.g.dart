@@ -8,7 +8,7 @@ part of 'routine.dart';
 
 class RoutineAdapter extends TypeAdapter<Routine> {
   @override
-  final int typeId = 13;
+  final int typeId = 15;
 
   @override
   Routine read(BinaryReader reader) {
@@ -20,8 +20,7 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       id: fields[0] as String,
       name: fields[1] as String,
       description: fields[2] as String,
-      exercises: (fields[3] as List).cast<RoutineExercise>(),
-    );
+    )..exercises = (fields[3] as HiveList).castHiveList();
   }
 
   @override
@@ -48,23 +47,3 @@ class RoutineAdapter extends TypeAdapter<Routine> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
-
-// **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
-
-Routine _$RoutineFromJson(Map<String, dynamic> json) => Routine(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String? ?? '',
-      exercises: (json['exercises'] as List<dynamic>)
-          .map((e) => RoutineExercise.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
-
-Map<String, dynamic> _$RoutineToJson(Routine instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'description': instance.description,
-      'exercises': instance.exercises.map((e) => e.toJson()).toList(),
-    };
