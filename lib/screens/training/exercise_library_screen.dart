@@ -84,93 +84,83 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Biblioteca de Ejercicios'),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                });
-              },
-              decoration: const InputDecoration(
-                labelText: 'Buscar ejercicio',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
+            onChanged: (value) {
+              setState(() {
+                _searchQuery = value;
+              });
+            },
+            decoration: const InputDecoration(
+              labelText: 'Buscar ejercicio',
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(),
             ),
           ),
-          Expanded(
-            child: Consumer<ExerciseProvider>(
-              builder: (context, provider, child) {
-                final filteredExercises = provider.exercises.where((exercise) {
-                  final query = _searchQuery.toLowerCase();
-                  return exercise.name.toLowerCase().contains(query) ||
-                      exercise.muscleGroup.toLowerCase().contains(query) ||
-                      exercise.equipment.toLowerCase().contains(query);
-                }).toList();
+        ),
+        Expanded(
+          child: Consumer<ExerciseProvider>(
+            builder: (context, provider, child) {
+              final filteredExercises = provider.exercises.where((exercise) {
+                final query = _searchQuery.toLowerCase();
+                return exercise.name.toLowerCase().contains(query) ||
+                    exercise.muscleGroup.toLowerCase().contains(query) ||
+                    exercise.equipment.toLowerCase().contains(query);
+              }).toList();
 
-                if (filteredExercises.isEmpty) {
-                  return const Center(child: Text('No se encontraron ejercicios.'));
+              if (filteredExercises.isEmpty) {
+                return const Center(child: Text('No se encontraron ejercicios.'));
+              }
+
+              final groupedExercises = <String, List<Exercise>>{};
+              for (final exercise in filteredExercises) {
+                if (groupedExercises.containsKey(exercise.muscleGroup)) {
+                  groupedExercises[exercise.muscleGroup]!.add(exercise);
+                } else {
+                  groupedExercises[exercise.muscleGroup] = [exercise];
                 }
+              }
 
-                final groupedExercises = <String, List<Exercise>>{};
-                for (final exercise in filteredExercises) {
-                  if (groupedExercises.containsKey(exercise.muscleGroup)) {
-                    groupedExercises[exercise.muscleGroup]!.add(exercise);
-                  } else {
-                    groupedExercises[exercise.muscleGroup] = [exercise];
-                  }
-                }
+              final muscleGroups = groupedExercises.keys.toList();
 
-                final muscleGroups = groupedExercises.keys.toList();
+              return ListView.builder(
+                itemCount: muscleGroups.length,
+                itemBuilder: (context, index) {
+                  final muscleGroup = muscleGroups[index];
+                  final exercisesInGroup = groupedExercises[muscleGroup]!;
 
-                return ListView.builder(
-                  itemCount: muscleGroups.length,
-                  itemBuilder: (context, index) {
-                    final muscleGroup = muscleGroups[index];
-                    final exercisesInGroup = groupedExercises[muscleGroup]!;
-
-                    return Card(
-                      elevation: 2,
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: ExpansionTile(
-                        leading: Icon(_getIconForMuscleGroup(muscleGroup), size: 40),
-                        title: Text(
-                          muscleGroup,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                        children: exercisesInGroup.map((exercise) {
-                          return ListTile(
-                            title: Text(exercise.name),
-                            subtitle: Text(exercise.equipment),
-                            onTap: () => _navigateAndSaveChanges(exercise),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                              onPressed: () => _deleteExercise(exercise),
-                            ),
-                          );
-                        }).toList(),
+                  return Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    child: ExpansionTile(
+                      leading: Icon(_getIconForMuscleGroup(muscleGroup), size: 40),
+                      title: Text(
+                        muscleGroup,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                       ),
-                    );
-                  },
-                );
-              },
-            ),
+                      children: exercisesInGroup.map((exercise) {
+                        return ListTile(
+                          title: Text(exercise.name),
+                          subtitle: Text(exercise.equipment),
+                          onTap: () => _navigateAndSaveChanges(exercise),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                            onPressed: () => _deleteExercise(exercise),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  );
+                },
+              );
+            },
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateAndSaveChanges(null),
-        tooltip: 'Añadir Ejercicio',
-        child: const Icon(Icons.add),
-      ),
+        ),
+      ],
     );
   }
 }

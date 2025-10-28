@@ -1,8 +1,12 @@
-# Blueprint de la Aplicación de Fitness y Salud
+# Blueprint de la Aplicación de Fitness
 
-## Descripción General
+## Propósito y Capacidades
 
-Esta es una aplicación de Flutter diseñada para ser un asistente de fitness y salud todo en uno. Permite a los usuarios crear y seguir rutinas de entrenamiento personalizadas, registrar su progreso detalladamente y, en futuras versiones, monitorizar otros aspectos de su bienestar como la nutrición y los hábitos. La app se centra en una experiencia de usuario guiada, moderna y motivadora.
+Esta aplicación de fitness está diseñada para ser un asistente de salud y bienestar integral. Permite a los usuarios gestionar sus rutinas de entrenamiento, registrar su ingesta de alimentos y agua, y monitorear su progreso a lo largo del tiempo.
+
+## Restricciones de Diseño
+
+- **Navegación Principal:** La estructura, el estilo y la funcionalidad de la `AppBar`, `BottomNavigationBar` y `Drawer` (menú lateral) se consideran **fijos**. No se realizarán cambios en estos componentes sin la solicitud y aprobación explícita del usuario.
 
 ## Estilo y Diseño
 
@@ -10,34 +14,73 @@ Esta es una aplicación de Flutter diseñada para ser un asistente de fitness y 
 - **Tipografía:** Uso del paquete `google_fonts` para una identidad visual consistente y legible.
 - **Iconografía:** Iconos claros y funcionales para una navegación intuitiva.
 - **Componentes:**
-  - **`AppBar` principal:** Título de la pantalla y acciones contextuales.
-  - **`BottomNavigationBar`:** Navegación principal de la aplicación. **(No modificar)**. Las secciones definidas son: "Inicio", "Menús" y "Progreso".
   - **Tarjetas (`Card`):** Usadas extensivamente para presentar información de forma limpia y organizada (rutinas, ejercicios, registros).
   - **Componentes Interactivos:** Uso de `TextFormField` para la entrada de datos, `IconButton` para acciones rápidas y `ElevatedButton` para acciones principales.
+
+## Navegación
+
+### AppBar
+
+- **Función:** La `AppBar` es dinámica y sensible al contexto.
+- **Título:** Muestra el título de la pantalla actual, proporcionando al usuario una clara indicación de su ubicación dentro de la aplicación.
+- **Menú Lateral:** En las pantallas principales, incluye un `IconButton` que abre el `Drawer` (menú lateral), permitiendo el acceso a secciones secundarias.
+- **Acciones Contextuales:** Muestra botones de acción relevantes para la pantalla actual. Por ejemplo, en la pantalla de una rutina, puede mostrar un botón para "Iniciar Entrenamiento".
+
+### BottomNavigationBar
+
+- **Función:** Es la principal herramienta de navegación, fija en la parte inferior, que permite al usuario cambiar entre las tres secciones clave de la aplicación.
+- **Estructura:**
+  - **Ítem 1: Inicio (`DashboardScreen`)**
+    - **Icono:** `Icons.home`
+    - **Etiqueta:** "Inicio"
+  - **Ítem 2: Menús (`MenusScreen`)**
+    - **Icono:** `Icons.restaurant_menu`
+    - **Etiqueta:** "Menús"
+  - **Ítem 3: Progreso (`ProgresoScreen`)**
+    - **Icono:** `Icons.show_chart`
+    - **Etiqueta:** "Progreso"
+- **Comportamiento:** La selección de un ítem actualiza el cuerpo de la pantalla principal (`MainScreen`) para mostrar la vista correspondiente.
+
+### Drawer (Menú Lateral)
+
+- **Función:** Proporciona acceso a funcionalidades y pantallas secundarias que no forman parte del flujo de navegación principal.
+- **Estructura:**
+  - **Encabezado (`UserAccountsDrawerHeader`):**
+    - Muestra el nombre y el email del usuario.
+    - Utiliza una imagen de fondo (`luna_splash_b.png` o `luna_splash_w.png` según el tema) para un diseño atractivo.
+  - **Secciones (Agrupadas con `ExpansionTile`):**
+    - **Hábitos:**
+      - **Recordatorios:** `Icons.notifications_active`
+      - **Ayuno Intermitente:** `Icons.fasting`
+    - **Registros:**
+      - **Historial de Agua:** `Icons.history`
+      - **Historial de Comida:** `Icons.history`
+      - **Medidas Corporales:** `Icons.history`
+    - **Logros:**
+      - **Objetivos:** `Icons.flag`
+      - **Recompensas:** `Icons.emoji_events`
+  - **Opciones Adicionales (`ListTile`):**
+    - **Configuración:** `Icons.settings`
+    - **Cerrar Sesión:** `Icons.logout`
+- **Comportamiento:** Cada opción de navegación cierra el `Drawer` y lleva al usuario a la pantalla correspondiente. Las secciones agrupadas se pueden expandir o contraer para una mejor organización.
 
 ## Características Implementadas
 
 ### Módulo de Entrenamiento y Rutinas
 
-Este es el núcleo de la aplicación. Proporciona un flujo completo desde la creación de un plan hasta la ejecución y el registro del mismo.
-
-- **Gestión de Ejercicios (CRUD):**
-  - Los usuarios pueden crear, ver, editar y eliminar ejercicios en una base de datos persistente (`Hive`).
-  - Cada ejercicio tiene un nombre, descripción y un tipo asignado.
-
-- **Gestión de Rutinas (CRUD):**
-  - Los usuarios pueden crear, ver, editar y eliminar rutinas.
-  - Cada rutina tiene un nombre y una descripción.
-
-- **Composición de Rutinas:**
-  - **Añadir Ejercicios:** Los usuarios pueden añadir ejercicios de su base de datos a cualquier rutina.
-  - **Personalización de Series:** Para cada ejercicio dentro de una rutina, se puede especificar:
-    - Número de **series**.
-    - Número de **repeticiones** objetivo.
-    - **Peso** inicial recomendado.
-    - **Tiempo de descanso** en segundos después de cada serie.
-  - **Reordenamiento:** Los ejercicios dentro de una rutina se pueden reordenar fácilmente mediante una interfaz de arrastrar y soltar (`ReorderableListView`).
-
+- **Gestión de Biblioteca de Ejercicios:**
+  - **Creación y Edición:** Los usuarios pueden crear sus propios ejercicios, especificando el nombre, el grupo muscular al que pertenece y una descripción.
+  - **Visualización:** Se presenta una lista completa de ejercicios, filtrable y buscable, para una fácil consulta.
+- **Gestión de Rutinas:**
+  - **Creación y Edición:** Los usuarios pueden crear múltiples rutinas de entrenamiento.
+  - **Composición de Rutinas:**
+    - **Añadir Ejercicios:** Los usuarios pueden añadir ejercicios de su base de datos a cualquier rutina.
+    - **Personalización de Series:** Para cada ejercicio dentro de una rutina, se puede especificar:
+      - Número de **series**.
+      - Número de **repeticiones** objetivo.
+      - **Peso** inicial recomendado.
+      - **Tiempo de descanso** en segundos después de cada serie.
+    - **Reordenamiento:** Los ejercicios dentro de una rutina se pueden reordenar fácilmente mediante una interfaz de arrastrar y soltar (`ReorderableListView`).
 - **Flujo de Entrenamiento Guiado (`WorkoutScreen`):**
   - **Inicio de Sesión:** El usuario selecciona una rutina para comenzar una sesión de entrenamiento.
   - **Vista por Ejercicio:** La pantalla se centra en un solo ejercicio a la vez para minimizar distracciones.
@@ -47,43 +90,47 @@ Este es el núcleo de la aplicación. Proporciona un flujo completo desde la cre
   - **Marcar como Completado:** Un botón de check permite marcar cada serie como finalizada.
   - **Temporizador de Descanso Automático:** Tras completar una serie, se muestra una pantalla de descanso con una cuenta atrás visual, utilizando el tiempo definido en la rutina. El usuario puede saltar el descanso.
   - **Navegación:** Botones para moverse al ejercicio "Siguiente" o "Anterior".
+  - **Finalización y Resumen:** Al completar todos los ejercicios, se muestra un resumen del entrenamiento y los datos se guardan en el historial.
 
-- **Persistencia de Datos (`Hive`):**
-  - Se utiliza Hive para el almacenamiento local y eficiente de:
-    - `Exercise`: La base de datos de todos los ejercicios.
-    - `Routine`: Todas las rutinas creadas por el usuario.
-    - `RoutineLog`: El historial de todos los entrenamientos completados.
+### Módulo de Nutrición
 
-### Módulo de Historial
+- **Registro de Ingesta de Agua (`WaterIntakeScreen`):**
+  - **Objetivo Diario:** El usuario puede establecer un objetivo diario de consumo de agua.
+  - **Registro Rápido:** Botones para añadir cantidades predefinidas de agua (e.g., 250ml, 500ml).
+  - **Visualización del Progreso:** Una animación de un acuario que se llena progresivamente con cada registro y una barra de progreso circular en el dashboard.
+- **Registro de Comidas (`FoodIntakeScreen`):**
+  - **Búsqueda de Alimentos:** Permite buscar en una base de datos de alimentos.
+  - **Registro por Comida:** Los usuarios pueden registrar alimentos en diferentes momentos del día (Desayuno, Almuerzo, Cena, Snacks).
+  - **Información Nutricional:** Muestra un resumen de las calorías y macronutrientes consumidos.
 
-- **Vista de Historial (`WorkoutLogScreen`):**
-  - Muestra una lista cronológica de todos los entrenamientos guardados.
-  - Cada entrada muestra el nombre de la rutina, la fecha y la duración.
-- **Detalle del Entrenamiento (`WorkoutLogDetailScreen`):**
-  - Al seleccionar un registro del historial, se muestra una vista detallada con:
-    - Resumen (fecha, duración, notas).
-    - Una tabla detallada para cada ejercicio, mostrando las repeticiones y el peso de cada serie registrada.
+### Módulo de Seguimiento y Progreso
 
-## Estructura del Código y Proveedores
+- **Dashboard Principal (`DashboardScreen`):**
+  - **Tarjetas de Acceso Rápido:**
+    - **Agua:** Muestra el progreso actual y permite añadir nuevos registros.
+    - **Comida:** Muestra las calorías consumidas y permite añadir nuevos registros.
+    - **Entrenamiento:** Acceso rápido para iniciar una rutina.
+  - **Gráficas de Progreso:** Visualización del progreso de peso y otras métricas clave.
+- **Historial Detallado:**
+  - **Entrenamientos Pasados:** Lista de todos los entrenamientos completados, con detalles de cada uno.
+  - **Registros de Comida y Agua:** Historial completo de la ingesta diaria.
 
-- **`Provider` para State Management:**
-  - **`ExerciseProvider`:** Gestiona el estado y las operaciones CRUD de los ejercicios.
-  - **`RoutineProvider`:** Gestiona el estado y las operaciones CRUD de las rutinas y los registros de historial (`RoutineLog`).
-- **Modelos de Datos:**
-  - Clases bien definidas (`Exercise`, `Routine`, `RoutineExercise`, `RoutineLog`, `ExerciseLog`, `SetLog`) con adaptadores de `Hive` para la persistencia.
-  - Se utiliza `json_serializable` para facilitar la conversión de objetos a JSON si fuera necesario en el futuro (e.g., para APIs o backups).
+### Gestión de Perfil y Ajustes
 
-## Plan de Desarrollo Actual
+- **Perfil de Usuario:** Permite al usuario ver y editar su información personal (nombre, email, etc.).
+- **Configuración de la Aplicación (`SettingsScreen`):**
+  - **Tema:** Opción para cambiar entre modo claro, oscuro o seguir la configuración del sistema.
+  - **Notificaciones:** Ajustes para activar o desactivar recordatorios.
 
-**Objetivo:** Revisión y consolidación de la aplicación.
+## Estructura del Proyecto
 
-**Acciones:**
-- El usuario (`revisare`) está actualmente probando la aplicación para evaluar la funcionalidad y la experiencia de usuario.
-- El `blueprint.md` ha sido actualizado para reflejar el estado actual y completo del desarrollo.
+El proyecto sigue una arquitectura limpia y organizada por capas, separando la UI, la lógica de negocio y los datos.
 
-**Próximos Pasos Potenciales (A discutir):**
-
-1.  **Visualización Gráfica del Progreso:** Añadir gráficos que muestren la evolución del peso levantado o las repeticiones para ejercicios específicos a lo largo del tiempo.
-2.  **Mejoras de UI/UX:** Pulir animaciones, mejorar la retroalimentación visual durante el entrenamiento o refinar el diseño de alguna pantalla.
-3.  **Metas y Objetivos:** Permitir a los usuarios establecer metas (e.g., "levantar X peso en 3 meses").
-4.  **Módulo de Nutrición:** Integrar el seguimiento de comidas y macronutrientes.
+- **`lib/`**
+  - **`main.dart`**: Punto de entrada de la aplicación, configuración de `provider` y temas.
+  - **`models/`**: Clases de modelo que representan los datos de la aplicación (e.g., `Routine`, `Exercise`, `FoodLog`).
+  - **`providers/`**: Gestiona el estado de la aplicación utilizando el paquete `provider` (e.g., `ThemeProvider`, `WorkoutProvider`).
+  - **`screens/`**: Contiene los widgets de pantalla completa, organizados por funcionalidad (e.g., `training/`, `nutrition/`, `profile/`).
+  - **`widgets/`**: Widgets reutilizables utilizados en múltiples pantallas (e.g., `DashboardCard`, `DrawerMenu`).
+  - **`services/`**: Lógica de negocio y comunicación con fuentes de datos (e.g., `DatabaseService`).
+  - **`data/`**: Datos estáticos o iniciales, como la lista de ejercicios precargada.

@@ -12,8 +12,7 @@ import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/recipes/recipes_screen.dart';
 import 'package:myapp/screens/settings/about_screen.dart';
 import 'package:myapp/screens/settings_screen.dart';
-import 'package:myapp/screens/training/exercise_library_screen.dart';
-import 'package:myapp/screens/training/routines_screen.dart';
+import 'package:myapp/screens/training/training_screen.dart';
 import 'package:myapp/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -35,7 +34,7 @@ class DrawerMenu extends StatelessWidget {
 
     final headerTextColor = textColorForBackground(themeProvider.seedColor);
 
-    Widget buildListTile(BuildContext context, {required IconData icon, required Color iconColor, required String title, required Widget destination, int? initialTabIndex}) {
+    Widget buildListTile(BuildContext context, {required IconData icon, required Color iconColor, required String title, required Widget destination}) {
       return ListTile(
         leading: Icon(icon, color: iconColor),
         title: Text(title, style: GoogleFonts.lato()),
@@ -115,8 +114,8 @@ class DrawerMenu extends StatelessWidget {
             buildListTile(context, icon: Icons.favorite, iconColor: Colors.red[400]!, title: 'Recetas Favoritas', destination: const RecipesScreen(initialTabIndex: 1)),
           ]),
           _buildExpansionTile(context, title: 'Entrenamiento', icon: Icons.fitness_center, iconColor: Colors.red[700]!, children: [
-            buildListTile(context, icon: Icons.directions_run, iconColor: Colors.blue[700]!, title: 'Ejercicios', destination: const RoutinesScreen()),
-            buildListTile(context, icon: Icons.local_library, iconColor: Colors.pink, title: 'Biblioteca', destination: const ExerciseLibraryScreen()),
+            buildListTile(context, icon: Icons.directions_run, iconColor: Colors.blue[700]!, title: 'Rutinas', destination: const TrainingScreen(initialTabIndex: 0)),
+            buildListTile(context, icon: Icons.local_library, iconColor: Colors.pink, title: 'Biblioteca', destination: const TrainingScreen(initialTabIndex: 1)),
           ]),
           _buildExpansionTile(context, title: 'Hábitos', icon: Icons.check_circle_outline, iconColor: Colors.lightGreen[800]!, children: [
             buildListTile(context, icon: Icons.notifications, iconColor: Colors.amber[600]!, title: 'Recordatorios', destination: const HabitsScreen(initialTabIndex: 0)),
