@@ -6,6 +6,7 @@ import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/models/exercise_log.dart';
 import 'package:myapp/models/set_log.dart';
 import 'package:myapp/providers/routine_provider.dart';
+import 'package:myapp/screens/training/workout_history_screen.dart';
 import 'package:provider/provider.dart';
 
 class WorkoutScreen extends StatefulWidget {
@@ -49,7 +50,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       duration: duration,
     );
     Provider.of<RoutineProvider>(context, listen: false).addRoutineLog(routineLog);
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const WorkoutHistoryScreen()));
   }
 
   void _completeSet(int setIndex) {
