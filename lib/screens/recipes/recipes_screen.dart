@@ -107,13 +107,12 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
   int? _selectedCategoryIndex;
 
 
-  void _searchRecipes(String query) async {
-    String finalQuery = query.trim();
+  void _searchRecipes() async {
+    final String textQuery = _searchController.text.trim();
+    final String categoryQuery = _selectedCategoryIndex != null ? _categories[_selectedCategoryIndex!].label : '';
 
-    if (_selectedCategoryIndex != null) {
-      final selectedCategory = _categories[_selectedCategoryIndex!].label;
-      finalQuery = '$finalQuery $selectedCategory'.trim();
-    }
+    final String finalQuery = '$textQuery $categoryQuery'.trim();
+
 
     if (finalQuery.isEmpty) {
       setState(() {
@@ -173,17 +172,9 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
     }
   }
 
-  void _onCategorySelected(int? index) {
+  void _finalizeCategorySelection() {
     Navigator.of(context).pop(); // Close the modal
-    setState(() {
-      _selectedCategoryIndex = (_selectedCategoryIndex == index) ? null : index;
-    });
-
-    String currentSearchText = _searchController.text;
-    if (_selectedCategoryIndex != null || currentSearchText.isNotEmpty) {
-      final categoryQuery = _selectedCategoryIndex != null ? _categories[_selectedCategoryIndex!].label : '';
-      _searchRecipes('$currentSearchText $categoryQuery'.trim());
-    }
+    _searchRecipes();
   }
 
   void _showCategoryModal() {
@@ -230,12 +221,12 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
                               icon: _categories[index].icon,
                               isSelected: _selectedCategoryIndex == index,
                               onTap: () {
-                                setState(() { // Use setState from the main screen
+                                setState(() {
                                   _selectedCategoryIndex = (_selectedCategoryIndex == index) ? null : index;
                                 });
                                 modalState(() {}); // Rebuild the modal to show selection
                                  Future.delayed(const Duration(milliseconds: 300), () {
-                                  _onCategorySelected(_selectedCategoryIndex);
+                                  _finalizeCategorySelection();
                                 });
                               },
                             );
@@ -288,7 +279,7 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
               ),
               prefixIcon: const Icon(Icons.search),
             ),
-            onSubmitted: (value) => _searchRecipes(value),
+            onSubmitted: (_) => _searchRecipes(),
           ),
            const SizedBox(height: 16.0),
           ElevatedButton.icon(

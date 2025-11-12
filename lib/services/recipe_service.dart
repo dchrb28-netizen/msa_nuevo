@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 import 'package:myapp/models/recipe.dart';
 
@@ -10,6 +11,9 @@ class RecipeService {
   final String _baseUrl = 'https://www.googleapis.com/customsearch/v1';
 
   Future<List<Recipe>> searchRecipes(String query) async {
+    // Imprimir la consulta para depuración
+    developer.log('Buscando recetas con la consulta: "$query"', name: 'RecipeService');
+
     // Construir la URL para la API de Google Custom Search
     final url = Uri.parse(
         '$_baseUrl?key=$_apiKey&cx=$_searchEngineId&q=$query&lr=lang_es');
