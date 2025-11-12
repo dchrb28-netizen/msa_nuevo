@@ -25,13 +25,14 @@ class UserRecipeAdapter extends TypeAdapter<UserRecipe> {
       category: fields[6] as String?,
       cookingTime: fields[7] as int?,
       servings: fields[8] as int?,
+      isFavorite: fields[9] as bool,
     )..id = fields[0] as String;
   }
 
   @override
   void write(BinaryWriter writer, UserRecipe obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -49,7 +50,9 @@ class UserRecipeAdapter extends TypeAdapter<UserRecipe> {
       ..writeByte(7)
       ..write(obj.cookingTime)
       ..writeByte(8)
-      ..write(obj.servings);
+      ..write(obj.servings)
+      ..writeByte(9)
+      ..write(obj.isFavorite);
   }
 
   @override

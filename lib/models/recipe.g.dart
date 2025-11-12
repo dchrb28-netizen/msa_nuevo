@@ -21,13 +21,14 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       link: fields[1] as String,
       snippet: fields[2] as String,
       imageUrl: fields[3] as String?,
+      isFavorite: fields[4] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Recipe obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       ..writeByte(2)
       ..write(obj.snippet)
       ..writeByte(3)
-      ..write(obj.imageUrl);
+      ..write(obj.imageUrl)
+      ..writeByte(4)
+      ..write(obj.isFavorite);
   }
 
   @override

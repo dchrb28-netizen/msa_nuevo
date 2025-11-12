@@ -102,6 +102,11 @@ Esta aplicación de fitness está diseñada para ser un asistente de salud y bie
   - **Búsqueda de Alimentos:** Permite buscar en una base de datos de alimentos.
   - **Registro por Comida:** Los usuarios pueden registrar alimentos en diferentes momentos del día (Desayuno, Almuerzo, Cena, Snacks).
   - **Información Nutricional:** Muestra un resumen de las calorías y macronutrientes consumidos.
+- **Gestión de Recetas:**
+  - **Búsqueda de Recetas:** Los usuarios pueden buscar recetas en la web.
+  - **Recetas Favoritas:** Los usuarios pueden marcar/desmarcar recetas como favoritas, tanto las de la web como las creadas por ellos. Las recetas favoritas se guardan para un acceso rápido.
+  - **Creación de Recetas Propias:** Los usuarios pueden crear sus propias recetas, añadiendo título, descripción, ingredientes, instrucciones y una imagen.
+
 
 ### Módulo de Seguimiento y Progreso
 
@@ -128,9 +133,21 @@ El proyecto sigue una arquitectura limpia y organizada por capas, separando la U
 
 - **`lib/`**
   - **`main.dart`**: Punto de entrada de la aplicación, configuración de `provider` y temas.
-  - **`models/`**: Clases de modelo que representan los datos de la aplicación (e.g., `Routine`, `Exercise`, `FoodLog`).
+  - **`models/`**: Clases de modelo que representan los datos de la aplicación (e.g., `Routine`, `Exercise`, `FoodLog`, `Recipe`, `UserRecipe`).
   - **`providers/`**: Gestiona el estado de la aplicación utilizando el paquete `provider` (e.g., `ThemeProvider`, `WorkoutProvider`).
-  - **`screens/`**: Contiene los widgets de pantalla completa, organizados por funcionalidad (e.g., `training/`, `nutrition/`, `profile/`).
+  - **`screens/`**: Contiene los widgets de pantalla completa, organizados por funcionalidad (e.g., `training/`, `nutrition/`, `profile/`, `recipes/`).
   - **`widgets/`**: Widgets reutilizables utilizados en múltiples pantallas (e.g., `DashboardCard`, `DrawerMenu`).
-  - **`services/`**: Lógica de negocio y comunicación con fuentes de datos (e.g., `DatabaseService`).
+  - **`services/`**: Lógica de negocio y comunicación con fuentes de datos (e.g., `DatabaseService`, `RecipeService`).
   - **`data/`**: Datos estáticos o iniciales, como la lista de ejercicios precargada.
+
+## Plan Actual: Agregar Corazón de Favorito a las Recetas
+
+- **Estado:** Completado.
+- **Pasos Realizados:**
+  1.  **Modificar Modelo `Recipe`:** Se agregó el campo booleano `isFavorite` a la clase `Recipe` en `lib/models/recipe.dart`.
+  2.  **Modificar Modelo `UserRecipe`:** Se agregó el campo booleano `isFavorite` a la clase `UserRecipe` en `lib/models/user_recipe.dart`.
+  3.  **Regenerar Archivos `*.g.dart`:** Se ejecutó `build_runner` para actualizar los archivos generados.
+  4.  **Actualizar UI en `recipes_screen.dart`:**
+      - Se agregó un `IconButton` a las tarjetas de recetas (tanto de la web como creadas) para marcar/desmarcar como favoritas.
+      - El ícono del corazón cambia entre `Icons.favorite` (relleno) y `Icons.favorite_border` (vacío) para reflejar el estado.
+      - La lógica para guardar el estado de favorito en Hive fue implementada directamente en el `onPressed` del `IconButton`.

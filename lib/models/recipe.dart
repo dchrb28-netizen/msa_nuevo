@@ -16,12 +16,32 @@ class Recipe extends HiveObject {
   @HiveField(3)
   final String? imageUrl;
 
+  @HiveField(4)
+  bool isFavorite;
+
   Recipe({
     required this.title,
     required this.link,
     required this.snippet,
     this.imageUrl,
+    this.isFavorite = false,
   });
+
+  Recipe copyWith({
+    String? title,
+    String? link,
+    String? snippet,
+    String? imageUrl,
+    bool? isFavorite,
+  }) {
+    return Recipe(
+      title: title ?? this.title,
+      link: link ?? this.link,
+      snippet: snippet ?? this.snippet,
+      imageUrl: imageUrl ?? this.imageUrl,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
     String? imageUrl;

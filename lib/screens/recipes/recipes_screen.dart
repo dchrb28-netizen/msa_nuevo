@@ -343,29 +343,52 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    if (recipe.imageUrl != null)
-                                      Image.network(
-                                        recipe.imageUrl!,
-                                        width: double.infinity,
-                                        height: 180,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return Container(
-                                            height: 180,
+                                    Stack(
+                                      alignment: Alignment.topRight,
+                                      children: [
+                                        if (recipe.imageUrl != null)
+                                          Image.network(
+                                            recipe.imageUrl!,
                                             width: double.infinity,
+                                            height: 180,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return Container(
+                                                height: 180,
+                                                width: double.infinity,
+                                                color: Colors.grey[300],
+                                                child: const Icon(Icons.restaurant_menu, color: Colors.grey, size: 50),
+                                              );
+                                            },
+                                          )
+                                        else
+                                          Container(
+                                            height: 180,
                                             color: Colors.grey[300],
-                                            child: const Icon(Icons.restaurant_menu, color: Colors.grey, size: 50),
-                                          );
-                                        },
-                                      )
-                                    else
-                                      Container(
-                                        height: 180,
-                                        color: Colors.grey[300],
-                                        child: const Center(
-                                          child: Icon(Icons.restaurant_menu, size: 50, color: Colors.grey),
+                                            child: const Center(
+                                              child: Icon(Icons.restaurant_menu, size: 50, color: Colors.grey),
+                                            ),
+                                          ),
+                                        IconButton(
+                                          icon: Icon(
+                                            recipe.isFavorite ? Icons.favorite : Icons.favorite_border,
+                                            color: recipe.isFavorite ? Colors.red : Colors.white,
+                                            size: 30,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              recipe.isFavorite = !recipe.isFavorite;
+                                            });
+                                            final favoritesBox = Hive.box<Recipe>('favorite_recipes');
+                                            if (recipe.isFavorite) {
+                                              favoritesBox.put(recipe.link, recipe);
+                                            } else {
+                                              favoritesBox.delete(recipe.link);
+                                            }
+                                          },
                                         ),
-                                      ),
+                                      ],
+                                    ),
                                     Padding(
                                       padding: const EdgeInsets.all(16.0),
                                       child: Column(
@@ -699,21 +722,37 @@ class CreatedRecipesTab extends StatelessWidget {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (recipe.imageBytes != null)
-                      Image.memory(
-                        recipe.imageBytes!,
-                        width: double.infinity,
-                        height: 180,
-                        fit: BoxFit.cover,
-                      )
-                    else
-                      Container(
-                        height: 180,
-                        color: Colors.grey[300],
-                        child: const Center(
-                          child: Icon(Icons.restaurant_menu, size: 50, color: Colors.grey),
+                    Stack(
+                      alignment: Alignment.topRight,
+                      children: [
+                        if (recipe.imageBytes != null)
+                          Image.memory(
+                            recipe.imageBytes!,
+                            width: double.infinity,
+                            height: 180,
+                            fit: BoxFit.cover,
+                          )
+                        else
+                          Container(
+                            height: 180,
+                            color: Colors.grey[300],
+                            child: const Center(
+                              child: Icon(Icons.restaurant_menu, size: 50, color: Colors.grey),
+                            ),
+                          ),
+                        IconButton(
+                          icon: Icon(
+                            recipe.isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: recipe.isFavorite ? Colors.red : Colors.white,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            recipe.isFavorite = !recipe.isFavorite;
+                            recipe.save();
+                          },
                         ),
-                      ),
+                      ],
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(

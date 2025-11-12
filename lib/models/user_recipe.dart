@@ -34,6 +34,10 @@ class UserRecipe extends HiveObject {
   @HiveField(8)
   final int? servings;
 
+  @HiveField(9)
+  bool isFavorite;
+
+
   UserRecipe({
     required this.title,
     this.description,
@@ -43,6 +47,7 @@ class UserRecipe extends HiveObject {
     this.category,
     this.cookingTime,
     this.servings,
+    this.isFavorite = false,
   }) {
     id = const Uuid().v4();
   }
