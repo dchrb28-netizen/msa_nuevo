@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/widgets/profile/profile_edit_view.dart';
+import 'package:myapp/widgets/profile/profile_read_view.dart';
 import 'package:myapp/widgets/ui/watermark_image.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +20,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isEditing = false;
   bool _isLoading = true;
+  bool _isSaving = false;
 
   late TextEditingController _nameController;
   late TextEditingController _ageController;
@@ -53,7 +56,6 @@ class ProfileScreenState extends State<ProfileScreen> {
 
     _loadUserData(isNewUser);
 
-    // If it's a new user, automatically enter editing mode.
     if (isNewUser) {
       setState(() {
         _isEditing = true;
@@ -69,7 +71,6 @@ class ProfileScreenState extends State<ProfileScreen> {
     final user = Provider.of<UserProvider>(context, listen: false).user;
 
     if (isNewUser) {
-      // For a new user, initialize with empty or default values
       _nameController = TextEditingController();
       _ageController = TextEditingController();
       _heightController = TextEditingController();
@@ -78,7 +79,6 @@ class ProfileScreenState extends State<ProfileScreen> {
       _activityLevel = _activityLevelOptions.keys.first;
       _profileImageBytes = null;
     } else {
-      // For an existing user, load their data
       _nameController = TextEditingController(text: user?.name ?? '');
       _ageController = TextEditingController(text: user?.age.toString() ?? '0');
       _heightController = TextEditingController(text: user?.height.toString() ?? '0');
@@ -110,8 +110,12 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _saveProfile() {
+  Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isSaving = true;
+      });
+
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final navigator = Navigator.of(context);
       final messenger = ScaffoldMessenger.of(context);
@@ -129,7 +133,11 @@ class ProfileScreenState extends State<ProfileScreen> {
         isGuest: false,
       );
 
-      userProvider.setUser(updatedUser);
+      await userProvider.setUser(updatedUser);
+
+      setState(() {
+        _isSaving = false;
+      });
 
       if (isNewUser) {
         navigator.pushNamedAndRemoveUntil('/', (route) => false);
@@ -155,12 +163,6 @@ class ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).user;
     final bool profileExists = user != null && !user.isGuest;
-
-    // This ensures that if the provider loads and we have a user, we load their data.
-    // Prevents starting with an empty form for an existing user.
-    if (!_isLoading && !profileExists && !_isEditing) {
-      _initializeProfile();
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -189,18 +191,46 @@ class ProfileScreenState extends State<ProfileScreen> {
       body: Stack(
         children: [
           const WatermarkImage(imageName: 'perfil'),
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : SafeArea(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24.0),
-                    child: _isEditing
-                        ? _buildEditView()
-                        : (user != null
-                            ? _buildReadView(user)
-                            : _buildNoProfileView()),
-                  ),
-                ),
+          if (_isLoading || _isSaving)
+            const Center(child: CircularProgressIndicator())
+          else
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: _isEditing
+                    ? ProfileEditView(
+                        formKey: _formKey,
+                        nameController: _nameController,
+                        ageController: _ageController,
+                        heightController: _heightController,
+                        weightController: _weightController,
+                        selectedGender: _selectedGender,
+                        activityLevel: _activityLevel,
+                        profileImageBytes: _profileImageBytes,
+                        genderOptions: _genderOptions,
+                        activityLevelOptions: _activityLevelOptions,
+                        onPickImage: _pickImage,
+                        onSaveProfile: _saveProfile,
+                        onGenderChanged: (value) {
+                          setState(() {
+                            _selectedGender = value;
+                          });
+                        },
+                        onActivityLevelChanged: (value) {
+                          setState(() {
+                            _activityLevel = value;
+                          });
+                        },
+                      )
+                    : (user != null
+                        ? ProfileReadView(
+                            user: user,
+                            genderOptions: _genderOptions,
+                            activityLevelOptions: _activityLevelOptions,
+                          )
+                        : _buildNoProfileView()),
+              ),
+            ),
         ],
       ),
     );
@@ -224,220 +254,6 @@ class ProfileScreenState extends State<ProfileScreen> {
           )
         ],
       ),
-    );
-  }
-
-  Widget _buildReadView(User user) {
-    final profileImage = user.profileImageBytes != null
-        ? MemoryImage(user.profileImageBytes!)
-        : const AssetImage('assets/icons/icon.png') as ImageProvider;
-
-    return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 20),
-          CircleAvatar(
-            radius: 80,
-            backgroundImage: profileImage,
-          ),
-          const SizedBox(height: 24),
-          Text(user.name, style: Theme.of(context).textTheme.headlineMedium),
-          const SizedBox(height: 40),
-          _buildInfoCard(context, user),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoCard(BuildContext context, User user) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 2.5,
-          crossAxisSpacing: 20,
-          mainAxisSpacing: 20,
-          children: [
-            _buildInfoItem(context, Icons.cake_outlined, 'Edad', '${user.age} años'),
-            _buildInfoItem(context, Icons.height_outlined, 'Altura', '${user.height} cm'),
-            _buildInfoItem(context, Icons.monitor_weight_outlined, 'Peso', '${user.weight} kg'),
-            _buildInfoItem(context, Icons.person_outline, 'Género', _genderOptions[user.gender] ?? 'No especificado'),
-            _buildInfoItem(context, Icons.fitness_center_outlined, 'Nivel Actividad', _activityLevelOptions[user.activityLevel] ?? 'No especificado'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoItem(
-      BuildContext context, IconData icon, String label, String value) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: Theme.of(context).colorScheme.primary, size: 28),
-        const SizedBox(height: 8),
-        Text(label, style: Theme.of(context).textTheme.bodySmall),
-        Text(value, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-      ],
-    );
-  }
-
-  Widget _buildEditView() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          Center(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 80,
-                  backgroundColor: Theme.of(context).colorScheme.surface.withAlpha(200),
-                  backgroundImage: _profileImageBytes != null ? MemoryImage(_profileImageBytes!) : null,
-                  child: _profileImageBytes == null
-                      ? Icon(Icons.person, size: 80, color: Theme.of(context).colorScheme.primary)
-                      : null,
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: FloatingActionButton(
-                    mini: true,
-                    onPressed: _pickImage,
-                    child: const Icon(Icons.edit),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 32),
-          _buildTextField(
-            controller: _nameController,
-            label: 'Nombre',
-            icon: Icons.person_outline,
-            validator: (value) => (value == null || value.isEmpty) ? 'Introduce tu nombre' : null,
-          ),
-          const SizedBox(height: 16),
-          _buildTextField(
-            controller: _ageController,
-            label: 'Edad',
-            icon: Icons.cake_outlined,
-            keyboardType: TextInputType.number,
-            validator: (value) {
-              if (value == null || value.isEmpty) return 'Introduce tu edad';
-              if (int.tryParse(value) == null || int.parse(value) <= 0) return 'Introduce una edad válida';
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          _buildTextField(
-            controller: _heightController,
-            label: 'Altura (cm)',
-            icon: Icons.height_outlined,
-            keyboardType: TextInputType.number,
-            validator: (value) {
-              if (value == null || value.isEmpty) return 'Introduce tu altura';
-              if (double.tryParse(value) == null || double.parse(value) <= 0) return 'Introduce una altura válida';
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          _buildTextField(
-            controller: _weightController,
-            label: 'Peso (kg)',
-            icon: Icons.monitor_weight_outlined,
-            keyboardType: TextInputType.number,
-            validator: (value) {
-              if (value == null || value.isEmpty) return 'Introduce tu peso';
-              if (double.tryParse(value) == null || double.parse(value) <= 0) return 'Introduce un peso válido';
-              return null;
-            },
-          ),
-          const SizedBox(height: 24),
-          _buildDropdownField(
-            label: 'Género',
-            initialValue: _selectedGender,
-            items: _genderOptions,
-            onChanged: (value) {
-              setState(() {
-                _selectedGender = value;
-              });
-            },
-          ),
-          const SizedBox(height: 16),
-          _buildDropdownField(
-            label: 'Nivel de Actividad',
-            initialValue: _activityLevel,
-            items: _activityLevelOptions,
-            onChanged: (value) {
-              setState(() {
-                _activityLevel = value;
-              });
-            },
-          ),
-          const SizedBox(height: 32),
-          ElevatedButton(
-            onPressed: _saveProfile,
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            ),
-            child: const Text('Guardar Cambios'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.surface.withAlpha(200),
-      ),
-      validator: validator,
-    );
-  }
-
-  Widget _buildDropdownField({
-    required String label,
-    required String? initialValue,
-    required Map<String, String> items,
-    required void Function(String?)? onChanged,
-  }) {
-    return DropdownButtonFormField<String>(
-      initialValue: initialValue,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.surface.withAlpha(200),
-      ),
-      items: items.keys.map((String key) {
-        return DropdownMenuItem<String>(
-          value: key,
-          child: Text(items[key]!),
-        );
-      }).toList(),
-      onChanged: onChanged,
     );
   }
 }

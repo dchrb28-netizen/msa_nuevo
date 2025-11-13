@@ -30,9 +30,9 @@ class UserProvider with ChangeNotifier {
   }
 
   // Sets or creates a user
-  void setUser(User user) {
+  Future<void> setUser(User user) async {
     _user = user;
-    _userBox.put(_userKey, user);
+    await _userBox.put(_userKey, user);
     notifyListeners();
   }
 
@@ -52,6 +52,7 @@ class UserProvider with ChangeNotifier {
       height: 0,
       weight: 0,
       isGuest: true,
+      activityLevel: 'sedentary', 
     );
     _user = guestUser;
     _userBox.put(_userKey, guestUser); // Also save guest status
