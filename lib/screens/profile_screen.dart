@@ -6,7 +6,6 @@ import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/widgets/ui/watermark_image.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -48,28 +47,46 @@ class ProfileScreenState extends State<ProfileScreen> {
     _initializeProfile();
   }
 
-  Future<void> _initializeProfile() async {
-    _loadUserData();
-    final prefs = await SharedPreferences.getInstance();
-    if (!(prefs.getBool('profile_exists') ?? false)) {
+  void _initializeProfile() {
+    final user = Provider.of<UserProvider>(context, listen: false).user;
+    final bool isNewUser = user == null || user.isGuest;
+
+    _loadUserData(isNewUser);
+
+    // If it's a new user, automatically enter editing mode.
+    if (isNewUser) {
       setState(() {
         _isEditing = true;
       });
     }
+
     setState(() {
       _isLoading = false;
     });
   }
 
-  void _loadUserData() {
+  void _loadUserData(bool isNewUser) {
     final user = Provider.of<UserProvider>(context, listen: false).user;
-    _nameController = TextEditingController(text: user?.name ?? '');
-    _ageController = TextEditingController(text: user?.age.toString() ?? '0');
-    _heightController = TextEditingController(text: user?.height.toString() ?? '0');
-    _weightController = TextEditingController(text: user?.weight.toString() ?? '0');
-    _selectedGender = user?.gender ?? _genderOptions.keys.first;
-    _activityLevel = user?.activityLevel ?? _activityLevelOptions.keys.first;
-    _profileImageBytes = user?.profileImageBytes;
+
+    if (isNewUser) {
+      // For a new user, initialize with empty or default values
+      _nameController = TextEditingController();
+      _ageController = TextEditingController();
+      _heightController = TextEditingController();
+      _weightController = TextEditingController();
+      _selectedGender = _genderOptions.keys.first;
+      _activityLevel = _activityLevelOptions.keys.first;
+      _profileImageBytes = null;
+    } else {
+      // For an existing user, load their data
+      _nameController = TextEditingController(text: user?.name ?? '');
+      _ageController = TextEditingController(text: user?.age.toString() ?? '0');
+      _heightController = TextEditingController(text: user?.height.toString() ?? '0');
+      _weightController = TextEditingController(text: user?.weight.toString() ?? '0');
+      _selectedGender = user?.gender ?? _genderOptions.keys.first;
+      _activityLevel = user?.activityLevel ?? _activityLevelOptions.keys.first;
+      _profileImageBytes = user?.profileImageBytes;
+    }
   }
 
   @override
@@ -93,11 +110,11 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _saveProfile() async {
+  void _saveProfile() {
     if (_formKey.currentState!.validate()) {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final navigator = Navigator.of(context); // Capture navigator
-      final messenger = ScaffoldMessenger.of(context); // Capture messenger
+      final navigator = Navigator.of(context);
+      final messenger = ScaffoldMessenger.of(context);
       final isNewUser = userProvider.user == null || userProvider.user!.isGuest;
 
       final updatedUser = User(
@@ -112,10 +129,7 @@ class ProfileScreenState extends State<ProfileScreen> {
         isGuest: false,
       );
 
-      userProvider.setUser(updatedUser); // Removed await
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('profile_exists', true);
+      userProvider.setUser(updatedUser);
 
       if (isNewUser) {
         navigator.pushNamedAndRemoveUntil('/', (route) => false);
@@ -130,14 +144,10 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _logout() async {
+  void _logout() {
     final navigator = Navigator.of(context);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('profile_exists', false);
-
-    userProvider.logout(); // Removed await
-
+    userProvider.logout();
     navigator.pushNamedAndRemoveUntil('/welcome', (route) => false);
   }
 
@@ -145,6 +155,12 @@ class ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).user;
     final bool profileExists = user != null && !user.isGuest;
+
+    // This ensures that if the provider loads and we have a user, we load their data.
+    // Prevents starting with an empty form for an existing user.
+    if (!_isLoading && !profileExists && !_isEditing) {
+      _initializeProfile();
+    }
 
     return Scaffold(
       appBar: AppBar(
