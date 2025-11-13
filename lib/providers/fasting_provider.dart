@@ -35,23 +35,27 @@ class FastingProvider with ChangeNotifier {
         final newPhase = currentPhase;
         if (_previousPhase?.name != newPhase?.name) {
           if (newPhase != null) {
-            _notificationService.showNotification(0, '¡Nueva Fase Alcanzada!',
+            _notificationService.showNotification(
+                1, // Different ID for phase changes
+                '¡Nueva Fase Alcanzada!',
                 'Has entrado en la fase: ${newPhase.name}');
             _previousPhase = newPhase;
           }
         }
 
+        // Check if goal is reached
         if (_currentFast!.durationInSeconds >= goalInSeconds) {
-          _notificationService.showNotification(0, '¡Objetivo Cumplido!', 'Has alcanzado tu meta de ${_selectedPlan.fastingHours} horas. ¡Excelente!');
+          // This notification is for when the app is open
+          _notificationService.showNotification(
+              0, '¡Objetivo Cumplido!', 'Has alcanzado tu meta de ${_selectedPlan.fastingHours} horas. ¡Excelente!');
           stopFasting(); 
         }
       } else {
-          _updateFeedingWindow();
+        _updateFeedingWindow();
       }
       notifyListeners();
     });
   }
-
 
   FastingPhase? get currentPhase {
     if (!isFasting) return null;
@@ -90,14 +94,14 @@ class FastingProvider with ChangeNotifier {
   void _loadCurrentFast() {
     try {
       _currentFast = _fastingBox.values.firstWhere((log) => log.endTime == null);
-       _previousPhase = currentPhase;
+      _previousPhase = currentPhase;
     } catch (e) {
       _currentFast = null;
     }
     notifyListeners();
   }
 
-   void _updateFeedingWindow() {
+  void _updateFeedingWindow() {
     if (fastingHistory.isNotEmpty) {
       final lastFast = fastingHistory.first;
       _feedingWindowDuration = DateTime.now().difference(lastFast.endTime!);
@@ -122,7 +126,8 @@ class FastingProvider with ChangeNotifier {
     final planName = prefs.getString('selectedPlan');
     if (planName != null) {
       try {
-        _selectedPlan = FastingPlan.defaultPlans.firstWhere((p) => p.name == planName);
+        _selectedPlan =
+            FastingPlan.defaultPlans.firstWhere((p) => p.name == planName);
       } catch (e) {
         _selectedPlan = FastingPlan.defaultPlans.first;
       }
@@ -134,54 +139,73 @@ class FastingProvider with ChangeNotifier {
     if (isFasting) return;
 
     const uuid = Uuid();
+    final startTime = DateTime.now();
     final newFast = FastingLog(
       id: uuid.v4(),
-      startTime: DateTime.now(),
+      startTime: startTime,
     );
     _fastingBox.put(newFast.id, newFast);
     _currentFast = newFast;
-     _previousPhase = null;
+    _previousPhase = null;
     _feedingWindowDuration = Duration.zero;
+
+    // Show immediate notification
     _notificationService.showNotification(
         0, 'Ayuno Iniciado', '¡Tu ayuno ha comenzado! Buen trabajo.');
+
+    // Schedule end-of-fast notification
+    final endTime = startTime.add(Duration(hours: _selectedPlan.fastingHours));
+    _notificationService.scheduleNotification(
+      newFast.id.hashCode,
+      '¡Ayuno Completado!',
+      '¡Felicidades! Has completado tu ayuno de ${_selectedPlan.fastingHours} horas.',
+      endTime,
+    );
+
     notifyListeners();
   }
 
   void stopFasting() {
     if (!isFasting) return;
+    
+    final fastToStop = _currentFast!;
+    // Cancel the scheduled notification
+    _notificationService.cancelNotification(fastToStop.id.hashCode);
 
     final endTime = DateTime.now();
-    final duration = endTime.difference(_currentFast!.startTime);
+    final duration = endTime.difference(fastToStop.startTime);
 
     if (duration.inHours < 1) {
-      _fastingBox.delete(_currentFast!.id);
+      _fastingBox.delete(fastToStop.id);
       _notificationService.showNotification(
           0, 'Ayuno Cancelado', 'El ayuno fue demasiado corto para ser registrado.');
     } else {
-      _currentFast!.endTime = endTime;
-      _currentFast!.save();
-       final formatted = _formatDuration(duration);
-       _notificationService.showNotification(0, '¡Ayuno Completado!', 'Has completado un ayuno de $formatted. ¡Felicidades!');
+      fastToStop.endTime = endTime;
+      fastToStop.save();
+      final formatted = _formatDuration(duration);
+      _notificationService.showNotification(0, '¡Ayuno Completado!',
+          'Has completado un ayuno de $formatted. ¡Felicidades!');
     }
-    
+
     _currentFast = null;
-    _previousPhase = null; 
+    _previousPhase = null;
     _updateFeedingWindow();
     notifyListeners();
   }
 
-
   Future<void> deleteFastingLog(String logId) async {
     await _fastingBox.delete(logId);
-    if (logId == fastingHistory.first.id) {
+    if (fastingHistory.isNotEmpty && logId == fastingHistory.first.id) {
        _updateFeedingWindow();
+    } else if (fastingHistory.isEmpty) {
+      _feedingWindowDuration = Duration.zero;
     }
     notifyListeners();
   }
 
   Future<void> updateFastingLog(FastingLog updatedLog) async {
     await _fastingBox.put(updatedLog.id, updatedLog);
-     if (updatedLog.id == fastingHistory.first.id) {
+    if (updatedLog.id == fastingHistory.first.id) {
        _updateFeedingWindow();
     }
     notifyListeners();
@@ -212,7 +236,6 @@ class FastingProvider with ChangeNotifier {
     final minutes = twoDigits(duration.inMinutes.remainder(60));
     return '${hours}h ${minutes}m';
   }
-
 
   @override
   void dispose() {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -31,12 +32,19 @@ class NotificationService {
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
-    
+
     tz.initializeTimeZones();
     final String timeZoneName = tz.local.name;
     tz.setLocalLocation(tz.getLocation(timeZoneName));
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    if (await Permission.notification.isDenied) {
+      await Permission.notification.request();
+    }
   }
 
   Future<void> showNotification(
@@ -63,9 +71,29 @@ class NotificationService {
     );
   }
 
+  Future<void> scheduleNotification(
+      int id, String title, String body, DateTime scheduledTime) async {
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(scheduledTime, tz.local),
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'scheduled_notification_channel',
+          'Scheduled Notifications',
+          channelDescription: 'Scheduled reminder notifications',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+         iOS: DarwinNotificationDetails(),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
+  }
+
   Future<void> scheduleDailyNotification(
       int id, String title, String body, TimeOfDay time) async {
-
     await flutterLocalNotificationsPlugin.zonedSchedule(
         id,
         title,
@@ -86,16 +114,15 @@ class NotificationService {
 
   tz.TZDateTime _nextInstanceOfTime(TimeOfDay time) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduledDate = tz.TZDateTime(tz.local, now.year, now.month,
-        now.day, time.hour, time.minute);
+    tz.TZDateTime scheduledDate =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, time.hour, time.minute);
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
     return scheduledDate;
   }
 
-    Future<void> cancelNotification(int id) async {
+  Future<void> cancelNotification(int id) async {
     await flutterLocalNotificationsPlugin.cancel(id);
   }
-
 }
