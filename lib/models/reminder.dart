@@ -31,4 +31,22 @@ class Reminder extends HiveObject {
     required this.days,
     this.isActive = true,
   });
+
+  Reminder copyWith({
+    String? id,
+    String? title,
+    int? hour,
+    int? minute,
+    List<bool>? days,
+    bool? isActive,
+  }) {
+    return Reminder(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      hour: hour ?? this.hour,
+      minute: minute ?? this.minute,
+      days: days ?? this.days,
+      isActive: isActive ?? this.isActive,
+    );
+  }
 }

@@ -92,24 +92,45 @@ class NotificationService {
     );
   }
 
-  Future<void> scheduleDailyNotification(
-      int id, String title, String body, TimeOfDay time) async {
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-        id,
-        title,
-        body,
-        _nextInstanceOfTime(time),
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'daily_notification_channel',
-            'Daily Notifications',
-            channelDescription: 'Daily reminder notifications',
-            importance: Importance.max,
-            priority: Priority.high,
+  Future<void> scheduleWeeklyNotification(
+    int baseId,
+    String title,
+    String body,
+    TimeOfDay time,
+    List<bool> days,
+  ) async {
+    for (int i = 0; i < days.length; i++) {
+      if (days[i]) {
+        final dayIndex = i + 1; // flutter_local_notifications uses 1 for Monday, 7 for Sunday
+        final notificationId = baseId + dayIndex;
+
+        await flutterLocalNotificationsPlugin.zonedSchedule(
+          notificationId,
+          title,
+          body,
+          _nextInstanceOfDayAndTime(dayIndex, time),
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'weekly_notification_channel',
+              'Weekly Notifications',
+              channelDescription: 'Weekly reminder notifications',
+              importance: Importance.max,
+              priority: Priority.high,
+            ),
           ),
-        ),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        matchDateTimeComponents: DateTimeComponents.time);
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+        );
+      }
+    }
+  }
+
+  tz.TZDateTime _nextInstanceOfDayAndTime(int day, TimeOfDay time) {
+    tz.TZDateTime scheduledDate = _nextInstanceOfTime(time);
+    while (scheduledDate.weekday != day) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
   }
 
   tz.TZDateTime _nextInstanceOfTime(TimeOfDay time) {
@@ -124,5 +145,15 @@ class NotificationService {
 
   Future<void> cancelNotification(int id) async {
     await flutterLocalNotificationsPlugin.cancel(id);
+  }
+
+  Future<void> cancelWeeklyNotifications(int baseId, List<bool> days) async {
+    for (int i = 0; i < days.length; i++) {
+      if (days[i]) {
+        final dayIndex = i + 1;
+        final notificationId = baseId + dayIndex;
+        await flutterLocalNotificationsPlugin.cancel(notificationId);
+      }
+    }
   }
 }

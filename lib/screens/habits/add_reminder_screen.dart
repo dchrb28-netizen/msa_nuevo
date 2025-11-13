@@ -139,7 +139,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
 
       // Cancel old notifications if editing
       if (isEditing) {
-        await notificationService.cancelNotification(widget.reminder!.id.hashCode);
+        await notificationService.cancelWeeklyNotifications(widget.reminder!.id.hashCode, widget.reminder!.days);
       }
 
       final reminderId = isEditing ? widget.reminder!.id : const Uuid().v4();
@@ -158,8 +158,8 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
 
       // Schedule new notifications if active
       if (reminder.isActive) {
-        await notificationService.scheduleDailyNotification(
-            reminder.id.hashCode, reminder.title, 'Es hora de tu hábito diario.', _selectedTime);
+        await notificationService.scheduleWeeklyNotification(
+            reminder.id.hashCode, reminder.title, 'Es hora de tu hábito diario.', _selectedTime, _selectedDays);
       }
 
       if (mounted) {
