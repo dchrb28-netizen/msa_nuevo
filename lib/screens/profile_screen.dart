@@ -133,20 +133,29 @@ class ProfileScreenState extends State<ProfileScreen> {
         isGuest: false,
       );
 
-      await userProvider.setUser(updatedUser);
+      try {
+        await userProvider.setUser(updatedUser);
 
-      setState(() {
-        _isSaving = false;
-      });
-
-      if (isNewUser) {
-        navigator.pushNamedAndRemoveUntil('/', (route) => false);
-      } else {
         setState(() {
-          _isEditing = false;
+          _isSaving = false;
+        });
+
+        if (isNewUser) {
+          navigator.pushNamedAndRemoveUntil('/', (route) => false);
+        } else {
+          setState(() {
+            _isEditing = false;
+          });
+          messenger.showSnackBar(
+            const SnackBar(content: Text('¡Perfil actualizado con éxito!')),
+          );
+        }
+      } catch (e) {
+        setState(() {
+          _isSaving = false;
         });
         messenger.showSnackBar(
-          const SnackBar(content: Text('¡Perfil actualizado con éxito!')),
+          SnackBar(content: Text('Error al guardar el perfil: $e')),
         );
       }
     }

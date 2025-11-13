@@ -50,78 +50,10 @@ void main() async {
   await Hive.initFlutter();
 
   // Register adapters
-  if (!Hive.isAdapterRegistered(FoodAdapter().typeId)) {
-    Hive.registerAdapter(FoodAdapter());
-  }
-  if (!Hive.isAdapterRegistered(WaterLogAdapter().typeId)) {
-    Hive.registerAdapter(WaterLogAdapter());
-  }
-  if (!Hive.isAdapterRegistered(FoodLogAdapter().typeId)) {
-    Hive.registerAdapter(FoodLogAdapter());
-  }
-  if (!Hive.isAdapterRegistered(BodyMeasurementAdapter().typeId)) {
-    Hive.registerAdapter(BodyMeasurementAdapter());
-  }
-  if (!Hive.isAdapterRegistered(UserAdapter().typeId)) {
-    Hive.registerAdapter(UserAdapter());
-  }
-  if (!Hive.isAdapterRegistered(MealTypeAdapter().typeId)) {
-    Hive.registerAdapter(MealTypeAdapter());
-  }
-  if (!Hive.isAdapterRegistered(DailyMealPlanAdapter().typeId)) {
-    Hive.registerAdapter(DailyMealPlanAdapter());
-  }
-  if (!Hive.isAdapterRegistered(RecipeAdapter().typeId)) {
-    Hive.registerAdapter(RecipeAdapter());
-  }
-  if (!Hive.isAdapterRegistered(UserRecipeAdapter().typeId)) {
-    Hive.registerAdapter(UserRecipeAdapter());
-  }
-  if (!Hive.isAdapterRegistered(ReminderAdapter().typeId)) {
-    Hive.registerAdapter(ReminderAdapter());
-  }
-  if (!Hive.isAdapterRegistered(FastingLogAdapter().typeId)) {
-    Hive.registerAdapter(FastingLogAdapter());
-  }
-
-  // Register the new training adapters
-  if (!Hive.isAdapterRegistered(RoutineAdapter().typeId)) {
-    Hive.registerAdapter(RoutineAdapter());
-  }
-  if (!Hive.isAdapterRegistered(SetLogAdapter().typeId)) {
-    Hive.registerAdapter(SetLogAdapter());
-  }
-  if (!Hive.isAdapterRegistered(ExerciseLogAdapter().typeId)) {
-    Hive.registerAdapter(ExerciseLogAdapter());
-  }
-  if (!Hive.isAdapterRegistered(RoutineLogAdapter().typeId)) {
-    Hive.registerAdapter(RoutineLogAdapter());
-  }
-  if (!Hive.isAdapterRegistered(ExerciseAdapter().typeId)) {
-    Hive.registerAdapter(ExerciseAdapter());
-  }
-  if (!Hive.isAdapterRegistered(RoutineExerciseAdapter().typeId)) {
-    Hive.registerAdapter(RoutineExerciseAdapter());
-  }
+  _registerHiveAdapters();
 
   // Open boxes
-  await Hive.openBox<Food>('foods');
-  await Hive.openBox<WaterLog>('water_logs');
-  await Hive.openBox<FoodLog>('food_logs');
-  await Hive.openBox<BodyMeasurement>('body_measurements');
-  await Hive.openBox<User>('user_box');
-  await Hive.openBox<DailyMealPlan>('daily_meal_plans');
-  await Hive.openBox('settings');
-  await Hive.openBox<Recipe>('favorite_recipes');
-  await Hive.openBox<UserRecipe>('user_recipes');
-  await Hive.openBox<Reminder>('reminders');
-  await Hive.openBox<FastingLog>('fasting_logs');
-
-  // Open the new training boxes
-  await Hive.openBox<Routine>('routines');
-  await Hive.openBox<RoutineLog>('routine_logs');
-  await Hive.openBox<Exercise>('exercises');
-  await Hive.openBox<RoutineExercise>('routine_exercises');
+  await _openHiveBoxes();
 
   await _populateInitialFoodData();
 
@@ -143,6 +75,80 @@ void main() async {
     ),
   );
 }
+
+void _registerHiveAdapters() {
+  // Register your existing adapters here
+  if (!Hive.isAdapterRegistered(UserAdapter().typeId)) {
+    Hive.registerAdapter(UserAdapter());
+  }
+  if (!Hive.isAdapterRegistered(FoodAdapter().typeId)) {
+    Hive.registerAdapter(FoodAdapter());
+  }
+  if (!Hive.isAdapterRegistered(WaterLogAdapter().typeId)) {
+    Hive.registerAdapter(WaterLogAdapter());
+  }
+  if (!Hive.isAdapterRegistered(FoodLogAdapter().typeId)) {
+    Hive.registerAdapter(FoodLogAdapter());
+  }
+  if (!Hive.isAdapterRegistered(BodyMeasurementAdapter().typeId)) {
+    Hive.registerAdapter(BodyMeasurementAdapter());
+  }
+  if (!Hive.isAdapterRegistered(MealTypeAdapter().typeId)) {
+    Hive.registerAdapter(MealTypeAdapter());
+  }
+  if (!Hive.isAdapterRegistered(DailyMealPlanAdapter().typeId)) {
+    Hive.registerAdapter(DailyMealPlanAdapter());
+  }
+  if (!Hive.isAdapterRegistered(RecipeAdapter().typeId)) {
+    Hive.registerAdapter(RecipeAdapter());
+  }
+  if (!Hive.isAdapterRegistered(UserRecipeAdapter().typeId)) {
+    Hive.registerAdapter(UserRecipeAdapter());
+  }
+  if (!Hive.isAdapterRegistered(ReminderAdapter().typeId)) {
+    Hive.registerAdapter(ReminderAdapter());
+  }
+  if (!Hive.isAdapterRegistered(FastingLogAdapter().typeId)) {
+    Hive.registerAdapter(FastingLogAdapter());
+  }
+  if (!Hive.isAdapterRegistered(RoutineAdapter().typeId)) {
+    Hive.registerAdapter(RoutineAdapter());
+  }
+  if (!Hive.isAdapterRegistered(SetLogAdapter().typeId)) {
+    Hive.registerAdapter(SetLogAdapter());
+  }
+  if (!Hive.isAdapterRegistered(ExerciseLogAdapter().typeId)) {
+    Hive.registerAdapter(ExerciseLogAdapter());
+  }
+  if (!Hive.isAdapterRegistered(RoutineLogAdapter().typeId)) {
+    Hive.registerAdapter(RoutineLogAdapter());
+  }
+  if (!Hive.isAdapterRegistered(ExerciseAdapter().typeId)) {
+    Hive.registerAdapter(ExerciseAdapter());
+  }
+  if (!Hive.isAdapterRegistered(RoutineExerciseAdapter().typeId)) {
+    Hive.registerAdapter(RoutineExerciseAdapter());
+  }
+}
+
+Future<void> _openHiveBoxes() async {
+  await Hive.openBox<User>('user_box');
+  await Hive.openBox<Food>('foods');
+  await Hive.openBox<WaterLog>('water_logs');
+  await Hive.openBox<FoodLog>('food_logs');
+  await Hive.openBox<BodyMeasurement>('body_measurements');
+  await Hive.openBox<DailyMealPlan>('daily_meal_plans');
+  await Hive.openBox('settings');
+  await Hive.openBox<Recipe>('favorite_recipes');
+  await Hive.openBox<UserRecipe>('user_recipes');
+  await Hive.openBox<Reminder>('reminders');
+  await Hive.openBox<FastingLog>('fasting_logs');
+  await Hive.openBox<Routine>('routines');
+  await Hive.openBox<RoutineLog>('routine_logs');
+  await Hive.openBox<Exercise>('exercises');
+  await Hive.openBox<RoutineExercise>('routine_exercises');
+}
+
 
 Future<void> _populateInitialFoodData() async {
   final foodBox = Hive.box<Food>('foods');
