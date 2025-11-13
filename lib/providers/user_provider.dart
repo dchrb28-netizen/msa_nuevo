@@ -10,15 +10,21 @@ class UserProvider with ChangeNotifier {
   User? get user => _user;
 
   UserProvider() {
-    loadUser(); // Use the public method
+    loadUser(); // Load user on initialization
   }
 
-  // Now public, so it can be called from other parts of the app
+  // Load user from Hive
   void loadUser() {
     if (_userBox.containsKey(_userKey)) {
-      _user = _userBox.get(_userKey);
+      final storedUser = _userBox.get(_userKey);
+      // If the stored user is a guest, reflect that, otherwise set the user
+      if (storedUser != null) {
+        _user = storedUser;
+      } else {
+        setGuestUser(); // If for some reason the user is null, set to guest
+      }
     } else {
-      _user = null;
+      setGuestUser(); // If no user is stored, set to guest
     }
     notifyListeners();
   }
@@ -48,15 +54,12 @@ class UserProvider with ChangeNotifier {
       isGuest: true,
     );
     _user = guestUser;
-    _userBox.put(_userKey, guestUser);
+    _userBox.put(_userKey, guestUser); // Also save guest status
     notifyListeners();
   }
 
   void logout() {
-    _user = null;
-    if (_userBox.containsKey(_userKey)) {
-      _userBox.delete(_userKey);
-    }
-    notifyListeners();
+    _userBox.delete(_userKey); // Remove the user from storage
+    setGuestUser(); // Set the user to guest after logout
   }
 }

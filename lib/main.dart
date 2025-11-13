@@ -23,7 +23,6 @@ import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/welcome_screen.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:url_strategy/url_strategy.dart';
 
@@ -126,8 +125,9 @@ void main() async {
 
   await _populateInitialFoodData();
 
-  final prefs = await SharedPreferences.getInstance();
-  final bool profileExists = prefs.getBool('profile_exists') ?? false;
+  final userBox = Hive.box<User>('user_box');
+  final currentUser = userBox.get('currentUser');
+  final bool profileExists = currentUser != null && !currentUser.isGuest;
 
   runApp(
     MultiProvider(
