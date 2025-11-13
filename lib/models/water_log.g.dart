@@ -8,7 +8,7 @@ part of 'water_log.dart';
 
 class WaterLogAdapter extends TypeAdapter<WaterLog> {
   @override
-  final int typeId = 0;
+  final int typeId = 2;
 
   @override
   WaterLog read(BinaryReader reader) {

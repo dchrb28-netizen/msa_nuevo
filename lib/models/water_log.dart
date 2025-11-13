@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'water_log.g.dart';
 
-@HiveType(typeId: 0)
+@HiveType(typeId: 2)
 class WaterLog extends HiveObject {
   @HiveField(0)
   final String id;
