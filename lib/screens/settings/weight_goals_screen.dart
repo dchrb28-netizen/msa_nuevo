@@ -215,6 +215,34 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
   Widget _buildSummaryView() {
     final user = Provider.of<UserProvider>(context).user!;
 
+    // Calculation for the weight goal tile
+    Widget? weightGoalTile;
+    if (user.weightGoal != null && user.weightGoal! > 0 && user.weight > 0) {
+      final difference = user.weight - user.weightGoal!;
+      if (difference > 0.1) { // Added a small threshold
+        weightGoalTile = _buildSummaryTile(
+          icon: Icons.trending_down_outlined,
+          title: 'Para tu Meta (Perder)',
+          value: '${difference.toStringAsFixed(1)} kg',
+          color: Colors.orange.shade700,
+        );
+      } else if (difference < -0.1) { // Added a small threshold
+        weightGoalTile = _buildSummaryTile(
+          icon: Icons.trending_up_outlined,
+          title: 'Para tu Meta (Ganar)',
+          value: '${(-difference).toStringAsFixed(1)} kg',
+          color: Colors.green.shade700,
+        );
+      } else {
+         weightGoalTile = _buildSummaryTile(
+          icon: Icons.check_circle_outline,
+          title: '¡Meta Alcanzada!',
+          value: '¡Felicidades!',
+          color: Colors.green.shade700,
+        );
+      }
+    }
+
     return SingleChildScrollView(
       key: const ValueKey('summaryView'),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 80), 
@@ -246,6 +274,10 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
                     value: '${user.weightGoal!.toStringAsFixed(1)} kg',
                     color: Theme.of(context).colorScheme.secondary,
                   ),
+                ],
+                if (weightGoalTile != null) ...[
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  weightGoalTile,
                 ]
               ],
             ),
@@ -335,7 +367,10 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     return ListTile(
       leading: Icon(icon, color: color ?? Theme.of(context).colorScheme.onSurfaceVariant),
       title: Text(title),
-      trailing: Text(value, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
+      trailing: Text(value, style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+        fontWeight: FontWeight.bold,
+        color: color
+      )),
     );
   }
 

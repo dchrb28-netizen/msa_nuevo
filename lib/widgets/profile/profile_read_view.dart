@@ -43,26 +43,35 @@ class ProfileReadView extends StatelessWidget {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 2.5,
-          crossAxisSpacing: 20,
-          mainAxisSpacing: 20,
+        padding: const EdgeInsets.symmetric(vertical: 20.0),
+        child: Column(
           children: [
-            _buildInfoItem(context, Icons.cake_outlined, 'Edad', '${user.age} años'),
-            _buildInfoItem(context, Icons.height_outlined, 'Altura', '${user.height} cm'),
-            _buildInfoItem(
-                context, Icons.monitor_weight_outlined, 'Peso', '${user.weight} kg'),
-            _buildInfoItem(context, Icons.person_outline, 'Género',
-                genderOptions[user.gender] ?? 'No especificado'),
-            _buildInfoItem(
-                context,
-                Icons.fitness_center_outlined,
-                'Nivel Actividad',
-                activityLevelOptions[user.activityLevel] ?? 'No especificado'),
+            Row(
+              children: [
+                Expanded(child: _buildInfoItem(context, Icons.cake_outlined, 'Edad', '${user.age} años')),
+                SizedBox(
+                  height: 60,
+                  child: VerticalDivider(width: 1, thickness: 1, indent: 8, endIndent: 8, color: Colors.grey[300]),
+                ),
+                Expanded(child: _buildInfoItem(context, Icons.height_outlined, 'Altura', '${user.height.toStringAsFixed(0)} cm')),
+              ],
+            ),
+            const Divider(height: 1, indent: 20, endIndent: 20),
+            Row(
+              children: [
+                Expanded(child: _buildInfoItem(context, Icons.monitor_weight_outlined, 'Peso', '${user.weight.toStringAsFixed(1)} kg')),
+                SizedBox(
+                  height: 60,
+                  child: VerticalDivider(width: 1, thickness: 1, indent: 8, endIndent: 8, color: Colors.grey[300]),
+                ),
+                Expanded(child: _buildInfoItem(context, Icons.person_outline, 'Género', genderOptions[user.gender] ?? 'No especificado')),
+              ],
+            ),
+            const Divider(height: 1, indent: 20, endIndent: 20),
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: _buildInfoItem(context, Icons.fitness_center_outlined, 'Nivel Actividad', activityLevelOptions[user.activityLevel] ?? 'No especificado'),
+            )
           ],
         ),
       ),
@@ -78,6 +87,7 @@ class ProfileReadView extends StatelessWidget {
         const SizedBox(height: 8),
         Text(label, style: Theme.of(context).textTheme.bodySmall),
         Text(value,
+            textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
                 .titleMedium
