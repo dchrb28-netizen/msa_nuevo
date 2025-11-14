@@ -132,7 +132,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
   Future<void> _showEditDialog(
       BuildContext context, FastingLog log, FastingProvider provider) async {
     DateTime editedStartTime = log.startTime;
-    DateTime editedEndTime = log.endTime!;
+    DateTime? editedEndTime = log.endTime;
     final notesController = TextEditingController(text: log.notes);
 
     await showDialog(
@@ -171,13 +171,13 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                       }),
                   ListTile(
                       title: Text(
-                          'Fin:      ${DateFormat('dd/MM/yy HH:mm').format(editedEndTime)}'),
+                          'Fin:      ${editedEndTime != null ? DateFormat('dd/MM/yy HH:mm').format(editedEndTime!) : 'N/A'}'),
                       trailing: const Icon(Icons.edit_calendar),
                       onTap: () async {
                         if (!context.mounted) return;
                         final date = await showDatePicker(
                             context: context,
-                            initialDate: editedEndTime,
+                            initialDate: editedEndTime ?? DateTime.now(),
                             firstDate: DateTime(2020),
                             lastDate:
                                 DateTime.now().add(const Duration(days: 1)));
@@ -186,7 +186,8 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                         if (!context.mounted) return;
                         final time = await showTimePicker(
                             context: context,
-                            initialTime: TimeOfDay.fromDateTime(editedEndTime));
+                            initialTime: TimeOfDay.fromDateTime(
+                                editedEndTime ?? DateTime.now()));
                         if (time == null) return;
 
                         setState(() {
@@ -211,7 +212,8 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                 child: const Text('Cancelar')),
             ElevatedButton(
                 onPressed: () async {
-                  if (editedEndTime.isBefore(editedStartTime)) {
+                  if (editedEndTime != null &&
+                      editedEndTime!.isBefore(editedStartTime)) {
                     if (dialogContext.mounted) {
                       ScaffoldMessenger.of(dialogContext)
                           .showSnackBar(const SnackBar(
@@ -443,7 +445,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                   builder: (dialogCtx) => AlertDialog(
                     title: const Text('Confirmar Eliminación'),
                     content: Text(
-                        '¿Seguro que quieres eliminar el plan \"${plan.name}\"?'),
+                        '¿Seguro que quieres eliminar el plan "${plan.name}"?'),
                     actions: [
                       TextButton(
                           onPressed: () =>
@@ -544,6 +546,10 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
         itemCount: history.length,
         itemBuilder: (context, index) {
           final log = history[index];
+          if (log.endTime == null) {
+            // Handle the case where endTime is null, maybe return an empty container
+            return Container();
+          }
           final duration = log.endTime!.difference(log.startTime);
           final hours = duration.inHours;
           final minutes = duration.inMinutes.remainder(60);
@@ -660,8 +666,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                   ),
                 ],
               ),
-              child:
-                  Icon(phase.icon, color: theme.colorScheme.onPrimary, size: 20),
+              child: Icon(phase.icon, color: theme.colorScheme.onPrimary, size: 20),
             );
           } else {
             indicator = Icon(phase.icon, color: Colors.grey.shade400, size: 20);
@@ -739,7 +744,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                   theme,
                   icon: Icons.star_border,
                   title: 'Ayuno Más Largo',
-                  value: longestFast != null
+                  value: longestFast != null && longestFast.endTime != null
                       ? provider.formatDuration(
                           longestFast.endTime!.difference(longestFast.startTime))
                       : 'N/A',
@@ -814,7 +819,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
     }
 
     for (final log in provider.fastingHistory) {
-      if (log.endTime!.isAfter(weekStart)) {
+      if (log.endTime != null && log.endTime!.isAfter(weekStart)) {
         final weekday = log.endTime!.weekday;
         final durationHours = log.durationInSeconds / 3600;
         weeklyData[weekday] = (weeklyData[weekday] ?? 0) + durationHours;

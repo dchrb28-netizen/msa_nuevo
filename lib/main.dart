@@ -20,6 +20,7 @@ import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
+import 'package:myapp/screens/profile_selection_screen.dart';
 import 'package:myapp/screens/welcome_screen.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:provider/provider.dart';
@@ -58,8 +59,18 @@ void main() async {
   await _populateInitialFoodData();
 
   final userBox = Hive.box<User>('user_box');
-  final currentUser = userBox.get('currentUser');
-  final bool profileExists = currentUser != null && !currentUser.isGuest;
+  final activeUser = userBox.get('activeUser');
+  final bool profileExists = userBox.values.any((user) => !user.isGuest);
+  final bool activeUserExists = activeUser != null;
+
+  String initialRoute;
+  if (activeUserExists) {
+    initialRoute = '/';
+  } else if (profileExists) {
+    initialRoute = '/profile_selection';
+  } else {
+    initialRoute = '/welcome';
+  }
 
   runApp(
     MultiProvider(
@@ -71,7 +82,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => RoutineProvider()),
         ChangeNotifierProvider(create: (context) => ExerciseProvider()),
       ],
-      child: MyApp(profileExists: profileExists),
+      child: MyApp(initialRoute: initialRoute),
     ),
   );
 }
@@ -149,7 +160,6 @@ Future<void> _openHiveBoxes() async {
   await Hive.openBox<RoutineExercise>('routine_exercises');
 }
 
-
 Future<void> _populateInitialFoodData() async {
   final foodBox = Hive.box<Food>('foods');
   if (foodBox.isEmpty) {
@@ -208,8 +218,8 @@ Future<void> _populateInitialFoodData() async {
 }
 
 class MyApp extends StatelessWidget {
-  final bool profileExists;
-  const MyApp({super.key, required this.profileExists});
+  final String initialRoute;
+  const MyApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
@@ -370,11 +380,12 @@ class MyApp extends StatelessWidget {
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: themeProvider.themeMode,
-          initialRoute: profileExists ? '/' : '/welcome',
+          initialRoute: initialRoute,
           routes: {
             '/': (context) => const MainScreen(),
             '/welcome': (context) => const WelcomeScreen(),
             '/profile': (context) => const ProfileScreen(),
+            '/profile_selection': (context) => const ProfileSelectionScreen(),
           },
         );
       },

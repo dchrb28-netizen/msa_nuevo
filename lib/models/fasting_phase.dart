@@ -18,7 +18,7 @@ class FastingPhase {
   static const List<FastingPhase> phases = [
     FastingPhase(
       name: 'Anabólica',
-      description: 'Justo después de comer, tu cuerpo está en modo \"construcción\". Está digiriendo y absorbiendo los nutrientes que le acabas de dar, usando la glucosa como su principal fuente de energía. ¡Es el momento de reponer fuerzas!',
+      description: 'Justo después de comer, tu cuerpo está en modo "construcción". Está digiriendo y absorbiendo los nutrientes que le acabas de dar, usando la glucosa como su principal fuente de energía. ¡Es el momento de reponer fuerzas!',
       startHour: 0,
       endHour: 4,
       icon: Icons.wb_sunny_outlined,
@@ -39,7 +39,7 @@ class FastingPhase {
     ),
     FastingPhase(
       name: 'Autofagia',
-      description: 'Aquí empieza la magia celular. Tu cuerpo activa un proceso de \"limpieza interna\" llamado autofagia. Las células dañadas y viejas se reciclan para crear otras nuevas y más fuertes. Es como una renovación para tu organismo.',
+      description: 'Aquí empieza la magia celular. Tu cuerpo activa un proceso de "limpieza interna" llamado autofagia. Las células dañadas y viejas se reciclan para crear otras nuevas y más fuertes. Es como una renovación para tu organismo.',
       startHour: 18,
       endHour: 24,
       icon: Icons.recycling_outlined,

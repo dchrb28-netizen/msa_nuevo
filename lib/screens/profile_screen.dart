@@ -165,7 +165,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     final navigator = Navigator.of(context);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     userProvider.logout();
-    navigator.pushNamedAndRemoveUntil('/welcome', (route) => false);
+    navigator.pushNamedAndRemoveUntil('/profile_selection', (route) => false);
   }
 
   @override

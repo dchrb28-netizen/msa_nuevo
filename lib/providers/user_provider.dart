@@ -1,46 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/user.dart';
+import 'package:uuid/uuid.dart';
 
 class UserProvider with ChangeNotifier {
-  static const String _userKey = 'currentUser';
+  static const String _activeUserKey = 'activeUserId';
   User? _user;
   final Box<User> _userBox = Hive.box<User>('user_box');
+  final Box _settingsBox = Hive.box('settings');
+  List<User> _users = [];
 
   User? get user => _user;
+  List<User> get users => _users;
 
   UserProvider() {
-    loadUser(); // Load user on initialization
+    loadUsers();
   }
 
-  // Load user from Hive
-  void loadUser() {
-    if (_userBox.containsKey(_userKey)) {
-      final storedUser = _userBox.get(_userKey);
-      // If the stored user is a guest, reflect that, otherwise set the user
-      if (storedUser != null) {
-        _user = storedUser;
-      } else {
-        setGuestUser(); // If for some reason the user is null, set to guest
+  void loadUsers() {
+    _users = _userBox.values.where((user) => !user.isGuest).toList();
+    final activeUserId = _settingsBox.get(_activeUserKey);
+
+    if (activeUserId != null) {
+      try {
+        _user = _users.firstWhere((u) => u.id == activeUserId);
+      } catch (e) {
+        _user = null;
+        _settingsBox.delete(_activeUserKey);
       }
     } else {
-      setGuestUser(); // If no user is stored, set to guest
+      _user = null;
     }
+    
     notifyListeners();
   }
 
-  // Sets or creates a user
   Future<void> setUser(User user) async {
-    _user = user;
-    await _userBox.put(_userKey, user);
-    notifyListeners();
+    var userToSave = user;
+    if (user.id == 'guest' || user.id.isEmpty) {
+      userToSave = user.copyWith(id: const Uuid().v4());
+    }
+    _user = userToSave;
+    await _userBox.put(userToSave.id, userToSave);
+    await _settingsBox.put(_activeUserKey, userToSave.id);
+    loadUsers();
   }
 
-  // Updates the current user
   Future<void> updateUser(User updatedUser) async {
     _user = updatedUser;
-    await _userBox.put(_userKey, updatedUser);
-    notifyListeners();
+    await _userBox.put(updatedUser.id, updatedUser);
+    loadUsers();
   }
 
   void setGuestUser() {
@@ -52,15 +61,22 @@ class UserProvider with ChangeNotifier {
       height: 0,
       weight: 0,
       isGuest: true,
-      activityLevel: 'sedentary', 
+      activityLevel: 'sedentary',
     );
     _user = guestUser;
-    _userBox.put(_userKey, guestUser); // Also save guest status
     notifyListeners();
   }
 
   void logout() {
-    _userBox.delete(_userKey); // Remove the user from storage
-    setGuestUser(); // Set the user to guest after logout
+    _settingsBox.delete(_activeUserKey);
+    _user = null;
+    loadUsers(); // Recargar la lista de usuarios
+  }
+
+  Future<void> switchUser(String userId) async {
+    final userToSwitch = _users.firstWhere((u) => u.id == userId);
+    _user = userToSwitch;
+    await _settingsBox.put(_activeUserKey, userId);
+    notifyListeners();
   }
 }

@@ -54,7 +54,7 @@ class SunMoonTimer extends StatelessWidget {
         gradient: skyGradient,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 15,
             spreadRadius: 2,
             offset: const Offset(0, 5),
@@ -126,7 +126,7 @@ class _ArcPainter extends CustomPainter {
     final trackPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
-      ..color = Colors.white.withOpacity(0.3);
+      ..color = Colors.white.withAlpha(77);
 
     final progressPaint = Paint()
       ..style = PaintingStyle.stroke
