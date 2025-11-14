@@ -140,13 +140,22 @@ class DrawerMenu extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.logout, color: Colors.red[800]!),
-            title: Text('Cerrar Sesión', style: GoogleFonts.lato()),
+            leading: Icon(Icons.cloud_upload_outlined, color: Colors.blue[800]!),
+            title: Text('Respaldo', style: GoogleFonts.lato()),
             onTap: () {
-              userProvider.logout();
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-                (Route<dynamic> route) => false,
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Próximamente'),
+                  content: const Text(
+                      'La función de respaldo y sincronización en la nube estará disponible pronto.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Entendido'),
+                    ),
+                  ],
+                ),
               );
             },
           ),
