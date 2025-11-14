@@ -122,19 +122,30 @@ class FastingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addCustomPlan(FastingPlan plan) async {
+  Future<bool> addCustomPlan(FastingPlan plan) async {
+    bool exists = allPlans.any((p) => p.fastingHours == plan.fastingHours);
+    if (exists) {
+      return false; // Falla si ya existe
+    }
     _customPlans.add(plan.copyWith(isCustom: true));
     await _savePreferences();
     notifyListeners();
+    return true; // Éxito
   }
 
-  Future<void> updateCustomPlan(FastingPlan plan) async {
+  Future<bool> updateCustomPlan(FastingPlan plan) async {
+     bool exists = allPlans.any((p) => p.id != plan.id && p.fastingHours == plan.fastingHours);
+    if (exists) {
+      return false; // Falla si ya existe
+    }
     final index = _customPlans.indexWhere((p) => p.id == plan.id);
     if (index != -1) {
       _customPlans[index] = plan;
       await _savePreferences();
       notifyListeners();
+      return true;
     }
+    return false;
   }
 
   Future<void> deleteCustomPlan(String planId) async {
@@ -144,6 +155,22 @@ class FastingProvider with ChangeNotifier {
       _selectedPlan = FastingPlan.defaultPlans.first;
     }
     await _savePreferences();
+    notifyListeners();
+  }
+
+  Future<void> addManualFastingLog(DateTime startTime, DateTime endTime, String? notes) async {
+    if (endTime.isBefore(startTime)) {
+      return;
+    }
+    const uuid = Uuid();
+    final newLog = FastingLog(
+      id: uuid.v4(),
+      startTime: startTime,
+      endTime: endTime,
+      notes: notes,
+    );
+    await _fastingBox.put(newLog.id, newLog);
+    _updateFeedingWindow();
     notifyListeners();
   }
 
@@ -162,7 +189,24 @@ class FastingProvider with ChangeNotifier {
     final customPlansJson = prefs.getString('customFastingPlans');
     if (customPlansJson != null) {
       final decoded = jsonDecode(customPlansJson) as List;
-      _customPlans = decoded.map((e) => FastingPlan.fromJson(e)).toList();
+      final loadedPlans = decoded.map((e) => FastingPlan.fromJson(e)).toList();
+      
+      // --- CORRECCIÓN DEFINITIVA ---
+      final uniqueHours = <int>{};
+      final uniquePlans = <FastingPlan>[];
+      for (final plan in loadedPlans) {
+        if (uniqueHours.add(plan.fastingHours)) {
+          uniquePlans.add(plan);
+        }
+      }
+      
+      if (loadedPlans.length != uniquePlans.length) {
+        _customPlans = uniquePlans;
+        await _savePreferences();
+      } else {
+        _customPlans = loadedPlans;
+      }
+      // --- FIN CORRECCIÓN ---
     }
 
     // Load selected plan

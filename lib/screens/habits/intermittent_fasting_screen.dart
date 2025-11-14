@@ -468,12 +468,20 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
     );
   }
 
+// -----------------------------------------------------------------------------
+// --- INICIO DE LA CORRECCIÓN DEFINITIVA ---
+// -----------------------------------------------------------------------------
+
   Future<void> _showPlanFormDialog(
       BuildContext context, FastingProvider provider,
       {FastingPlan? planToEdit}) async {
+
     final formKey = GlobalKey<FormState>();
     int fastingHours = planToEdit?.fastingHours ?? 16;
     final bool isEditing = planToEdit != null;
+
+    // Usamos un StateSetter para actualizar el Slider dentro del diálogo
+    int? tempFastingHours;
 
     await showDialog(
       context: context,
@@ -482,22 +490,27 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
           title: Text(isEditing ? 'Editar Plan' : 'Nuevo Plan de Ayuno'),
           content: Form(
             key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Horas de Ayuno: $fastingHours'),
-                Slider(
-                  value: fastingHours.toDouble(),
-                  min: 8,
-                  max: 23,
-                  divisions: 15,
-                  label: fastingHours.toString(),
-                  onChanged: (value) {
-                    (dialogContext as Element).markNeedsBuild(); // Redibuja el dialogo
-                    fastingHours = value.round();
-                  },
-                ),
-              ],
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Horas de Ayuno: ${tempFastingHours ?? fastingHours}'),
+                    Slider(
+                      value: (tempFastingHours ?? fastingHours).toDouble(),
+                      min: 8,
+                      max: 23,
+                      divisions: 15,
+                      label: (tempFastingHours ?? fastingHours).toString(),
+                      onChanged: (value) {
+                        setState(() {
+                           tempFastingHours = value.round();
+                        });
+                      },
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           actions: [
@@ -506,21 +519,44 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (formKey.currentState!.validate()) {
-                  final planName = '$fastingHours:${24 - fastingHours}';
+                  final finalFastingHours = tempFastingHours ?? fastingHours;
+                  final planName = '$finalFastingHours:${24 - finalFastingHours}';
+                  
+                  bool success = false;
                   if (isEditing) {
-                    final updatedPlan = planToEdit
-                        .copyWith(fastingHours: fastingHours, name: planName);
-                    provider.updateCustomPlan(updatedPlan);
+                    final updatedPlan = planToEdit.copyWith(
+                        fastingHours: finalFastingHours, name: planName);
+                    success = await provider.updateCustomPlan(updatedPlan);
                   } else {
                     final newPlan = FastingPlan(
                         name: planName,
-                        fastingHours: fastingHours,
+                        fastingHours: finalFastingHours,
                         isCustom: true);
-                    provider.addCustomPlan(newPlan);
+                    success = await provider.addCustomPlan(newPlan);
                   }
-                  Navigator.of(dialogContext).pop();
+
+                  // Si la operación no fue exitosa (porque el plan ya existe)...
+                  if (!success && dialogContext.mounted) {
+                    // MUESTRA EL DIÁLOGO DE ERROR
+                    showDialog(
+                        context: dialogContext,
+                        builder: (errorCtx) => AlertDialog(
+                              title: const Text('Plan Duplicado'),
+                              content: Text(
+                                  'Ya existe un plan con una duración de $finalFastingHours horas. Por favor, elige una duración diferente.'),
+                              actions: [
+                                TextButton(
+                                    child: const Text('Entendido'),
+                                    onPressed: () => Navigator.of(errorCtx).pop())
+                              ],
+                            ));
+                  } 
+                  // Si fue exitosa, simplemente cierra el formulario.
+                  else if (success && dialogContext.mounted) {
+                    Navigator.of(dialogContext).pop();
+                  }
                 }
               },
               child: const Text('Guardar'),
@@ -530,6 +566,11 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
       },
     );
   }
+
+// -----------------------------------------------------------------------------
+// --- FIN DE LA CORRECCIÓN DEFINITIVA ---
+// -----------------------------------------------------------------------------
+
 
   Widget _buildHistoryTab(
       BuildContext context, FastingProvider provider, ThemeData theme) {
