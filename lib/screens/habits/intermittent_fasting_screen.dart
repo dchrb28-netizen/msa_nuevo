@@ -510,7 +510,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                 if (formKey.currentState!.validate()) {
                   final planName = '$fastingHours:${24 - fastingHours}';
                   if (isEditing) {
-                    final updatedPlan = planToEdit!
+                    final updatedPlan = planToEdit
                         .copyWith(fastingHours: fastingHours, name: planName);
                     provider.updateCustomPlan(updatedPlan);
                   } else {

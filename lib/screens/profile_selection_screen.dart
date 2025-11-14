@@ -23,6 +23,10 @@ class ProfileSelectionScreen extends StatelessWidget {
               userProvider.switchUser(user.id);
               Navigator.pushReplacementNamed(context, '/');
             },
+            trailing: IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () => _confirmDelete(context, userProvider, user.id),
+            ),
           );
         },
       ),
@@ -32,6 +36,40 @@ class ProfileSelectionScreen extends StatelessWidget {
         },
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, UserProvider userProvider, String userId) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar Eliminación'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('¿Estás seguro de que quieres eliminar este perfil?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Eliminar'),
+              onPressed: () {
+                userProvider.deleteUser(userId);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

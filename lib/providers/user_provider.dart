@@ -79,4 +79,14 @@ class UserProvider with ChangeNotifier {
     await _settingsBox.put(_activeUserKey, userId);
     notifyListeners();
   }
+
+  Future<void> deleteUser(String userId) async {
+    final activeUserId = _settingsBox.get(_activeUserKey);
+    if (activeUserId == userId) {
+      await _settingsBox.delete(_activeUserKey);
+      _user = null;
+    }
+    await _userBox.delete(userId);
+    loadUsers();
+  }
 }

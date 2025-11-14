@@ -1,56 +1,36 @@
-# Blueprint: Habit Tracker App - Intermittent Fasting Module
+# Blueprint: My Health and Fitness App
 
 ## Overview
 
-This document outlines the features and design of the Intermittent Fasting module within the Habit Tracker application. The goal is to provide a comprehensive, motivating, and visually engaging experience for users tracking their fasting habits.
+This document outlines the features and design of the "My Health and Fitness App". The application helps users track various aspects of their health, including diet, exercise, and body measurements.
 
 ## Implemented Features & Design
 
-This is a summary of the features implemented in the current version of the Intermittent Fasting screen.
+### **User Profile Management**
 
-### Core Functionality
-- **Fasting Timer**: Tracks the duration of the current fast or the time within the feeding window.
-- **Start/Stop Control**: Users can manually start and stop their fasting periods.
-- **Plan Selection**: Users can choose from a list of predefined fasting plans (e.g., 16:8, 18:6).
-- **History Tracking**: All completed fasts are saved locally, displaying start time, end time, and total duration.
-- **Statistics**: The app calculates and displays key stats like the longest fast and the average fast duration.
+*   **User Profiles**: Users can create multiple profiles to track their health and fitness data separately.
+*   **Guest Mode**: A guest mode is available for users who want to try the app without creating a profile.
+*   **Profile Switching**: Users can easily switch between different profiles.
+*   **Delete User Profiles**:
+    *   Users can delete their profiles from the profile selection screen.
+    *   A confirmation dialog is displayed to prevent accidental deletion.
+    *   If the currently active profile is deleted, the user is logged out.
 
-### Advanced Features (Newly Implemented)
-1.  **Custom Fasting Plans**:
-    - Users can create their own fasting plans by specifying the fasting duration.
-    - Custom plans can be edited or deleted with a long-press gesture.
-2.  **Educational Fasting Timeline**:
-    - The timeline now displays enriched, motivational descriptions for each phase of the fast (Anabolic, Catabolic, Fat Burning, Autophagy, etc.).
-    - Users can tap on a phase to learn about the benefits their body is experiencing at that moment.
-3.  **Fasting Journal**:
-    - Users can add, edit, and view personal notes for each completed fast in their history.
-    - This allows for tracking feelings, energy levels, or any other relevant information.
-4.  **Smart Notifications**:
-    - Users receive notifications at the start and successful completion of a fast.
-    - **Phase Change Alerts**: A key feature that sends a notification each time the user enters a new fasting phase, keeping them informed and motivated.
+### **Core Functionality**
 
-### Visual & UX Design (Newly Implemented)
-1.  **Interactive Sun & Moon Timer**:
-    - The standard circular progress bar has been replaced with a custom-painted, animated timer.
-    - A sun icon (☀️) travels along an arc during the feeding window, set against a bright, daytime sky gradient.
-    - A moon icon (🌙) travels along the arc during the fasting period, set against a dark, nighttime sky gradient.
-    - This provides an intuitive and visually delightful representation of the user's progress.
-2.  **Dynamic Background**:
-    - The entire background of the fasting tab animates smoothly between two states:
-        - A light, energetic gradient during the feeding window.
-        - A dark, calm gradient during the fasting period.
-    - This creates an immersive experience that complements the Sun & Moon timer.
-3.  **Modern UI Components**:
-    - `ChoiceChip` for plan selection provides clear visual feedback.
-    - `Card`, `ListTile`, and `TimelineTile` are used for a clean, organized, and modern layout.
-    - Dialogs and bottom sheets are used for intuitive user interactions like adding plans or notes.
+*   **Dashboard**: A central dashboard provides an overview of the user's daily progress.
+*   **Food Tracking**: Users can log their daily food intake.
+*   **Water Tracking**: Users can track their daily water consumption.
+*   **Exercise Tracking**: Users can log their workouts and exercises.
+*   **Body Measurements**: Users can track their body measurements, such as weight and height.
+*   **History**: Users can view their historical data for all tracked metrics.
 
-## Plan for Current Request: Upload to GitHub
+## Plan for Current Request: Add Profile Deletion
 
-1.  **Create `blueprint.md`**: Document all the newly implemented features and design changes in this file. (✓ Done)
-2.  **Initialize Git Repository**: Use `git init` to prepare the project for version control.
-3.  **Stage All Files**: Use `git add .` to include all project files in the first commit.
-4.  **Create Initial Commit**: Use `git commit -m "feat: Implement enhanced intermittent fasting tracker"` to save the current state.
-5.  **Provide User Instructions**: Explain to the user how to create a new, empty repository on GitHub.com.
-6.  **Request Repository URL**: Ask the user to provide the URL for the newly created GitHub repository.
-7.  **Push to GitHub**: Once the URL is provided, add it as a remote origin (`git remote add origin <URL>`) and push the `main` branch (`git push -u origin main`).
+1.  **Modify `lib/screens/profile_selection_screen.dart`**: (✓ Done)
+    *   Add a delete button to each profile in the list.
+    *   Implement a confirmation dialog to prevent accidental deletion.
+2.  **Modify `lib/providers/user_provider.dart`**: (✓ Done)
+    *   Implement a `deleteUser` method to remove the user from the database.
+    *   Handle the case where the active user is deleted.
+3.  **Update `blueprint.md`**: Document the new profile deletion feature. (✓ Done)
