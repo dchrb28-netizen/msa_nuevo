@@ -187,13 +187,13 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             decoration: BoxDecoration(
-              color: isSelected ? colorScheme.primary.withOpacity(0.2) : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              color: isSelected ? colorScheme.primary.withAlpha(51) : colorScheme.surfaceContainerHighest.withAlpha(128),
               borderRadius: BorderRadius.circular(16),
               border: isSelected ? Border.all(color: colorScheme.primary, width: 2) : null,
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: colorScheme.primary.withOpacity(0.3),
+                        color: colorScheme.primary.withAlpha(77),
                         blurRadius: 10,
                         spreadRadius: 2,
                       )

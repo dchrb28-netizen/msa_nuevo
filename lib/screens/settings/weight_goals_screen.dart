@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
@@ -496,13 +497,14 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
             ),
             const SizedBox(height: 30),
             ElevatedButton.icon(
-              icon: const Icon(Icons.edit_note_rounded),
+              icon: const Icon(Icons.person_search_outlined),
               onPressed: () {
-                setState(() {
-                  _isEditing = true;
-                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                );
               },
-              label: const Text('Completar mi Perfil'),
+              label: const Text('Ir a mi Perfil'),
             )
           ],
         ),

@@ -11,10 +11,10 @@ class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({super.key});
 
   @override
-  _CreateProfileScreenState createState() => _CreateProfileScreenState();
+  CreateProfileScreenState createState() => CreateProfileScreenState();
 }
 
-class _CreateProfileScreenState extends State<CreateProfileScreen> {
+class CreateProfileScreenState extends State<CreateProfileScreen> {
   final PageController _pageController = PageController();
   final _formKeys = [GlobalKey<FormState>(), GlobalKey<FormState>(), GlobalKey<FormState>()];
   int _currentPage = 0;
