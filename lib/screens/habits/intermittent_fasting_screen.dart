@@ -6,9 +6,9 @@ import 'package:myapp/models/fasting_log.dart';
 import 'package:myapp/models/fasting_phase.dart';
 import 'package:myapp/models/fasting_plan.dart';
 import 'package:myapp/providers/fasting_provider.dart';
+import 'package:myapp/widgets/sun_moon_timer.dart';
 import 'package:provider/provider.dart';
 import 'package:timeline_tile/timeline_tile.dart';
-
 
 class IntermittentFastingScreen extends StatefulWidget {
   const IntermittentFastingScreen({super.key});
@@ -46,13 +46,11 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
     super.dispose();
   }
 
-
   void _scrollToCurrentPhase(FastingProvider provider) {
     if (provider.currentPhase == null || !_scrollController.hasClients) return;
 
-    final currentPhaseIndex = FastingPhase.phases.indexWhere(
-      (p) => p.name == provider.currentPhase!.name,
-    );
+    final currentPhaseIndex = FastingPhase.phases
+        .indexWhere((p) => p.name == provider.currentPhase!.name);
 
     if (currentPhaseIndex != -1) {
       const itemWidth = 120.0; // Approximate width of a timeline item
@@ -61,16 +59,12 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
           (itemWidth * currentPhaseIndex) - (screenWidth / 2) + (itemWidth / 2);
 
       _scrollController.animateTo(
-        scrollPosition.clamp(
-          0.0,
-          _scrollController.position.maxScrollExtent,
-        ),
+        scrollPosition.clamp(0.0, _scrollController.position.maxScrollExtent),
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
     }
   }
-
 
   Future<void> _showPhaseInfoDialog(
       BuildContext context, FastingPhase phase, ThemeData theme) async {
@@ -78,44 +72,68 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          title: Row(
-            children: [
-              Icon(phase.icon, color: theme.colorScheme.primary, size: 28),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  phase.name,
-                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+          title: Row(children: [
+            Icon(phase.icon, color: theme.colorScheme.primary, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+                child: Text(phase.name,
+                    style: theme.textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold)))
+          ]),
           content: SingleChildScrollView(
-            child: Text(
-              phase.description,
-              style: theme.textTheme.bodyLarge,
-            ),
-          ),
+              child: Text(phase.description, style: theme.textTheme.bodyLarge)),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cerrar'),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-            ),
+                child: const Text('Cerrar'),
+                onPressed: () => Navigator.of(dialogContext).pop())
           ],
         );
       },
     );
   }
 
+  Future<void> _showNotesDialog(
+      BuildContext context, FastingLog log, FastingProvider provider) async {
+    final notesController = TextEditingController(text: log.notes);
+    await showDialog(
+        context: context,
+        builder: (dialogContext) {
+          return AlertDialog(
+              title: const Text('Notas del Ayuno'),
+              content: TextField(
+                  controller: notesController,
+                  maxLines: 4,
+                  decoration: const InputDecoration(
+                      hintText: '¿Cómo te sentiste? ¿Tuviste antojos?',
+                      border: OutlineInputBorder())),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    child: const Text('Cancelar')),
+                ElevatedButton(
+                    onPressed: () async {
+                      final updatedLog = FastingLog(
+                          id: log.id,
+                          startTime: log.startTime,
+                          endTime: log.endTime,
+                          notes: notesController.text);
+                      await provider.updateFastingLog(updatedLog);
+                      if (dialogContext.mounted) {
+                        Navigator.of(dialogContext).pop();
+                      }
+                    },
+                    child: const Text('Guardar'))
+              ]);
+        });
+  }
+
   Future<void> _showEditDialog(
       BuildContext context, FastingLog log, FastingProvider provider) async {
     DateTime editedStartTime = log.startTime;
     DateTime editedEndTime = log.endTime!;
+    final notesController = TextEditingController(text: log.notes);
 
     await showDialog(
       context: context,
@@ -124,98 +142,97 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
           title: const Text('Editar Ayuno'),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
+              return SingleChildScrollView(
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
                   ListTile(
-                    title: Text(
-                        'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(editedStartTime)}'),
-                    trailing: const Icon(Icons.edit_calendar),
-                    onTap: () async {
-                      if (!context.mounted) return;
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: editedStartTime,
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime.now(),
-                      );
-                      if (date == null) return;
+                      title: Text(
+                          'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(editedStartTime)}'),
+                      trailing: const Icon(Icons.edit_calendar),
+                      onTap: () async {
+                        if (!context.mounted) return;
+                        final date = await showDatePicker(
+                            context: context,
+                            initialDate: editedStartTime,
+                            firstDate: DateTime(2020),
+                            lastDate: DateTime.now());
+                        if (date == null) return;
 
-                      if (!context.mounted) return;
-                      final time = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(editedStartTime),
-                      );
-                      if (time == null) return;
+                        if (!context.mounted) return;
+                        final time = await showTimePicker(
+                            context: context,
+                            initialTime:
+                                TimeOfDay.fromDateTime(editedStartTime));
+                        if (time == null) return;
 
-                      setState(() {
-                        editedStartTime = DateTime(date.year, date.month,
-                            date.day, time.hour, time.minute);
-                      });
-                    },
-                  ),
+                        setState(() {
+                          editedStartTime = DateTime(date.year, date.month,
+                              date.day, time.hour, time.minute);
+                        });
+                      }),
                   ListTile(
-                    title: Text(
-                        'Fin:      ${DateFormat('dd/MM/yy HH:mm').format(editedEndTime)}'),
-                    trailing: const Icon(Icons.edit_calendar),
-                    onTap: () async {
-                      if (!context.mounted) return;
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: editedEndTime,
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime.now().add(const Duration(days: 1)),
-                      );
-                      if (date == null) return;
+                      title: Text(
+                          'Fin:      ${DateFormat('dd/MM/yy HH:mm').format(editedEndTime)}'),
+                      trailing: const Icon(Icons.edit_calendar),
+                      onTap: () async {
+                        if (!context.mounted) return;
+                        final date = await showDatePicker(
+                            context: context,
+                            initialDate: editedEndTime,
+                            firstDate: DateTime(2020),
+                            lastDate:
+                                DateTime.now().add(const Duration(days: 1)));
+                        if (date == null) return;
 
-                      if (!context.mounted) return;
-                      final time = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(editedEndTime),
-                      );
-                      if (time == null) return;
+                        if (!context.mounted) return;
+                        final time = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.fromDateTime(editedEndTime));
+                        if (time == null) return;
 
-                      setState(() {
-                        editedEndTime = DateTime(date.year, date.month,
-                            date.day, time.hour, time.minute);
-                      });
-                    },
-                  ),
-                ],
+                        setState(() {
+                          editedEndTime = DateTime(date.year, date.month,
+                              date.day, time.hour, time.minute);
+                        });
+                      }),
+                  const SizedBox(height: 16),
+                  TextField(
+                      controller: notesController,
+                      decoration: const InputDecoration(
+                          labelText: 'Notas',
+                          hintText: 'Añade tus notas aquí...',
+                          border: OutlineInputBorder()))
+                ]),
               );
             },
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancelar'),
-            ),
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('Cancelar')),
             ElevatedButton(
-              onPressed: () async {
-                if (editedEndTime.isBefore(editedStartTime)) {
-                  if (dialogContext.mounted) {
-                    ScaffoldMessenger.of(dialogContext).showSnackBar(
-                      const SnackBar(
+                onPressed: () async {
+                  if (editedEndTime.isBefore(editedStartTime)) {
+                    if (dialogContext.mounted) {
+                      ScaffoldMessenger.of(dialogContext)
+                          .showSnackBar(const SnackBar(
                         content: Text(
                             'La fecha de fin no puede ser anterior a la de inicio.'),
                         backgroundColor: Colors.red,
-                      ),
-                    );
+                      ));
+                    }
+                    return;
                   }
-                  return;
-                }
-                final updatedLog = FastingLog(
-                  id: log.id,
-                  startTime: editedStartTime,
-                  endTime: editedEndTime,
-                );
-                await provider.updateFastingLog(updatedLog);
-                if (dialogContext.mounted) {
-                  Navigator.of(dialogContext).pop();
-                }
-              },
-              child: const Text('Guardar'),
-            ),
+                  final updatedLog = FastingLog(
+                      id: log.id,
+                      startTime: editedStartTime,
+                      endTime: editedEndTime,
+                      notes: notesController.text);
+                  await provider.updateFastingLog(updatedLog);
+                  if (dialogContext.mounted) {
+                    Navigator.of(dialogContext).pop();
+                  }
+                },
+                child: const Text('Guardar')),
           ],
         );
       },
@@ -233,7 +250,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
           content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('¿Estás seguro de que quieres finalizar el ayuno?'),
+                Text('¿Estás seguro de que quieres finalizar el ayuno?')
               ],
             ),
           ),
@@ -269,34 +286,15 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             return Column(
               children: [
                 Container(
-                  color: theme.colorScheme.surface,
-                  child: Material(
-                    color: theme.colorScheme.primary.withAlpha(25),
-                    child: TabBar(
-                      indicatorColor: theme.colorScheme.primary,
-                      labelColor: theme.colorScheme.primary,
-                      unselectedLabelColor: theme.textTheme.bodyLarge?.color,
-                      tabs: const [
-                        Tab(icon: Icon(Icons.timer_outlined), text: 'Ayuno'),
-                        Tab(
-                            icon: Icon(Icons.history_outlined),
-                            text: 'Historial'),
-                        Tab(
-                            icon: Icon(Icons.bar_chart_outlined),
-                            text: 'Estadísticas'),
-                      ],
-                    ),
-                  ),
-                ),
+                    color: theme.colorScheme.surface,
+                    child: Material(color: theme.colorScheme.primary.withAlpha(25),
+                        child: TabBar(indicatorColor: theme.colorScheme.primary, labelColor: theme.colorScheme.primary, unselectedLabelColor: theme.textTheme.bodyLarge?.color, tabs: const [Tab(icon: Icon(Icons.timer_outlined), text: 'Ayuno'), Tab(icon: Icon(Icons.history_outlined), text: 'Historial'), Tab(icon: Icon(Icons.bar_chart_outlined), text: 'Estadísticas')]))),
                 Expanded(
-                  child: TabBarView(
-                    children: [
-                      _buildFastingTab(context, theme, fastingProvider),
-                      _buildHistoryTab(context, fastingProvider, theme),
-                      _buildStatsTab(fastingProvider, theme),
-                    ],
-                  ),
-                ),
+                    child: TabBarView(children: [
+                  _buildFastingTab(context, theme, fastingProvider),
+                  _buildHistoryTab(context, fastingProvider, theme),
+                  _buildStatsTab(fastingProvider, theme)
+                ]))
               ],
             );
           },
@@ -305,134 +303,229 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
     );
   }
 
-  Widget _buildFastingTab(
-      BuildContext context, ThemeData theme, FastingProvider fastingProvider) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          _buildPlanSelector(theme, fastingProvider),
-          const SizedBox(height: 24),
-          _buildCircularTimer(theme, fastingProvider, context),
-          const SizedBox(height: 24),
-          const Divider(),
-          const SizedBox(height: 16),
-          _buildFastingTimeline(fastingProvider, theme),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPlanSelector(ThemeData theme, FastingProvider provider) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: FastingPlan.defaultPlans.map((plan) {
-          final isSelected = provider.selectedPlan.name == plan.name;
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: ChoiceChip(
-              label: Text(plan.name),
-              selected: isSelected,
-              onSelected: provider.isFasting
-                  ? null
-                  : (selected) {
-                      if (selected) {
-                        provider.setPlan(plan);
-                      }
-                    },
-              selectedColor: theme.colorScheme.primary,
-              labelStyle: TextStyle(
-                color: isSelected
-                    ? theme.colorScheme.onPrimary
-                    : theme.textTheme.bodyLarge?.color,
-              ),
-              backgroundColor: theme.colorScheme.surfaceContainerHighest,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: BorderSide(
-                    color: isSelected
-                        ? theme.colorScheme.primary
-                        : Colors.grey.shade300),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildCircularTimer(
-      ThemeData theme, FastingProvider provider, BuildContext context) {
+  Widget _buildFastingTab(BuildContext context, ThemeData theme, FastingProvider provider) {
     final isFasting = provider.isFasting;
     final duration = provider.currentFast?.durationInSeconds ?? 0;
     final goal = provider.goalInSeconds;
     final progress = goal > 0 ? (duration / goal).clamp(0.0, 1.0) : 0.0;
 
-    return SizedBox(
-      width: 280,
-      height: 280,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          CircularProgressIndicator(
-            value: progress,
-            strokeWidth: 12,
-            backgroundColor: theme.colorScheme.surfaceContainerHighest,
-            valueColor:
-                AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (isFasting)
-                  Text(
-                    provider.formattedFastingDuration,
-                    style: theme.textTheme.headlineLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  )
-                else
-                  Text(
-                    provider.formattedFeedingWindowDuration,
-                    style: theme.textTheme.headlineLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
+    final fastingGradient = LinearGradient(
+      colors: [theme.colorScheme.surface, theme.colorScheme.surface.withBlue(30)],
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+    );
+
+    final feedingGradient = LinearGradient(
+      colors: [Colors.lightBlue.shade50, Colors.lightGreen.shade50],
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+    );
+
+    return AnimatedContainer(
+      duration: const Duration(seconds: 1),
+      decoration: BoxDecoration(
+        gradient: isFasting ? fastingGradient : feedingGradient,
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildPlanSelector(theme, provider),
+            const SizedBox(height: 24),
+            SunMoonTimer(
+              progress: progress,
+              isFasting: isFasting,
+              timeText: isFasting
+                  ? provider.formattedFastingDuration
+                  : provider.formattedFeedingWindowDuration,
+              phaseText: isFasting
+                  ? (provider.currentPhase?.name ?? 'Comenzando...')
+                  : 'Ventana de alimentación',
+              goalText: 'Objetivo: ${provider.selectedPlan.fastingHours} horas',
+              onButtonPressed: () {
+                if (isFasting) {
+                  _showStopFastingDialog(context, provider);
+                } else {
+                  provider.startFasting();
+                }
+              },
+            ),
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 16),
+            _buildFastingTimeline(provider, theme),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlanSelector(ThemeData theme, FastingProvider provider) {
+    return Column(
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: provider.allPlans.map((plan) {
+              final isSelected = provider.selectedPlan.id == plan.id;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: GestureDetector(
+                  onLongPress: () {
+                    if (plan.isCustom) {
+                      _showManagePlanOptions(context, plan, provider);
+                    }
+                  },
+                  child: ChoiceChip(
+                    label: Text(plan.name),
+                    selected: isSelected,
+                    onSelected: provider.isFasting
+                        ? null
+                        : (selected) {
+                            if (selected) {
+                              provider.setPlan(plan);
+                            }
+                          },
+                    selectedColor: theme.colorScheme.primary,
+                    labelStyle: TextStyle(
+                      color: isSelected
+                          ? theme.colorScheme.onPrimary
+                          : theme.textTheme.bodyLarge?.color,
+                    ),
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                          color: isSelected
+                              ? theme.colorScheme.primary
+                              : Colors.grey.shade300),
+                    ),
                   ),
-                const SizedBox(height: 8),
-                if (isFasting)
-                  Text(
-                    provider.currentPhase?.name ?? 'Comenzando...',
-                    style: theme.textTheme.titleMedium,
-                  )
-                else
-                  Text('Ventana de alimentación',
-                      style: theme.textTheme.titleMedium),
-                const SizedBox(height: 8),
-                Text('Objetivo: ${provider.selectedPlan.fastingHours} horas',
-                    style: theme.textTheme.titleSmall),
-                const SizedBox(height: 16),
-                if (isFasting)
-                  ElevatedButton.icon(
-                    onPressed: () => _showStopFastingDialog(context, provider),
-                    icon: const Icon(Icons.stop),
-                    label: const Text('Parar'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.error,
-                      foregroundColor: theme.colorScheme.onError,
-                    ),
-                  )
-                else
-                  ElevatedButton.icon(
-                      onPressed: () => provider.startFasting(),
-                      icon: const Icon(Icons.play_arrow),
-                      label: const Text('Empezar'),
-                    ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextButton.icon(
+          icon: const Icon(Icons.add, size: 16),
+          label: const Text('Añadir Plan'),
+          onPressed: () => _showPlanFormDialog(context, provider),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _showManagePlanOptions(
+      BuildContext context, FastingPlan plan, FastingProvider provider) async {
+    await showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        return Wrap(
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Editar Plan'),
+              onTap: () {
+                Navigator.of(ctx).pop();
+                _showPlanFormDialog(context, provider, planToEdit: plan);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Eliminar Plan',
+                  style: TextStyle(color: Colors.red)),
+              onTap: () async {
+                Navigator.of(ctx).pop();
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (dialogCtx) => AlertDialog(
+                    title: const Text('Confirmar Eliminación'),
+                    content: Text(
+                        '¿Seguro que quieres eliminar el plan \"${plan.name}\"?'),
+                    actions: [
+                      TextButton(
+                          onPressed: () =>
+                              Navigator.of(dialogCtx).pop(false),
+                          child: const Text('Cancelar')),
+                      ElevatedButton(
+                          onPressed: () => Navigator.of(dialogCtx).pop(true),
+                          child: const Text('Eliminar')),
+                    ],
+                  ),
+                );
+                if (confirm == true) {
+                  await provider.deleteCustomPlan(plan.id);
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showPlanFormDialog(
+      BuildContext context, FastingProvider provider,
+      {FastingPlan? planToEdit}) async {
+    final formKey = GlobalKey<FormState>();
+    int fastingHours = planToEdit?.fastingHours ?? 16;
+    final bool isEditing = planToEdit != null;
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(isEditing ? 'Editar Plan' : 'Nuevo Plan de Ayuno'),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Horas de Ayuno: $fastingHours'),
+                Slider(
+                  value: fastingHours.toDouble(),
+                  min: 8,
+                  max: 23,
+                  divisions: 15,
+                  label: fastingHours.toString(),
+                  onChanged: (value) {
+                    (dialogContext as Element).markNeedsBuild(); // Redibuja el dialogo
+                    fastingHours = value.round();
+                  },
+                ),
               ],
             ),
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  final planName = '$fastingHours:${24 - fastingHours}';
+                  if (isEditing) {
+                    final updatedPlan = planToEdit!
+                        .copyWith(fastingHours: fastingHours, name: planName);
+                    provider.updateCustomPlan(updatedPlan);
+                  } else {
+                    final newPlan = FastingPlan(
+                        name: planName,
+                        fastingHours: fastingHours,
+                        isCustom: true);
+                    provider.addCustomPlan(newPlan);
+                  }
+                  Navigator.of(dialogContext).pop();
+                }
+              },
+              child: const Text('Guardar'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -442,89 +535,93 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
 
     if (history.isEmpty) {
       return const Center(
-        child: Text(
-          'Aún no hay registros de ayuno.',
-          style: TextStyle(fontSize: 16),
-        ),
-      );
+          child: Text('Aún no hay registros de ayuno.',
+              style: TextStyle(fontSize: 16)));
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: history.length,
-      itemBuilder: (context, index) {
-        final log = history[index];
-        final duration = log.endTime!.difference(log.startTime);
-        final hours = duration.inHours;
-        final minutes = duration.inMinutes.remainder(60);
+        padding: const EdgeInsets.all(16),
+        itemCount: history.length,
+        itemBuilder: (context, index) {
+          final log = history[index];
+          final duration = log.endTime!.difference(log.startTime);
+          final hours = duration.inHours;
+          final minutes = duration.inMinutes.remainder(60);
 
-        return Dismissible(
-          key: Key(log.id),
-          direction: DismissDirection.endToStart,
-          background: Container(
-            color: Colors.red,
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 20.0),
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
-          confirmDismiss: (direction) async {
-            return await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text("Confirmar"),
-                  content: const Text(
-                      "¿Estás seguro de que quieres eliminar este ayuno?"),
-                  actions: <Widget>[
-                    TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text("CANCELAR")),
-                    ElevatedButton(
-                        onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text("ELIMINAR")),
-                  ],
-                );
+          return Dismissible(
+              key: Key(log.id),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: const Icon(Icons.delete, color: Colors.white)),
+              confirmDismiss: (direction) async {
+                return await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                          title: const Text("Confirmar"),
+                          content: const Text(
+                              "¿Estás seguro de que quieres eliminar este ayuno?"),
+                          actions: <Widget>[
+                            TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: const Text("CANCELAR")),
+                            ElevatedButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: const Text("ELIMINAR"))
+                          ]);
+                    });
               },
-            );
-          },
-          onDismissed: (direction) async {
-            await provider.deleteFastingLog(log.id);
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Ayuno eliminado')),
-              );
-            }
-          },
-          child: Card(
-            elevation: 2,
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                child: const Icon(Icons.check_circle_outline),
-              ),
-              title: Text(
-                'Ayuno de ${hours}h ${minutes}m',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(
-                'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(log.startTime)}\nFin:      ${DateFormat('dd/MM/yy HH:mm').format(log.endTime!)}',
-                style: const TextStyle(fontSize: 12),
-              ),
-              trailing: IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () => _showEditDialog(context, log, provider),
-              ),
-            ),
-          ),
-        );
-      },
-    );
+              onDismissed: (direction) async {
+                await provider.deleteFastingLog(log.id);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Ayuno eliminado')));
+                }
+              },
+              child: Card(
+                  elevation: 2,
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
+                        child: const Icon(Icons.check_circle_outline)),
+                    title: Text('Ayuno de ${hours}h ${minutes}m',
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(
+                        'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(log.startTime)}\nFin:      ${DateFormat('dd/MM/yy HH:mm').format(log.endTime!)}',
+                        style: const TextStyle(fontSize: 12)),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                            icon: Icon(
+                                log.notes != null && log.notes!.isNotEmpty
+                                    ? Icons.speaker_notes
+                                    : Icons.speaker_notes_off_outlined,
+                                color: log.notes != null && log.notes!.isNotEmpty
+                                    ? theme.colorScheme.secondary
+                                    : Colors.grey),
+                            onPressed: () =>
+                                _showNotesDialog(context, log, provider)),
+                        IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () =>
+                                _showEditDialog(context, log, provider))
+                      ],
+                    ),
+                  )));
+        });
   }
 
   Widget _buildFastingTimeline(FastingProvider provider, ThemeData theme) {
-    final currentDurationHours = (provider.currentFast?.durationInSeconds ?? 0) / 3600;
+    final currentDurationHours =
+        (provider.currentFast?.durationInSeconds ?? 0) / 3600;
     const phases = FastingPhase.phases;
 
     return SizedBox(
@@ -543,9 +640,8 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
               provider.currentPhase != null && provider.currentPhase == phase;
           bool isFuture = currentDurationHours < phase.startHour;
 
-          Color lineColor = isCompleted
-              ? theme.colorScheme.primary
-              : Colors.grey.shade300;
+          Color lineColor =
+              isCompleted ? theme.colorScheme.primary : Colors.grey.shade300;
           Widget indicator;
 
           if (isCompleted) {

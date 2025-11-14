@@ -56,21 +56,21 @@ class BodyMeasurementTodayView extends StatelessWidget {
             final lastWeight = lastMeasurementWithWeight?.weight ?? initialWeight;
 
             if (lastWeight == null || lastWeight <= 0) {
-              return Card(
+              return const Card(
                 elevation: 2,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      const Icon(Icons.show_chart_rounded, size: 40, color: Colors.blueAccent),
-                      const SizedBox(height: 12),
-                      const Text(
+                      Icon(Icons.show_chart_rounded, size: 40, color: Colors.blueAccent),
+                      SizedBox(height: 12),
+                      Text(
                         'Comienza tu Viaje de Bienestar',
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
+                      SizedBox(height: 8),
+                      Text(
                         'Registra tu peso para comenzar a ver tu progreso.',
                         textAlign: TextAlign.center,
                       ),

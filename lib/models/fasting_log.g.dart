@@ -20,19 +20,22 @@ class FastingLogAdapter extends TypeAdapter<FastingLog> {
       id: fields[0] as String,
       startTime: fields[1] as DateTime,
       endTime: fields[2] as DateTime?,
+      notes: fields[4] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, FastingLog obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.startTime)
       ..writeByte(2)
       ..write(obj.endTime)
+      ..writeByte(4)
+      ..write(obj.notes)
       ..writeByte(3)
       ..write(obj.durationInSeconds);
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/fasting_log.dart';
@@ -17,11 +18,16 @@ class FastingProvider with ChangeNotifier {
   FastingPlan _selectedPlan = FastingPlan.defaultPlans.first;
   Duration _feedingWindowDuration = Duration.zero;
 
+  List<FastingPlan> _customPlans = [];
+
   FastingLog? get currentFast => _currentFast;
   bool get isFasting => _currentFast != null && _currentFast!.endTime == null;
   FastingPlan get selectedPlan => _selectedPlan;
   int get goalInSeconds => _selectedPlan.fastingHours * 3600;
   Duration get feedingWindowDuration => _feedingWindowDuration;
+  List<FastingPlan> get customPlans => _customPlans;
+  List<FastingPlan> get allPlans => [...FastingPlan.defaultPlans, ..._customPlans];
+
 
   FastingProvider() {
     _loadPreferences();
@@ -116,18 +122,54 @@ class FastingProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> addCustomPlan(FastingPlan plan) async {
+    _customPlans.add(plan.copyWith(isCustom: true));
+    await _savePreferences();
+    notifyListeners();
+  }
+
+  Future<void> updateCustomPlan(FastingPlan plan) async {
+    final index = _customPlans.indexWhere((p) => p.id == plan.id);
+    if (index != -1) {
+      _customPlans[index] = plan;
+      await _savePreferences();
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteCustomPlan(String planId) async {
+    _customPlans.removeWhere((p) => p.id == planId);
+    // If the deleted plan was the selected one, revert to the default plan
+    if (_selectedPlan.id == planId) {
+      _selectedPlan = FastingPlan.defaultPlans.first;
+    }
+    await _savePreferences();
+    notifyListeners();
+  }
+
+
   Future<void> _savePreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('selectedPlan', _selectedPlan.name);
+    await prefs.setString('selectedPlanId', _selectedPlan.id);
+    final customPlansJson = jsonEncode(_customPlans.map((p) => p.toJson()).toList());
+    await prefs.setString('customFastingPlans', customPlansJson);
   }
 
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    final planName = prefs.getString('selectedPlan');
-    if (planName != null) {
+    
+    // Load custom plans
+    final customPlansJson = prefs.getString('customFastingPlans');
+    if (customPlansJson != null) {
+      final decoded = jsonDecode(customPlansJson) as List;
+      _customPlans = decoded.map((e) => FastingPlan.fromJson(e)).toList();
+    }
+
+    // Load selected plan
+    final planId = prefs.getString('selectedPlanId');
+    if (planId != null) {
       try {
-        _selectedPlan =
-            FastingPlan.defaultPlans.firstWhere((p) => p.name == planName);
+        _selectedPlan = allPlans.firstWhere((p) => p.id == planId);
       } catch (e) {
         _selectedPlan = FastingPlan.defaultPlans.first;
       }

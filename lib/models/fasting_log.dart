@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'fasting_log.g.dart';
 
-@HiveType(typeId: 14) // Siguiente typeId disponible
+@HiveType(typeId: 14)
 class FastingLog extends HiveObject {
   @HiveField(0)
   final String id;
@@ -12,6 +12,9 @@ class FastingLog extends HiveObject {
 
   @HiveField(2)
   DateTime? endTime;
+
+  @HiveField(4)
+  String? notes;
 
   @HiveField(3)
   int get durationInSeconds {
@@ -25,5 +28,6 @@ class FastingLog extends HiveObject {
     required this.id,
     required this.startTime,
     this.endTime,
+    this.notes,
   });
 }
