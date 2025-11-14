@@ -290,72 +290,77 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: SfRadialGauge(
-          axes: <RadialAxis>[
-            RadialAxis(
-              minimum: 15,
-              maximum: 40,
-              showLabels: false,
-              showTicks: false,
-              axisLineStyle: const AxisLineStyle(thickness: 0.2, thicknessUnit: GaugeSizeUnit.factor),
-              pointers: <GaugePointer>[
-                if (_imc != null)
-                  NeedlePointer(
-                    value: _imc!,
-                    enableAnimation: true,
-                    animationType: AnimationType.easeOutBack,
-                    animationDuration: 1200,
-                    needleStartWidth: 1,
-                    needleEndWidth: 5,
-                    needleColor: colorScheme.onSurface,
-                    knobStyle: KnobStyle(knobRadius: 0.08, sizeUnit: GaugeSizeUnit.factor, color: colorScheme.onSurface),
-                  ),
-              ],
-              ranges: <GaugeRange>[
-                GaugeRange(startValue: 15, endValue: 18.5, color: Colors.blue.shade200, label: 'Bajo', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-                GaugeRange(startValue: 18.5, endValue: 25, color: Colors.green.shade300, label: 'Normal', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-                GaugeRange(startValue: 25, endValue: 30, color: Colors.orange.shade300, label: 'Alto', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-                GaugeRange(startValue: 30, endValue: 40, color: Colors.red.shade300, label: 'Obeso', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-              ],
-              annotations: <GaugeAnnotation>[
-                GaugeAnnotation(
-                  widget: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                       Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text('IMC', style: Theme.of(context).textTheme.bodyMedium),
-                          IconButton(
-                            icon: Icon(Icons.info_outline, size: 18, color: Theme.of(context).textTheme.bodySmall?.color),
-                            onPressed: _showIMCInfoDialog,
-                            padding: const EdgeInsets.only(left: 6),
-                            constraints: const BoxConstraints(),
-                            splashRadius: 18,
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        _imc?.toStringAsFixed(1) ?? '--',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: _getCategoryColor(_imc)),
-                      ),
-                      Text(
-                        _imcCategory,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(color: _getCategoryColor(_imc), fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  angle: 90,
-                  positionFactor: 0.1,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 12.0, left: 12.0, right: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Índice de Masa Corporal (IMC)', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(width: 4),
+                IconButton(
+                  icon: Icon(Icons.info_outline, size: 20, color: Theme.of(context).textTheme.bodySmall?.color),
+                  onPressed: _showIMCInfoDialog,
+                  splashRadius: 20,
+                  constraints: const BoxConstraints(),
                 )
               ],
             ),
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: SfRadialGauge(
+              axes: <RadialAxis>[
+                RadialAxis(
+                  minimum: 15,
+                  maximum: 40,
+                  showLabels: false,
+                  showTicks: false,
+                  axisLineStyle: const AxisLineStyle(thickness: 0.2, thicknessUnit: GaugeSizeUnit.factor),
+                  pointers: <GaugePointer>[
+                    if (_imc != null)
+                      NeedlePointer(
+                        value: _imc!,
+                        enableAnimation: true,
+                        animationType: AnimationType.easeOutBack,
+                        animationDuration: 1200,
+                        needleStartWidth: 1,
+                        needleEndWidth: 5,
+                        needleColor: colorScheme.onSurface,
+                        knobStyle: KnobStyle(knobRadius: 0.08, sizeUnit: GaugeSizeUnit.factor, color: colorScheme.onSurface),
+                      ),
+                  ],
+                  ranges: <GaugeRange>[
+                    GaugeRange(startValue: 15, endValue: 18.5, color: Colors.blue.shade200, label: 'Bajo', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                    GaugeRange(startValue: 18.5, endValue: 25, color: Colors.green.shade300, label: 'Normal', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                    GaugeRange(startValue: 25, endValue: 30, color: Colors.orange.shade300, label: 'Alto', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                    GaugeRange(startValue: 30, endValue: 40, color: Colors.red.shade300, label: 'Obeso', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                  ],
+                  annotations: <GaugeAnnotation>[
+                    GaugeAnnotation(
+                      widget: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            _imc?.toStringAsFixed(1) ?? '--',
+                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: _getCategoryColor(_imc)),
+                          ),
+                          Text(
+                            _imcCategory,
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(color: _getCategoryColor(_imc), fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      angle: 90,
+                      positionFactor: 0.1,
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
