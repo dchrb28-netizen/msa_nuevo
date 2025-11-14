@@ -13,7 +13,6 @@ import 'package:myapp/screens/recipes/recipes_screen.dart';
 import 'package:myapp/screens/settings/about_screen.dart';
 import 'package:myapp/screens/settings_screen.dart';
 import 'package:myapp/screens/training/training_screen.dart';
-import 'package:myapp/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
 
 class DrawerMenu extends StatelessWidget {

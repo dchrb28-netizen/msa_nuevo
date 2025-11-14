@@ -21,7 +21,7 @@ class SelectionCard extends StatelessWidget {
 
     return Card(
       elevation: isSelected ? 4 : 1,
-      color: isSelected ? colorScheme.primaryContainer : colorScheme.surfaceVariant,
+      color: isSelected ? colorScheme.primaryContainer : colorScheme.surfaceContainerHighest,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: isSelected

@@ -11,7 +11,7 @@ class CaloricGoalsScreen extends StatefulWidget {
 
 class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
   double? _tdee;
-  late List<bool> _isSelected;
+  late int _selectedPlanIndex;
   final List<String> _plans = const ['Perder', 'Mantener', 'Ganar', 'Personalizado'];
   final TextEditingController _customGoalController = TextEditingController();
 
@@ -27,9 +27,8 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
   void initState() {
     super.initState();
     final user = Provider.of<UserProvider>(context, listen: false).user;
-    final planIndex = _plans.indexOf(user?.dietPlan ?? 'Mantener');
-    _isSelected = List.generate(4, (index) => index == planIndex);
-    if (planIndex == 3) {
+    _selectedPlanIndex = _plans.indexOf(user?.dietPlan ?? 'Mantener');
+    if (_selectedPlanIndex == 3) {
       _customGoalController.text = user?.calorieGoal?.toStringAsFixed(0) ?? '';
     }
 
@@ -49,8 +48,7 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
     super.didChangeDependencies();
     _calculateTDEE();
     final user = Provider.of<UserProvider>(context, listen: false).user;
-    final planIndex = _plans.indexOf(user?.dietPlan ?? 'Mantener');
-    _isSelected = List.generate(4, (index) => index == planIndex);
+    _selectedPlanIndex = _plans.indexOf(user?.dietPlan ?? 'Mantener');
   }
 
   void _calculateTDEE() {
@@ -79,9 +77,7 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
 
   void _updateDietPlan(int index) {
     setState(() {
-      for (int i = 0; i < _isSelected.length; i++) {
-        _isSelected[i] = i == index;
-      }
+      _selectedPlanIndex = index;
     });
 
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -119,7 +115,6 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
     final user = Provider.of<UserProvider>(context).user;
 
     if (user == null || user.weight <= 0 || user.height <= 0 || user.age <= 0) {
@@ -129,9 +124,6 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
     if (_tdee == null) {
       return const Center(child: CircularProgressIndicator());
     }
-
-    final selectedPlanIndex = _isSelected.indexOf(true);
-    final selectedPlan = _plans[selectedPlanIndex];
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
@@ -153,34 +145,82 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          Center(
-            child: ToggleButtons(
-              isSelected: _isSelected,
-              onPressed: _updateDietPlan,
-              borderRadius: BorderRadius.circular(12.0),
-              selectedBorderColor: colorScheme.primary,
-              selectedColor: colorScheme.onPrimary,
-              fillColor: colorScheme.primary,
-              color: colorScheme.onSurfaceVariant,
-              constraints: BoxConstraints(minWidth: (MediaQuery.of(context).size.width - 50) / 4, minHeight: 50),
-              children: const [
-                Padding(padding: EdgeInsets.all(8), child: Text('Perder')),
-                Padding(padding: EdgeInsets.all(8), child: Text('Mantener')),
-                Padding(padding: EdgeInsets.all(8), child: Text('Ganar')),
-                Padding(padding: EdgeInsets.all(8), child: Text('Personalizado')),
-              ],
-            ),
-          ),
+          _buildPlanSelectionGrid(),
           const SizedBox(height: 24),
-          if (selectedPlan != 'Personalizado')
+          if (_plans[_selectedPlanIndex] != 'Personalizado')
             _buildGoalCard(
-              plan: selectedPlan,
-              calories: (_tdee! + (selectedPlan == 'Perder' ? -500 : selectedPlan == 'Ganar' ? 500 : 0)),
+              plan: _plans[_selectedPlanIndex],
+              calories: (_tdee! + (_plans[_selectedPlanIndex] == 'Perder' ? -500 : _plans[_selectedPlanIndex] == 'Ganar' ? 500 : 0)),
             )
           else
             _buildCustomGoalCard(),
         ],
       ),
+    );
+  }
+
+  Widget _buildPlanSelectionGrid() {
+    final Map<String, IconData> planIcons = {
+      'Perder': Icons.trending_down,
+      'Mantener': Icons.sync,
+      'Ganar': Icons.trending_up,
+      'Personalizado': Icons.edit,
+    };
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 1.5,
+      ),
+      itemCount: _plans.length,
+      itemBuilder: (context, index) {
+        final plan = _plans[index];
+        final isSelected = _selectedPlanIndex == index;
+        final colorScheme = Theme.of(context).colorScheme;
+
+        return GestureDetector(
+          onTap: () => _updateDietPlan(index),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            decoration: BoxDecoration(
+              color: isSelected ? colorScheme.primary.withOpacity(0.2) : colorScheme.surfaceVariant.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(16),
+              border: isSelected ? Border.all(color: colorScheme.primary, width: 2) : null,
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: colorScheme.primary.withOpacity(0.3),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      )
+                    ]
+                  : [],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  planIcons[plan],
+                  size: 40,
+                  color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  plan,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

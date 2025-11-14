@@ -31,7 +31,6 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     _heightController = TextEditingController();
     _weightGoalController = TextEditingController();
 
-    // Initialize controllers with existing data if available
     if (userProvider.user != null) {
       _updateControllers(userProvider.user);
       _calculateIMC();
@@ -44,7 +43,6 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Update controllers when user data changes and not in edit mode
     final userProvider = Provider.of<UserProvider>(context, listen: true);
     if (userProvider.user != null && !_isEditing) {
       _updateControllers(userProvider.user);
@@ -195,8 +193,8 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: ElevatedButton.icon(
                 onPressed: () => setState(() => _isEditing = true),
-                icon: const Icon(Icons.edit_outlined),
-                label: const Text('Actualizar Mis Datos'),
+                icon: const Icon(Icons.flag_outlined),
+                label: const Text('Definir o Actualizar Metas'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: appBarColor,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -215,18 +213,17 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
   Widget _buildSummaryView() {
     final user = Provider.of<UserProvider>(context).user!;
 
-    // Calculation for the weight goal tile
     Widget? weightGoalTile;
     if (user.weightGoal != null && user.weightGoal! > 0 && user.weight > 0) {
       final difference = user.weight - user.weightGoal!;
-      if (difference > 0.1) { // Added a small threshold
+      if (difference > 0.1) {
         weightGoalTile = _buildSummaryTile(
           icon: Icons.trending_down_outlined,
           title: 'Para tu Meta (Perder)',
           value: '${difference.toStringAsFixed(1)} kg',
           color: Colors.orange.shade700,
         );
-      } else if (difference < -0.1) { // Added a small threshold
+      } else if (difference < -0.1) {
         weightGoalTile = _buildSummaryTile(
           icon: Icons.trending_up_outlined,
           title: 'Para tu Meta (Ganar)',
@@ -294,7 +291,7 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: SfRadialGauge(
           axes: <RadialAxis>[
             RadialAxis(
@@ -317,10 +314,10 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
                   ),
               ],
               ranges: <GaugeRange>[
-                GaugeRange(startValue: 15, endValue: 18.5, color: Colors.blue.shade200, label: 'Bajo', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold)),
-                GaugeRange(startValue: 18.5, endValue: 25, color: Colors.green.shade300, label: 'Normal', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold)),
-                GaugeRange(startValue: 25, endValue: 30, color: Colors.orange.shade300, label: 'Alto', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold)),
-                GaugeRange(startValue: 30, endValue: 40, color: Colors.red.shade300, label: 'Obeso', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold)),
+                GaugeRange(startValue: 15, endValue: 18.5, color: Colors.blue.shade200, label: 'Bajo', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                GaugeRange(startValue: 18.5, endValue: 25, color: Colors.green.shade300, label: 'Normal', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                GaugeRange(startValue: 25, endValue: 30, color: Colors.orange.shade300, label: 'Alto', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                GaugeRange(startValue: 30, endValue: 40, color: Colors.red.shade300, label: 'Obeso', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
               ],
               annotations: <GaugeAnnotation>[
                 GaugeAnnotation(
@@ -331,24 +328,24 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('IMC', style: Theme.of(context).textTheme.bodyLarge),
+                          Text('IMC', style: Theme.of(context).textTheme.bodyMedium),
                           IconButton(
-                            icon: Icon(Icons.info_outline, size: 20, color: Theme.of(context).textTheme.bodySmall?.color),
+                            icon: Icon(Icons.info_outline, size: 18, color: Theme.of(context).textTheme.bodySmall?.color),
                             onPressed: _showIMCInfoDialog,
-                            padding: const EdgeInsets.only(left: 8),
+                            padding: const EdgeInsets.only(left: 6),
                             constraints: const BoxConstraints(),
-                            splashRadius: 20,
+                            splashRadius: 18,
                           )
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text(
                         _imc?.toStringAsFixed(1) ?? '--',
-                        style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold, color: _getCategoryColor(_imc)),
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: _getCategoryColor(_imc)),
                       ),
                       Text(
                         _imcCategory,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: _getCategoryColor(_imc), fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(color: _getCategoryColor(_imc), fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -365,9 +362,10 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
 
   Widget _buildSummaryTile({required IconData icon, required String title, required String value, Color? color}) {
     return ListTile(
-      leading: Icon(icon, color: color ?? Theme.of(context).colorScheme.onSurfaceVariant),
-      title: Text(title),
-      trailing: Text(value, style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+      dense: true,
+      leading: Icon(icon, color: color ?? Theme.of(context).colorScheme.onSurfaceVariant, size: 22),
+      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
+      trailing: Text(value, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
         fontWeight: FontWeight.bold,
         color: color
       )),
@@ -404,14 +402,14 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
               label: 'Mi Peso Actual (kg)',
               icon: Icons.monitor_weight_outlined,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             _buildTextField(
               controller: _heightController,
               label: 'Mi Altura (cm)',
               icon: Icons.height_outlined,
             ),
-            const SizedBox(height: 30),
-            Text('Mi Meta de Peso', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 24),
+            Text('Mi Meta de Peso', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             _buildTextField(
               controller: _weightGoalController,
@@ -419,18 +417,18 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
               icon: Icons.flag_outlined,
               isRequired: false,
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: _saveGoals,
               icon: const Icon(Icons.save_outlined),
               label: Text(isInitialSetup ? 'Guardar y Continuar' : 'Guardar Cambios'),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
              if (!isInitialSetup) ...[
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 TextButton(onPressed: () => setState(() => _isEditing = false), child: const Text('Cancelar'))
              ]
           ],
@@ -451,9 +449,11 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon),
+        prefixIcon: Icon(icon, size: 22),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12)
       ),
       validator: (value) {
         if (!isRequired && (value == null || value.isEmpty)) return null;
