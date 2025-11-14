@@ -71,6 +71,7 @@ class ProfileEditView extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           _buildTextField(
+            context: context,
             controller: nameController,
             label: 'Nombre',
             icon: Icons.person_outline,
@@ -79,6 +80,7 @@ class ProfileEditView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildTextField(
+            context: context,
             controller: ageController,
             label: 'Edad',
             icon: Icons.cake_outlined,
@@ -95,6 +97,7 @@ class ProfileEditView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildTextField(
+            context: context,
             controller: heightController,
             label: 'Altura (cm)',
             icon: Icons.height_outlined,
@@ -111,6 +114,7 @@ class ProfileEditView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildTextField(
+            context: context,
             controller: weightController,
             label: 'Peso (kg)',
             icon: Icons.monitor_weight_outlined,
@@ -127,6 +131,7 @@ class ProfileEditView extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           _buildDropdownField(
+            context: context,
             label: 'Género',
             initialValue: selectedGender,
             items: genderOptions,
@@ -134,6 +139,7 @@ class ProfileEditView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildDropdownField(
+            context: context,
             label: 'Nivel de Actividad',
             initialValue: activityLevel,
             items: activityLevelOptions,
@@ -155,6 +161,7 @@ class ProfileEditView extends StatelessWidget {
   }
 
   Widget _buildTextField({
+    required BuildContext context,
     required TextEditingController controller,
     required String label,
     required IconData icon,
@@ -169,13 +176,14 @@ class ProfileEditView extends StatelessWidget {
         prefixIcon: Icon(icon),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
         filled: true,
-        fillColor: const Color.fromARGB(255, 255, 255, 255).withAlpha(200),
+        fillColor: Theme.of(context).colorScheme.surface.withAlpha(200),
       ),
       validator: validator,
     );
   }
 
   Widget _buildDropdownField({
+    required BuildContext context,
     required String label,
     required String? initialValue,
     required Map<String, String> items,
@@ -187,7 +195,7 @@ class ProfileEditView extends StatelessWidget {
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
         filled: true,
-        fillColor: const Color.fromARGB(255, 255, 255, 255).withAlpha(200),
+        fillColor: Theme.of(context).colorScheme.surface.withAlpha(200),
       ),
       items: items.keys.map((String key) {
         return DropdownMenuItem<String>(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/screens/profile/create_profile_screen.dart';
 import 'package:myapp/widgets/profile/profile_edit_view.dart';
 import 'package:myapp/widgets/profile/profile_read_view.dart';
 import 'package:myapp/widgets/ui/watermark_image.dart';
@@ -54,39 +55,28 @@ class ProfileScreenState extends State<ProfileScreen> {
     final user = Provider.of<UserProvider>(context, listen: false).user;
     final bool isNewUser = user == null || user.isGuest;
 
-    _loadUserData(isNewUser);
-
     if (isNewUser) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
+        );
+      });
+    } else {
+      _loadUserData(user);
       setState(() {
-        _isEditing = true;
+        _isLoading = false;
       });
     }
-
-    setState(() {
-      _isLoading = false;
-    });
   }
 
-  void _loadUserData(bool isNewUser) {
-    final user = Provider.of<UserProvider>(context, listen: false).user;
-
-    if (isNewUser) {
-      _nameController = TextEditingController();
-      _ageController = TextEditingController();
-      _heightController = TextEditingController();
-      _weightController = TextEditingController();
-      _selectedGender = _genderOptions.keys.first;
-      _activityLevel = _activityLevelOptions.keys.first;
-      _profileImageBytes = null;
-    } else {
-      _nameController = TextEditingController(text: user?.name ?? '');
-      _ageController = TextEditingController(text: user?.age.toString() ?? '0');
-      _heightController = TextEditingController(text: user?.height.toString() ?? '0');
-      _weightController = TextEditingController(text: user?.weight.toString() ?? '0');
-      _selectedGender = user?.gender ?? _genderOptions.keys.first;
-      _activityLevel = user?.activityLevel ?? _activityLevelOptions.keys.first;
-      _profileImageBytes = user?.profileImageBytes;
-    }
+  void _loadUserData(User? user) {
+    _nameController = TextEditingController(text: user?.name ?? '');
+    _ageController = TextEditingController(text: user?.age.toString() ?? '0');
+    _heightController = TextEditingController(text: user?.height.toString() ?? '0');
+    _weightController = TextEditingController(text: user?.weight.toString() ?? '0');
+    _selectedGender = user?.gender ?? _genderOptions.keys.first;
+    _activityLevel = user?.activityLevel ?? _activityLevelOptions.keys.first;
+    _profileImageBytes = user?.profileImageBytes;
   }
 
   @override
@@ -117,12 +107,10 @@ class ProfileScreenState extends State<ProfileScreen> {
       });
 
       final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final navigator = Navigator.of(context);
       final messenger = ScaffoldMessenger.of(context);
-      final isNewUser = userProvider.user == null || userProvider.user!.isGuest;
 
       final updatedUser = User(
-        id: userProvider.user?.id ?? DateTime.now().toString(),
+        id: userProvider.user!.id,
         name: _nameController.text,
         gender: _selectedGender!,
         age: int.tryParse(_ageController.text) ?? 0,
@@ -135,21 +123,13 @@ class ProfileScreenState extends State<ProfileScreen> {
 
       try {
         await userProvider.setUser(updatedUser);
-
         setState(() {
           _isSaving = false;
+          _isEditing = false;
         });
-
-        if (isNewUser) {
-          navigator.pushNamedAndRemoveUntil('/', (route) => false);
-        } else {
-          setState(() {
-            _isEditing = false;
-          });
-          messenger.showSnackBar(
-            const SnackBar(content: Text('¡Perfil actualizado con éxito!')),
-          );
-        }
+        messenger.showSnackBar(
+          const SnackBar(content: Text('¡Perfil actualizado con éxito!')),
+        );
       } catch (e) {
         setState(() {
           _isSaving = false;
@@ -171,36 +151,34 @@ class ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).user;
-    final bool profileExists = user != null && !user.isGuest;
+
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(profileExists ? 'Mi Perfil' : 'Crea tu Perfil'),
+        title: Text(_isEditing ? 'Editar Perfil' : 'Mi Perfil'),
         centerTitle: true,
         elevation: 0,
         actions: [
-          if (profileExists && !_isEditing)
+          if (!_isEditing)
             IconButton(
               icon: const Icon(Icons.edit),
               tooltip: 'Editar Perfil',
-              onPressed: () {
-                setState(() {
-                  _isEditing = true;
-                });
-              },
+              onPressed: () => setState(() => _isEditing = true),
             ),
-          if (profileExists)
-            IconButton(
-              icon: const Icon(Icons.logout),
-              tooltip: 'Cerrar Sesión',
-              onPressed: _logout,
-            ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar Sesión',
+            onPressed: _logout,
+          ),
         ],
       ),
       body: Stack(
         children: [
           const WatermarkImage(imageName: 'perfil'),
-          if (_isLoading || _isSaving)
+          if (_isSaving)
             const Center(child: CircularProgressIndicator())
           else
             SafeArea(
@@ -220,16 +198,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                         activityLevelOptions: _activityLevelOptions,
                         onPickImage: _pickImage,
                         onSaveProfile: _saveProfile,
-                        onGenderChanged: (value) {
-                          setState(() {
-                            _selectedGender = value;
-                          });
-                        },
-                        onActivityLevelChanged: (value) {
-                          setState(() {
-                            _activityLevel = value;
-                          });
-                        },
+                        onGenderChanged: (value) => setState(() => _selectedGender = value),
+                        onActivityLevelChanged: (value) => setState(() => _activityLevel = value),
                       )
                     : (user != null
                         ? ProfileReadView(
@@ -237,30 +207,9 @@ class ProfileScreenState extends State<ProfileScreen> {
                             genderOptions: _genderOptions,
                             activityLevelOptions: _activityLevelOptions,
                           )
-                        : _buildNoProfileView()),
+                        : const SizedBox.shrink()),
               ),
             ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNoProfileView() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('Aún no has creado tu perfil.',
-              style: TextStyle(fontSize: 18)),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _isEditing = true;
-              });
-            },
-            child: const Text('Crear Perfil'),
-          )
         ],
       ),
     );

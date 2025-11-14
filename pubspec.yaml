@@ -45,6 +45,8 @@ dependencies:
   timeline_tile: ^2.0.0
   flutter_native_splash: ^2.4.7
   permission_handler: ^12.0.1
+  firebase_core: ^4.2.1
+  firebase_ai: ^3.5.0
 
 dev_dependencies:
   flutter_test:
