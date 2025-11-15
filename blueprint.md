@@ -25,12 +25,24 @@ This document outlines the features and design of the "My Health and Fitness App
 *   **Body Measurements**: Users can track their body measurements, such as weight and height.
 *   **History**: Users can view their historical data for all tracked metrics.
 
-## Plan for Current Request: Add Profile Deletion
+### **Exercise Library**
 
-1.  **Modify `lib/screens/profile_selection_screen.dart`**: (✓ Done)
-    *   Add a delete button to each profile in the list.
-    *   Implement a confirmation dialog to prevent accidental deletion.
-2.  **Modify `lib/providers/user_provider.dart`**: (✓ Done)
-    *   Implement a `deleteUser` method to remove the user from the database.
-    *   Handle the case where the active user is deleted.
-3.  **Update `blueprint.md`**: Document the new profile deletion feature. (✓ Done)
+*   **Predefined Exercises**: The app now includes a default library of exercises.
+*   **Categorization**: Exercises are categorized by muscle group (e.g., Legs, Arms, Glutes, Chest, Back, Core).
+*   **Visual Grouping**: The exercise library screen displays exercises grouped by muscle group in expandable cards (`ExpansionTile`).
+*   **Icons**: Each muscle group is represented by a unique icon for quick visual identification.
+*   **Search Functionality**: A search bar allows users to easily filter and find specific exercises by name, muscle group, or equipment.
+*   **CRUD Operations**: Users can still add, edit, and delete their own custom exercises.
+*   **Initial Data Loading**: The `ExerciseProvider` now preloads the default exercise list into the local database on the first launch.
+*   **Loading Indicator**: A `CircularProgressIndicator` is displayed while the initial exercises are being loaded.
+
+## Plan for Current Request: Fix Empty Exercise Library
+
+1.  **Initialize `ExerciseProvider` with Default Data**: (✓ Done)
+    *   Modified `lib/providers/exercise_provider.dart` to check if the exercise database is empty upon initialization.
+    *   If empty, it now populates the database with the predefined `exerciseList`.
+2.  **Add Loading Indicator**: (✓ Done)
+    *   Updated `lib/screens/training/exercise_library_screen.dart` to show a `CircularProgressIndicator` while the provider is loading the initial data.
+3.  **Fix Grouping Logic**: (✓ Done)
+    *   Corrected a minor bug in `lib/screens/training/exercise_library_screen.dart` to ensure exercises are correctly grouped by muscle group after filtering.
+4.  **Update `blueprint.md`**: Document the bug fixes and improvements. (✓ Done)
