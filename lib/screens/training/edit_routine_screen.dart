@@ -155,6 +155,7 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
                 child: _routineExercises.isEmpty
                     ? const Center(child: Text('Añade ejercicios a tu rutina.'))
                     : ReorderableListView.builder(
+                        padding: const EdgeInsets.only(bottom: 80.0), // Added padding
                         itemCount: _routineExercises.length,
                         itemBuilder: (context, index) {
                           final routineExercise = _routineExercises[index];
@@ -162,19 +163,27 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
                             key: ValueKey(routineExercise.key),
                             title: Text(routineExercise.exercise.name),
                             subtitle: Text('${routineExercise.sets} series x ${routineExercise.reps} reps'),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                              onPressed: () {
-                                setState(() {
-                                  final item = _routineExercises.removeAt(index);
-                                  item.delete(); // Remove from Hive box
-                                });
-                              },
-                            ),
-                            onTap: () => _showExerciseSettingsDialog(
-                              exercise: routineExercise.exercise,
-                              routineExercise: routineExercise,
-                              index: index,
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.edit_outlined),
+                                  onPressed: () => _showExerciseSettingsDialog(
+                                    exercise: routineExercise.exercise,
+                                    routineExercise: routineExercise,
+                                    index: index,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                                  onPressed: () {
+                                    setState(() {
+                                      final item = _routineExercises.removeAt(index);
+                                      item.delete(); // Remove from Hive box
+                                    });
+                                  },
+                                ),
+                              ],
                             ),
                           );
                         },

@@ -46,7 +46,6 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
   }
 
   void _saveRoutine() {
-    // Aquí guardaremos la rutina seleccionada
     Navigator.of(context).pop(_selectedExercises);
   }
 

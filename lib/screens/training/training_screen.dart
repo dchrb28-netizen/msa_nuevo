@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:myapp/models/exercise.dart';
 import 'package:myapp/providers/exercise_provider.dart';
@@ -6,6 +5,7 @@ import 'package:myapp/screens/training/routines_screen.dart';
 import 'package:myapp/screens/training/exercise_library_screen.dart';
 import 'package:myapp/screens/training/start_workout_screen.dart';
 import 'package:myapp/screens/training/edit_exercise_screen.dart';
+import 'package:myapp/screens/training/edit_routine_screen.dart';
 import 'package:provider/provider.dart';
 
 class TrainingScreen extends StatefulWidget {
@@ -52,26 +52,30 @@ class _TrainingScreenState extends State<TrainingScreen> with SingleTickerProvid
       Provider.of<ExerciseProvider>(context, listen: false).addExercise(result);
     }
   }
+  
+  void _navigateAndAddRoutine() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const EditRoutineScreen(),
+      ),
+    );
+  }
+
 
   Widget? _getFloatingActionButton() {
     switch (_tabController.index) {
       case 0:
         return FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const StartWorkoutScreen(),
-              ),
-            );
-          },
-          label: const Text('Empezar Entreno'),
-          icon: const Icon(Icons.play_arrow),
+          onPressed: _navigateAndAddRoutine,
+          label: const Text('Crear Rutina'),
+          icon: const Icon(Icons.add),
         );
       case 1:
-        return FloatingActionButton(
+        return FloatingActionButton.extended(
           onPressed: _navigateAndAddExercise,
           tooltip: 'Añadir Ejercicio',
-          child: const Icon(Icons.add),
+          label: const Text('Añadir Ejercicio'),
+          icon: const Icon(Icons.add),
         );
       default:
         return null;

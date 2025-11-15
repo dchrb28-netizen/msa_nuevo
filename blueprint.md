@@ -1,48 +1,44 @@
-# Blueprint: My Health and Fitness App
+# Blueprint de la Aplicación de Fitness
 
-## Overview
+## Descripción General
 
-This document outlines the features and design of the "My Health and Fitness App". The application helps users track various aspects of their health, including diet, exercise, and body measurements.
+Esta es una aplicación de fitness desarrollada en Flutter, diseñada para ayudar a los usuarios a crear, seguir y gestionar sus rutinas de entrenamiento. La aplicación permite a los usuarios construir una biblioteca personal de ejercicios, agruparlos en rutinas personalizadas y registrar su progreso.
 
-## Implemented Features & Design
+## Características Implementadas
 
-### **User Profile Management**
+- **Gestión de Ejercicios:**
+  - Biblioteca de ejercicios con búsqueda y filtrado.
+  - Creación, edición y eliminación de ejercicios.
+  - Detalle de cada ejercicio con imagen, grupo muscular y equipamiento.
 
-*   **User Profiles**: Users can create multiple profiles to track their health and fitness data separately.
-*   **Guest Mode**: A guest mode is available for users who want to try the app without creating a profile.
-*   **Profile Switching**: Users can easily switch between different profiles.
-*   **Delete User Profiles**:
-    *   Users can delete their profiles from the profile selection screen.
-    *   A confirmation dialog is displayed to prevent accidental deletion.
-    *   If the currently active profile is deleted, the user is logged out.
+- **Gestión de Rutinas:**
+  - Creación de rutinas personalizadas a partir de la biblioteca de ejercicios.
+  - Edición de rutinas para añadir, eliminar o reordenar ejercicios.
+  - Configuración de series, repeticiones, peso y tiempo de descanso para cada ejercicio dentro de una rutina.
 
-### **Core Functionality**
+- **Seguimiento de Entrenamientos:**
+  - Pantalla para iniciar un entreno basado en una rutina.
+  - Historial de entrenamientos completados.
 
-*   **Dashboard**: A central dashboard provides an overview of the user's daily progress.
-*   **Food Tracking**: Users can log their daily food intake.
-*   **Water Tracking**: Users can track their daily water consumption.
-*   **Exercise Tracking**: Users can log their workouts and exercises.
-*   **Body Measurements**: Users can track their body measurements, such as weight and height.
-*   **History**: Users can view their historical data for all tracked metrics.
+- **Interfaz de Usuario (UI):**
+  - Navegación basada en pestañas para separar "Rutinas" y "Biblioteca".
+  - Uso de botones de acción flotantes (`FloatingActionButton`) contextuales para cada pestaña.
+  - Diseño limpio basado en `Card` y `ListTile` para mostrar la información.
 
-### **Exercise Library**
+## Plan de Cambios Recientes
 
-*   **Predefined Exercises**: The app now includes a default library of exercises.
-*   **Categorization**: Exercises are categorized by muscle group (e.g., Legs, Arms, Glutes, Chest, Back, Core).
-*   **Visual Grouping**: The exercise library screen displays exercises grouped by muscle group in expandable cards (`ExpansionTile`).
-*   **Icons**: Each muscle group is represented by a unique icon for quick visual identification.
-*   **Search Functionality**: A search bar allows users to easily filter and find specific exercises by name, muscle group, or equipment.
-*   **CRUD Operations**: Users can still add, edit, and delete their own custom exercises.
-*   **Initial Data Loading**: The `ExerciseProvider` now preloads the default exercise list into the local database on the first launch.
-*   **Loading Indicator**: A `CircularProgressIndicator` is displayed while the initial exercises are being loaded.
+**Objetivo:** Solucionar un error visual en la pestaña "Biblioteca" donde aparecían dos botones flotantes superpuestos.
 
-## Plan for Current Request: Fix Empty Exercise Library
+**Pasos Realizados:**
 
-1.  **Initialize `ExerciseProvider` with Default Data**: (✓ Done)
-    *   Modified `lib/providers/exercise_provider.dart` to check if the exercise database is empty upon initialization.
-    *   If empty, it now populates the database with the predefined `exerciseList`.
-2.  **Add Loading Indicator**: (✓ Done)
-    *   Updated `lib/screens/training/exercise_library_screen.dart` to show a `CircularProgressIndicator` while the provider is loading the initial data.
-3.  **Fix Grouping Logic**: (✓ Done)
-    *   Corrected a minor bug in `lib/screens/training/exercise_library_screen.dart` to ensure exercises are correctly grouped by muscle group after filtering.
-4.  **Update `blueprint.md`**: Document the bug fixes and improvements. (✓ Done)
+1.  **Diagnóstico:** Se identificó que la pantalla `ExerciseLibraryScreen` contenía su propio `Scaffold` y `FloatingActionButton`, lo que causaba un conflicto con la pantalla principal `TrainingScreen` que la contenía.
+2.  **Corrección en `ExerciseLibraryScreen`:**
+    - Se eliminó el `Scaffold` y el `FloatingActionButton` redundantes.
+    - La pantalla se convirtió en un `Column` simple para actuar como el cuerpo de la pestaña, evitando conflictos estructurales.
+    - Se añadió un `padding` inferior a la lista para evitar que el botón flotante principal oculte el último elemento.
+3.  **Ajuste en `TrainingScreen`:**
+    - Se modificó la lógica del `FloatingActionButton` para que sea contextual a la pestaña seleccionada.
+    - En la pestaña "Biblioteca", ahora se muestra un `FloatingActionButton.extended` con el texto "Añadir Ejercicio", proporcionando una única y clara llamada a la acción.
+    - En la pestaña "Rutinas", se configuró un botón similar para "Crear Rutina".
+
+**Resultado:** El error de los botones duplicados ha sido resuelto, y la interfaz de usuario ahora es coherente y funcional en ambas pestañas.

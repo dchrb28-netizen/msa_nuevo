@@ -96,126 +96,119 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                });
-              },
-              decoration: const InputDecoration(
-                labelText: 'Buscar ejercicio',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
+            onChanged: (value) {
+              setState(() {
+                _searchQuery = value;
+              });
+            },
+            decoration: const InputDecoration(
+              labelText: 'Buscar ejercicio',
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(),
             ),
           ),
-          Expanded(
-            child: Consumer<ExerciseProvider>(
-              builder: (context, provider, child) {
-                if (provider.exercises.isEmpty) {
-                  return const Center(child: Text("No hay ejercicios. ¡Añade uno nuevo!"));
+        ),
+        Expanded(
+          child: Consumer<ExerciseProvider>(
+            builder: (context, provider, child) {
+              if (provider.exercises.isEmpty) {
+                return const Center(child: Text("No hay ejercicios. ¡Añade uno nuevo!"));
+              }
+
+              final filteredExercises = provider.exercises.where((exercise) {
+                final query = _searchQuery.toLowerCase();
+                return exercise.name.toLowerCase().contains(query) ||
+                    exercise.muscleGroup.toLowerCase().contains(query) ||
+                    exercise.equipment.toLowerCase().contains(query);
+              }).toList();
+
+              if (filteredExercises.isEmpty) {
+                return const Center(child: Text('No se encontraron ejercicios.'));
+              }
+
+              final groupedExercises = <String, List<Exercise>>{};
+              for (final exercise in filteredExercises) {
+                if (groupedExercises.containsKey(exercise.muscleGroup)) {
+                  groupedExercises[exercise.muscleGroup]!.add(exercise);
+                } else {
+                  groupedExercises[exercise.muscleGroup] = [exercise];
                 }
+              }
 
-                final filteredExercises = provider.exercises.where((exercise) {
-                  final query = _searchQuery.toLowerCase();
-                  return exercise.name.toLowerCase().contains(query) ||
-                      exercise.muscleGroup.toLowerCase().contains(query) ||
-                      exercise.equipment.toLowerCase().contains(query);
-                }).toList();
+              final muscleGroups = groupedExercises.keys.toList()..sort();
 
-                if (filteredExercises.isEmpty) {
-                  return const Center(child: Text('No se encontraron ejercicios.'));
-                }
+              return ListView.builder(
+                padding: const EdgeInsets.only(bottom: 80.0), // Padding for the main FAB
+                itemCount: muscleGroups.length,
+                itemBuilder: (context, index) {
+                  final muscleGroup = muscleGroups[index];
+                  final exercisesInGroup = groupedExercises[muscleGroup]!;
 
-                final groupedExercises = <String, List<Exercise>>{};
-                for (final exercise in filteredExercises) {
-                  if (groupedExercises.containsKey(exercise.muscleGroup)) {
-                    groupedExercises[exercise.muscleGroup]!.add(exercise);
-                  } else {
-                    groupedExercises[exercise.muscleGroup] = [exercise];
-                  }
-                }
-
-                final muscleGroups = groupedExercises.keys.toList()..sort();
-
-                return ListView.builder(
-                  itemCount: muscleGroups.length,
-                  itemBuilder: (context, index) {
-                    final muscleGroup = muscleGroups[index];
-                    final exercisesInGroup = groupedExercises[muscleGroup]!;
-
-                    return Card(
-                      elevation: 4,
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      child: ExpansionTile(
-                        leading: Icon(
-                          _getIconForMuscleGroup(muscleGroup),
-                          size: 40,
-                          color: theme.colorScheme.primary,
-                        ),
-                        title: Text(
-                          muscleGroup,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        children: exercisesInGroup.map((exercise) {
-                          return ListTile(
-                            leading: exercise.imageUrl != null && exercise.imageUrl!.isNotEmpty
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: Image.network(
-                                      exercise.imageUrl!,
-                                      width: 50,
-                                      height: 50,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) => 
-                                        const Icon(Icons.image, size: 30),
-                                    ),
-                                  )
-                                : const Icon(Icons.image, size: 30),
-                            title: Text(exercise.name, style: theme.textTheme.titleMedium),
-                            subtitle: Text(exercise.equipment, style: theme.textTheme.bodyMedium),
-                            onTap: () => _navigateToDetail(exercise),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit, color: Colors.blueGrey),
-                                  onPressed: () => _navigateAndSaveChanges(exercise),
-                                  tooltip: 'Editar Ejercicio',
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                                  onPressed: () => _deleteExercise(exercise),
-                                  tooltip: 'Eliminar Ejercicio',
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
+                  return Card(
+                    elevation: 4,
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    child: ExpansionTile(
+                      leading: Icon(
+                        _getIconForMuscleGroup(muscleGroup),
+                        size: 40,
+                        color: theme.colorScheme.primary,
                       ),
-                    );
-                  },
-                );
-              },
-            ),
+                      title: Text(
+                        muscleGroup,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      children: exercisesInGroup.map((exercise) {
+                        return ListTile(
+                          leading: exercise.imageUrl != null && exercise.imageUrl!.isNotEmpty
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.network(
+                                    exercise.imageUrl!,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => 
+                                      const Icon(Icons.image, size: 30),
+                                  ),
+                                )
+                              : const Icon(Icons.image, size: 30),
+                          title: Text(exercise.name, style: theme.textTheme.titleMedium),
+                          subtitle: Text(exercise.equipment, style: theme.textTheme.bodyMedium),
+                          onTap: () => _navigateToDetail(exercise),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit, color: Colors.blueGrey),
+                                onPressed: () => _navigateAndSaveChanges(exercise),
+                                tooltip: 'Editar Ejercicio',
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                                onPressed: () => _deleteExercise(exercise),
+                                tooltip: 'Eliminar Ejercicio',
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  );
+                },
+              );
+            },
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _navigateAndSaveChanges(null),
-        icon: const Icon(Icons.add),
-        label: const Text('Añadir Ejercicio'),
-        tooltip: 'Añadir un nuevo ejercicio',
-      ),
+        ),
+      ],
     );
   }
 }

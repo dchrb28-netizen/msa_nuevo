@@ -30,17 +30,6 @@ class RoutinesScreen extends StatelessWidget {
                     );
                   },
                 ),
-                ActionChip(
-                  avatar: const Icon(Icons.add),
-                  label: const Text('Crear Rutina'),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const EditRoutineScreen(),
-                      ),
-                    );
-                  },
-                ),
               ],
             ),
           ),
