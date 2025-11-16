@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:myapp/models/exercise.dart';
 
 final List<Exercise> exerciseList = [
@@ -11,7 +10,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Pecho',
     equipment: 'Ninguno',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/P50WJv5B/flexiones.png',
   ),
   Exercise(
@@ -22,7 +20,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Pecho',
     equipment: 'Mancuernas y banco',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/7YgLzZbf/press-banca-mancuernas.png',
   ),
   Exercise(
@@ -33,7 +30,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Pecho',
     equipment: 'Mancuernas y banco',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/pr2Xk1s2/aperturas-mancuernas.png',
   ),
   Exercise(
@@ -44,7 +40,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Pecho',
     equipment: 'Banco o superficie elevada',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/2SBYhv2W/flexiones-inclinadas.png',
   ),
   Exercise(
@@ -55,7 +50,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Pecho',
     equipment: 'Banco o superficie elevada',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/t4xT4Cqf/flexiones-declinadas.png',
   ),
 
@@ -68,7 +62,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Piernas',
     equipment: 'Ninguno',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/SQ0f69Qc/sentadillas.png',
   ),
   Exercise(
@@ -79,7 +72,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Piernas',
     equipment: 'Ninguno',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/2yFfRshn/zancadas.png',
   ),
   Exercise(
@@ -90,7 +82,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Piernas',
     equipment: 'Ninguno',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/YSZg61t2/elevacion-de-talones.png',
   ),
   Exercise(
@@ -101,7 +92,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Piernas',
     equipment: 'Barra o mancuernas',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/6p6t2g7B/peso-muerto-rumano.png',
   ),
   Exercise(
@@ -112,7 +102,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Piernas',
     equipment: 'Máquina de prensa de piernas',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/J4ZcK7G4/prensa-piernas.png',
   ),
   
@@ -125,7 +114,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Espalda',
     equipment: 'Barra de dominadas',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/vH2VmszC/dominadas.png',
   ),
   Exercise(
@@ -136,7 +124,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Espalda',
     equipment: 'Mancuerna y banco',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/NMMQH3qj/remo-mancuerna.png',
   ),
   Exercise(
@@ -147,7 +134,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Espalda',
     equipment: 'Barra',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/d1Gf0G2B/peso-muerto.png',
   ),
   Exercise(
@@ -158,7 +144,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Espalda',
     equipment: 'Barra o mancuernas',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/Y0zYc3w1/remo-menton.png',
   ),
   Exercise(
@@ -169,7 +154,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Espalda',
     equipment: 'Ninguno',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/L5vPZQfB/superman.png',
   ),
   
@@ -182,7 +166,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Abdomen',
     equipment: 'Ninguno',
     measurement: 'time',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/pX0C9Bw7/plancha.png',
   ),
   Exercise(
@@ -193,7 +176,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Abdomen',
     equipment: 'Ninguno',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/TYxK5YfJ/crunches.png',
   ),
   Exercise(
@@ -204,7 +186,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Abdomen',
     equipment: 'Ninguno',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/8z0bV4vG/elevaciones-piernas.png',
   ),
   Exercise(
@@ -215,7 +196,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Abdomen',
     equipment: 'Pesa rusa o mancuerna (opcional)',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/wMP51bFh/giro-ruso.png',
   ),
   Exercise(
@@ -226,7 +206,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Abdomen',
     equipment: 'Ninguno',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/sX1k1T0c/toques-talon.png',
   ),
 
@@ -239,7 +218,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Hombros',
     equipment: 'Mancuernas',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/Kz1W4LqP/press-de-hombros.png',
   ),
   Exercise(
@@ -250,7 +228,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Hombros',
     equipment: 'Mancuernas',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/C1z8gL3F/elevaciones-laterales.png',
   ),
   Exercise(
@@ -261,7 +238,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Hombros',
     equipment: 'Mancuernas',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/y8Y1R4wQ/elevaciones-frontales.png',
   ),
   Exercise(
@@ -272,7 +248,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Hombros',
     equipment: 'Mancuernas o barra',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/GpdvS0xP/encogimiento-hombros.png',
   ),
   Exercise(
@@ -283,7 +258,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Hombros',
     equipment: 'Mancuernas',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/k4Wn7N1J/pajaros.png',
   ),
 
@@ -296,7 +270,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Brazos',
     equipment: 'Mancuernas',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/02W42BwM/curls-de-biceps.png',
   ),
   Exercise(
@@ -307,7 +280,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Brazos',
     equipment: 'Banco o silla',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/520N2bXq/fondos-de-triceps.png',
   ),
   Exercise(
@@ -318,7 +290,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Brazos',
     equipment: 'Mancuernas',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/63g5zWvg/curl-martillo.png',
   ),
   Exercise(
@@ -329,7 +300,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Brazos',
     equipment: 'Mancuerna o polea',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/xT8B8Qn2/extensiones-triceps.png',
   ),
   Exercise(
@@ -340,7 +310,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Brazos',
     equipment: 'Mancuernas',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/Z5xV5Z3V/patada-triceps.png',
   ),
   
@@ -353,7 +322,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Glúteos',
     equipment: 'Ninguno',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/44D3zH2x/puentes-de-gluteos.png',
   ),
   Exercise(
@@ -364,7 +332,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Glúteos',
     equipment: 'Ninguno',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/Fz3V3Q1Y/hidrantes.png',
   ),
   Exercise(
@@ -375,7 +342,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Glúteos',
     equipment: 'Ninguno o tobilleras con peso',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/HxbV8yM3/patada-gluteo.png',
   ),
   Exercise(
@@ -386,7 +352,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Glúteos',
     equipment: 'Barra y banco',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/9QW2W3hF/hip-thrust.png',
   ),
   Exercise(
@@ -397,7 +362,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Glúteos',
     equipment: 'Banda de resistencia o máquina',
     measurement: 'reps',
-    icon: Icons.fitness_center,
     imageUrl: 'https://i.postimg.cc/yYpBwzW0/abduccion-cadera.png',
   ),
 
@@ -410,7 +374,6 @@ final List<Exercise> exerciseList = [
     muscleGroup: 'Piernas',
     equipment: 'Ninguno',
     measurement: 'time',
-    icon: Icons.directions_run,
     imageUrl: 'https://i.postimg.cc/tCnT0DDW/correr.png',
   ),
 ];

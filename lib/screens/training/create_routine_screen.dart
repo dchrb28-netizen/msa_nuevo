@@ -34,7 +34,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
     setState(() {
       final existingExercise = _selectedExercises.firstWhere(
         (e) => e.exercise.id == exercise.id,
-        orElse: () => RoutineExercise(exercise: exercise, sets: 3, reps: '10'),
+        orElse: () => RoutineExercise(exerciseId: exercise.id, sets: 3, reps: '10'),
       );
 
       if (_selectedExercises.any((e) => e.exercise.id == exercise.id)) {

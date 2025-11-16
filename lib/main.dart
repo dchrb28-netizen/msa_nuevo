@@ -10,6 +10,7 @@ import 'package:myapp/models/exercise_log.dart';
 import 'package:myapp/models/fasting_log.dart';
 import 'package:myapp/models/food.dart';
 import 'package:myapp/models/food_log.dart';
+import 'package:myapp/models/meal_entry.dart';
 import 'package:myapp/models/meal_type.dart';
 import 'package:myapp/models/recipe.dart';
 import 'package:myapp/models/reminder.dart';
@@ -55,6 +56,7 @@ void main() async {
   await _openHiveBoxes();
 
   await _populateInitialFoodData();
+  await _populateInitialExerciseData();
 
   final userBox = Hive.box<User>('user_box');
   final activeUser = userBox.get('activeUser');
@@ -105,6 +107,7 @@ void _registerHiveAdapters() {
   _tryRegisterAdapter(RoutineLogAdapter());
   _tryRegisterAdapter(ExerciseAdapter());
   _tryRegisterAdapter(RoutineExerciseAdapter());
+  _tryRegisterAdapter(MealEntryAdapter());
 }
 
 void _tryRegisterAdapter<T>(TypeAdapter<T> adapter) {
@@ -129,6 +132,8 @@ Future<void> _openHiveBoxes() async {
   await Hive.openBox<RoutineLog>('routine_logs');
   await Hive.openBox<Exercise>('exercises');
   await Hive.openBox<RoutineExercise>('routine_exercises');
+  await Hive.openBox<MealEntry>('meal_entries');
+
 }
 
 
@@ -188,6 +193,23 @@ Future<void> _populateInitialFoodData() async {
             fats: 11));
   }
 }
+
+Future<void> _populateInitialExerciseData() async {
+  final exerciseBox = Hive.box<Exercise>('exercises');
+  if (exerciseBox.isEmpty) {
+    const uuid = Uuid();
+    var exercise1Id = uuid.v4();
+    await exerciseBox.put(exercise1Id, Exercise(id: exercise1Id, name: 'Press de Banca', description: 'Acuéstese en un banco plano y baje una barra hasta el pecho, luego empújela hacia arriba.', type: 'strength', muscleGroup: 'Pecho', equipment: 'Barra', measurement: 'reps'));
+    var exercise2Id = uuid.v4();
+    await exerciseBox.put(exercise2Id, Exercise(id: exercise2Id, name: 'Sentadillas', description: 'Baje las caderas desde una posición de pie y luego vuelva a levantarse.', type: 'strength', muscleGroup: 'Piernas', equipment: 'Barra', measurement: 'reps'));
+    var exercise3Id = uuid.v4();
+    await exerciseBox.put(exercise3Id, Exercise(id: exercise3Id, name: 'Peso Muerto', description: 'Levante una barra cargada del suelo hasta la altura de las caderas, y luego bájela de nuevo.', type: 'strength', muscleGroup: 'Espalda', equipment: 'Barra', measurement: 'reps'));
+    var exercise4Id = uuid.v4();
+    await exerciseBox.put(exercise4Id, Exercise(id: exercise4Id, name: 'Correr', description: 'Correr a un ritmo constante durante un período de tiempo determinado.', type: 'cardio', muscleGroup: 'Cardio', equipment: 'Ninguno', measurement: 'time'));
+  }
+}
+
+
 
 class MyApp extends StatelessWidget {
   final String initialRoute;

@@ -1,3 +1,4 @@
+
 import 'package:hive/hive.dart';
 import 'package:myapp/models/routine_exercise.dart';
 
@@ -15,13 +16,12 @@ class Routine extends HiveObject {
   late String description;
 
   @HiveField(3)
-  late HiveList<RoutineExercise> exercises;
+  HiveList<RoutineExercise>? exercises;
 
   Routine({
     required this.id,
     required this.name,
     required this.description,
-  }) {
-    exercises = HiveList(Hive.box<RoutineExercise>('routine_exercises'));
-  }
+    this.exercises,
+  });
 }

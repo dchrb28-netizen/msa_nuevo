@@ -5,7 +5,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'set_log.g.dart';
 
 @JsonSerializable()
-@HiveType(typeId: 10)
+@HiveType(typeId: 17)
 class SetLog extends HiveObject {
   @HiveField(0)
   int reps;

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:myapp/models/exercise.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -77,7 +76,6 @@ class ExerciseService {
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
         measurement: 'reps',
-        icon: Icons.fitness_center,
       ),
       Exercise(
         id: '2',
@@ -87,7 +85,6 @@ class ExerciseService {
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
         measurement: 'reps',
-        icon: Icons.fitness_center,
       ),
       Exercise(
         id: '3',
@@ -97,7 +94,6 @@ class ExerciseService {
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
         measurement: 'reps',
-        icon: Icons.fitness_center,
       ),
       Exercise(
         id: '4',
@@ -107,7 +103,6 @@ class ExerciseService {
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
         measurement: 'reps',
-        icon: Icons.fitness_center,
       ),
       Exercise(
         id: '5',
@@ -117,7 +112,6 @@ class ExerciseService {
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
         measurement: 'reps',
-        icon: Icons.fitness_center,
       ),
       Exercise(
         id: '6',
@@ -127,7 +121,6 @@ class ExerciseService {
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
         measurement: 'reps',
-        icon: Icons.fitness_center,
       ),
       Exercise(
         id: '7',
@@ -137,7 +130,6 @@ class ExerciseService {
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
         measurement: 'reps',
-        icon: Icons.fitness_center,
       ),
       Exercise(
         id: '8',
@@ -147,7 +139,6 @@ class ExerciseService {
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
         measurement: 'reps',
-        icon: Icons.fitness_center,
       ),
       Exercise(
         id: '9',
@@ -157,7 +148,6 @@ class ExerciseService {
         description: 'Descripción del ejercicio...',
         type: 'Fuerza',
         measurement: 'reps',
-        icon: Icons.fitness_center,
       ),
       Exercise(
         id: '10',
@@ -167,7 +157,6 @@ class ExerciseService {
         description: 'Descripción del ejercicio...',
         type: 'Resistencia',
         measurement: 'time',
-        icon: Icons.fitness_center,
       ),
     ];
   }

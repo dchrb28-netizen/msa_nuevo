@@ -56,14 +56,41 @@ class RoutinesScreen extends StatelessWidget {
                         trailing: IconButton(
                           icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                           onPressed: () {
-                            provider.deleteRoutine(routine.id);
+                            // Show a confirmation dialog before deleting
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext ctx) {
+                                return AlertDialog(
+                                  title: const Text('Confirmar Borrado'),
+                                  content: Text(
+                                      '¿Estás seguro de que quieres eliminar la rutina "${routine.name}"?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text('Cancelar'),
+                                      onPressed: () {
+                                        Navigator.of(ctx).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                                      onPressed: () {
+                                        provider.deleteRoutine(routine.id);
+                                        Navigator.of(ctx).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           },
                         ),
                         onTap: () {
+                          // *** THE FIX IS HERE ***
+                          // Pass only the ID to the edit screen.
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) =>
-                                  EditRoutineScreen(routine: routine),
+                                  EditRoutineScreen(routineId: routine.id),
                             ),
                           );
                         },

@@ -38,7 +38,6 @@ class ExerciseProvider with ChangeNotifier {
       measurement: exercise.measurement,
       imageUrl: exercise.imageUrl,
       videoUrl: exercise.videoUrl,
-      icon: exercise.icon,
     );
     await _exerciseBox.put(newExercise.id, newExercise);
     _exercises.add(newExercise);

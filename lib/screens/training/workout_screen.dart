@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:myapp/models/routine.dart';
@@ -30,7 +29,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   void initState() {
     super.initState();
     _startTime = DateTime.now();
-    _exerciseLogs = widget.routine.exercises.map((routineExercise) {
+    // Safely map exercises, providing an empty list if null.
+    _exerciseLogs = (widget.routine.exercises ?? []).map((routineExercise) {
       return ExerciseLog(
         exercise: routineExercise.exercise,
         sets: List.generate(
@@ -42,6 +42,13 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   void _finishWorkout() {
+    // Prevent finishing an empty workout if there are no logs.
+    if (_exerciseLogs.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No hay ejercicios en esta rutina.'))
+        );
+        return;
+    }
     final duration = DateTime.now().difference(_startTime);
     final routineLog = RoutineLog(
       date: _startTime,
@@ -50,8 +57,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       duration: duration,
     );
     Provider.of<RoutineProvider>(context, listen: false).addRoutineLog(routineLog);
-    Navigator.of(context).pushReplacement(
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const WorkoutHistoryScreen()));
+    }
   }
 
   void _completeSet(int setIndex) {
@@ -62,7 +71,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   void _startRestTimer() {
-    final restTime = widget.routine.exercises[_currentExerciseIndex].restTime ?? 60;
+    final exercises = widget.routine.exercises ?? [];
+    if (exercises.isEmpty) return;
+    
+    final restTime = exercises[_currentExerciseIndex].restTime ?? 60;
     _restTimeRemaining = restTime;
     setState(() {
       _isResting = true;
@@ -83,7 +95,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   void _nextExercise() {
-    if (_currentExerciseIndex < widget.routine.exercises.length - 1) {
+    final exercises = widget.routine.exercises ?? [];
+    if (_currentExerciseIndex < exercises.length - 1) {
       setState(() {
         _currentExerciseIndex++;
         _isResting = false;
@@ -110,7 +123,18 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentRoutineExercise = widget.routine.exercises[_currentExerciseIndex];
+    final exercises = widget.routine.exercises ?? [];
+
+    if (exercises.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Entrenamiento')),
+        body: const Center(
+          child: Text('Esta rutina no tiene ejercicios.'),
+        ),
+      );
+    }
+    
+    final currentRoutineExercise = exercises[_currentExerciseIndex];
     final currentExerciseLog = _exerciseLogs[_currentExerciseIndex];
 
     if (_isResting) {
@@ -119,7 +143,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${_currentExerciseIndex + 1}/${widget.routine.exercises.length}'),
+        title: Text('${_currentExerciseIndex + 1}/${exercises.length}'),
         centerTitle: true,
         actions: [
           TextButton(
@@ -144,7 +168,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               children: [
                 if (_currentExerciseIndex > 0)
                   ElevatedButton(onPressed: _previousExercise, child: const Text('Anterior')),
-                if (_currentExerciseIndex < widget.routine.exercises.length - 1)
+                if (_currentExerciseIndex < exercises.length - 1)
                   ElevatedButton(onPressed: _nextExercise, child: const Text('Siguiente')),
               ],
             )

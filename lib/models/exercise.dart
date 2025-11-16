@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -25,8 +24,6 @@ class Exercise extends HiveObject {
   final String? imageUrl;
   @HiveField(8)
   final String? videoUrl;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final IconData? icon;
 
   Exercise({
     required this.id,
@@ -38,7 +35,6 @@ class Exercise extends HiveObject {
     required this.measurement,
     this.imageUrl,
     this.videoUrl,
-    this.icon,
   });
 
   factory Exercise.fromJson(Map<String, dynamic> json) => _$ExerciseFromJson(json);

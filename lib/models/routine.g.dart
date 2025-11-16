@@ -20,7 +20,8 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       id: fields[0] as String,
       name: fields[1] as String,
       description: fields[2] as String,
-    )..exercises = (fields[3] as HiveList).castHiveList();
+      exercises: (fields[3] as HiveList?)?.castHiveList(),
+    );
   }
 
   @override

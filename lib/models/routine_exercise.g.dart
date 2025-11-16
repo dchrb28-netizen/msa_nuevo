@@ -8,7 +8,7 @@ part of 'routine_exercise.dart';
 
 class RoutineExerciseAdapter extends TypeAdapter<RoutineExercise> {
   @override
-  final int typeId = 7;
+  final int typeId = 18;
 
   @override
   RoutineExercise read(BinaryReader reader) {
@@ -17,7 +17,7 @@ class RoutineExerciseAdapter extends TypeAdapter<RoutineExercise> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return RoutineExercise(
-      exercise: fields[0] as Exercise,
+      exerciseId: fields[0] as String,
       sets: fields[1] as int,
       reps: fields[2] as String,
       weight: fields[3] as double?,
@@ -30,7 +30,7 @@ class RoutineExerciseAdapter extends TypeAdapter<RoutineExercise> {
     writer
       ..writeByte(5)
       ..writeByte(0)
-      ..write(obj.exercise)
+      ..write(obj.exerciseId)
       ..writeByte(1)
       ..write(obj.sets)
       ..writeByte(2)
@@ -51,25 +51,3 @@ class RoutineExerciseAdapter extends TypeAdapter<RoutineExercise> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
-
-// **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
-
-RoutineExercise _$RoutineExerciseFromJson(Map<String, dynamic> json) =>
-    RoutineExercise(
-      exercise: Exercise.fromJson(json['exercise'] as Map<String, dynamic>),
-      sets: (json['sets'] as num).toInt(),
-      reps: json['reps'] as String,
-      weight: (json['weight'] as num?)?.toDouble(),
-      restTime: (json['restTime'] as num?)?.toInt(),
-    );
-
-Map<String, dynamic> _$RoutineExerciseToJson(RoutineExercise instance) =>
-    <String, dynamic>{
-      'exercise': instance.exercise.toJson(),
-      'sets': instance.sets,
-      'reps': instance.reps,
-      'weight': instance.weight,
-      'restTime': instance.restTime,
-    };

@@ -3,7 +3,6 @@ import 'package:myapp/models/exercise.dart';
 import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/screens/training/routines_screen.dart';
 import 'package:myapp/screens/training/exercise_library_screen.dart';
-import 'package:myapp/screens/training/start_workout_screen.dart';
 import 'package:myapp/screens/training/edit_exercise_screen.dart';
 import 'package:myapp/screens/training/edit_routine_screen.dart';
 import 'package:provider/provider.dart';

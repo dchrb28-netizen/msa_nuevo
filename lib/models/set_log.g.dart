@@ -8,7 +8,7 @@ part of 'set_log.dart';
 
 class SetLogAdapter extends TypeAdapter<SetLog> {
   @override
-  final int typeId = 10;
+  final int typeId = 17;
 
   @override
   SetLog read(BinaryReader reader) {

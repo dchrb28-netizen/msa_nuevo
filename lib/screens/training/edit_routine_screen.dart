@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:myapp/models/exercise.dart';
 import 'package:myapp/models/routine.dart';
 import 'package:myapp/models/routine_exercise.dart';
 import 'package:myapp/screens/training/select_exercise_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/routine_provider.dart';
-import 'package:uuid/uuid.dart';
 
 class EditRoutineScreen extends StatefulWidget {
-  final Routine? routine;
+  final String? routineId;
 
-  const EditRoutineScreen({super.key, this.routine});
+  const EditRoutineScreen({super.key, this.routineId});
 
   @override
   State<EditRoutineScreen> createState() => _EditRoutineScreenState();
@@ -19,74 +17,72 @@ class EditRoutineScreen extends StatefulWidget {
 
 class _EditRoutineScreenState extends State<EditRoutineScreen> {
   final _formKey = GlobalKey<FormState>();
+  
+  // Local UI state variables
   late String _routineName;
   late String _routineDescription;
   late List<RoutineExercise> _routineExercises;
-  final routineExerciseBox = Hive.box<RoutineExercise>('routine_exercises');
-
+  Routine? _existingRoutine; // The original routine object for updates
+  bool _isCreating = true;
 
   @override
   void initState() {
     super.initState();
-    _routineName = widget.routine?.name ?? '';
-    _routineDescription = widget.routine?.description ?? '';
-    _routineExercises = widget.routine?.exercises.cast<RoutineExercise>().toList() ?? [];
+    final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
+
+    if (widget.routineId != null) {
+      // *** EDITING FLOW ***
+      _isCreating = false;
+      // 1. Find the fully loaded routine from the provider.
+      _existingRoutine = routineProvider.routines.firstWhere((r) => r.id == widget.routineId!);
+      
+      // 2. Populate local state from the existing routine.
+      _routineName = _existingRoutine!.name;
+      _routineDescription = _existingRoutine!.description;
+      // 3. Create a mutable copy of the exercises for the UI to manipulate.
+      _routineExercises = List<RoutineExercise>.from(_existingRoutine!.exercises ?? []);
+    } else {
+      // *** CREATION FLOW ***
+      _isCreating = true;
+      _routineName = '';
+      _routineDescription = '';
+      _routineExercises = []; // Start with an empty list.
+    }
   }
 
-  void _saveRoutine() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
+  Future<void> _saveRoutine() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    _formKey.currentState!.save();
 
-      if (widget.routine == null) {
-        // Create new routine
-        final newRoutine = Routine(
-          id: const Uuid().v4(),
-          name: _routineName,
-          description: _routineDescription,
-        );
-        
-        for (var re in _routineExercises) {
-          routineExerciseBox.add(re);
-          newRoutine.exercises.add(re);
-        }
+    final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
 
-        routineProvider.addRoutine(newRoutine);
+    try {
+      if (_isCreating) {
+        // 1. Create the routine object first.
+        final newRoutine = await routineProvider.addRoutine(_routineName, _routineDescription);
+        // 2. Now update the new routine with the list of exercises from UI state.
+        await routineProvider.updateRoutine(newRoutine, _routineExercises);
       } else {
-        // Update existing routine
-        final existingRoutine = widget.routine!;
-        existingRoutine.name = _routineName;
-        existingRoutine.description = _routineDescription;
-
-        // First, handle deletions: remove exercises from the box that are no longer in the list
-        final originalExercises = existingRoutine.exercises.toList().cast<RoutineExercise>();
-        for (var originalExercise in originalExercises) {
-            if (!_routineExercises.any((element) => element.key == originalExercise.key)) {
-                originalExercise.delete();
-            }
-        }
-
-        // Then, add or update exercises
-        existingRoutine.exercises.clear();
-        for (var routineExercise in _routineExercises) {
-          // If it's a new exercise (doesn't have a key), save it to its box.
-          if (!routineExercise.isInBox) {
-            routineExerciseBox.add(routineExercise);
-          }
-           // The object itself might have been updated, so ensure it's saved.
-          routineExercise.save();
-          existingRoutine.exercises.add(routineExercise);
-        }
-
-        routineProvider.updateRoutine(existingRoutine.id, existingRoutine);
+        // 1. Update the original routine object with the new name/description.
+        _existingRoutine!.name = _routineName;
+        _existingRoutine!.description = _routineDescription;
+        // 2. Pass the original routine and the updated exercise list to the provider.
+        await routineProvider.updateRoutine(_existingRoutine!, _routineExercises);
       }
 
       if (mounted) {
         Navigator.of(context).pop();
       }
+    } catch (e) {
+      if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error al guardar: $e'))
+          );
+      }
     }
-}
-
+  }
 
   void _navigateAndSelectExercise() async {
     final selectedExercise = await Navigator.of(context).push<Exercise>(
@@ -110,10 +106,8 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
           onSave: (newRoutineExercise) {
             setState(() {
               if (index != null) {
-                // This is an update
                 _routineExercises[index] = newRoutineExercise;
               } else {
-                // This is a new addition to the list
                 _routineExercises.add(newRoutineExercise);
               }
             });
@@ -127,7 +121,7 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.routine == null ? 'Crear Rutina' : 'Editar Rutina'),
+        title: Text(_isCreating ? 'Crear Rutina' : 'Editar Rutina'),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
@@ -171,17 +165,10 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
                 child: _routineExercises.isEmpty
                     ? const Center(child: Text('Añade ejercicios a tu rutina.'))
                     : ReorderableListView.builder(
-                        padding: const EdgeInsets.only(bottom: 80.0), // Added padding
+                        padding: const EdgeInsets.only(bottom: 80.0),
                         itemCount: _routineExercises.length,
                         itemBuilder: (context, index) {
                           final routineExercise = _routineExercises[index];
-                          // Make sure the exercise object is valid
-                          if (routineExercise.exercise == null) {
-                             return ListTile(
-                              key: ValueKey(UniqueKey()), // Use a unique key for safety
-                              title: const Text('Error: Ejercicio no encontrado'),
-                            );
-                          }
                           return ListTile(
                             key: ValueKey(routineExercise.hashCode),
                             title: Text(routineExercise.exercise.name),
@@ -269,23 +256,27 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       
-      // If we are editing, we update the existing instance.
-      // If we are creating, we make a new instance.
       final RoutineExercise routineExerciseToSave;
       if (widget.routineExercise != null) {
+        // If editing, we update the existing instance.
         routineExerciseToSave = widget.routineExercise!;
         routineExerciseToSave.sets = _sets;
         routineExerciseToSave.reps = _reps;
         routineExerciseToSave.weight = _weight;
         routineExerciseToSave.restTime = _restTime;
+        // Ensure the exercise object is carried over
+        routineExerciseToSave.setExercise(widget.exercise);
       } else {
+        // If creating, we make a new instance.
         routineExerciseToSave = RoutineExercise(
-          exercise: widget.exercise,
+          exerciseId: widget.exercise.id,
           sets: _sets,
           reps: _reps,
           weight: _weight,
           restTime: _restTime,
         );
+         // Ensure the exercise object is attached immediately
+        routineExerciseToSave.setExercise(widget.exercise);
       }
       
       widget.onSave(routineExerciseToSave);
