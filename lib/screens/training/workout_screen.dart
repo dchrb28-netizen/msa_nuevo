@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:myapp/models/exercise.dart';
 import 'package:myapp/models/routine.dart';
 import 'package:myapp/models/routine_exercise.dart';
+import 'package:myapp/models/workout_session.dart'; // Import the new model
 import 'package:myapp/providers/exercise_provider.dart';
+import 'package:myapp/providers/workout_history_provider.dart'; // Import the new provider
 import 'package:provider/provider.dart';
 
 class WorkoutScreen extends StatefulWidget {
@@ -15,17 +17,14 @@ class WorkoutScreen extends StatefulWidget {
 }
 
 class _WorkoutScreenState extends State<WorkoutScreen> {
-  // A map to track the completion status of each set for each exercise.
-  // The key is the routineExercise's index, value is a list of booleans for sets.
-  late Map<int, List<bool>> _setsCompletion;
+  late Map<int, List<SetLog?>> _setsData;
 
   @override
   void initState() {
     super.initState();
-    // Initialize the completion status for all sets of all exercises to false.
-    _setsCompletion = {
-      for (var i = 0; i < (widget.routine.exercises?.length ?? 0); i++) 
-        i: List.generate(widget.routine.exercises![i].sets, (_) => false)
+    _setsData = {
+      for (var i = 0; i < (widget.routine.exercises?.length ?? 0); i++)
+        i: List.generate(widget.routine.exercises![i].sets, (_) => null)
     };
   }
 
@@ -79,9 +78,12 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   Widget _buildExerciseCard(Exercise exercise, RoutineExercise routineExercise, int exerciseIndex) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final List<SetLog?> loggedSets = _setsData[exerciseIndex]!;
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      elevation: 5,
+      elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -90,44 +92,121 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           children: [
             Text(exercise.name, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text('${routineExercise.sets} series x ${routineExercise.reps} reps', style: Theme.of(context).textTheme.titleMedium),
+            Text('${routineExercise.sets} series x ${routineExercise.reps} reps', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[600])),
             if (routineExercise.restTime != null && routineExercise.restTime! > 0)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Row(
                   children: [
-                    const Icon(Icons.timer_outlined, size: 20, color: Colors.grey),
+                    Icon(Icons.timer_outlined, size: 20, color: Colors.grey[600]),
                     const SizedBox(width: 4),
-                    Text('${routineExercise.restTime} seg de descanso entre series', style: Theme.of(context).textTheme.bodyMedium),
+                    Text('${routineExercise.restTime} seg de descanso', style: Theme.of(context).textTheme.bodyMedium),
                   ],
                 ),
               ),
             const SizedBox(height: 16),
             Wrap(
-              spacing: 8.0,
-              runSpacing: 4.0,
+              spacing: 12.0,
+              runSpacing: 8.0,
               children: List.generate(routineExercise.sets, (setIndex) {
-                return ChoiceChip(
-                  label: Text('Set ${setIndex + 1}'),
-                  selected: _setsCompletion[exerciseIndex]![setIndex],
-                  onSelected: (bool selected) {
-                    setState(() {
-                      _setsCompletion[exerciseIndex]![setIndex] = selected;
-                    });
-                  },
-                  avatar: _setsCompletion[exerciseIndex]![setIndex]
-                      ? const Icon(Icons.check_circle, color: Colors.white)
-                      : null,
-                  selectedColor: Colors.green,
-                  labelStyle: TextStyle(
-                    color: _setsCompletion[exerciseIndex]![setIndex] ? Colors.white : Colors.black,
+                final bool isCompleted = loggedSets[setIndex] != null;
+
+                return OutlinedButton(
+                  onPressed: () => _showLogSetDialog(exerciseIndex, setIndex, routineExercise.reps),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: isCompleted ? colorScheme.onPrimary : colorScheme.primary,
+                    backgroundColor: isCompleted ? colorScheme.primary : Colors.transparent,
+                    side: BorderSide(color: colorScheme.primary.withOpacity(0.5)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (isCompleted) ...[
+                        const Icon(Icons.check, size: 18),
+                        const SizedBox(width: 6),
+                      ],
+                      Text('Set ${setIndex + 1}'),
+                    ],
                   ),
                 );
               }),
             ),
+            if (loggedSets.any((log) => log != null)) ...[
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 8),
+                Text("Registros:", style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(height: 8),
+                ...List.generate(loggedSets.length, (setIndex) {
+                  final log = loggedSets[setIndex];
+                  if (log == null) return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 4.0),
+                    child: Text('  • Set ${setIndex + 1}: ${log.toString()}'),
+                  );
+                }),
+            ]
           ],
         ),
       ),
+    );
+  }
+
+  void _showLogSetDialog(int exerciseIndex, int setIndex, String targetReps) {
+    final repsController = TextEditingController(text: targetReps.split('-').first);
+    double? previousWeight;
+    if (setIndex > 0 && _setsData[exerciseIndex]![setIndex - 1] != null) {
+      previousWeight = _setsData[exerciseIndex]![setIndex - 1]!.weight;
+    }
+    final weightController = TextEditingController(text: previousWeight?.toString() ?? '');
+
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: Text('Registrar Set ${setIndex + 1}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: repsController,
+                decoration: const InputDecoration(labelText: 'Repeticiones', icon: Icon(Icons.repeat)),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: weightController,
+                decoration: const InputDecoration(labelText: 'Peso (kg)', icon: Icon(Icons.fitness_center)),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () => Navigator.of(ctx).pop(),
+            ),
+            ElevatedButton(
+              child: const Text('Guardar'),
+              onPressed: () {
+                final int? reps = int.tryParse(repsController.text);
+                final double? weight = double.tryParse(weightController.text);
+                if (reps != null && weight != null) {
+                  setState(() {
+                    _setsData[exerciseIndex]![setIndex] = SetLog(reps: reps, weight: weight);
+                  });
+                  Navigator.of(ctx).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Por favor, introduce valores numéricos válidos.')),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -147,7 +226,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               child: const Text('Finalizar', style: TextStyle(color: Colors.red)),
               onPressed: () {
                 Navigator.of(ctx).pop();
-                Navigator.of(context).pop();
+                _finishWorkout(confirmed: true);
               },
             ),
           ],
@@ -156,12 +235,49 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     );
   }
 
-  void _finishWorkout() {
-    // TODO: Implement logic to save the workout session to history
-    // For now, just show a confirmation and pop
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('¡Entrenamiento completado! Buen trabajo.')),
+  void _finishWorkout({bool confirmed = false}) {
+    final historyProvider = Provider.of<WorkoutHistoryProvider>(context, listen: false);
+    final exerciseProvider = Provider.of<ExerciseProvider>(context, listen: false);
+    final List<PerformedExerciseLog> performedExercises = [];
+
+    _setsData.forEach((exerciseIndex, logs) {
+      final routineExercise = widget.routine.exercises![exerciseIndex];
+      final exercise = exerciseProvider.getExerciseById(routineExercise.exerciseId);
+      final List<SetLog> completedSets = logs.where((log) => log != null).cast<SetLog>().toList();
+
+      if (exercise != null && completedSets.isNotEmpty) {
+        performedExercises.add(PerformedExerciseLog(
+          exerciseName: exercise.name,
+          sets: completedSets,
+        ));
+      }
+    });
+
+    if (performedExercises.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se ha registrado ninguna serie. El entrenamiento no se guardará.')),
+      );
+      if (confirmed) Navigator.of(context).pop();
+      return;
+    }
+
+    final newSession = WorkoutSession(
+      routineName: widget.routine.name,
+      date: DateTime.now(),
+      performedExercises: performedExercises,
     );
-    Navigator.of(context).pop();
+
+    historyProvider.addWorkoutSession(newSession);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('¡Entrenamiento guardado en el historial! Buen trabajo.')),
+    );
+    
+    // Pop twice if coming from the confirmation dialog
+    if (confirmed) {
+        Navigator.of(context).pop();
+    } else {
+        Navigator.of(context).pop();
+    }
   }
 }

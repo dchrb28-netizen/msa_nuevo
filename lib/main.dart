@@ -27,6 +27,7 @@ import 'package:myapp/providers/meal_plan_provider.dart';
 import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/providers/workout_history_provider.dart'; // Import the new provider
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/profile_selection_screen.dart';
@@ -81,6 +82,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => MealPlanProvider()),
         ChangeNotifierProvider(create: (context) => RoutineProvider()),
         ChangeNotifierProvider(create: (context) => ExerciseProvider()),
+        ChangeNotifierProvider(create: (context) => WorkoutHistoryProvider()), // Add the new provider here
       ],
       child: MyApp(initialRoute: initialRoute),
     ),
@@ -133,9 +135,7 @@ Future<void> _openHiveBoxes() async {
   await Hive.openBox<Exercise>('exercises');
   await Hive.openBox<RoutineExercise>('routine_exercises');
   await Hive.openBox<MealEntry>('meal_entries');
-
 }
-
 
 Future<void> _populateInitialFoodData() async {
   final foodBox = Hive.box<Food>('foods');
@@ -208,8 +208,6 @@ Future<void> _populateInitialExerciseData() async {
     await exerciseBox.put(exercise4Id, Exercise(id: exercise4Id, name: 'Correr', description: 'Correr a un ritmo constante durante un período de tiempo determinado.', type: 'cardio', muscleGroup: 'Cardio', equipment: 'Ninguno', measurement: 'time'));
   }
 }
-
-
 
 class MyApp extends StatelessWidget {
   final String initialRoute;
