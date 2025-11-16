@@ -5,17 +5,25 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:myapp/models/body_measurement.dart';
 import 'package:myapp/models/daily_meal_plan.dart';
+import 'package:myapp/models/exercise.dart';
+import 'package:myapp/models/exercise_log.dart';
 import 'package:myapp/models/fasting_log.dart';
 import 'package:myapp/models/food.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/models/meal_type.dart';
 import 'package:myapp/models/recipe.dart';
 import 'package:myapp/models/reminder.dart';
+import 'package:myapp/models/routine.dart';
+import 'package:myapp/models/routine_exercise.dart';
+import 'package:myapp/models/routine_log.dart';
+import 'package:myapp/models/set_log.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/user_recipe.dart';
 import 'package:myapp/models/water_log.dart';
+import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/providers/fasting_provider.dart';
 import 'package:myapp/providers/meal_plan_provider.dart';
+import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/main_screen.dart';
@@ -26,16 +34,6 @@ import 'package:myapp/services/notification_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:url_strategy/url_strategy.dart';
-
-// Import the new models and providers
-import 'package:myapp/models/routine.dart';
-import 'package:myapp/models/set_log.dart';
-import 'package:myapp/models/exercise.dart';
-import 'package:myapp/models/exercise_log.dart';
-import 'package:myapp/models/routine_exercise.dart';
-import 'package:myapp/models/routine_log.dart';
-import 'package:myapp/providers/exercise_provider.dart';
-import 'package:myapp/providers/routine_provider.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized
@@ -50,10 +48,10 @@ void main() async {
   await initializeDateFormatting('es', null);
   await Hive.initFlutter();
 
-  // Register adapters
+  // Register all adapters
   _registerHiveAdapters();
 
-  // Open boxes
+  // Open all boxes
   await _openHiveBoxes();
 
   await _populateInitialFoodData();
@@ -88,57 +86,30 @@ void main() async {
 }
 
 void _registerHiveAdapters() {
-  // Register your existing adapters here
-  if (!Hive.isAdapterRegistered(UserAdapter().typeId)) {
-    Hive.registerAdapter(UserAdapter());
-  }
-  if (!Hive.isAdapterRegistered(FoodAdapter().typeId)) {
-    Hive.registerAdapter(FoodAdapter());
-  }
-  if (!Hive.isAdapterRegistered(WaterLogAdapter().typeId)) {
-    Hive.registerAdapter(WaterLogAdapter());
-  }
-  if (!Hive.isAdapterRegistered(FoodLogAdapter().typeId)) {
-    Hive.registerAdapter(FoodLogAdapter());
-  }
-  if (!Hive.isAdapterRegistered(BodyMeasurementAdapter().typeId)) {
-    Hive.registerAdapter(BodyMeasurementAdapter());
-  }
-  if (!Hive.isAdapterRegistered(MealTypeAdapter().typeId)) {
-    Hive.registerAdapter(MealTypeAdapter());
-  }
-  if (!Hive.isAdapterRegistered(DailyMealPlanAdapter().typeId)) {
-    Hive.registerAdapter(DailyMealPlanAdapter());
-  }
-  if (!Hive.isAdapterRegistered(RecipeAdapter().typeId)) {
-    Hive.registerAdapter(RecipeAdapter());
-  }
-  if (!Hive.isAdapterRegistered(UserRecipeAdapter().typeId)) {
-    Hive.registerAdapter(UserRecipeAdapter());
-  }
-  if (!Hive.isAdapterRegistered(ReminderAdapter().typeId)) {
-    Hive.registerAdapter(ReminderAdapter());
-  }
-  if (!Hive.isAdapterRegistered(FastingLogAdapter().typeId)) {
-    Hive.registerAdapter(FastingLogAdapter());
-  }
-  if (!Hive.isAdapterRegistered(RoutineAdapter().typeId)) {
-    Hive.registerAdapter(RoutineAdapter());
-  }
-  if (!Hive.isAdapterRegistered(SetLogAdapter().typeId)) {
-    Hive.registerAdapter(SetLogAdapter());
-  }
-  if (!Hive.isAdapterRegistered(ExerciseLogAdapter().typeId)) {
-    Hive.registerAdapter(ExerciseLogAdapter());
-  }
-  if (!Hive.isAdapterRegistered(RoutineLogAdapter().typeId)) {
-    Hive.registerAdapter(RoutineLogAdapter());
-  }
-  if (!Hive.isAdapterRegistered(ExerciseAdapter().typeId)) {
-    Hive.registerAdapter(ExerciseAdapter());
-  }
-  if (!Hive.isAdapterRegistered(RoutineExerciseAdapter().typeId)) {
-    Hive.registerAdapter(RoutineExerciseAdapter());
+  // This approach ensures that adapters are only registered once.
+  // It's cleaner and avoids potential issues with hot-restarts.
+  _tryRegisterAdapter(UserAdapter());
+  _tryRegisterAdapter(FoodAdapter());
+  _tryRegisterAdapter(WaterLogAdapter());
+  _tryRegisterAdapter(FoodLogAdapter());
+  _tryRegisterAdapter(BodyMeasurementAdapter());
+  _tryRegisterAdapter(MealTypeAdapter());
+  _tryRegisterAdapter(DailyMealPlanAdapter());
+  _tryRegisterAdapter(RecipeAdapter());
+  _tryRegisterAdapter(UserRecipeAdapter());
+  _tryRegisterAdapter(ReminderAdapter());
+  _tryRegisterAdapter(FastingLogAdapter());
+  _tryRegisterAdapter(RoutineAdapter());
+  _tryRegisterAdapter(SetLogAdapter());
+  _tryRegisterAdapter(ExerciseLogAdapter());
+  _tryRegisterAdapter(RoutineLogAdapter());
+  _tryRegisterAdapter(ExerciseAdapter());
+  _tryRegisterAdapter(RoutineExerciseAdapter());
+}
+
+void _tryRegisterAdapter<T>(TypeAdapter<T> adapter) {
+  if (!Hive.isAdapterRegistered(adapter.typeId)) {
+    Hive.registerAdapter(adapter);
   }
 }
 
@@ -159,6 +130,7 @@ Future<void> _openHiveBoxes() async {
   await Hive.openBox<Exercise>('exercises');
   await Hive.openBox<RoutineExercise>('routine_exercises');
 }
+
 
 Future<void> _populateInitialFoodData() async {
   final foodBox = Hive.box<Food>('foods');

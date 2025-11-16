@@ -6,7 +6,7 @@ part 'exercise.g.dart';
 
 @HiveType(typeId: 16)
 @JsonSerializable()
-class Exercise {
+class Exercise extends HiveObject {
   @HiveField(0)
   final String id;
   @HiveField(1)

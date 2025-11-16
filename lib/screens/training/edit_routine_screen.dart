@@ -21,46 +21,63 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
   final _formKey = GlobalKey<FormState>();
   late String _routineName;
   late String _routineDescription;
-  late HiveList<RoutineExercise> _routineExercises;
+  late List<RoutineExercise> _routineExercises;
+  final routineExerciseBox = Hive.box<RoutineExercise>('routine_exercises');
+
 
   @override
   void initState() {
     super.initState();
     _routineName = widget.routine?.name ?? '';
     _routineDescription = widget.routine?.description ?? '';
-    _routineExercises = widget.routine?.exercises ?? HiveList(Hive.box<RoutineExercise>('routine_exercises'));
+    _routineExercises = widget.routine?.exercises.cast<RoutineExercise>().toList() ?? [];
   }
 
   void _saveRoutine() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
-      final routineBox = Hive.box<Routine>('routines');
 
       if (widget.routine == null) {
-        // Creating a new routine
+        // Create new routine
         final newRoutine = Routine(
           id: const Uuid().v4(),
           name: _routineName,
           description: _routineDescription,
         );
-        // The HiveList needs to be associated with a saved routine
-        routineBox.put(newRoutine.id, newRoutine).then((_){
-            newRoutine.exercises.addAll(_routineExercises);
-            newRoutine.save();
-            routineProvider.addRoutine(newRoutine);
-        });
+        
+        for (var re in _routineExercises) {
+          routineExerciseBox.add(re);
+          newRoutine.exercises.add(re);
+        }
 
+        routineProvider.addRoutine(newRoutine);
       } else {
-        // Updating an existing routine
+        // Update existing routine
         final existingRoutine = widget.routine!;
         existingRoutine.name = _routineName;
         existingRoutine.description = _routineDescription;
-        
-        // Clear and add new exercises to handle updates, additions, and deletions
+
+        // First, handle deletions: remove exercises from the box that are no longer in the list
+        final originalExercises = existingRoutine.exercises.toList().cast<RoutineExercise>();
+        for (var originalExercise in originalExercises) {
+            if (!_routineExercises.any((element) => element.key == originalExercise.key)) {
+                originalExercise.delete();
+            }
+        }
+
+        // Then, add or update exercises
         existingRoutine.exercises.clear();
-        existingRoutine.exercises.addAll(_routineExercises);
-        
+        for (var routineExercise in _routineExercises) {
+          // If it's a new exercise (doesn't have a key), save it to its box.
+          if (!routineExercise.isInBox) {
+            routineExerciseBox.add(routineExercise);
+          }
+           // The object itself might have been updated, so ensure it's saved.
+          routineExercise.save();
+          existingRoutine.exercises.add(routineExercise);
+        }
+
         routineProvider.updateRoutine(existingRoutine.id, existingRoutine);
       }
 
@@ -68,7 +85,7 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
         Navigator.of(context).pop();
       }
     }
-  }
+}
 
 
   void _navigateAndSelectExercise() async {
@@ -91,13 +108,12 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
           exercise: exercise,
           routineExercise: routineExercise,
           onSave: (newRoutineExercise) {
-             final routineExerciseBox = Hive.box<RoutineExercise>('routine_exercises');
-             routineExerciseBox.add(newRoutineExercise); // Save to its own box first
-
             setState(() {
               if (index != null) {
+                // This is an update
                 _routineExercises[index] = newRoutineExercise;
               } else {
+                // This is a new addition to the list
                 _routineExercises.add(newRoutineExercise);
               }
             });
@@ -159,8 +175,15 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
                         itemCount: _routineExercises.length,
                         itemBuilder: (context, index) {
                           final routineExercise = _routineExercises[index];
+                          // Make sure the exercise object is valid
+                          if (routineExercise.exercise == null) {
+                             return ListTile(
+                              key: ValueKey(UniqueKey()), // Use a unique key for safety
+                              title: const Text('Error: Ejercicio no encontrado'),
+                            );
+                          }
                           return ListTile(
-                            key: ValueKey(routineExercise.key),
+                            key: ValueKey(routineExercise.hashCode),
                             title: Text(routineExercise.exercise.name),
                             subtitle: Text('${routineExercise.sets} series x ${routineExercise.reps} reps'),
                             trailing: Row(
@@ -178,8 +201,7 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
                                   icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                                   onPressed: () {
                                     setState(() {
-                                      final item = _routineExercises.removeAt(index);
-                                      item.delete(); // Remove from Hive box
+                                      _routineExercises.removeAt(index);
                                     });
                                   },
                                 ),
@@ -247,15 +269,26 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       
-      // For updates, we modify the existing object. For new, we create one.
-      final routineExercise = widget.routineExercise ?? RoutineExercise(exercise: widget.exercise, reps: _reps, sets: _sets);
-
-      routineExercise.sets = _sets;
-      routineExercise.reps = _reps;
-      routineExercise.weight = _weight;
-      routineExercise.restTime = _restTime;
-
-      widget.onSave(routineExercise);
+      // If we are editing, we update the existing instance.
+      // If we are creating, we make a new instance.
+      final RoutineExercise routineExerciseToSave;
+      if (widget.routineExercise != null) {
+        routineExerciseToSave = widget.routineExercise!;
+        routineExerciseToSave.sets = _sets;
+        routineExerciseToSave.reps = _reps;
+        routineExerciseToSave.weight = _weight;
+        routineExerciseToSave.restTime = _restTime;
+      } else {
+        routineExerciseToSave = RoutineExercise(
+          exercise: widget.exercise,
+          sets: _sets,
+          reps: _reps,
+          weight: _weight,
+          restTime: _restTime,
+        );
+      }
+      
+      widget.onSave(routineExerciseToSave);
       Navigator.of(context).pop();
     }
   }
