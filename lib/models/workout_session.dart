@@ -1,4 +1,5 @@
 // lib/models/workout_session.dart
+import 'package:uuid/uuid.dart';
 
 // Representa los datos registrados para una sola serie de un ejercicio.
 class SetLog {
@@ -33,5 +34,6 @@ class WorkoutSession {
     required this.routineName,
     required this.date,
     required this.performedExercises,
-  }) : id = 'ws_${DateTime.now().millisecondsSinceEpoch}'; // ID único simple
+    String? id, // El ID es ahora opcional en el constructor
+  }) : id = id ?? const Uuid().v4(); // Genera un ID v4 si no se proporciona uno
 }

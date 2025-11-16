@@ -112,11 +112,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 final bool isCompleted = loggedSets[setIndex] != null;
 
                 return OutlinedButton(
-                  onPressed: () => _showLogSetDialog(exerciseIndex, setIndex, routineExercise.reps),
+                  onPressed: () => _showLogSetDialog(exerciseIndex, setIndex, routineExercise),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: isCompleted ? colorScheme.onPrimary : colorScheme.primary,
                     backgroundColor: isCompleted ? colorScheme.primary : Colors.transparent,
-                    side: BorderSide(color: colorScheme.primary.withOpacity(0.5)),
+                    side: BorderSide(color: colorScheme.primary.withAlpha(128)),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
@@ -154,13 +154,20 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     );
   }
 
-  void _showLogSetDialog(int exerciseIndex, int setIndex, String targetReps) {
-    final repsController = TextEditingController(text: targetReps.split('-').first);
-    double? previousWeight;
+  void _showLogSetDialog(int exerciseIndex, int setIndex, RoutineExercise routineExercise) {
+    final repsController = TextEditingController(text: routineExercise.reps.split('-').first);
+
+    double? initialWeight;
+    // Prioridad 1: Usar el peso de la serie anterior si existe
     if (setIndex > 0 && _setsData[exerciseIndex]![setIndex - 1] != null) {
-      previousWeight = _setsData[exerciseIndex]![setIndex - 1]!.weight;
+      initialWeight = _setsData[exerciseIndex]![setIndex - 1]!.weight;
+    } 
+    // Prioridad 2: Usar el peso objetivo de la rutina si está definido
+    else if (routineExercise.weight != null && routineExercise.weight! > 0) {
+      initialWeight = routineExercise.weight;
     }
-    final weightController = TextEditingController(text: previousWeight?.toString() ?? '');
+
+    final weightController = TextEditingController(text: initialWeight?.toString() ?? '');
 
     showDialog(
       context: context,

@@ -134,6 +134,17 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                                   },
                                 ),
                               const SizedBox(height: 8.0),
+                               TextFormField(
+                                initialValue: (routineExercise.weight ?? 0).toString(),
+                                decoration: const InputDecoration(labelText: 'Peso (kg)'),
+                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                onChanged: (value) {
+                                  setState(() {
+                                    routineExercise.weight = double.tryParse(value) ?? 0;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 8.0),
                               TextFormField(
                                 initialValue: (routineExercise.restTime ?? 60).toString(),
                                 decoration: const InputDecoration(labelText: 'Descanso (segundos)'),
