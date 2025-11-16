@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:myapp/models/exercise.dart';
 import 'package:myapp/models/routine.dart';
 import 'package:myapp/models/routine_exercise.dart';
-import 'package:myapp/models/workout_session.dart'; // Import the new model
+import 'package:myapp/models/workout_session.dart';
 import 'package:myapp/providers/exercise_provider.dart';
-import 'package:myapp/providers/workout_history_provider.dart'; // Import the new provider
+import 'package:myapp/providers/workout_history_provider.dart';
 import 'package:provider/provider.dart';
 
 class WorkoutScreen extends StatefulWidget {
@@ -18,6 +20,13 @@ class WorkoutScreen extends StatefulWidget {
 
 class _WorkoutScreenState extends State<WorkoutScreen> {
   late Map<int, List<SetLog?>> _setsData;
+  
+  // --- Temporizador State ---
+  Timer? _timer;
+  int _countdownTime = 0;
+  bool _isResting = false;
+  int? _restingExerciseIndex;
+  // --------------------------
 
   @override
   void initState() {
@@ -27,6 +36,48 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         i: List.generate(widget.routine.exercises![i].sets, (_) => null)
     };
   }
+
+  @override
+  void dispose() {
+    // Cancelar el temporizador al salir de la pantalla para evitar errores
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  // --- Lógica del Temporizador ---
+  void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
+    if (restTimeInSeconds <= 0) return;
+
+    _cancelRestTimer(); // Cancela cualquier temporizador anterior
+
+    setState(() {
+      _countdownTime = restTimeInSeconds;
+      _isResting = true;
+      _restingExerciseIndex = exerciseIndex;
+    });
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_countdownTime > 0) {
+        setState(() {
+          _countdownTime--;
+        });
+      } else {
+        _cancelRestTimer();
+        // Notificación con vibración al finalizar
+        Vibrate.feedback(FeedbackType.success);
+      }
+    });
+  }
+
+  void _cancelRestTimer() {
+    _timer?.cancel();
+    setState(() {
+      _isResting = false;
+      _restingExerciseIndex = null;
+      _countdownTime = 0;
+    });
+  }
+  // --------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +122,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          onPressed: _finishWorkout,
+          onPressed: _isResting ? null : _finishWorkout, // Desactivar si se está en descanso
         ),
       ),
     );
@@ -80,6 +131,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   Widget _buildExerciseCard(Exercise exercise, RoutineExercise routineExercise, int exerciseIndex) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final List<SetLog?> loggedSets = _setsData[exerciseIndex]!;
+    final bool isCurrentlyResting = _isResting && _restingExerciseIndex == exerciseIndex;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -93,7 +145,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             Text(exercise.name, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text('${routineExercise.sets} series x ${routineExercise.reps} reps', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[600])),
-            if (routineExercise.restTime != null && routineExercise.restTime! > 0)
+            if (routineExercise.restTime != null && routineExercise.restTime! > 0 && !isCurrentlyResting)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Row(
@@ -105,34 +157,40 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 ),
               ),
             const SizedBox(height: 16),
-            Wrap(
-              spacing: 12.0,
-              runSpacing: 8.0,
-              children: List.generate(routineExercise.sets, (setIndex) {
-                final bool isCompleted = loggedSets[setIndex] != null;
+            
+            // --- Widget del Temporizador ---
+            if (isCurrentlyResting)
+              _buildTimerWidget(routineExercise.restTime!)
+            else
+            // ---------------------------
+              Wrap(
+                spacing: 12.0,
+                runSpacing: 8.0,
+                children: List.generate(routineExercise.sets, (setIndex) {
+                  final bool isCompleted = loggedSets[setIndex] != null;
 
-                return OutlinedButton(
-                  onPressed: () => _showLogSetDialog(exerciseIndex, setIndex, routineExercise),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: isCompleted ? colorScheme.onPrimary : colorScheme.primary,
-                    backgroundColor: isCompleted ? colorScheme.primary : Colors.transparent,
-                    side: BorderSide(color: colorScheme.primary.withAlpha(128)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (isCompleted) ...[
-                        const Icon(Icons.check, size: 18),
-                        const SizedBox(width: 6),
+                  return OutlinedButton(
+                    onPressed: () => _showLogSetDialog(exerciseIndex, setIndex, routineExercise),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: isCompleted ? colorScheme.onPrimary : colorScheme.primary,
+                      backgroundColor: isCompleted ? colorScheme.primary : Colors.transparent,
+                      side: BorderSide(color: colorScheme.primary.withAlpha(128)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (isCompleted) ...[
+                          const Icon(Icons.check, size: 18),
+                          const SizedBox(width: 6),
+                        ],
+                        Text('Set ${setIndex + 1}'),
                       ],
-                      Text('Set ${setIndex + 1}'),
-                    ],
-                  ),
-                );
-              }),
-            ),
+                    ),
+                  );
+                }),
+              ),
             if (loggedSets.any((log) => log != null)) ...[
                 const SizedBox(height: 16),
                 const Divider(),
@@ -154,16 +212,43 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     );
   }
 
+  // --- Widget para mostrar el temporizador ---
+  Widget _buildTimerWidget(int totalRestTime) {
+    final double progress = 1.0 - (_countdownTime / totalRestTime);
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Icon(Icons.timer, color: Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 8),
+            Text('$_countdownTime', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+            const SizedBox(width: 4),
+            Text('seg', style: Theme.of(context).textTheme.titleMedium),
+          ],
+        ),
+        const SizedBox(height: 12),
+        LinearProgressIndicator(
+          value: progress,
+          minHeight: 6,
+          borderRadius: BorderRadius.circular(3),
+        ),
+        const SizedBox(height: 12),
+        TextButton(onPressed: _cancelRestTimer, child: const Text('Saltar Descanso')),
+      ],
+    );
+  }
+  // ----------------------------------------
+
   void _showLogSetDialog(int exerciseIndex, int setIndex, RoutineExercise routineExercise) {
     final repsController = TextEditingController(text: routineExercise.reps.split('-').first);
 
     double? initialWeight;
-    // Prioridad 1: Usar el peso de la serie anterior si existe
     if (setIndex > 0 && _setsData[exerciseIndex]![setIndex - 1] != null) {
       initialWeight = _setsData[exerciseIndex]![setIndex - 1]!.weight;
-    } 
-    // Prioridad 2: Usar el peso objetivo de la rutina si está definido
-    else if (routineExercise.weight != null && routineExercise.weight! > 0) {
+    } else if (routineExercise.weight != null && routineExercise.weight! > 0) {
       initialWeight = routineExercise.weight;
     }
 
@@ -204,6 +289,14 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     _setsData[exerciseIndex]![setIndex] = SetLog(reps: reps, weight: weight);
                   });
                   Navigator.of(ctx).pop();
+
+                  // Iniciar el temporizador después de guardar una serie
+                  // Solo si no es la última serie del ejercicio
+                  final bool isLastSet = setIndex == routineExercise.sets - 1;
+                  if (!isLastSet) {
+                    _startRestTimer(exerciseIndex, routineExercise.restTime ?? 60);
+                  }
+
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Por favor, introduce valores numéricos válidos.')),
@@ -232,8 +325,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             TextButton(
               child: const Text('Finalizar', style: TextStyle(color: Colors.red)),
               onPressed: () {
-                Navigator.of(ctx).pop();
-                _finishWorkout(confirmed: true);
+                _timer?.cancel(); // Detener el temporizador si se sale
+                Navigator.of(ctx).pop(); // Cierra el diálogo
+                Navigator.of(context).pop(); // Cierra la pantalla de entrenamiento
               },
             ),
           ],
@@ -243,6 +337,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   void _finishWorkout({bool confirmed = false}) {
+    _timer?.cancel(); // Detener el temporizador al finalizar
+
     final historyProvider = Provider.of<WorkoutHistoryProvider>(context, listen: false);
     final exerciseProvider = Provider.of<ExerciseProvider>(context, listen: false);
     final List<PerformedExerciseLog> performedExercises = [];
@@ -280,9 +376,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       const SnackBar(content: Text('¡Entrenamiento guardado en el historial! Buen trabajo.')),
     );
     
-    // Pop twice if coming from the confirmation dialog
     if (confirmed) {
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(); 
     } else {
         Navigator.of(context).pop();
     }
