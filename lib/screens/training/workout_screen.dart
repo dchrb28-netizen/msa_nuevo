@@ -1,11 +1,8 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:myapp/models/exercise.dart';
 import 'package:myapp/models/routine.dart';
-import 'package:myapp/models/routine_log.dart';
-import 'package:myapp/models/exercise_log.dart';
-import 'package:myapp/models/set_log.dart';
-import 'package:myapp/providers/routine_provider.dart';
-import 'package:myapp/screens/training/workout_history_screen.dart';
+import 'package:myapp/models/routine_exercise.dart';
+import 'package:myapp/providers/exercise_provider.dart';
 import 'package:provider/provider.dart';
 
 class WorkoutScreen extends StatefulWidget {
@@ -18,237 +15,153 @@ class WorkoutScreen extends StatefulWidget {
 }
 
 class _WorkoutScreenState extends State<WorkoutScreen> {
-  late List<ExerciseLog> _exerciseLogs;
-  late DateTime _startTime;
-  int _currentExerciseIndex = 0;
-  bool _isResting = false;
-  Timer? _restTimer;
-  int _restTimeRemaining = 0;
+  // A map to track the completion status of each set for each exercise.
+  // The key is the routineExercise's index, value is a list of booleans for sets.
+  late Map<int, List<bool>> _setsCompletion;
 
   @override
   void initState() {
     super.initState();
-    _startTime = DateTime.now();
-    // Safely map exercises, providing an empty list if null.
-    _exerciseLogs = (widget.routine.exercises ?? []).map((routineExercise) {
-      return ExerciseLog(
-        exercise: routineExercise.exercise,
-        sets: List.generate(
-          routineExercise.sets,
-          (index) => SetLog(reps: 0, weight: 0), // Initialize with 0 or planned values
-        ),
-      );
-    }).toList();
-  }
-
-  void _finishWorkout() {
-    // Prevent finishing an empty workout if there are no logs.
-    if (_exerciseLogs.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No hay ejercicios en esta rutina.'))
-        );
-        return;
-    }
-    final duration = DateTime.now().difference(_startTime);
-    final routineLog = RoutineLog(
-      date: _startTime,
-      routineName: widget.routine.name,
-      exerciseLogs: _exerciseLogs,
-      duration: duration,
-    );
-    Provider.of<RoutineProvider>(context, listen: false).addRoutineLog(routineLog);
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const WorkoutHistoryScreen()));
-    }
-  }
-
-  void _completeSet(int setIndex) {
-    setState(() {
-      _exerciseLogs[_currentExerciseIndex].sets[setIndex].isCompleted = true;
-      _startRestTimer();
-    });
-  }
-
-  void _startRestTimer() {
-    final exercises = widget.routine.exercises ?? [];
-    if (exercises.isEmpty) return;
-    
-    final restTime = exercises[_currentExerciseIndex].restTime ?? 60;
-    _restTimeRemaining = restTime;
-    setState(() {
-      _isResting = true;
-    });
-    _restTimer?.cancel();
-    _restTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_restTimeRemaining > 0) {
-        setState(() {
-          _restTimeRemaining--;
-        });
-      } else {
-        _restTimer?.cancel();
-        setState(() {
-          _isResting = false;
-        });
-      }
-    });
-  }
-
-  void _nextExercise() {
-    final exercises = widget.routine.exercises ?? [];
-    if (_currentExerciseIndex < exercises.length - 1) {
-      setState(() {
-        _currentExerciseIndex++;
-        _isResting = false;
-        _restTimer?.cancel();
-      });
-    }
-  }
-
-  void _previousExercise() {
-    if (_currentExerciseIndex > 0) {
-      setState(() {
-        _currentExerciseIndex--;
-        _isResting = false;
-        _restTimer?.cancel();
-      });
-    }
-  }
-  
-  @override
-  void dispose() {
-    _restTimer?.cancel();
-    super.dispose();
+    // Initialize the completion status for all sets of all exercises to false.
+    _setsCompletion = {
+      for (var i = 0; i < (widget.routine.exercises?.length ?? 0); i++) 
+        i: List.generate(widget.routine.exercises![i].sets, (_) => false)
+    };
   }
 
   @override
   Widget build(BuildContext context) {
-    final exercises = widget.routine.exercises ?? [];
-
-    if (exercises.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Entrenamiento')),
-        body: const Center(
-          child: Text('Esta rutina no tiene ejercicios.'),
-        ),
-      );
-    }
-    
-    final currentRoutineExercise = exercises[_currentExerciseIndex];
-    final currentExerciseLog = _exerciseLogs[_currentExerciseIndex];
-
-    if (_isResting) {
-      return _buildRestScreen();
-    }
+    final exerciseProvider = Provider.of<ExerciseProvider>(context, listen: false);
+    final routineExercises = widget.routine.exercises;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${_currentExerciseIndex + 1}/${exercises.length}'),
-        centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: _finishWorkout,
-            child: const Text('Finalizar', style: TextStyle(color: Colors.white)),
-          )
-        ],
+        title: Text('Entrenamiento: ${widget.routine.name}'),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => _showExitConfirmationDialog(),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(currentRoutineExercise.exercise.name, style: Theme.of(context).textTheme.headlineMedium, textAlign: TextAlign.center),
-            const SizedBox(height: 8),
-            Text('${currentRoutineExercise.sets} series x ${currentRoutineExercise.reps} reps', style: Theme.of(context).textTheme.titleMedium, textAlign: TextAlign.center),
-            const SizedBox(height: 24),
-            _buildSetList(currentExerciseLog),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (_currentExerciseIndex > 0)
-                  ElevatedButton(onPressed: _previousExercise, child: const Text('Anterior')),
-                if (_currentExerciseIndex < exercises.length - 1)
-                  ElevatedButton(onPressed: _nextExercise, child: const Text('Siguiente')),
-              ],
+      body: (routineExercises == null || routineExercises.isEmpty)
+          ? const Center(
+              child: Text('Esta rutina no tiene ejercicios todavía.'),
             )
-          ],
+          : ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              itemCount: routineExercises.length,
+              itemBuilder: (context, index) {
+                final routineExercise = routineExercises[index];
+                final Exercise? exercise = exerciseProvider.getExerciseById(routineExercise.exerciseId);
+
+                if (exercise == null) {
+                  return ListTile(
+                    title: Text('Ejercicio no encontrado (ID: ${routineExercise.exerciseId})'),
+                    leading: const Icon(Icons.error_outline, color: Colors.red),
+                  );
+                }
+
+                return _buildExerciseCard(exercise, routineExercise, index);
+              },
+            ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+        child: ElevatedButton.icon(
+          icon: const Icon(Icons.check_circle_outline),
+          label: const Text('Finalizar Entrenamiento'),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          onPressed: _finishWorkout,
         ),
       ),
     );
   }
 
-  Widget _buildSetList(ExerciseLog exerciseLog) {
-  return ListView.builder(
-    shrinkWrap: true,
-    itemCount: exerciseLog.sets.length,
-    itemBuilder: (context, index) {
-      final set = exerciseLog.sets[index];
-      return Card(
-        color: set.isCompleted ? Colors.green[100] : null,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Serie ${index + 1}', style: const TextStyle(fontSize: 16)),
-              SizedBox(
-                width: 80,
-                child: TextFormField(
-                  initialValue: set.weight.toString(),
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Peso'),
-                  onChanged: (value) => set.weight = double.tryParse(value) ?? 0,
-                ),
-              ),
-              SizedBox(
-                width: 80,
-                child: TextFormField(
-                  initialValue: set.reps.toString(),
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Reps'),
-                  onChanged: (value) => set.reps = int.tryParse(value) ?? 0,
-                ),
-              ),
-              IconButton(
-                icon: Icon(set.isCompleted ? Icons.check_circle : Icons.check_circle_outline),
-                color: set.isCompleted ? Colors.green : Colors.grey,
-                onPressed: () => _completeSet(index),
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
-
-
-  Widget _buildRestScreen() {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      body: Center(
+  Widget _buildExerciseCard(Exercise exercise, RoutineExercise routineExercise, int exerciseIndex) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('DESCANSO', style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white)),
-            const SizedBox(height: 20),
-            Text('${_restTimeRemaining}s', style: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _restTimer?.cancel();
-                setState(() {
-                  _isResting = false;
-                });
-              },
-              child: const Text('Saltar Descanso'),
+            Text(exercise.name, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text('${routineExercise.sets} series x ${routineExercise.reps} reps', style: Theme.of(context).textTheme.titleMedium),
+            if (routineExercise.restTime != null && routineExercise.restTime! > 0)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  children: [
+                    const Icon(Icons.timer_outlined, size: 20, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Text('${routineExercise.restTime} seg de descanso entre series', style: Theme.of(context).textTheme.bodyMedium),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 4.0,
+              children: List.generate(routineExercise.sets, (setIndex) {
+                return ChoiceChip(
+                  label: Text('Set ${setIndex + 1}'),
+                  selected: _setsCompletion[exerciseIndex]![setIndex],
+                  onSelected: (bool selected) {
+                    setState(() {
+                      _setsCompletion[exerciseIndex]![setIndex] = selected;
+                    });
+                  },
+                  avatar: _setsCompletion[exerciseIndex]![setIndex]
+                      ? const Icon(Icons.check_circle, color: Colors.white)
+                      : null,
+                  selectedColor: Colors.green,
+                  labelStyle: TextStyle(
+                    color: _setsCompletion[exerciseIndex]![setIndex] ? Colors.white : Colors.black,
+                  ),
+                );
+              }),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _showExitConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: const Text('¿Finalizar Entrenamiento?'),
+          content: const Text('¿Estás seguro de que quieres terminar la sesión? El progreso no guardado se perderá.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () => Navigator.of(ctx).pop(),
+            ),
+            TextButton(
+              child: const Text('Finalizar', style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _finishWorkout() {
+    // TODO: Implement logic to save the workout session to history
+    // For now, just show a confirmation and pop
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('¡Entrenamiento completado! Buen trabajo.')),
+    );
+    Navigator.of(context).pop();
   }
 }

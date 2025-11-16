@@ -16,11 +16,11 @@ class ExerciseProvider with ChangeNotifier {
   }
 
   Future<void> _loadExercises() async {
-    // Clear the box to ensure fresh data
-    await _exerciseBox.clear();
-
-    for (final exercise in exerciseList) {
-        await _exerciseBox.put(exercise.id, exercise);
+    // The box is not cleared anymore to persist user-added exercises
+    if (_exerciseBox.isEmpty) {
+      for (final exercise in exerciseList) {
+          await _exerciseBox.put(exercise.id, exercise);
+      }
     }
     
     _exercises = _exerciseBox.values.toList();
@@ -57,5 +57,16 @@ class ExerciseProvider with ChangeNotifier {
     await _exerciseBox.delete(id);
     _exercises.removeWhere((e) => e.id == id);
     notifyListeners();
+  }
+
+  // Method to get a single exercise by its ID
+  Exercise? getExerciseById(String id) {
+    try {
+      return _exercises.firstWhere((exercise) => exercise.id == id);
+    } catch (e) {
+      // If no element is found, firstWhere throws a StateError.
+      // We catch it and return null for safety.
+      return null;
+    }
   }
 }
