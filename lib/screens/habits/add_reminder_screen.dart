@@ -187,7 +187,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         try {
           await notificationService.scheduleWeeklyNotification(
               reminder.id.hashCode, reminder.title, 'Es hora de tu hábito diario.', _selectedTime, _selectedDays);
-        } catch (e, st) {
+        } catch (e) {
           // If scheduling fails, deactivate the reminder and inform the user
           await remindersBox.put(reminder.id, reminder.copyWith(isActive: false));
           if (mounted) {
@@ -206,18 +206,24 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       }
 
       if (mounted) {
-        // Show a dialog so the user clearly notices the confirmation
+        // Show a confirmation dialog.
+        // It's safe to use the context here because it's before the await.
         await showDialog<void>(
           context: context,
-          builder: (context) => AlertDialog(
+          builder: (dialogContext) => AlertDialog(
             title: Text(isEditing ? 'Recordatorio actualizado' : 'Recordatorio guardado'),
             content: const Text('Tu recordatorio se guardó correctamente.'),
             actions: [
-              TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Aceptar')),
+              // Use the dialog's context to pop the dialog.
+              TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Aceptar')),
             ],
           ),
         );
-        Navigator.pop(context);
+
+        // After the await, check if the widget is still mounted before using its context.
+        if (mounted) {
+          Navigator.of(context).pop(); // Pop the AddReminderScreen itself.
+        }
       }
     }
   }
