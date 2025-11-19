@@ -139,10 +139,15 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       final remindersBox = Hive.box<Reminder>('reminders');
 
       // Check for duplicates (same time + same days) except when editing the same reminder
-      final existingDuplicate = remindersBox.values.firstWhere(
-        (r) => r.id != (isEditing ? widget.reminder!.id : null) && r.hour == _selectedTime.hour && r.minute == _selectedTime.minute && listEquals(r.days, _selectedDays),
-        orElse: () => null as Reminder,
-      );
+      Reminder? existingDuplicate;
+      try {
+        existingDuplicate = remindersBox.values.firstWhere(
+          (r) => r.id != (isEditing ? widget.reminder!.id : null) && r.hour == _selectedTime.hour && r.minute == _selectedTime.minute && listEquals(r.days, _selectedDays),
+        );
+      } catch(e) {
+        existingDuplicate = null;
+      }
+
       if (existingDuplicate != null) {
         final proceed = await showDialog<bool>(
           context: context,
