@@ -271,16 +271,6 @@ class MyApp extends StatelessWidget {
           primary: themeProvider.seedColor,
         );
 
-        Color textColorForBackground(Color backgroundColor) {
-          return ThemeData.estimateBrightnessForColor(backgroundColor) ==
-                  Brightness.dark
-              ? Colors.white
-              : Colors.black;
-        }
-
-        final lightAppBarTextColor = textColorForBackground(lightColorScheme.primary);
-        final darkAppBarTextColor = textColorForBackground(darkColorScheme.primary);
-
         final lightTheme = ThemeData(
           useMaterial3: true,
           colorScheme: lightColorScheme,
@@ -288,10 +278,12 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: lightColorScheme.surface,
           appBarTheme: AppBarTheme(
             backgroundColor: lightColorScheme.primary,
-            foregroundColor: lightAppBarTextColor,
+            foregroundColor: lightColorScheme.onPrimary,
+            iconTheme: IconThemeData(color: lightColorScheme.onPrimary),
+            actionsIconTheme: IconThemeData(color: lightColorScheme.onPrimary),
             elevation: 2,
             titleTextStyle:
-                textTheme.headlineSmall?.copyWith(color: lightAppBarTextColor),
+                textTheme.headlineSmall?.copyWith(color: lightColorScheme.onPrimary),
           ),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             selectedItemColor: lightColorScheme.primary,
@@ -300,10 +292,10 @@ class MyApp extends StatelessWidget {
             showUnselectedLabels: true,
           ),
           tabBarTheme: TabBarThemeData(
-            labelColor: lightAppBarTextColor,
+            labelColor: lightColorScheme.onPrimary,
             unselectedLabelColor:
-                lightAppBarTextColor.withAlpha((255 * 0.7).round()),
-            indicatorColor: lightAppBarTextColor,
+                lightColorScheme.onPrimary.withAlpha((255 * 0.7).round()),
+            indicatorColor: lightColorScheme.onPrimary,
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
@@ -329,10 +321,12 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: darkColorScheme.surface,
           appBarTheme: AppBarTheme(
             backgroundColor: darkColorScheme.primary,
-            foregroundColor: darkAppBarTextColor,
+            foregroundColor: darkColorScheme.onPrimary,
+            iconTheme: IconThemeData(color: darkColorScheme.onPrimary),
+            actionsIconTheme: IconThemeData(color: darkColorScheme.onPrimary),
             elevation: 2,
             titleTextStyle:
-                textTheme.headlineSmall?.copyWith(color: darkAppBarTextColor),
+                textTheme.headlineSmall?.copyWith(color: darkColorScheme.onPrimary),
           ),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: darkColorScheme.surface,
@@ -342,10 +336,10 @@ class MyApp extends StatelessWidget {
             showUnselectedLabels: true,
           ),
           tabBarTheme: TabBarThemeData(
-            labelColor: darkAppBarTextColor,
+            labelColor: darkColorScheme.onPrimary,
             unselectedLabelColor:
-                darkAppBarTextColor.withAlpha((255 * 0.7).round()),
-            indicatorColor: darkAppBarTextColor,
+                darkColorScheme.onPrimary.withAlpha((255 * 0.7).round()),
+            indicatorColor: darkColorScheme.onPrimary,
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
