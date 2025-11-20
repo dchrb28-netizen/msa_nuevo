@@ -30,7 +30,7 @@ class _FoodTodayViewState extends State<FoodTodayView> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface, // Use theme surface color
+      backgroundColor: Colors.transparent,
       body: Column(
         children: [
           Padding(
@@ -68,11 +68,8 @@ class _FoodTodayViewState extends State<FoodTodayView> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _selectMealTypeAndEdit(context),
-        label: const Text('Añadir Comida'),
+        label: const Text('Registrar'),
         icon: const Icon(Icons.add),
-        backgroundColor: const Color(0xFF6D4C41), // Brown color from the image
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

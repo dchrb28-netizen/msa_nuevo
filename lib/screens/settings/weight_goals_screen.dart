@@ -313,9 +313,12 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Índice de Masa Corporal (IMC)',
-                  style: Theme.of(context).textTheme.titleMedium,
+                Flexible(
+                  child: Text(
+                    'Índice de Masa Corporal (IMC)',
+                    style: Theme.of(context).textTheme.titleMedium,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 const SizedBox(width: 4),
                 IconButton(
