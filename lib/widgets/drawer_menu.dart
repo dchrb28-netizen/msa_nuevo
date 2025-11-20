@@ -248,7 +248,7 @@ class DrawerMenu extends StatelessWidget {
           ),
           _buildExpansionTile(
             context,
-            title: 'Recompensas y Metas',
+            title: 'Hitos',
             icon: PhosphorIcons.trophy(),
             iconColor: Colors.amber[900]!,
             children: [
