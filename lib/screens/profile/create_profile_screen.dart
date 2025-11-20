@@ -260,14 +260,11 @@ class CreateProfileScreenState extends State<CreateProfileScreen> {
               runSpacing: 10.0,
               alignment: WrapAlignment.center,
               children: _activityLevelOptions.entries.map((entry) {
-                return SizedBox(
-                  width: (MediaQuery.of(context).size.width / 2) - 34,
-                  child: SelectionCard(
-                    title: entry.value['label'],
-                    icon: entry.value['icon'],
-                    isSelected: _activityLevel == entry.key,
-                    onTap: () => setState(() => _activityLevel = entry.key),
-                  ),
+                return SelectionCard(
+                  title: entry.value['label'],
+                  icon: entry.value['icon'],
+                  isSelected: _activityLevel == entry.key,
+                  onTap: () => setState(() => _activityLevel = entry.key),
                 );
               }).toList(),
             ),

@@ -253,9 +253,9 @@ class DashboardScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Expanded(child: _buildCaloriesRing(context)),
-                Expanded(child: _buildWaterRing(context)),
-                Expanded(child: _buildTrainingRing()),
+                Flexible(child: _buildCaloriesRing(context)),
+                Flexible(child: _buildWaterRing(context)),
+                Flexible(child: _buildTrainingRing()),
               ],
             ),
           ],
@@ -292,7 +292,7 @@ class DashboardScreen extends StatelessWidget {
             return Column(
               children: [
                 CircularPercentIndicator(
-                  radius: 45.0,
+                  radius: 50.0,
                   lineWidth: 10.0,
                   percent: percent,
                   center: Icon(
@@ -313,7 +313,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 if (caloricGoal <= 0)
                   Text(
-                    'Sin meta',
+                    'Sin definir',
                     style: GoogleFonts.lato(
                       fontWeight: FontWeight.bold,
                       color: Colors.grey,
@@ -345,7 +345,7 @@ class DashboardScreen extends StatelessWidget {
         return Column(
           children: [
             CircularPercentIndicator(
-              radius: 45.0,
+              radius: 50.0,
               lineWidth: 10.0,
               percent: percent,
               center: Icon(PhosphorIcons.drop(PhosphorIconsStyle.duotone), color: Colors.blue, size: 30),
@@ -362,7 +362,7 @@ class DashboardScreen extends StatelessWidget {
               ),
             if (waterGoal <= 0)
               Text(
-                'Sin meta',
+                'Sin definir',
                 style: GoogleFonts.lato(
                   fontWeight: FontWeight.bold,
                   color: Colors.grey,
@@ -397,7 +397,7 @@ class DashboardScreen extends StatelessWidget {
         return Column(
           children: [
             CircularPercentIndicator(
-              radius: 45.0,
+              radius: 50.0,
               lineWidth: 10.0,
               percent: percent,
               center:

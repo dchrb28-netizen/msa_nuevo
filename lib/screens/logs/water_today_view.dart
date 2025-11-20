@@ -156,7 +156,7 @@ class WaterTodayView extends StatelessWidget {
                 else
                   Card(
                     elevation: 2,
-                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -210,13 +210,16 @@ class WaterTodayView extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back_ios),
                       onPressed: waterProvider.goToPreviousDay,
                     ),
-                    Text(
-                      DateFormat.yMMMMd(
-                        'es',
-                      ).format(waterProvider.selectedDate),
-                      style: GoogleFonts.lato(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Text(
+                        DateFormat.yMMMMd(
+                          'es',
+                        ).format(waterProvider.selectedDate),
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.lato(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     IconButton(

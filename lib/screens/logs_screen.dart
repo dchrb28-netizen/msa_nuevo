@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/screens/food/food_screen.dart';
 import 'package:myapp/screens/logs/body_measurement_screen.dart';
-import 'package:myapp/screens/water_today_screen.dart';
+import 'package:myapp/screens/water_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class LogsScreen extends StatefulWidget {
@@ -59,7 +59,7 @@ class _LogsScreenState extends State<LogsScreen>
       body: TabBarView(
         controller: _tabController,
         children: const [
-          WaterTodayScreen(),
+          WaterScreen(),
           FoodScreen(),
           BodyMeasurementScreen(),
         ],

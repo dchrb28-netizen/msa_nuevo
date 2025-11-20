@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/screens/profile/create_profile_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -39,8 +40,10 @@ class ProfileSelectionScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to create a new profile. Assuming you have a route for that.
-          Navigator.pushNamed(context, '/profile/create');
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
+          );
         },
         tooltip: 'Añadir Perfil',
         child: Icon(PhosphorIcons.plus(PhosphorIconsStyle.regular)),
