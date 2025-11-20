@@ -3,10 +3,12 @@ import 'package:hive/hive.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/services/streaks_service.dart'; // Importar el servicio de rachas
 import 'package:provider/provider.dart';
 
 class WaterIntakeProvider with ChangeNotifier {
   final Box<WaterLog> waterLogBox = Hive.box<WaterLog>('water_logs');
+  final StreaksService _streaksService = StreaksService(); // Instanciar el servicio
   double _dailyGoal = 2000; // Default goal
   DateTime _selectedDate = DateTime.now();
   User? _currentUser;
@@ -22,7 +24,6 @@ class WaterIntakeProvider with ChangeNotifier {
 
   void updateUser(UserProvider userProvider) {
     _updateUser(userProvider.user);
-    // No notificamos aquí, ya que el proxy provider reconstruirá los widgets.
   }
 
   void _updateUser(User? user) {
@@ -50,27 +51,33 @@ class WaterIntakeProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addWaterLog(double amount) {
+  Future<void> addWaterLog(double amount) async {
     if (_currentUser == null) return;
     final log = WaterLog(
       id: DateTime.now().toString(),
       userId: _currentUser!.id,
       amount: amount,
-      timestamp: _selectedDate, // Usar la fecha seleccionada por el usuario
+      timestamp: _selectedDate,
     );
-    waterLogBox.add(log);
-    notifyListeners(); // <-- ¡CRÍTICO! Notificar a los widgets que escuchan.
+    await waterLogBox.add(log);
+    notifyListeners();
+
+    // --- Lógica de Rachas ---
+    final totalToday = getWaterIntakeForDate(_selectedDate);
+    if (totalToday >= _dailyGoal) {
+      await _streaksService.updateHydrationStreak();
+    }
   }
 
   void editWaterLog(WaterLog log, double newAmount) {
     log.amount = newAmount;
     log.save();
-    notifyListeners(); // <-- ¡CRÍTICO! Notificar a los widgets que escuchan.
+    notifyListeners();
   }
 
   void deleteWaterLog(WaterLog log) {
     log.delete();
-    notifyListeners(); // <-- ¡CRÍTICO! Notificar a los widgets que escuchan.
+    notifyListeners(); 
   }
 
   double getWaterIntakeForDate(DateTime date) {
@@ -126,7 +133,6 @@ class WaterIntakeProvider with ChangeNotifier {
               if (newGoal != null && newGoal > 0) {
                 final updatedUser = currentUser.copyWith(waterGoal: newGoal);
                 userProvider.updateUser(updatedUser);
-                // El provider se actualizará a través del proxy, no es necesario llamar a _updateUser aquí.
                 Navigator.pop(context);
               }
             },

@@ -28,7 +28,7 @@ dependencies:
   flutter_staggered_animations: any
   fl_chart: any
   rive: any
-  shared_preferences: any
+  shared_preferences: ^2.5.3
   url_launcher: any
   json_annotation: any
   syncfusion_flutter_gauges: any
