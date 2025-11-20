@@ -261,9 +261,9 @@ class DrawerMenu extends StatelessWidget {
               ),
               buildListTile(
                 context,
-                icon: PhosphorIcons.flag(),
+                icon: PhosphorIcons.fire(),
                 iconColor: Colors.deepOrange[400]!,
-                title: 'Metas',
+                title: 'Rachas',
                 destination: const RewardsGoalsScreen(initialTabIndex: 1),
               ),
             ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/screens/rewards_goals/goals_screen.dart';
 import 'package:myapp/screens/rewards_goals/rewards_screen.dart';
+import 'package:myapp/screens/rewards_goals/streaks_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class RewardsGoalsScreen extends StatefulWidget {
@@ -42,8 +42,8 @@ class _RewardsGoalsScreenState extends State<RewardsGoalsScreen>
               text: 'Recompensas',
             ),
             Tab(
-              icon: Icon(PhosphorIcons.flag()),
-              text: 'Metas',
+              icon: Icon(PhosphorIcons.fire()),
+              text: 'Rachas',
             ),
           ],
         ),
@@ -52,7 +52,7 @@ class _RewardsGoalsScreenState extends State<RewardsGoalsScreen>
         controller: _tabController,
         children: const [
           RewardsScreen(),
-          GoalsScreen(),
+          StreaksScreen(),
         ],
       ),
     );
