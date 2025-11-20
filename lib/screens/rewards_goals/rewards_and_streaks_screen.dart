@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/screens/rewards_screen.dart';
+import 'package:myapp/screens/achievements_screen.dart';
 import 'package:myapp/screens/rewards_goals/streaks_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -22,7 +22,7 @@ class RewardsAndStreaksScreen extends StatelessWidget {
             tabs: [
               Tab(
                 icon: Icon(PhosphorIcons.trophy()),
-                text: 'Recompensas',
+                text: 'Logros',
               ),
               Tab(
                 icon: Icon(PhosphorIcons.fire()),
@@ -33,7 +33,7 @@ class RewardsAndStreaksScreen extends StatelessWidget {
         ),
         body: const TabBarView(
           children: [
-            RewardsScreen(),
+            AchievementsScreen(),
             StreaksScreen(),
           ],
         ),

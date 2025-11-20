@@ -3,14 +3,14 @@ import 'package:intl/intl.dart';
 import 'package:myapp/models/achievement.dart';
 import 'package:myapp/services/achievement_service.dart';
 
-class RewardsScreen extends StatefulWidget {
-  const RewardsScreen({super.key});
+class AchievementsScreen extends StatefulWidget {
+  const AchievementsScreen({super.key});
 
   @override
-  State<RewardsScreen> createState() => _RewardsScreenState();
+  State<AchievementsScreen> createState() => _AchievementsScreenState();
 }
 
-class _RewardsScreenState extends State<RewardsScreen> {
+class _AchievementsScreenState extends State<AchievementsScreen> {
   final AchievementService _achievementService = AchievementService();
   late Future<Map<String, List<Achievement>>> _groupedAchievementsFuture;
   int _userLevel = 1;
