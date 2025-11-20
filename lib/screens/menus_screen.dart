@@ -18,6 +18,9 @@ class MenusScreenState extends State<MenusScreen> with TickerProviderStateMixin 
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {}); // Rebuild to update icon styles
+    });
   }
 
   @override
@@ -28,6 +31,8 @@ class MenusScreenState extends State<MenusScreen> with TickerProviderStateMixin 
 
   @override
   Widget build(BuildContext context) {
+    final bool isTodaySelected = _tabController.index == 0;
+
     return Column(
       children: [
         TabBar(
@@ -39,11 +44,19 @@ class MenusScreenState extends State<MenusScreen> with TickerProviderStateMixin 
           unselectedLabelStyle: GoogleFonts.lato(),
           tabs: [
             Tab(
-              icon: Icon(PhosphorIcons.calendarCheck()),
+              icon: Icon(
+                isTodaySelected
+                    ? PhosphorIcons.calendarCheck(PhosphorIconsStyle.fill)
+                    : PhosphorIcons.calendarCheck(PhosphorIconsStyle.regular),
+              ),
               text: 'Menú de Hoy',
             ),
             Tab(
-              icon: Icon(PhosphorIcons.calendar()),
+              icon: Icon(
+                !isTodaySelected
+                    ? PhosphorIcons.calendar(PhosphorIconsStyle.fill)
+                    : PhosphorIcons.calendar(PhosphorIconsStyle.regular),
+              ),
               text: 'Planificador Semanal',
             ),
           ],

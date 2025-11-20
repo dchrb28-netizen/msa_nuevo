@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/logs/food_history_screen.dart';
 import 'package:myapp/screens/logs/food_today_view.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class FoodIntakeScreen extends StatefulWidget {
   const FoodIntakeScreen({super.key});
@@ -30,9 +31,9 @@ class _FoodIntakeScreenState extends State<FoodIntakeScreen>
     return Scaffold(
       appBar: TabBar(
         controller: _tabController,
-        tabs: const [
-          Tab(text: 'Hoy'),
-          Tab(text: 'Historial'),
+        tabs: [
+          Tab(icon: Icon(PhosphorIcons.calendar(PhosphorIconsStyle.regular)), text: 'Hoy'),
+          Tab(icon: Icon(PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.regular)), text: 'Historial'),
         ],
       ),
       body: TabBarView(

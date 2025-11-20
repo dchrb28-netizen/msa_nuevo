@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/user.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ProfileReadView extends StatelessWidget {
   final User user;
@@ -17,14 +18,24 @@ class ProfileReadView extends StatelessWidget {
   Widget build(BuildContext context) {
     final profileImage = user.profileImageBytes != null
         ? MemoryImage(user.profileImageBytes!)
-        : const AssetImage('assets/icons/icon.png') as ImageProvider;
+        : null;
 
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 20),
-          CircleAvatar(radius: 80, backgroundImage: profileImage),
+          CircleAvatar(
+            radius: 80,
+            backgroundImage: profileImage,
+            child: profileImage == null
+                ? Icon(
+                    PhosphorIcons.user(PhosphorIconsStyle.duotone),
+                    size: 80,
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                : null,
+          ),
           const SizedBox(height: 24),
           Text(user.name, style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 40),
@@ -47,7 +58,7 @@ class ProfileReadView extends StatelessWidget {
                 Expanded(
                   child: _buildInfoItem(
                     context,
-                    Icons.cake_outlined,
+                    PhosphorIcons.cake(PhosphorIconsStyle.duotone),
                     'Edad',
                     '${user.age} años',
                   ),
@@ -65,7 +76,7 @@ class ProfileReadView extends StatelessWidget {
                 Expanded(
                   child: _buildInfoItem(
                     context,
-                    Icons.height_outlined,
+                    PhosphorIcons.ruler(PhosphorIconsStyle.duotone),
                     'Altura',
                     '${user.height.toStringAsFixed(0)} cm',
                   ),
@@ -78,7 +89,7 @@ class ProfileReadView extends StatelessWidget {
                 Expanded(
                   child: _buildInfoItem(
                     context,
-                    Icons.monitor_weight_outlined,
+                    PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
                     'Peso',
                     '${user.weight.toStringAsFixed(1)} kg',
                   ),
@@ -96,7 +107,7 @@ class ProfileReadView extends StatelessWidget {
                 Expanded(
                   child: _buildInfoItem(
                     context,
-                    Icons.person_outline,
+                    PhosphorIcons.genderIntersex(PhosphorIconsStyle.duotone),
                     'Género',
                     genderOptions[user.gender] ?? 'No especificado',
                   ),
@@ -108,7 +119,7 @@ class ProfileReadView extends StatelessWidget {
               padding: const EdgeInsets.only(top: 10.0),
               child: _buildInfoItem(
                 context,
-                Icons.fitness_center_outlined,
+                PhosphorIcons.heartbeat(PhosphorIconsStyle.duotone),
                 'Nivel Actividad',
                 activityLevelOptions[user.activityLevel] ?? 'No especificado',
               ),
@@ -134,9 +145,10 @@ class ProfileReadView extends StatelessWidget {
         Text(
           value,
           textAlign: TextAlign.center,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium
+              ?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );

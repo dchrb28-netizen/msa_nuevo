@@ -7,6 +7,7 @@ import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/providers/water_intake_provider.dart';
 import 'package:myapp/screens/training/workout_screen.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -69,7 +70,7 @@ class DashboardScreen extends StatelessWidget {
                     ? MemoryImage(user!.profileImageBytes!)
                     : null,
                 child: (user?.profileImageBytes == null)
-                    ? const Icon(Icons.person, size: 40, color: Colors.grey)
+                    ? Icon(PhosphorIcons.user(PhosphorIconsStyle.duotone), size: 40, color: Colors.grey)
                     : null,
               ),
               const SizedBox(width: 16),
@@ -142,7 +143,7 @@ class DashboardScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 20.0),
                     child: ElevatedButton.icon(
-                      icon: const Icon(Icons.play_arrow_rounded),
+                      icon: Icon(PhosphorIcons.play(PhosphorIconsStyle.duotone)),
                       label: const Text('Comenzar'),
                       onPressed: () {
                         Navigator.push(
@@ -199,10 +200,10 @@ class DashboardScreen extends StatelessWidget {
     final dietPlan = user?.dietPlan ?? 'Mantener';
 
     final Map<String, dynamic> planDetails = {
-      'Perder': {'icon': Icons.trending_down, 'color': Colors.orange.shade300},
-      'Mantener': {'icon': Icons.sync, 'color': Colors.green.shade300},
-      'Ganar': {'icon': Icons.trending_up, 'color': Colors.blue.shade300},
-      'Personalizado': {'icon': Icons.edit, 'color': Colors.purple.shade300},
+      'Perder': {'icon': PhosphorIcons.trendDown(PhosphorIconsStyle.duotone), 'color': Colors.orange.shade300},
+      'Mantener': {'icon': PhosphorIcons.arrowsClockwise(PhosphorIconsStyle.duotone), 'color': Colors.green.shade300},
+      'Ganar': {'icon': PhosphorIcons.trendUp(PhosphorIconsStyle.duotone), 'color': Colors.blue.shade300},
+      'Personalizado': {'icon': PhosphorIcons.pencilSimple(PhosphorIconsStyle.duotone), 'color': Colors.purple.shade300},
     };
 
     return Card(
@@ -226,7 +227,7 @@ class DashboardScreen extends StatelessWidget {
                 if (user != null && !user.isGuest)
                   Chip(
                     avatar: Icon(
-                      planDetails[dietPlan]?['icon'] ?? Icons.help,
+                      planDetails[dietPlan]?['icon'] ?? PhosphorIcons.question(PhosphorIconsStyle.duotone),
                       color: Colors.black87,
                       size: 18,
                     ),
@@ -251,7 +252,7 @@ class DashboardScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildCaloriesRing(context),
-                _buildWaterRing(context), // <--- Este es el widget que vamos a arreglar
+                _buildWaterRing(context), 
                 _buildTrainingRing(),
               ],
             ),
@@ -292,8 +293,8 @@ class DashboardScreen extends StatelessWidget {
                   radius: 45.0,
                   lineWidth: 10.0,
                   percent: percent,
-                  center: const Icon(
-                    Icons.local_fire_department,
+                  center: Icon(
+                    PhosphorIcons.fire(PhosphorIconsStyle.duotone),
                     color: Colors.orange,
                     size: 30,
                   ),
@@ -324,25 +325,21 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  // *** INICIO DE LA SOLUCIÓN DEFINITIVA ***
   Widget _buildWaterRing(BuildContext context) {
-    // 1. Usar un Consumer para escuchar a WaterIntakeProvider.
     return Consumer<WaterIntakeProvider>(
       builder: (context, waterProvider, child) {
-        // 2. Obtener los datos directamente del provider.
         final waterGoal = waterProvider.dailyGoal;
         final totalWater = waterProvider.getWaterIntakeForDate(DateTime.now());
         final percent =
             waterGoal > 0 ? (totalWater / waterGoal).clamp(0.0, 1.0) : 0.0;
 
-        // 3. Devolver la UI actualizada.
         return Column(
           children: [
             CircularPercentIndicator(
               radius: 45.0,
               lineWidth: 10.0,
               percent: percent,
-              center: const Icon(Icons.water_drop, color: Colors.blue, size: 30),
+              center: Icon(PhosphorIcons.drop(PhosphorIconsStyle.duotone), color: Colors.blue, size: 30),
               progressColor: Colors.blue,
               backgroundColor: Colors.blue.shade100,
               circularStrokeCap: CircularStrokeCap.round,
@@ -367,7 +364,6 @@ class DashboardScreen extends StatelessWidget {
       },
     );
   }
-  // *** FIN DE LA SOLUCIÓN DEFINITIVA ***
 
   Widget _buildTrainingRing() {
     return ValueListenableBuilder(
@@ -389,7 +385,7 @@ class DashboardScreen extends StatelessWidget {
               lineWidth: 10.0,
               percent: percent,
               center:
-                  const Icon(Icons.fitness_center, color: Colors.green, size: 30),
+                  Icon(PhosphorIcons.barbell(PhosphorIconsStyle.duotone), color: Colors.green, size: 30),
               progressColor: Colors.green,
               backgroundColor: Colors.green.shade100,
               circularStrokeCap: CircularStrokeCap.round,

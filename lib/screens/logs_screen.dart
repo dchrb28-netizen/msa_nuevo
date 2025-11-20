@@ -3,6 +3,7 @@ import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/screens/food/food_screen.dart'; // Import the new nested tab screen
 import 'package:myapp/screens/logs/body_measurement_screen.dart';
 import 'package:myapp/screens/logs/water_log_screen.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
 class LogsScreen extends StatelessWidget {
@@ -17,8 +18,8 @@ class LogsScreen extends StatelessWidget {
     final appBarColor = themeProvider.seedColor;
     final tabBarItemColor =
         ThemeData.estimateBrightnessForColor(appBarColor) == Brightness.dark
-        ? Colors.white
-        : Colors.black;
+            ? Colors.white
+            : Colors.black;
 
     return DefaultTabController(
       initialIndex: initialTabIndex,
@@ -33,10 +34,10 @@ class LogsScreen extends StatelessWidget {
             unselectedLabelColor: tabBarItemColor.withAlpha(
               178,
             ), // Fixed: Used withAlpha instead of withOpacity
-            tabs: const [
-              Tab(icon: Icon(Icons.water_drop), text: 'Agua'),
-              Tab(icon: Icon(Icons.fastfood), text: 'Comida'),
-              Tab(icon: Icon(Icons.straighten), text: 'Medidas'),
+            tabs: [
+              Tab(icon: Icon(PhosphorIcons.drop(PhosphorIconsStyle.regular)), text: 'Agua'),
+              Tab(icon: Icon(PhosphorIcons.bowlFood(PhosphorIconsStyle.regular)), text: 'Comida'),
+              Tab(icon: Icon(PhosphorIcons.ruler(PhosphorIconsStyle.regular)), text: 'Medidas'),
             ],
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:myapp/screens/settings/theme_settings_screen.dart';
 import 'package:myapp/screens/settings/weight_goals_screen.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class SettingsScreen extends StatefulWidget {
   final int initialIndex;
@@ -29,11 +30,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          bottom: const TabBar(
+          bottom: TabBar(
             tabs: [
-              Tab(icon: Icon(Icons.flag), text: 'Metas'),
-              Tab(icon: Icon(Icons.monitor_weight), text: 'Peso'),
-              Tab(icon: Icon(Icons.palette), text: 'Tema'),
+              Tab(icon: Icon(PhosphorIcons.flag(PhosphorIconsStyle.duotone)), text: 'Metas'),
+              Tab(icon: Icon(PhosphorIcons.gear(PhosphorIconsStyle.duotone)), text: 'Peso'),
+              Tab(icon: Icon(PhosphorIcons.palette(PhosphorIconsStyle.duotone)), text: 'Tema'),
             ],
           ),
         ),

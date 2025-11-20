@@ -4,6 +4,7 @@ import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/screens/training/edit_routine_screen.dart';
 import 'package:myapp/screens/training/workout_history_screen.dart';
 import 'package:myapp/screens/training/workout_screen.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class RoutinesScreen extends StatelessWidget {
   const RoutinesScreen({super.key});
@@ -16,6 +17,9 @@ class RoutinesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -31,12 +35,12 @@ class RoutinesScreen extends StatelessWidget {
               runSpacing: 4.0, // Space between rows of chips
               children: [
                 ActionChip(
-                  avatar: const Icon(Icons.add, size: 20),
+                  avatar: Icon(PhosphorIcons.plusCircle(PhosphorIconsStyle.fill), color: colorScheme.primary, size: 20),
                   label: const Text('Crear Rutina'),
                   onPressed: () => _navigateAndAddRoutine(context),
                 ),
                 ActionChip(
-                  avatar: const Icon(Icons.history, size: 20),
+                  avatar: Icon(PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill), color: colorScheme.secondary, size: 20),
                   label: const Text('Historial'),
                   onPressed: () {
                     Navigator.of(context).push(
@@ -77,16 +81,16 @@ class RoutinesScreen extends StatelessWidget {
                         child: ListTile(
                           title: Text(
                             routine.name,
-                            style: Theme.of(context).textTheme.titleLarge,
+                            style: theme.textTheme.titleLarge,
                           ),
                           subtitle: Text(routine.description),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: const Icon(
-                                  Icons.play_arrow_rounded,
-                                  color: Colors.green,
+                                icon: Icon(
+                                  PhosphorIcons.play(PhosphorIconsStyle.fill),
+                                  color: colorScheme.primary,
                                   size: 30,
                                 ),
                                 tooltip: 'Iniciar Entrenamiento',
@@ -100,9 +104,9 @@ class RoutinesScreen extends StatelessWidget {
                                 },
                               ),
                               IconButton(
-                                icon: const Icon(
-                                  Icons.edit_outlined,
-                                  color: Colors.blueAccent,
+                                icon: Icon(
+                                  PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular),
+                                  color: colorScheme.secondary,
                                 ),
                                 tooltip: 'Editar Rutina',
                                 onPressed: () {
@@ -136,10 +140,10 @@ class RoutinesScreen extends StatelessWidget {
                                               },
                                             ),
                                             TextButton(
-                                              child: const Text(
+                                              child: Text(
                                                 'Eliminar',
                                                 style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: colorScheme.error,
                                                 ),
                                               ),
                                               onPressed: () {
@@ -157,14 +161,17 @@ class RoutinesScreen extends StatelessWidget {
                                 },
                                 itemBuilder: (BuildContext context) =>
                                     <PopupMenuEntry<String>>[
-                                      const PopupMenuItem<String>(
+                                      PopupMenuItem<String>(
                                         value: 'delete',
                                         child: ListTile(
                                           leading: Icon(
-                                            Icons.delete_outline,
-                                            color: Colors.redAccent,
+                                            PhosphorIcons.trash(PhosphorIconsStyle.regular),
+                                            color: colorScheme.error,
                                           ),
-                                          title: Text('Eliminar'),
+                                          title: Text(
+                                            'Eliminar',
+                                            style: TextStyle(color: colorScheme.error),
+                                            ),
                                         ),
                                       ),
                                     ],

@@ -12,7 +12,7 @@ class WatermarkImage extends StatelessWidget {
         'assets/luna_png/luna_${imageName}_${isDarkMode ? 'b' : 'w'}.png';
 
     return Opacity(
-      opacity: 0.1, // Adjust opacity for watermark effect
+      opacity: 0.05, // Adjust opacity for watermark effect
       child: Container(
         decoration: BoxDecoration(
           image: DecorationImage(

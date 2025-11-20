@@ -7,6 +7,7 @@ import 'package:myapp/screens/profile/create_profile_screen.dart';
 import 'package:myapp/widgets/profile/profile_edit_view.dart';
 import 'package:myapp/widgets/profile/profile_read_view.dart';
 import 'package:myapp/widgets/ui/watermark_image.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -170,12 +171,12 @@ class ProfileScreenState extends State<ProfileScreen> {
         actions: [
           if (!_isEditing)
             IconButton(
-              icon: const Icon(Icons.edit),
+              icon: Icon(PhosphorIcons.pencilSimple(PhosphorIconsStyle.duotone)),
               tooltip: 'Editar Perfil',
               onPressed: () => setState(() => _isEditing = true),
             ),
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: Icon(PhosphorIcons.signOut(PhosphorIconsStyle.duotone)),
             tooltip: 'Cerrar Sesión',
             onPressed: _logout,
           ),

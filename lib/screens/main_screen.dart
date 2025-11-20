@@ -42,17 +42,17 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.house(PhosphorIconsStyle.regular)),
+            icon: Icon(PhosphorIcons.house(PhosphorIconsStyle.duotone)),
             activeIcon: Icon(PhosphorIcons.house(PhosphorIconsStyle.fill)),
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.forkKnife(PhosphorIconsStyle.regular)),
+            icon: Icon(PhosphorIcons.forkKnife(PhosphorIconsStyle.duotone)),
             activeIcon: Icon(PhosphorIcons.forkKnife(PhosphorIconsStyle.fill)),
             label: 'Menús',
           ),
           BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.regular)),
+            icon: Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.duotone)),
             activeIcon: Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.fill)),
             label: 'Progreso',
           ),

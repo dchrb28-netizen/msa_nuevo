@@ -1,12 +1,13 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 import 'package:myapp/models/body_measurement.dart';
 import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/widgets/ui/watermark_image.dart';
-import 'package:intl/intl.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ProgresoScreen extends StatefulWidget {
   const ProgresoScreen({super.key});
@@ -56,12 +57,19 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Medidas Corporales ($_selectedPeriod)',
-              style: GoogleFonts.montserrat(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Icon(PhosphorIcons.ruler(PhosphorIconsStyle.duotone),
+                    color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Medidas Corporales ($_selectedPeriod)',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -84,11 +92,10 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                       startDate = now.subtract(const Duration(days: 7));
                   }
 
-                  final measurements =
-                      box.values
-                          .where((m) => m.timestamp.isAfter(startDate))
-                          .toList()
-                        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+                  final measurements = box.values
+                      .where((m) => m.timestamp.isAfter(startDate))
+                      .toList()
+                    ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
                   if (measurements.length < 2) {
                     return const Center(
@@ -128,13 +135,13 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                           borderWidth: 1,
                         ),
                         RadarDataSet(
-                          dataEntries: data
-                              .map((d) => RadarEntry(value: d))
-                              .toList(),
+                          dataEntries:
+                              data.map((d) => RadarEntry(value: d)).toList(),
                           borderColor: Theme.of(context).colorScheme.primary,
-                          fillColor: Theme.of(
-                            context,
-                          ).colorScheme.primary.withAlpha(100),
+                          fillColor: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withAlpha(100),
                           borderWidth: 2,
                         ),
                       ],
@@ -217,12 +224,19 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Consumo de Agua ($_selectedPeriod)',
-              style: GoogleFonts.montserrat(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Icon(PhosphorIcons.drop(PhosphorIconsStyle.duotone),
+                    color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Consumo de Agua ($_selectedPeriod)',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -296,7 +310,8 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                               if (index >= 0 && index < chartData.length) {
                                 final date = chartData[index].key;
                                 if (chartData.length > 7 &&
-                                    index % (chartData.length / 7).round() != 0) {
+                                    index % (chartData.length / 7).round() !=
+                                        0) {
                                   return const SizedBox.shrink();
                                 }
                                 return Padding(
@@ -373,9 +388,10 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                           ),
                           belowBarData: BarAreaData(
                             show: true,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.secondary.withAlpha(50),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .secondary
+                                .withAlpha(50),
                           ),
                         ),
                       ],
@@ -426,12 +442,19 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Progreso de Peso ($_selectedPeriod)',
-              style: GoogleFonts.montserrat(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.duotone),
+                    color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Progreso de Peso ($_selectedPeriod)',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -454,15 +477,13 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                       startDate = now.subtract(const Duration(days: 7));
                   }
 
-                  final measurements =
-                      box.values
-                          .where(
-                            (m) =>
-                                m.timestamp.isAfter(startDate) &&
-                                m.weight != null,
-                          )
-                          .toList()
-                        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+                  final measurements = box.values
+                      .where(
+                        (m) =>
+                            m.timestamp.isAfter(startDate) && m.weight != null,
+                      )
+                      .toList()
+                    ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
                   if (measurements.length < 2) {
                     return const Center(
@@ -525,7 +546,8 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                               if (index >= 0 && index < measurements.length) {
                                 final date = measurements[index].timestamp;
                                 if (measurements.length > 7 &&
-                                    index % (measurements.length / 7).round() !=
+                                    index %
+                                            (measurements.length / 7).round() !=
                                         0) {
                                   return const SizedBox.shrink();
                                 }
@@ -581,9 +603,10 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                           ),
                           belowBarData: BarAreaData(
                             show: true,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.primary.withAlpha(50),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withAlpha(50),
                           ),
                         ),
                       ],
@@ -602,9 +625,8 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                                 ),
                                 children: [
                                   TextSpan(
-                                    text: DateFormat.yMMMd().format(
-                                      measurement.timestamp,
-                                    ),
+                                    text: DateFormat.yMMMd()
+                                        .format(measurement.timestamp),
                                     style: TextStyle(
                                       color: Colors.grey[400],
                                       fontWeight: FontWeight.normal,
@@ -676,12 +698,19 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Resumen de Ejercicio ($periodText)',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Icon(PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
+                        color: Theme.of(context).colorScheme.primary),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Resumen de Ejercicio ($periodText)',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -689,10 +718,16 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                   children: [
                     Column(
                       children: [
+                        Icon(
+                          PhosphorIcons.calendarCheck(PhosphorIconsStyle.duotone),
+                          color: Theme.of(context).colorScheme.secondary,
+                          size: 28,
+                        ),
+                        const SizedBox(height: 8),
                         Text(
                           workoutsThisWeek.toString(),
                           style: GoogleFonts.montserrat(
-                            fontSize: 28,
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -702,10 +737,16 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                     ),
                     Column(
                       children: [
+                        Icon(
+                          PhosphorIcons.timer(PhosphorIconsStyle.duotone),
+                          color: Theme.of(context).colorScheme.secondary,
+                          size: 28,
+                        ),
+                        const SizedBox(height: 8),
                         Text(
                           timeSpent,
                           style: GoogleFonts.montserrat(
-                            fontSize: 28,
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.primary,
                           ),

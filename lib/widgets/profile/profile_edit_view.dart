@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ProfileEditView extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -55,7 +56,7 @@ class ProfileEditView extends StatelessWidget {
                       : null,
                   child: profileImageBytes == null
                       ? Icon(
-                          Icons.person,
+                          PhosphorIcons.user(PhosphorIconsStyle.duotone),
                           size: 80,
                           color: Theme.of(context).colorScheme.primary,
                         )
@@ -67,7 +68,7 @@ class ProfileEditView extends StatelessWidget {
                   child: FloatingActionButton(
                     mini: true,
                     onPressed: onPickImage,
-                    child: const Icon(Icons.edit),
+                    child: Icon(PhosphorIcons.pencilSimple(PhosphorIconsStyle.duotone)),
                   ),
                 ),
               ],
@@ -78,7 +79,7 @@ class ProfileEditView extends StatelessWidget {
             context: context,
             controller: nameController,
             label: 'Nombre',
-            icon: Icons.person_outline,
+            icon: PhosphorIcons.user(PhosphorIconsStyle.duotone),
             validator: (value) =>
                 (value == null || value.isEmpty) ? 'Introduce tu nombre' : null,
           ),
@@ -87,7 +88,7 @@ class ProfileEditView extends StatelessWidget {
             context: context,
             controller: ageController,
             label: 'Edad',
-            icon: Icons.cake_outlined,
+            icon: PhosphorIcons.cake(PhosphorIconsStyle.duotone),
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -104,7 +105,7 @@ class ProfileEditView extends StatelessWidget {
             context: context,
             controller: heightController,
             label: 'Altura (cm)',
-            icon: Icons.height_outlined,
+            icon: PhosphorIcons.ruler(PhosphorIconsStyle.duotone),
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -121,7 +122,7 @@ class ProfileEditView extends StatelessWidget {
             context: context,
             controller: weightController,
             label: 'Peso (kg)',
-            icon: Icons.monitor_weight_outlined,
+            icon: PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value == null || value.isEmpty) {
