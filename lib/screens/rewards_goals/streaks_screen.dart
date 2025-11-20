@@ -39,6 +39,7 @@ class _StreaksScreenState extends State<StreaksScreen> {
     final mealData = await _streaksService.getMealStreak();
     final workoutData = await _streaksService.getWorkoutStreak();
     final calorieData = await _streaksService.getCalorieStreak();
+    final fastingData = await _streaksService.getFastingStreak(); // <-- NUEVA RACHA CARGADA
 
     return [
       StreakInfo(
@@ -64,6 +65,12 @@ class _StreaksScreenState extends State<StreaksScreen> {
         description: 'Días seguidos dentro de tu rango de calorías.',
         icon: PhosphorIcons.target(),
         data: calorieData,
+      ),
+      StreakInfo(
+        title: 'Racha de Ayuno Intermitente',
+        description: 'Días seguidos completando tu ayuno con éxito.',
+        icon: PhosphorIcons.timer(), // <-- NUEVA TARJETA
+        data: fastingData,
       ),
     ];
   }

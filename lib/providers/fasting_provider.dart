@@ -6,12 +6,14 @@ import 'package:myapp/models/fasting_log.dart';
 import 'package:myapp/models/fasting_phase.dart';
 import 'package:myapp/models/fasting_plan.dart';
 import 'package:myapp/services/notification_service.dart';
+import 'package:myapp/services/streaks_service.dart'; // <-- IMPORTADO
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 class FastingProvider with ChangeNotifier {
   final Box<FastingLog> _fastingBox = Hive.box<FastingLog>('fasting_logs');
   final NotificationService _notificationService = NotificationService();
+  final StreaksService _streaksService = StreaksService(); // <-- INSTANCIADO
   Timer? _timer;
   FastingLog? _currentFast;
   FastingPhase? _previousPhase;
@@ -54,7 +56,6 @@ class FastingProvider with ChangeNotifier {
 
         // Check if goal is reached
         if (_currentFast!.durationInSeconds >= goalInSeconds) {
-          // This notification is for when the app is open
           _notificationService.showNotification(
             0,
             '¡Objetivo Cumplido!',
@@ -133,12 +134,12 @@ class FastingProvider with ChangeNotifier {
   Future<bool> addCustomPlan(FastingPlan plan) async {
     bool exists = allPlans.any((p) => p.fastingHours == plan.fastingHours);
     if (exists) {
-      return false; // Falla si ya existe
+      return false;
     }
     _customPlans.add(plan.copyWith(isCustom: true));
     await _savePreferences();
     notifyListeners();
-    return true; // Éxito
+    return true;
   }
 
   Future<bool> updateCustomPlan(FastingPlan plan) async {
@@ -146,7 +147,7 @@ class FastingProvider with ChangeNotifier {
       (p) => p.id != plan.id && p.fastingHours == plan.fastingHours,
     );
     if (exists) {
-      return false; // Falla si ya existe
+      return false;
     }
     final index = _customPlans.indexWhere((p) => p.id == plan.id);
     if (index != -1) {
@@ -160,7 +161,6 @@ class FastingProvider with ChangeNotifier {
 
   Future<void> deleteCustomPlan(String planId) async {
     _customPlans.removeWhere((p) => p.id == planId);
-    // If the deleted plan was the selected one, revert to the default plan
     if (_selectedPlan.id == planId) {
       _selectedPlan = FastingPlan.defaultPlans.first;
     }
@@ -184,6 +184,7 @@ class FastingProvider with ChangeNotifier {
       notes: notes,
     );
     await _fastingBox.put(newLog.id, newLog);
+     await _streaksService.updateFastingStreak(); // <-- ACTUALIZAR RACHA
     _updateFeedingWindow();
     notifyListeners();
   }
@@ -200,13 +201,11 @@ class FastingProvider with ChangeNotifier {
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Load custom plans
     final customPlansJson = prefs.getString('customFastingPlans');
     if (customPlansJson != null) {
       final decoded = jsonDecode(customPlansJson) as List;
       final loadedPlans = decoded.map((e) => FastingPlan.fromJson(e)).toList();
 
-      // --- CORRECCIÓN DEFINITIVA ---
       final uniqueHours = <int>{};
       final uniquePlans = <FastingPlan>[];
       for (final plan in loadedPlans) {
@@ -221,10 +220,8 @@ class FastingProvider with ChangeNotifier {
       } else {
         _customPlans = loadedPlans;
       }
-      // --- FIN CORRECCIÓN ---
     }
 
-    // Load selected plan
     final planId = prefs.getString('selectedPlanId');
     if (planId != null) {
       try {
@@ -247,14 +244,12 @@ class FastingProvider with ChangeNotifier {
     _previousPhase = null;
     _feedingWindowDuration = Duration.zero;
 
-    // Show immediate notification
     _notificationService.showNotification(
       0,
       'Ayuno Iniciado',
       '¡Tu ayuno ha comenzado! Buen trabajo.',
     );
 
-    // Schedule end-of-fast notification
     final endTime = startTime.add(Duration(hours: _selectedPlan.fastingHours));
     _notificationService.scheduleNotification(
       newFast.id.hashCode,
@@ -270,14 +265,12 @@ class FastingProvider with ChangeNotifier {
     if (!isFasting) return;
 
     final fastToStop = _currentFast!;
-    // Cancel the scheduled notification
     _notificationService.cancelNotification(fastToStop.id.hashCode);
 
     final endTime = DateTime.now();
     final duration = endTime.difference(fastToStop.startTime);
 
     if (duration.inMinutes < 1) {
-      // No registramos ayunos que duren menos de 1 minuto
       await _fastingBox.delete(fastToStop.id);
       _notificationService.showNotification(
         0,
@@ -288,8 +281,9 @@ class FastingProvider with ChangeNotifier {
       fastToStop.endTime = endTime;
       try {
         await fastToStop.save();
+        await _streaksService.updateFastingStreak(); // <-- ACTUALIZAR RACHA
       } catch (e) {
-        // If save fails, still proceed but log in devtools if needed
+        // Manejar error si es necesario
       }
       final formatted = _formatDuration(duration);
       _notificationService.showNotification(
