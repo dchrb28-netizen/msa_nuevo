@@ -9,53 +9,26 @@ class RemindersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Se vuelve a usar un Scaffold para poder alojar el FloatingActionButton.
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_alarm_outlined),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AddReminderScreen(),
-              ),
-            ),
-          ),
-          // Test notification button
-          IconButton(
-            icon: const Icon(Icons.notifications_active_outlined),
-            tooltip: 'Probar notificación',
-            onPressed: () async {
-              final notificationService = NotificationService();
-              // Mostrar notificación inmediata
-              await notificationService.showNotification(
-                  99999, 'Notificación de prueba', 'Esto es una notificación de prueba.');
-              // Programar una notificación dentro de 10 segundos para verificar scheduling
-              final scheduled = DateTime.now().add(const Duration(seconds: 10));
-              await notificationService.scheduleNotification(
-                  99998, 'Notificación programada', 'Programada para 10s', scheduled);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Notificación de prueba enviada')));
-              }
-            },
-          ),
-        ],
-      ),
       body: ValueListenableBuilder(
         valueListenable: Hive.box<Reminder>('reminders').listenable(),
         builder: (context, Box<Reminder> box, _) {
           final reminders = box.values.toList();
           if (reminders.isEmpty) {
             return const Center(
-              child: Text('Aún no has creado ningún recordatorio.'),
+              child: Padding(
+                padding: EdgeInsets.all(24.0),
+                child: Text(
+                  'Aún no has creado ningún recordatorio. ¡Toca el botón (+) para empezar!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+              ),
             );
           }
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 80), // Padding inferior para que el FAB no tape el último elemento
             itemCount: reminders.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
@@ -64,6 +37,16 @@ class RemindersScreen extends StatelessWidget {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddReminderScreen()),
+          );
+        },
+        tooltip: 'Añadir Recordatorio',
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -90,24 +73,26 @@ class _ReminderCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  reminder.title,
-                  style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Text(
+                    reminder.title,
+                    style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 Switch(
                   value: reminder.isActive,
                   onChanged: (bool value) async {
                     final updatedReminder = reminder.copyWith(isActive: value);
-                    await Hive.box<Reminder>('reminders')
-                        .put(reminder.id, updatedReminder);
+                    await Hive.box<Reminder>('reminders').put(reminder.id, updatedReminder);
 
                     final notificationService = NotificationService();
                     final time = TimeOfDay(hour: reminder.hour, minute: reminder.minute);
                     if (value) {
-                       await notificationService.scheduleWeeklyNotification(
+                      await notificationService.scheduleWeeklyNotification(
                           reminder.id.hashCode, reminder.title, 'Es hora de tu hábito diario.', time, reminder.days);
                     } else {
-                       await notificationService.cancelWeeklyNotifications(reminder.id.hashCode, reminder.days);
+                      await notificationService.cancelWeeklyNotifications(reminder.id.hashCode, reminder.days);
                     }
                   },
                 ),
@@ -156,8 +141,7 @@ class _ReminderCard extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Confirmar Eliminación'),
-          content: const Text(
-              '¿Estás seguro de que deseas eliminar este recordatorio?'),
+          content: const Text('¿Estás seguro de que deseas eliminar este recordatorio?'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancelar'),
@@ -169,8 +153,8 @@ class _ReminderCard extends StatelessWidget {
                 await Hive.box<Reminder>('reminders').delete(reminder.id);
                 await NotificationService().cancelWeeklyNotifications(reminder.id.hashCode, reminder.days);
                 if (context.mounted) {
-                   Navigator.of(context).pop();
-                   ScaffoldMessenger.of(context).showSnackBar(
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Recordatorio eliminado')),
                   );
                 }
@@ -204,9 +188,7 @@ class _DayIndicator extends StatelessWidget {
     return Text(
       day,
       style: TextStyle(
-        color: isSelected
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).disabledColor,
+        color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).disabledColor,
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
     );
