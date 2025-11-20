@@ -49,8 +49,9 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
   void _scrollToCurrentPhase(FastingProvider provider) {
     if (provider.currentPhase == null || !_scrollController.hasClients) return;
 
-    final currentPhaseIndex = FastingPhase.phases
-        .indexWhere((p) => p.name == provider.currentPhase!.name);
+    final currentPhaseIndex = FastingPhase.phases.indexWhere(
+      (p) => p.name == provider.currentPhase!.name,
+    );
 
     if (currentPhaseIndex != -1) {
       const itemWidth = 120.0; // Approximate width of a timeline item
@@ -67,27 +68,39 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
   }
 
   Future<void> _showPhaseInfoDialog(
-      BuildContext context, FastingPhase phase, ThemeData theme) async {
+    BuildContext context,
+    FastingPhase phase,
+    ThemeData theme,
+  ) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-          title: Row(children: [
-            Icon(phase.icon, color: theme.colorScheme.primary, size: 28),
-            const SizedBox(width: 12),
-            Expanded(
-                child: Text(phase.name,
-                    style: theme.textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold)))
-          ]),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          title: Row(
+            children: [
+              Icon(phase.icon, color: theme.colorScheme.primary, size: 28),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  phase.name,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
           content: SingleChildScrollView(
-              child: Text(phase.description, style: theme.textTheme.bodyLarge)),
+            child: Text(phase.description, style: theme.textTheme.bodyLarge),
+          ),
           actions: <Widget>[
             TextButton(
-                child: const Text('Cerrar'),
-                onPressed: () => Navigator.of(dialogContext).pop())
+              child: const Text('Cerrar'),
+              onPressed: () => Navigator.of(dialogContext).pop(),
+            ),
           ],
         );
       },
@@ -95,42 +108,55 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
   }
 
   Future<void> _showNotesDialog(
-      BuildContext context, FastingLog log, FastingProvider provider) async {
+    BuildContext context,
+    FastingLog log,
+    FastingProvider provider,
+  ) async {
     final notesController = TextEditingController(text: log.notes);
     await showDialog(
-        context: context,
-        builder: (dialogContext) {
-          return AlertDialog(
-              title: const Text('Notas del Ayuno'),
-              content: TextField(
-                  controller: notesController,
-                  maxLines: 4,
-                  decoration: const InputDecoration(
-                      hintText: '¿Cómo te sentiste? ¿Tuviste antojos?',
-                      border: OutlineInputBorder())),
-              actions: [
-                TextButton(
-                    onPressed: () => Navigator.of(dialogContext).pop(),
-                    child: const Text('Cancelar')),
-                ElevatedButton(
-                    onPressed: () async {
-                      final updatedLog = FastingLog(
-                          id: log.id,
-                          startTime: log.startTime,
-                          endTime: log.endTime,
-                          notes: notesController.text);
-                      await provider.updateFastingLog(updatedLog);
-                      if (dialogContext.mounted) {
-                        Navigator.of(dialogContext).pop();
-                      }
-                    },
-                    child: const Text('Guardar'))
-              ]);
-        });
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Notas del Ayuno'),
+          content: TextField(
+            controller: notesController,
+            maxLines: 4,
+            decoration: const InputDecoration(
+              hintText: '¿Cómo te sentiste? ¿Tuviste antojos?',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final updatedLog = FastingLog(
+                  id: log.id,
+                  startTime: log.startTime,
+                  endTime: log.endTime,
+                  notes: notesController.text,
+                );
+                await provider.updateFastingLog(updatedLog);
+                if (dialogContext.mounted) {
+                  Navigator.of(dialogContext).pop();
+                }
+              },
+              child: const Text('Guardar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _showEditDialog(
-      BuildContext context, FastingLog log, FastingProvider provider) async {
+    BuildContext context,
+    FastingLog log,
+    FastingProvider provider,
+  ) async {
     DateTime editedStartTime = log.startTime;
     DateTime? editedEndTime = log.endTime;
     final notesController = TextEditingController(text: log.notes);
@@ -143,98 +169,125 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return SingleChildScrollView(
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  ListTile(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
                       title: Text(
-                          'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(editedStartTime)}'),
+                        'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(editedStartTime)}',
+                      ),
                       trailing: const Icon(Icons.edit_calendar),
                       onTap: () async {
                         if (!context.mounted) return;
                         final date = await showDatePicker(
-                            context: context,
-                            initialDate: editedStartTime,
-                            firstDate: DateTime(2020),
-                            lastDate: DateTime.now());
+                          context: context,
+                          initialDate: editedStartTime,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime.now(),
+                        );
                         if (date == null) return;
 
                         if (!context.mounted) return;
                         final time = await showTimePicker(
-                            context: context,
-                            initialTime:
-                                TimeOfDay.fromDateTime(editedStartTime));
+                          context: context,
+                          initialTime: TimeOfDay.fromDateTime(editedStartTime),
+                        );
                         if (time == null) return;
 
                         setState(() {
-                          editedStartTime = DateTime(date.year, date.month,
-                              date.day, time.hour, time.minute);
+                          editedStartTime = DateTime(
+                            date.year,
+                            date.month,
+                            date.day,
+                            time.hour,
+                            time.minute,
+                          );
                         });
-                      }),
-                  ListTile(
+                      },
+                    ),
+                    ListTile(
                       title: Text(
-                          'Fin:      ${editedEndTime != null ? DateFormat('dd/MM/yy HH:mm').format(editedEndTime!) : 'N/A'}'),
+                        'Fin:      ${editedEndTime != null ? DateFormat('dd/MM/yy HH:mm').format(editedEndTime!) : 'N/A'}',
+                      ),
                       trailing: const Icon(Icons.edit_calendar),
                       onTap: () async {
                         if (!context.mounted) return;
                         final date = await showDatePicker(
-                            context: context,
-                            initialDate: editedEndTime ?? DateTime.now(),
-                            firstDate: DateTime(2020),
-                            lastDate:
-                                DateTime.now().add(const Duration(days: 1)));
+                          context: context,
+                          initialDate: editedEndTime ?? DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime.now().add(const Duration(days: 1)),
+                        );
                         if (date == null) return;
 
                         if (!context.mounted) return;
                         final time = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.fromDateTime(
-                                editedEndTime ?? DateTime.now()));
+                          context: context,
+                          initialTime: TimeOfDay.fromDateTime(
+                            editedEndTime ?? DateTime.now(),
+                          ),
+                        );
                         if (time == null) return;
 
                         setState(() {
-                          editedEndTime = DateTime(date.year, date.month,
-                              date.day, time.hour, time.minute);
+                          editedEndTime = DateTime(
+                            date.year,
+                            date.month,
+                            date.day,
+                            time.hour,
+                            time.minute,
+                          );
                         });
-                      }),
-                  const SizedBox(height: 16),
-                  TextField(
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
                       controller: notesController,
                       decoration: const InputDecoration(
-                          labelText: 'Notas',
-                          hintText: 'Añade tus notas aquí...',
-                          border: OutlineInputBorder()))
-                ]),
+                        labelText: 'Notas',
+                        hintText: 'Añade tus notas aquí...',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text('Cancelar')),
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancelar'),
+            ),
             ElevatedButton(
-                onPressed: () async {
-                  if (editedEndTime != null &&
-                      editedEndTime!.isBefore(editedStartTime)) {
-                    if (dialogContext.mounted) {
-                      ScaffoldMessenger.of(dialogContext)
-                          .showSnackBar(const SnackBar(
-                        content: Text(
-                            'La fecha de fin no puede ser anterior a la de inicio.'),
-                        backgroundColor: Colors.red,
-                      ));
-                    }
-                    return;
-                  }
-                  final updatedLog = FastingLog(
-                      id: log.id,
-                      startTime: editedStartTime,
-                      endTime: editedEndTime,
-                      notes: notesController.text);
-                  await provider.updateFastingLog(updatedLog);
+              onPressed: () async {
+                if (editedEndTime != null &&
+                    editedEndTime!.isBefore(editedStartTime)) {
                   if (dialogContext.mounted) {
-                    Navigator.of(dialogContext).pop();
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'La fecha de fin no puede ser anterior a la de inicio.',
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
                   }
-                },
-                child: const Text('Guardar')),
+                  return;
+                }
+                final updatedLog = FastingLog(
+                  id: log.id,
+                  startTime: editedStartTime,
+                  endTime: editedEndTime,
+                  notes: notesController.text,
+                );
+                await provider.updateFastingLog(updatedLog);
+                if (dialogContext.mounted) {
+                  Navigator.of(dialogContext).pop();
+                }
+              },
+              child: const Text('Guardar'),
+            ),
           ],
         );
       },
@@ -242,7 +295,9 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
   }
 
   Future<void> _showStopFastingDialog(
-      BuildContext context, FastingProvider provider) async {
+    BuildContext context,
+    FastingProvider provider,
+  ) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -252,7 +307,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
           content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('¿Estás seguro de que quieres finalizar el ayuno?')
+                Text('¿Estás seguro de que quieres finalizar el ayuno?'),
               ],
             ),
           ),
@@ -308,15 +363,36 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             return Column(
               children: [
                 Container(
-                    color: theme.colorScheme.surface,
-                    child: Material(color: theme.colorScheme.primary.withAlpha(25),
-                        child: TabBar(indicatorColor: theme.colorScheme.primary, labelColor: theme.colorScheme.primary, unselectedLabelColor: theme.textTheme.bodyLarge?.color, tabs: const [Tab(icon: Icon(Icons.timer_outlined), text: 'Ayuno'), Tab(icon: Icon(Icons.history_outlined), text: 'Historial'), Tab(icon: Icon(Icons.bar_chart_outlined), text: 'Estadísticas')]))),
+                  color: theme.colorScheme.surface,
+                  child: Material(
+                    color: theme.colorScheme.primary.withAlpha(25),
+                    child: TabBar(
+                      indicatorColor: theme.colorScheme.primary,
+                      labelColor: theme.colorScheme.primary,
+                      unselectedLabelColor: theme.textTheme.bodyLarge?.color,
+                      tabs: const [
+                        Tab(icon: Icon(Icons.timer_outlined), text: 'Ayuno'),
+                        Tab(
+                          icon: Icon(Icons.history_outlined),
+                          text: 'Historial',
+                        ),
+                        Tab(
+                          icon: Icon(Icons.bar_chart_outlined),
+                          text: 'Estadísticas',
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 Expanded(
-                    child: TabBarView(children: [
-                  _buildFastingTab(context, theme, fastingProvider),
-                  _buildHistoryTab(context, fastingProvider, theme),
-                  _buildStatsTab(fastingProvider, theme)
-                ]))
+                  child: TabBarView(
+                    children: [
+                      _buildFastingTab(context, theme, fastingProvider),
+                      _buildHistoryTab(context, fastingProvider, theme),
+                      _buildStatsTab(fastingProvider, theme),
+                    ],
+                  ),
+                ),
               ],
             );
           },
@@ -325,14 +401,21 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
     );
   }
 
-  Widget _buildFastingTab(BuildContext context, ThemeData theme, FastingProvider provider) {
+  Widget _buildFastingTab(
+    BuildContext context,
+    ThemeData theme,
+    FastingProvider provider,
+  ) {
     final isFasting = provider.isFasting;
     final duration = provider.currentFast?.durationInSeconds ?? 0;
     final goal = provider.goalInSeconds;
     final progress = goal > 0 ? (duration / goal).clamp(0.0, 1.0) : 0.0;
 
     final fastingGradient = LinearGradient(
-      colors: [theme.colorScheme.surface, theme.colorScheme.surface.withBlue(30)],
+      colors: [
+        theme.colorScheme.surface,
+        theme.colorScheme.surface.withBlue(30),
+      ],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
     );
@@ -419,9 +502,10 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                       side: BorderSide(
-                          color: isSelected
-                              ? theme.colorScheme.primary
-                              : Colors.grey.shade300),
+                        color: isSelected
+                            ? theme.colorScheme.primary
+                            : Colors.grey.shade300,
+                      ),
                     ),
                   ),
                 ),
@@ -440,7 +524,10 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
   }
 
   Future<void> _showManagePlanOptions(
-      BuildContext context, FastingPlan plan, FastingProvider provider) async {
+    BuildContext context,
+    FastingPlan plan,
+    FastingProvider provider,
+  ) async {
     await showModalBottomSheet(
       context: context,
       builder: (ctx) {
@@ -456,8 +543,10 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Eliminar Plan',
-                  style: TextStyle(color: Colors.red)),
+              title: const Text(
+                'Eliminar Plan',
+                style: TextStyle(color: Colors.red),
+              ),
               onTap: () async {
                 Navigator.of(ctx).pop();
                 final confirm = await showDialog<bool>(
@@ -465,15 +554,17 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                   builder: (dialogCtx) => AlertDialog(
                     title: const Text('Confirmar Eliminación'),
                     content: Text(
-                        '¿Seguro que quieres eliminar el plan "${plan.name}"?'),
+                      '¿Seguro que quieres eliminar el plan "${plan.name}"?',
+                    ),
                     actions: [
                       TextButton(
-                          onPressed: () =>
-                              Navigator.of(dialogCtx).pop(false),
-                          child: const Text('Cancelar')),
+                        onPressed: () => Navigator.of(dialogCtx).pop(false),
+                        child: const Text('Cancelar'),
+                      ),
                       ElevatedButton(
-                          onPressed: () => Navigator.of(dialogCtx).pop(true),
-                          child: const Text('Eliminar')),
+                        onPressed: () => Navigator.of(dialogCtx).pop(true),
+                        child: const Text('Eliminar'),
+                      ),
                     ],
                   ),
                 );
@@ -488,14 +579,15 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
     );
   }
 
-// -----------------------------------------------------------------------------
-// --- INICIO DE LA CORRECCIÓN DEFINITIVA ---
-// -----------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------
+  // --- INICIO DE LA CORRECCIÓN DEFINITIVA ---
+  // -----------------------------------------------------------------------------
 
   Future<void> _showPlanFormDialog(
-      BuildContext context, FastingProvider provider,
-      {FastingPlan? planToEdit}) async {
-
+    BuildContext context,
+    FastingProvider provider, {
+    FastingPlan? planToEdit,
+  }) async {
     final formKey = GlobalKey<FormState>();
     int fastingHours = planToEdit?.fastingHours ?? 16;
     final bool isEditing = planToEdit != null;
@@ -524,7 +616,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                       label: (tempFastingHours ?? fastingHours).toString(),
                       onChanged: (value) {
                         setState(() {
-                           tempFastingHours = value.round();
+                          tempFastingHours = value.round();
                         });
                       },
                     ),
@@ -542,18 +634,22 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
               onPressed: () async {
                 if (formKey.currentState!.validate()) {
                   final finalFastingHours = tempFastingHours ?? fastingHours;
-                  final planName = '$finalFastingHours:${24 - finalFastingHours}';
-                  
+                  final planName =
+                      '$finalFastingHours:${24 - finalFastingHours}';
+
                   bool success = false;
                   if (isEditing) {
                     final updatedPlan = planToEdit.copyWith(
-                        fastingHours: finalFastingHours, name: planName);
+                      fastingHours: finalFastingHours,
+                      name: planName,
+                    );
                     success = await provider.updateCustomPlan(updatedPlan);
                   } else {
                     final newPlan = FastingPlan(
-                        name: planName,
-                        fastingHours: finalFastingHours,
-                        isCustom: true);
+                      name: planName,
+                      fastingHours: finalFastingHours,
+                      isCustom: true,
+                    );
                     success = await provider.addCustomPlan(newPlan);
                   }
 
@@ -561,18 +657,21 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                   if (!success && dialogContext.mounted) {
                     // MUESTRA EL DIÁLOGO DE ERROR
                     showDialog(
-                        context: dialogContext,
-                        builder: (errorCtx) => AlertDialog(
-                              title: const Text('Plan Duplicado'),
-                              content: Text(
-                                  'Ya existe un plan con una duración de $finalFastingHours horas. Por favor, elige una duración diferente.'),
-                              actions: [
-                                TextButton(
-                                    child: const Text('Entendido'),
-                                    onPressed: () => Navigator.of(errorCtx).pop())
-                              ],
-                            ));
-                  } 
+                      context: dialogContext,
+                      builder: (errorCtx) => AlertDialog(
+                        title: const Text('Plan Duplicado'),
+                        content: Text(
+                          'Ya existe un plan con una duración de $finalFastingHours horas. Por favor, elige una duración diferente.',
+                        ),
+                        actions: [
+                          TextButton(
+                            child: const Text('Entendido'),
+                            onPressed: () => Navigator.of(errorCtx).pop(),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                   // Si fue exitosa, simplemente cierra el formulario.
                   else if (success && dialogContext.mounted) {
                     Navigator.of(dialogContext).pop();
@@ -587,103 +686,121 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
     );
   }
 
-// -----------------------------------------------------------------------------
-// --- FIN DE LA CORRECCIÓN DEFINITIVA ---
-// -----------------------------------------------------------------------------
-
+  // -----------------------------------------------------------------------------
+  // --- FIN DE LA CORRECCIÓN DEFINITIVA ---
+  // -----------------------------------------------------------------------------
 
   Widget _buildHistoryTab(
-      BuildContext context, FastingProvider provider, ThemeData theme) {
+    BuildContext context,
+    FastingProvider provider,
+    ThemeData theme,
+  ) {
     final history = provider.fastingHistory;
 
     if (history.isEmpty) {
       return const Center(
-          child: Text('Aún no hay registros de ayuno.',
-              style: TextStyle(fontSize: 16)));
+        child: Text(
+          'Aún no hay registros de ayuno.',
+          style: TextStyle(fontSize: 16),
+        ),
+      );
     }
 
     return ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: history.length,
-        itemBuilder: (context, index) {
-          final log = history[index];
-          if (log.endTime == null) {
-            // Handle the case where endTime is null, maybe return an empty container
-            return Container();
-          }
-          final duration = log.endTime!.difference(log.startTime);
-          final hours = duration.inHours;
-          final minutes = duration.inMinutes.remainder(60);
+      padding: const EdgeInsets.all(16),
+      itemCount: history.length,
+      itemBuilder: (context, index) {
+        final log = history[index];
+        if (log.endTime == null) {
+          // Handle the case where endTime is null, maybe return an empty container
+          return Container();
+        }
+        final duration = log.endTime!.difference(log.startTime);
+        final hours = duration.inHours;
+        final minutes = duration.inMinutes.remainder(60);
 
-          return Dismissible(
-              key: Key(log.id),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: const Icon(Icons.delete, color: Colors.white)),
-              confirmDismiss: (direction) async {
-                return await showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                          title: const Text("Confirmar"),
-                          content: const Text(
-                              "¿Estás seguro de que quieres eliminar este ayuno?"),
-                          actions: <Widget>[
-                            TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(false),
-                                child: const Text("CANCELAR")),
-                            ElevatedButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(true),
-                                child: const Text("ELIMINAR"))
-                          ]);
-                    });
-              },
-              onDismissed: (direction) async {
-                await provider.deleteFastingLog(log.id);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Ayuno eliminado')));
-                }
-              },
-              child: Card(
-                  elevation: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                        backgroundColor: theme.colorScheme.primary,
-                        foregroundColor: theme.colorScheme.onPrimary,
-                        child: const Icon(Icons.check_circle_outline)),
-                    title: Text('Ayuno de ${hours}h ${minutes}m',
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text(
-                        'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(log.startTime)}\nFin:      ${DateFormat('dd/MM/yy HH:mm').format(log.endTime!)}',
-                        style: const TextStyle(fontSize: 12)),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                            icon: Icon(
-                                log.notes != null && log.notes!.isNotEmpty
-                                    ? Icons.speaker_notes
-                                    : Icons.speaker_notes_off_outlined,
-                                color: log.notes != null && log.notes!.isNotEmpty
-                                    ? theme.colorScheme.secondary
-                                    : Colors.grey),
-                            onPressed: () =>
-                                _showNotesDialog(context, log, provider)),
-                        IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () =>
-                                _showEditDialog(context, log, provider))
-                      ],
+        return Dismissible(
+          key: Key(log.id),
+          direction: DismissDirection.endToStart,
+          background: Container(
+            color: Colors.red,
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 20.0),
+            child: const Icon(Icons.delete, color: Colors.white),
+          ),
+          confirmDismiss: (direction) async {
+            return await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("Confirmar"),
+                  content: const Text(
+                    "¿Estás seguro de que quieres eliminar este ayuno?",
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text("CANCELAR"),
                     ),
-                  )));
-        });
+                    ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text("ELIMINAR"),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          onDismissed: (direction) async {
+            await provider.deleteFastingLog(log.id);
+            if (context.mounted) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Ayuno eliminado')));
+            }
+          },
+          child: Card(
+            elevation: 2,
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                child: const Icon(Icons.check_circle_outline),
+              ),
+              title: Text(
+                'Ayuno de ${hours}h ${minutes}m',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(log.startTime)}\nFin:      ${DateFormat('dd/MM/yy HH:mm').format(log.endTime!)}',
+                style: const TextStyle(fontSize: 12),
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      log.notes != null && log.notes!.isNotEmpty
+                          ? Icons.speaker_notes
+                          : Icons.speaker_notes_off_outlined,
+                      color: log.notes != null && log.notes!.isNotEmpty
+                          ? theme.colorScheme.secondary
+                          : Colors.grey,
+                    ),
+                    onPressed: () => _showNotesDialog(context, log, provider),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () => _showEditDialog(context, log, provider),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildFastingTimeline(FastingProvider provider, ThemeData theme) {
@@ -707,13 +824,16 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
               provider.currentPhase != null && provider.currentPhase == phase;
           bool isFuture = currentDurationHours < phase.startHour;
 
-          Color lineColor =
-              isCompleted ? theme.colorScheme.primary : Colors.grey.shade300;
+          Color lineColor = isCompleted
+              ? theme.colorScheme.primary
+              : Colors.grey.shade300;
           Widget indicator;
 
           if (isCompleted) {
-            indicator =
-                Icon(Icons.check_circle, color: theme.colorScheme.primary);
+            indicator = Icon(
+              Icons.check_circle,
+              color: theme.colorScheme.primary,
+            );
           } else if (isCurrent) {
             indicator = Container(
               decoration: BoxDecoration(
@@ -727,7 +847,11 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                   ),
                 ],
               ),
-              child: Icon(phase.icon, color: theme.colorScheme.onPrimary, size: 20),
+              child: Icon(
+                phase.icon,
+                color: theme.colorScheme.onPrimary,
+                size: 20,
+              ),
             );
           } else {
             indicator = Icon(phase.icon, color: Colors.grey.shade400, size: 20);
@@ -740,11 +864,13 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             isLast: isLast,
             beforeLineStyle: LineStyle(color: lineColor, thickness: 3),
             afterLineStyle: LineStyle(
-                color: index < phases.length - 1 &&
-                        currentDurationHours >= phases[index + 1].startHour
-                    ? theme.colorScheme.primary
-                    : Colors.grey.shade300,
-                thickness: 3),
+              color:
+                  index < phases.length - 1 &&
+                      currentDurationHours >= phases[index + 1].startHour
+                  ? theme.colorScheme.primary
+                  : Colors.grey.shade300,
+              thickness: 3,
+            ),
             indicatorStyle: IndicatorStyle(
               width: 35,
               height: 35,
@@ -753,7 +879,10 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             endChild: InkWell(
               onTap: () => _showPhaseInfoDialog(context, phase, theme),
               child: Container(
-                constraints: const BoxConstraints(minWidth: 100, minHeight: 120),
+                constraints: const BoxConstraints(
+                  minWidth: 100,
+                  minHeight: 120,
+                ),
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -763,22 +892,25 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                       phase.name,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontWeight:
-                            isCurrent ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: isCurrent
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                         color: isFuture
                             ? Colors.grey.shade500
                             : (isCurrent
-                                ? theme.colorScheme.primary
-                                : theme.textTheme.bodyMedium?.color),
+                                  ? theme.colorScheme.primary
+                                  : theme.textTheme.bodyMedium?.color),
                         fontSize: 12,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '${phase.startHour}h',
-                      style:
-                          TextStyle(fontSize: 11, color: Colors.grey.shade600),
-                    )
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -807,7 +939,10 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                   title: 'Ayuno Más Largo',
                   value: longestFast != null && longestFast.endTime != null
                       ? provider.formatDuration(
-                          longestFast.endTime!.difference(longestFast.startTime))
+                          longestFast.endTime!.difference(
+                            longestFast.startTime,
+                          ),
+                        )
                       : 'N/A',
                 ),
               ),
@@ -829,20 +964,18 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
-          Expanded(
-            child: BarChart(
-              _buildWeeklyChart(provider, theme),
-            ),
-          ),
+          Expanded(child: BarChart(_buildWeeklyChart(provider, theme))),
         ],
       ),
     );
   }
 
-  Widget _buildStatCard(ThemeData theme,
-      {required IconData icon,
-      required String title,
-      required String value}) {
+  Widget _buildStatCard(
+    ThemeData theme, {
+    required IconData icon,
+    required String title,
+    required String value,
+  }) {
     return Card(
       elevation: 2,
       child: Padding(
@@ -860,8 +993,9 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             const SizedBox(height: 4),
             Text(
               value,
-              style: theme.textTheme.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
@@ -900,8 +1034,10 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             showTitles: true,
             reservedSize: 40,
             getTitlesWidget: (value, meta) {
-              return Text('${value.toInt()}h',
-                  style: const TextStyle(fontSize: 10));
+              return Text(
+                '${value.toInt()}h',
+                style: const TextStyle(fontSize: 10),
+              );
             },
           ),
         ),
@@ -942,8 +1078,9 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
           ),
         ),
         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        rightTitles:
-            const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
       ),
       gridData: FlGridData(
         show: true,
@@ -961,8 +1098,9 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
               toY: entry.value,
               color: theme.colorScheme.primary,
               width: 16,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(4)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(4),
+              ),
             ),
           ],
         );

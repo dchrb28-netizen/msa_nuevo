@@ -40,7 +40,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         body: TabBarView(
           children: [
             CaloricGoalsScreen(key: _caloricGoalsKey), // Use the key here
-            WeightGoalsScreen(onProfileUpdated: _reloadCaloricGoals), // Pass the callback
+            WeightGoalsScreen(
+              onProfileUpdated: _reloadCaloricGoals,
+            ), // Pass the callback
             const ThemeSettingsScreen(),
           ],
         ),

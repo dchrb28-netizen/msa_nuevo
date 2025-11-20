@@ -1,4 +1,3 @@
-
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:simple_animations/simple_animations.dart';
@@ -8,11 +7,7 @@ class WaveBubble extends StatelessWidget {
   final double initialX;
   final double initialY;
 
-  const WaveBubble({
-    super.key,
-    required this.initialX,
-    required this.initialY,
-  });
+  const WaveBubble({super.key, required this.initialX, required this.initialY});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +22,10 @@ class WaveBubble extends StatelessWidget {
             opacity: 1.0 - value,
             child: CustomPaint(
               painter: BubblePainter(),
-              size: Size(5 + Random().nextDouble() * 5, 5 + Random().nextDouble() * 5),
+              size: Size(
+                5 + Random().nextDouble() * 5,
+                5 + Random().nextDouble() * 5,
+              ),
             ),
           ),
         );

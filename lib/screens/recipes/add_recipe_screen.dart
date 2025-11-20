@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -20,8 +19,12 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   final _cookingTimeController = TextEditingController();
   final _servingsController = TextEditingController();
 
-  final List<TextEditingController> _ingredientControllers = [TextEditingController()];
-  final List<TextEditingController> _instructionControllers = [TextEditingController()];
+  final List<TextEditingController> _ingredientControllers = [
+    TextEditingController(),
+  ];
+  final List<TextEditingController> _instructionControllers = [
+    TextEditingController(),
+  ];
 
   Uint8List? _imageBytes;
 
@@ -71,8 +74,14 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
         category: _categoryController.text,
         cookingTime: int.tryParse(_cookingTimeController.text),
         servings: int.tryParse(_servingsController.text),
-        ingredients: _ingredientControllers.map((c) => c.text).where((t) => t.isNotEmpty).toList(),
-        instructions: _instructionControllers.map((c) => c.text).where((t) => t.isNotEmpty).toList(),
+        ingredients: _ingredientControllers
+            .map((c) => c.text)
+            .where((t) => t.isNotEmpty)
+            .toList(),
+        instructions: _instructionControllers
+            .map((c) => c.text)
+            .where((t) => t.isNotEmpty)
+            .toList(),
         imageBytes: _imageBytes,
       );
 
@@ -110,10 +119,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
       appBar: AppBar(
         title: const Text('Añadir Nueva Receta'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _saveRecipe,
-          ),
+          IconButton(icon: const Icon(Icons.save), onPressed: _saveRecipe),
         ],
       ),
       body: Form(
@@ -135,12 +141,14 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
               controller: _descriptionController,
               decoration: const InputDecoration(labelText: 'Descripción'),
             ),
-             Row(
+            Row(
               children: [
                 Expanded(
                   child: TextFormField(
                     controller: _cookingTimeController,
-                    decoration: const InputDecoration(labelText: 'Tiempo (min)'),
+                    decoration: const InputDecoration(
+                      labelText: 'Tiempo (min)',
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
@@ -154,14 +162,24 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                 ),
               ],
             ),
-             TextFormField(
+            TextFormField(
               controller: _categoryController,
               decoration: const InputDecoration(labelText: 'Categoría'),
             ),
             const SizedBox(height: 20),
-            _buildDynamicList('Ingredientes', _ingredientControllers, _addIngredientField, _removeIngredientField),
+            _buildDynamicList(
+              'Ingredientes',
+              _ingredientControllers,
+              _addIngredientField,
+              _removeIngredientField,
+            ),
             const SizedBox(height: 20),
-            _buildDynamicList('Instrucciones', _instructionControllers, _addInstructionField, _removeInstructionField),
+            _buildDynamicList(
+              'Instrucciones',
+              _instructionControllers,
+              _addInstructionField,
+              _removeInstructionField,
+            ),
             const SizedBox(height: 20),
             _imageBytes == null
                 ? OutlinedButton.icon(
@@ -170,27 +188,32 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                     label: const Text('Seleccionar Imagen'),
                   )
                 : Center(
-                  child: Stack(
-                    children: [
-                      Image.memory(_imageBytes!, height: 200),
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.white),
-                          onPressed: _pickImage,
+                    child: Stack(
+                      children: [
+                        Image.memory(_imageBytes!, height: 200),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.white),
+                            onPressed: _pickImage,
+                          ),
                         ),
-                      )
-                    ],
+                      ],
+                    ),
                   ),
-                ),
           ],
         ),
       ),
     );
   }
-  
-  Widget _buildDynamicList(String title, List<TextEditingController> controllers, VoidCallback onAdd, Function(int) onRemove) {
+
+  Widget _buildDynamicList(
+    String title,
+    List<TextEditingController> controllers,
+    VoidCallback onAdd,
+    Function(int) onRemove,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -203,10 +226,13 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
               Expanded(
                 child: TextFormField(
                   controller: controller,
-                  decoration: InputDecoration(labelText: '${title.substring(0, title.length -1)} ${idx + 1}'),
+                  decoration: InputDecoration(
+                    labelText:
+                        '${title.substring(0, title.length - 1)} ${idx + 1}',
+                  ),
                 ),
               ),
-              if (controllers.length > 1) 
+              if (controllers.length > 1)
                 IconButton(
                   icon: const Icon(Icons.remove_circle_outline),
                   onPressed: () => onRemove(idx),
@@ -216,9 +242,9 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
         }),
         const SizedBox(height: 8),
         ElevatedButton.icon(
-           onPressed: onAdd,
+          onPressed: onAdd,
           icon: const Icon(Icons.add),
-          label: Text('Añadir ${title.substring(0, title.length -1)}'),
+          label: Text('Añadir ${title.substring(0, title.length - 1)}'),
         ),
       ],
     );

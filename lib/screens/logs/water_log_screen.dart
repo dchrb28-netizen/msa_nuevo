@@ -10,7 +10,9 @@ class WaterLogScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final tabBackgroundColor = themeProvider.seedColor.withAlpha(Theme.of(context).brightness == Brightness.dark ? 77 : 26);
+    final tabBackgroundColor = themeProvider.seedColor.withAlpha(
+      Theme.of(context).brightness == Brightness.dark ? 77 : 26,
+    );
     final tabLabelColor = Theme.of(context).colorScheme.onSurface;
 
     return DefaultTabController(
@@ -22,7 +24,9 @@ class WaterLogScreen extends StatelessWidget {
             child: TabBar(
               indicatorColor: themeProvider.seedColor,
               labelColor: tabLabelColor,
-              unselectedLabelColor: tabLabelColor.withAlpha((255 * 0.7).round()),
+              unselectedLabelColor: tabLabelColor.withAlpha(
+                (255 * 0.7).round(),
+              ),
               tabs: const [
                 Tab(icon: Icon(Icons.today), text: 'Hoy'),
                 Tab(icon: Icon(Icons.history), text: 'Historial'),
@@ -31,10 +35,7 @@ class WaterLogScreen extends StatelessWidget {
           ),
           const Expanded(
             child: TabBarView(
-              children: [
-                WaterTodayView(),
-                WaterHistoryScreen(),
-              ],
+              children: [WaterTodayView(), WaterHistoryScreen()],
             ),
           ),
         ],

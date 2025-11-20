@@ -30,7 +30,9 @@ class _AmbientBubbleAnimationState extends State<AmbientBubbleAnimation>
           random.nextDouble() * 400, // Assuming a max width
           random.nextDouble() * 300, // Start from anywhere in the aquarium
         ),
-        color: Colors.white.withAlpha((random.nextDouble() * 0.15 + 0.05 * 255).toInt()),
+        color: Colors.white.withAlpha(
+          (random.nextDouble() * 0.15 + 0.05 * 255).toInt(),
+        ),
       );
     });
   }
@@ -47,7 +49,11 @@ class _AmbientBubbleAnimationState extends State<AmbientBubbleAnimation>
       animation: _controller,
       builder: (context, child) {
         return CustomPaint(
-          painter: BubblePainter(bubbles: _bubbles, progress: _controller.value, size: MediaQuery.of(context).size),
+          painter: BubblePainter(
+            bubbles: _bubbles,
+            progress: _controller.value,
+            size: MediaQuery.of(context).size,
+          ),
           child: const SizedBox.expand(),
         );
       },
@@ -60,14 +66,19 @@ class BubblePainter extends CustomPainter {
   final double progress;
   final Size size;
 
-  BubblePainter({required this.bubbles, required this.progress, required this.size});
+  BubblePainter({
+    required this.bubbles,
+    required this.progress,
+    required this.size,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     for (var bubble in bubbles) {
       final paint = Paint()..color = bubble.color;
       // Loop the bubble's vertical position
-      final verticalProgress = (progress + bubble.initialPosition.dy / size.height) % 1.0;
+      final verticalProgress =
+          (progress + bubble.initialPosition.dy / size.height) % 1.0;
 
       final offset = Offset(
         bubble.initialPosition.dx,

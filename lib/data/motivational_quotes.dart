@@ -1,4 +1,3 @@
-
 const List<String> motivationalQuotes = [
   "La única manera de hacer un gran trabajo es amar lo que haces.",
   "El dolor que sientes hoy es la fuerza que sentirás mañana.",
@@ -14,5 +13,5 @@ const List<String> motivationalQuotes = [
   "La motivación es lo que te pone en marcha. El hábito es lo que hace que sigas.",
   "Entrena como una bestia, luce como una belleza.",
   "El único mal entrenamiento es el que no se hace.",
-  "No se trata de ser el mejor. Se trata de ser mejor de lo que eras ayer."
+  "No se trata de ser el mejor. Se trata de ser mejor de lo que eras ayer.",
 ];

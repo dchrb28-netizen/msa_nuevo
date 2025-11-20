@@ -8,7 +8,11 @@ class MealDetailScreen extends StatelessWidget {
   final String mealType;
   final DateTime date;
 
-  const MealDetailScreen({super.key, required this.mealType, required this.date});
+  const MealDetailScreen({
+    super.key,
+    required this.mealType,
+    required this.date,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +33,21 @@ class MealDetailScreen extends StatelessWidget {
           children: [
             Text(
               formattedDate,
-              style: GoogleFonts.montserrat(fontSize: 22, fontWeight: FontWeight.bold),
+              style: GoogleFonts.montserrat(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             const Divider(),
             const SizedBox(height: 16),
             Text(
               'Descripción de la Comida:',
-              style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black87),
+              style: GoogleFonts.lato(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -47,7 +58,9 @@ class MealDetailScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.0),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withAlpha(26), // Updated from withOpacity
+                      color: Colors.grey.withAlpha(
+                        26,
+                      ), // Updated from withOpacity
                       spreadRadius: 2,
                       blurRadius: 8,
                       offset: const Offset(0, 4),
@@ -60,13 +73,21 @@ class MealDetailScreen extends StatelessWidget {
                           child: Text(
                             mealText,
                             textAlign: TextAlign.left,
-                            style: GoogleFonts.lato(fontSize: 17, height: 1.5, color: Colors.black87),
+                            style: GoogleFonts.lato(
+                              fontSize: 17,
+                              height: 1.5,
+                              color: Colors.black87,
+                            ),
                           ),
                         )
                       : Text(
                           'No se ha añadido ninguna descripción para esta comida.',
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.lato(fontSize: 17, color: Colors.grey[600], fontStyle: FontStyle.italic),
+                          style: GoogleFonts.lato(
+                            fontSize: 17,
+                            color: Colors.grey[600],
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
                 ),
               ),

@@ -1,4 +1,3 @@
-
 import 'package:hive/hive.dart';
 
 part 'food_log.g.dart';

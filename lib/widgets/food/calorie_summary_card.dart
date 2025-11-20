@@ -55,8 +55,13 @@ class CalorieSummaryCard extends StatelessWidget {
       );
     }
 
-    final caloriesRemaining = (caloriesGoal - caloriesConsumed).clamp(0.0, caloriesGoal);
-    final calorieProgress = caloriesGoal > 0 ? (caloriesConsumed / caloriesGoal).clamp(0.0, 1.0) : 0.0;
+    final caloriesRemaining = (caloriesGoal - caloriesConsumed).clamp(
+      0.0,
+      caloriesGoal,
+    );
+    final calorieProgress = caloriesGoal > 0
+        ? (caloriesConsumed / caloriesGoal).clamp(0.0, 1.0)
+        : 0.0;
 
     return Card(
       elevation: 4,
@@ -76,7 +81,9 @@ class CalorieSummaryCard extends StatelessWidget {
                     painter: CalorieRingPainter(
                       progress: calorieProgress,
                       color: colorScheme.primary,
-                      backgroundColor: colorScheme.primary.withAlpha((255 * 0.2).round()),
+                      backgroundColor: colorScheme.primary.withAlpha(
+                        (255 * 0.2).round(),
+                      ),
                     ),
                     child: Center(
                       child: Column(
@@ -84,7 +91,10 @@ class CalorieSummaryCard extends StatelessWidget {
                         children: [
                           Text(
                             caloriesConsumed.toStringAsFixed(0),
-                            style: textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary),
+                            style: textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
+                            ),
                           ),
                           Text('Consumido', style: textTheme.bodySmall),
                         ],
@@ -95,9 +105,19 @@ class CalorieSummaryCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildCalorieStat('Meta', caloriesGoal, textTheme, colorScheme.onSurface),
+                    _buildCalorieStat(
+                      'Meta',
+                      caloriesGoal,
+                      textTheme,
+                      colorScheme.onSurface,
+                    ),
                     const SizedBox(height: 12),
-                    _buildCalorieStat('Restante', caloriesRemaining, textTheme, Colors.green.shade600),
+                    _buildCalorieStat(
+                      'Restante',
+                      caloriesRemaining,
+                      textTheme,
+                      Colors.green.shade600,
+                    ),
                   ],
                 ),
               ],
@@ -142,14 +162,22 @@ class CalorieSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCalorieStat(String label, double value, TextTheme textTheme, Color color) {
+  Widget _buildCalorieStat(
+    String label,
+    double value,
+    TextTheme textTheme,
+    Color color,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: textTheme.bodyMedium),
         Text(
           value.toStringAsFixed(0),
-          style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: color),
+          style: textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
       ],
     );

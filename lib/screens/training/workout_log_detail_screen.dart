@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/routine_log.dart';
@@ -11,9 +10,7 @@ class WorkoutLogDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(log.routineName),
-      ),
+      appBar: AppBar(title: Text(log.routineName)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -38,9 +35,15 @@ class WorkoutLogDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Notas:', style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                      'Notas:',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 8),
-                    Text(log.notes!, style: Theme.of(context).textTheme.bodyLarge),
+                    Text(
+                      log.notes!,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                   ],
                 ),
               ),

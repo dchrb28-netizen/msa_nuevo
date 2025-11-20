@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/providers/user_provider.dart';
-import 'package:myapp/screens/main_screen.dart'; 
+import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -11,37 +11,42 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Builder(builder: (context) {
-        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-        final colorScheme = Theme.of(context).colorScheme;
+      body: Builder(
+        builder: (context) {
+          final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+          final colorScheme = Theme.of(context).colorScheme;
 
-        final lunaImagePath = isDarkMode
-            ? 'assets/luna_png/luna_splash_b.png'
-            : 'assets/luna_png/luna_splash_w.png';
+          final lunaImagePath = isDarkMode
+              ? 'assets/luna_png/luna_splash_b.png'
+              : 'assets/luna_png/luna_splash_w.png';
 
-        return Container(
-          color: isDarkMode ? Colors.black : Colors.white,
-          child: SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      lunaImagePath,
-                      height: 180,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(height: 40),
-                    _buildContent(context, colorScheme),
-                  ],
+          return Container(
+            color: isDarkMode ? Colors.black : Colors.white,
+            child: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 48.0,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        lunaImagePath,
+                        height: 180,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(height: 40),
+                      _buildContent(context, colorScheme),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 
@@ -52,7 +57,6 @@ class WelcomeScreen extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        
         const SizedBox(height: 16),
         Text(
           'Tu compañero personal de salud',
@@ -60,7 +64,9 @@ class WelcomeScreen extends StatelessWidget {
           style: GoogleFonts.lato(
             fontSize: 18,
             fontWeight: FontWeight.w400,
-            color: (isDarkMode ? Colors.white : Colors.black).withAlpha(178), // 70% opacity
+            color: (isDarkMode ? Colors.white : Colors.black).withAlpha(
+              178,
+            ), // 70% opacity
           ),
         ),
         const SizedBox(height: 48),

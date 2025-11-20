@@ -26,8 +26,10 @@ class FastingProvider with ChangeNotifier {
   int get goalInSeconds => _selectedPlan.fastingHours * 3600;
   Duration get feedingWindowDuration => _feedingWindowDuration;
   List<FastingPlan> get customPlans => _customPlans;
-  List<FastingPlan> get allPlans => [...FastingPlan.defaultPlans, ..._customPlans];
-
+  List<FastingPlan> get allPlans => [
+    ...FastingPlan.defaultPlans,
+    ..._customPlans,
+  ];
 
   FastingProvider() {
     _loadPreferences();
@@ -42,9 +44,10 @@ class FastingProvider with ChangeNotifier {
         if (_previousPhase?.name != newPhase?.name) {
           if (newPhase != null) {
             _notificationService.showNotification(
-                1, // Different ID for phase changes
-                '¡Nueva Fase Alcanzada!',
-                'Has entrado en la fase: ${newPhase.name}');
+              1, // Different ID for phase changes
+              '¡Nueva Fase Alcanzada!',
+              'Has entrado en la fase: ${newPhase.name}',
+            );
             _previousPhase = newPhase;
           }
         }
@@ -53,8 +56,11 @@ class FastingProvider with ChangeNotifier {
         if (_currentFast!.durationInSeconds >= goalInSeconds) {
           // This notification is for when the app is open
           _notificationService.showNotification(
-              0, '¡Objetivo Cumplido!', 'Has alcanzado tu meta de ${_selectedPlan.fastingHours} horas. ¡Excelente!');
-          stopFasting(); 
+            0,
+            '¡Objetivo Cumplido!',
+            'Has alcanzado tu meta de ${_selectedPlan.fastingHours} horas. ¡Excelente!',
+          );
+          stopFasting();
         }
       } else {
         _updateFeedingWindow();
@@ -99,7 +105,9 @@ class FastingProvider with ChangeNotifier {
 
   void _loadCurrentFast() {
     try {
-      _currentFast = _fastingBox.values.firstWhere((log) => log.endTime == null);
+      _currentFast = _fastingBox.values.firstWhere(
+        (log) => log.endTime == null,
+      );
       _previousPhase = currentPhase;
     } catch (e) {
       _currentFast = null;
@@ -134,7 +142,9 @@ class FastingProvider with ChangeNotifier {
   }
 
   Future<bool> updateCustomPlan(FastingPlan plan) async {
-     bool exists = allPlans.any((p) => p.id != plan.id && p.fastingHours == plan.fastingHours);
+    bool exists = allPlans.any(
+      (p) => p.id != plan.id && p.fastingHours == plan.fastingHours,
+    );
     if (exists) {
       return false; // Falla si ya existe
     }
@@ -158,7 +168,11 @@ class FastingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addManualFastingLog(DateTime startTime, DateTime endTime, String? notes) async {
+  Future<void> addManualFastingLog(
+    DateTime startTime,
+    DateTime endTime,
+    String? notes,
+  ) async {
     if (endTime.isBefore(startTime)) {
       return;
     }
@@ -174,23 +188,24 @@ class FastingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
   Future<void> _savePreferences() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('selectedPlanId', _selectedPlan.id);
-    final customPlansJson = jsonEncode(_customPlans.map((p) => p.toJson()).toList());
+    final customPlansJson = jsonEncode(
+      _customPlans.map((p) => p.toJson()).toList(),
+    );
     await prefs.setString('customFastingPlans', customPlansJson);
   }
 
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     // Load custom plans
     final customPlansJson = prefs.getString('customFastingPlans');
     if (customPlansJson != null) {
       final decoded = jsonDecode(customPlansJson) as List;
       final loadedPlans = decoded.map((e) => FastingPlan.fromJson(e)).toList();
-      
+
       // --- CORRECCIÓN DEFINITIVA ---
       final uniqueHours = <int>{};
       final uniquePlans = <FastingPlan>[];
@@ -199,7 +214,7 @@ class FastingProvider with ChangeNotifier {
           uniquePlans.add(plan);
         }
       }
-      
+
       if (loadedPlans.length != uniquePlans.length) {
         _customPlans = uniquePlans;
         await _savePreferences();
@@ -226,10 +241,7 @@ class FastingProvider with ChangeNotifier {
 
     const uuid = Uuid();
     final startTime = DateTime.now();
-    final newFast = FastingLog(
-      id: uuid.v4(),
-      startTime: startTime,
-    );
+    final newFast = FastingLog(id: uuid.v4(), startTime: startTime);
     _fastingBox.put(newFast.id, newFast);
     _currentFast = newFast;
     _previousPhase = null;
@@ -237,7 +249,10 @@ class FastingProvider with ChangeNotifier {
 
     // Show immediate notification
     _notificationService.showNotification(
-        0, 'Ayuno Iniciado', '¡Tu ayuno ha comenzado! Buen trabajo.');
+      0,
+      'Ayuno Iniciado',
+      '¡Tu ayuno ha comenzado! Buen trabajo.',
+    );
 
     // Schedule end-of-fast notification
     final endTime = startTime.add(Duration(hours: _selectedPlan.fastingHours));
@@ -265,9 +280,10 @@ class FastingProvider with ChangeNotifier {
       // No registramos ayunos que duren menos de 1 minuto
       await _fastingBox.delete(fastToStop.id);
       _notificationService.showNotification(
-          0,
-          'Ayuno Cancelado',
-          'El ayuno fue demasiado corto para ser registrado (menos de 1 minuto).');
+        0,
+        'Ayuno Cancelado',
+        'El ayuno fue demasiado corto para ser registrado (menos de 1 minuto).',
+      );
     } else {
       fastToStop.endTime = endTime;
       try {
@@ -276,8 +292,11 @@ class FastingProvider with ChangeNotifier {
         // If save fails, still proceed but log in devtools if needed
       }
       final formatted = _formatDuration(duration);
-      _notificationService.showNotification(0, '¡Ayuno Completado!',
-          'Has completado un ayuno de $formatted. ¡Felicidades!');
+      _notificationService.showNotification(
+        0,
+        '¡Ayuno Completado!',
+        'Has completado un ayuno de $formatted. ¡Felicidades!',
+      );
     }
 
     _currentFast = null;
@@ -289,7 +308,7 @@ class FastingProvider with ChangeNotifier {
   Future<void> deleteFastingLog(String logId) async {
     await _fastingBox.delete(logId);
     if (fastingHistory.isNotEmpty && logId == fastingHistory.first.id) {
-       _updateFeedingWindow();
+      _updateFeedingWindow();
     } else if (fastingHistory.isEmpty) {
       _feedingWindowDuration = Duration.zero;
     }
@@ -299,7 +318,7 @@ class FastingProvider with ChangeNotifier {
   Future<void> updateFastingLog(FastingLog updatedLog) async {
     await _fastingBox.put(updatedLog.id, updatedLog);
     if (updatedLog.id == fastingHistory.first.id) {
-       _updateFeedingWindow();
+      _updateFeedingWindow();
     }
     notifyListeners();
   }

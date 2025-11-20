@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class RecipeListScreen extends StatelessWidget {
@@ -6,8 +5,6 @@ class RecipeListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Aquí se mostrará la lista de recetas.'),
-    );
+    return const Center(child: Text('Aquí se mostrará la lista de recetas.'));
   }
 }

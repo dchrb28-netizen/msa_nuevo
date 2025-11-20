@@ -10,9 +10,7 @@ class ProfileSelectionScreen extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Seleccionar Perfil'),
-      ),
+      appBar: AppBar(title: const Text('Seleccionar Perfil')),
       body: ListView.builder(
         itemCount: userProvider.users.length,
         itemBuilder: (context, index) {
@@ -39,7 +37,11 @@ class ProfileSelectionScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context, UserProvider userProvider, String userId) async {
+  Future<void> _confirmDelete(
+    BuildContext context,
+    UserProvider userProvider,
+    String userId,
+  ) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!

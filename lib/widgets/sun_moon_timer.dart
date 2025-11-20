@@ -58,7 +58,7 @@ class SunMoonTimer extends StatelessWidget {
             blurRadius: 15,
             spreadRadius: 2,
             offset: const Offset(0, 5),
-          )
+          ),
         ],
       ),
       child: Stack(
@@ -86,12 +86,16 @@ class SunMoonTimer extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   phaseText,
-                  style: theme.textTheme.titleMedium?.copyWith(color: Colors.white70),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: Colors.white70,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   goalText,
-                  style: theme.textTheme.titleSmall?.copyWith(color: Colors.white70),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: Colors.white70,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
@@ -99,7 +103,9 @@ class SunMoonTimer extends StatelessWidget {
                   icon: Icon(isFasting ? Icons.stop : Icons.play_arrow),
                   label: Text(isFasting ? 'Parar' : 'Empezar'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isFasting ? theme.colorScheme.error : theme.colorScheme.primary,
+                    backgroundColor: isFasting
+                        ? theme.colorScheme.error
+                        : theme.colorScheme.primary,
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -143,6 +149,7 @@ class _ArcPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _ArcPainter oldDelegate) {
-    return oldDelegate.progress != progress || oldDelegate.isFasting != isFasting;
+    return oldDelegate.progress != progress ||
+        oldDelegate.isFasting != isFasting;
   }
 }

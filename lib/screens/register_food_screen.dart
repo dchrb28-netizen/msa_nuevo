@@ -46,9 +46,7 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
     final user = userProvider.user;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registrar Comida'),
-      ),
+      appBar: AppBar(title: const Text('Registrar Comida')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -57,13 +55,17 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
             children: [
               CalorieSummaryCard(
                 caloriesGoal: user?.calorieGoal ?? 0,
-                caloriesConsumed: 0, // This should be calculated based on the food logs
+                caloriesConsumed:
+                    0, // This should be calculated based on the food logs
                 proteinGoal: user?.proteinGoal ?? 0,
-                proteinConsumed: 0, // This should be calculated based on the food logs
+                proteinConsumed:
+                    0, // This should be calculated based on the food logs
                 carbsGoal: user?.carbGoal ?? 0, // Corrected from carbsGoal
-                carbsConsumed: 0, // This should be calculated based on the food logs
+                carbsConsumed:
+                    0, // This should be calculated based on the food logs
                 fatsGoal: user?.fatGoal ?? 0,
-                fatsConsumed: 0, // This should be calculated based on the food logs
+                fatsConsumed:
+                    0, // This should be calculated based on the food logs
               ),
               TextFormField(
                 controller: _nameController,
@@ -92,7 +94,7 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
                 controller: _proteinController,
                 decoration: const InputDecoration(
                   labelText: 'Proteínas (g)',
-                   prefixIcon: Icon(Icons.fitness_center),
+                  prefixIcon: Icon(Icons.fitness_center),
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -110,7 +112,7 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
                 controller: _fatController,
                 decoration: const InputDecoration(
                   labelText: 'Grasas (g)',
-                   prefixIcon: Icon(Icons.opacity),
+                  prefixIcon: Icon(Icons.opacity),
                 ),
                 keyboardType: TextInputType.number,
               ),

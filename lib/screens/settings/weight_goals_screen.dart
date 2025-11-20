@@ -27,7 +27,7 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
   void initState() {
     super.initState();
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    
+
     _weightController = TextEditingController();
     _heightController = TextEditingController();
     _weightGoalController = TextEditingController();
@@ -40,7 +40,7 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     _weightController.addListener(_calculateIMC);
     _heightController.addListener(_calculateIMC);
   }
-  
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -50,11 +50,17 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
       _calculateIMC();
     }
   }
-  
+
   void _updateControllers(dynamic user) {
-    _weightController.text = user.weight > 0 ? user.weight.toStringAsFixed(1) : '';
-    _heightController.text = user.height > 0 ? user.height.toStringAsFixed(0) : '';
-    _weightGoalController.text = user.weightGoal != null && user.weightGoal! > 0 ? user.weightGoal!.toStringAsFixed(1) : '';
+    _weightController.text = user.weight > 0
+        ? user.weight.toStringAsFixed(1)
+        : '';
+    _heightController.text = user.height > 0
+        ? user.height.toStringAsFixed(0)
+        : '';
+    _weightGoalController.text = user.weightGoal != null && user.weightGoal! > 0
+        ? user.weightGoal!.toStringAsFixed(1)
+        : '';
   }
 
   @override
@@ -111,15 +117,17 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
       final updatedUser = currentUser.copyWith(
         weight: double.parse(_weightController.text.replaceAll(',', '.')),
         height: double.parse(_heightController.text.replaceAll(',', '.')),
-        weightGoal: double.tryParse(_weightGoalController.text.replaceAll(',', '.')),
+        weightGoal: double.tryParse(
+          _weightGoalController.text.replaceAll(',', '.'),
+        ),
       );
 
       userProvider.updateUser(updatedUser).then((_) {
         widget.onProfileUpdated?.call();
       });
 
-      _calculateIMC(); 
-      
+      _calculateIMC();
+
       if (mounted) {
         setState(() {
           _isEditing = false;
@@ -131,17 +139,17 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
       );
     }
   }
-  
+
   void _showIMCInfoDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Row(
           children: [
-            Icon(Icons.info_outline), 
+            Icon(Icons.info_outline),
             SizedBox(width: 10),
             Text('¿Qué es el IMC?'),
-            ],
+          ],
         ),
         content: const SingleChildScrollView(
           child: Text(
@@ -168,9 +176,12 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).user;
-    final appBarColor = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).primaryColor;
-    
-    final isProfileIncomplete = user == null || user.weight <= 0 || user.height <= 0;
+    final appBarColor =
+        Theme.of(context).appBarTheme.backgroundColor ??
+        Theme.of(context).primaryColor;
+
+    final isProfileIncomplete =
+        user == null || user.weight <= 0 || user.height <= 0;
 
     Widget currentView;
 
@@ -183,10 +194,12 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     }
 
     return Scaffold(
-      backgroundColor: _isEditing ? Theme.of(context).colorScheme.surface : null,
+      backgroundColor: _isEditing
+          ? Theme.of(context).colorScheme.surface
+          : null,
       body: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: currentView,
+        duration: const Duration(milliseconds: 300),
+        child: currentView,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: !_isEditing && !isProfileIncomplete
@@ -200,10 +213,12 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
                   backgroundColor: appBarColor,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             )
@@ -232,7 +247,7 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
           color: Colors.green.shade700,
         );
       } else {
-         weightGoalTile = _buildSummaryTile(
+        weightGoalTile = _buildSummaryTile(
           icon: Icons.check_circle_outline,
           title: '¡Meta Alcanzada!',
           value: '¡Felicidades!',
@@ -243,7 +258,7 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
 
     return SingleChildScrollView(
       key: const ValueKey('summaryView'),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 80), 
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
       child: Column(
         children: [
           _buildIMCGauge(),
@@ -276,7 +291,7 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
                 if (weightGoalTile != null) ...[
                   const Divider(height: 1, indent: 16, endIndent: 16),
                   weightGoalTile,
-                ]
+                ],
               ],
             ),
           ),
@@ -298,14 +313,21 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Índice de Masa Corporal (IMC)', style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  'Índice de Masa Corporal (IMC)',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const SizedBox(width: 4),
                 IconButton(
-                  icon: Icon(Icons.info_outline, size: 20, color: Theme.of(context).textTheme.bodySmall?.color),
+                  icon: Icon(
+                    Icons.info_outline,
+                    size: 20,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                  ),
                   onPressed: _showIMCInfoDialog,
                   splashRadius: 20,
                   constraints: const BoxConstraints(),
-                )
+                ),
               ],
             ),
           ),
@@ -318,7 +340,10 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
                   maximum: 40,
                   showLabels: false,
                   showTicks: false,
-                  axisLineStyle: const AxisLineStyle(thickness: 0.2, thicknessUnit: GaugeSizeUnit.factor),
+                  axisLineStyle: const AxisLineStyle(
+                    thickness: 0.2,
+                    thicknessUnit: GaugeSizeUnit.factor,
+                  ),
                   pointers: <GaugePointer>[
                     if (_imc != null)
                       NeedlePointer(
@@ -329,14 +354,54 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
                         needleStartWidth: 1,
                         needleEndWidth: 5,
                         needleColor: colorScheme.onSurface,
-                        knobStyle: KnobStyle(knobRadius: 0.08, sizeUnit: GaugeSizeUnit.factor, color: colorScheme.onSurface),
+                        knobStyle: KnobStyle(
+                          knobRadius: 0.08,
+                          sizeUnit: GaugeSizeUnit.factor,
+                          color: colorScheme.onSurface,
+                        ),
                       ),
                   ],
                   ranges: <GaugeRange>[
-                    GaugeRange(startValue: 15, endValue: 18.5, color: Colors.blue.shade200, label: 'Bajo', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-                    GaugeRange(startValue: 18.5, endValue: 25, color: Colors.green.shade300, label: 'Normal', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-                    GaugeRange(startValue: 25, endValue: 30, color: Colors.orange.shade300, label: 'Alto', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-                    GaugeRange(startValue: 30, endValue: 40, color: Colors.red.shade300, label: 'Obeso', labelStyle: const GaugeTextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                    GaugeRange(
+                      startValue: 15,
+                      endValue: 18.5,
+                      color: Colors.blue.shade200,
+                      label: 'Bajo',
+                      labelStyle: const GaugeTextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+                    GaugeRange(
+                      startValue: 18.5,
+                      endValue: 25,
+                      color: Colors.green.shade300,
+                      label: 'Normal',
+                      labelStyle: const GaugeTextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+                    GaugeRange(
+                      startValue: 25,
+                      endValue: 30,
+                      color: Colors.orange.shade300,
+                      label: 'Alto',
+                      labelStyle: const GaugeTextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+                    GaugeRange(
+                      startValue: 30,
+                      endValue: 40,
+                      color: Colors.red.shade300,
+                      label: 'Obeso',
+                      labelStyle: const GaugeTextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
                   ],
                   annotations: <GaugeAnnotation>[
                     GaugeAnnotation(
@@ -345,17 +410,25 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
                         children: <Widget>[
                           Text(
                             _imc?.toStringAsFixed(1) ?? '--',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: _getCategoryColor(_imc)),
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: _getCategoryColor(_imc),
+                                ),
                           ),
                           Text(
                             _imcCategory,
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(color: _getCategoryColor(_imc), fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(
+                                  color: _getCategoryColor(_imc),
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ],
                       ),
                       angle: 90,
                       positionFactor: 0.1,
-                    )
+                    ),
                   ],
                 ),
               ],
@@ -366,15 +439,27 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     );
   }
 
-  Widget _buildSummaryTile({required IconData icon, required String title, required String value, Color? color}) {
+  Widget _buildSummaryTile({
+    required IconData icon,
+    required String title,
+    required String value,
+    Color? color,
+  }) {
     return ListTile(
       dense: true,
-      leading: Icon(icon, color: color ?? Theme.of(context).colorScheme.onSurfaceVariant, size: 22),
+      leading: Icon(
+        icon,
+        color: color ?? Theme.of(context).colorScheme.onSurfaceVariant,
+        size: 22,
+      ),
       title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
-      trailing: Text(value, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        fontWeight: FontWeight.bold,
-        color: color
-      )),
+      trailing: Text(
+        value,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
+      ),
     );
   }
 
@@ -392,7 +477,9 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
           children: [
             Text(
               isInitialSetup ? 'Completa tu Perfil' : 'Actualiza tus Datos',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             if (isInitialSetup)
               Padding(
@@ -415,7 +502,12 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
               icon: Icons.height_outlined,
             ),
             const SizedBox(height: 24),
-            Text('Mi Meta de Peso', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Mi Meta de Peso',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 10),
             _buildTextField(
               controller: _weightGoalController,
@@ -427,16 +519,23 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
             ElevatedButton.icon(
               onPressed: _saveGoals,
               icon: const Icon(Icons.save_outlined),
-              label: Text(isInitialSetup ? 'Guardar y Continuar' : 'Guardar Cambios'),
+              label: Text(
+                isInitialSetup ? 'Guardar y Continuar' : 'Guardar Cambios',
+              ),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                textStyle: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-             if (!isInitialSetup) ...[
-                const SizedBox(height: 8),
-                TextButton(onPressed: () => setState(() => _isEditing = false), child: const Text('Cancelar'))
-             ]
+            if (!isInitialSetup) ...[
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () => setState(() => _isEditing = false),
+                child: const Text('Cancelar'),
+              ),
+            ],
           ],
         ),
       ),
@@ -459,7 +558,10 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12)
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: 12,
+        ),
       ),
       validator: (value) {
         if (!isRequired && (value == null || value.isEmpty)) return null;
@@ -482,11 +584,17 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(Icons.warning_amber_rounded, size: 60, color: Colors.amber),
+            const Icon(
+              Icons.warning_amber_rounded,
+              size: 60,
+              color: Colors.amber,
+            ),
             const SizedBox(height: 20),
             Text(
               'Faltan datos en tu perfil',
-              style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
@@ -501,11 +609,13 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
                 );
               },
               label: const Text('Ir a mi Perfil'),
-            )
+            ),
           ],
         ),
       ),

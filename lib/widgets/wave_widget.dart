@@ -27,9 +27,14 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
 
     _secondController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 7), // Different duration for a different speed
+      duration: const Duration(
+        seconds: 7,
+      ), // Different duration for a different speed
     )..repeat();
-    _secondAnimation = Tween(begin: 0.0, end: 2 * pi).animate(_secondController);
+    _secondAnimation = Tween(
+      begin: 0.0,
+      end: 2 * pi,
+    ).animate(_secondController);
   }
 
   @override
@@ -72,19 +77,28 @@ class WavePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // Paint for the first wave
     final paint1 = Paint()
-      ..color = Colors.blue.withAlpha(153) // 0.6 opacity
+      ..color = Colors.blue
+          .withAlpha(153) // 0.6 opacity
       ..style = PaintingStyle.fill;
 
     // Paint for the second wave
     final paint2 = Paint()
-      ..color = Colors.blue.withAlpha(102) // 0.4 opacity
+      ..color = Colors.blue
+          .withAlpha(102) // 0.4 opacity
       ..style = PaintingStyle.fill;
 
     _drawWave(canvas, size, paint1, firstWaveOffset, 15.0, 1.0);
     _drawWave(canvas, size, paint2, secondWaveOffset, 20.0, 1.5);
   }
 
-  void _drawWave(Canvas canvas, Size size, Paint paint, double offset, double waveHeight, double waveFrequency) {
+  void _drawWave(
+    Canvas canvas,
+    Size size,
+    Paint paint,
+    double offset,
+    double waveHeight,
+    double waveFrequency,
+  ) {
     final path = Path();
     final y = size.height * (1 - waterLevel);
     path.moveTo(0, y);

@@ -33,27 +33,36 @@ class _FoodTodayViewState extends State<FoodTodayView> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(icon: const Icon(Icons.chevron_left), onPressed: () => _changeDate(-1)),
+                IconButton(
+                  icon: const Icon(Icons.chevron_left),
+                  onPressed: () => _changeDate(-1),
+                ),
                 Text(
                   DateFormat.yMMMd('es').format(_selectedDate),
-                  style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.lato(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.chevron_right),
-                  onPressed: DateUtils.isSameDay(_selectedDate, DateTime.now()) ? null : () => _changeDate(1),
+                  onPressed: DateUtils.isSameDay(_selectedDate, DateTime.now())
+                      ? null
+                      : () => _changeDate(1),
                 ),
               ],
             ),
           ),
           _buildCaloriesSummaryCard(context),
           const SizedBox(height: 16),
-          Expanded(
-            child: FoodLogListView(date: _selectedDate),
-          ),
+          Expanded(child: FoodLogListView(date: _selectedDate)),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -81,46 +90,95 @@ class _FoodTodayViewState extends State<FoodTodayView> {
           return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
         }
 
-        final dailyLogs = box.values.where((log) => isSameDay(log.date, _selectedDate));
-        final totalCalories = dailyLogs.fold<double>(0, (sum, log) => sum + log.calories);
-        final totalProteins = dailyLogs.fold<double>(0, (sum, log) => sum + log.protein);
-        final totalCarbs = dailyLogs.fold<double>(0, (sum, log) => sum + log.carbohydrates);
-        final totalFats = dailyLogs.fold<double>(0, (sum, log) => sum + log.fat);
+        final dailyLogs = box.values.where(
+          (log) => isSameDay(log.date, _selectedDate),
+        );
+        final totalCalories = dailyLogs.fold<double>(
+          0,
+          (sum, log) => sum + log.calories,
+        );
+        final totalProteins = dailyLogs.fold<double>(
+          0,
+          (sum, log) => sum + log.protein,
+        );
+        final totalCarbs = dailyLogs.fold<double>(
+          0,
+          (sum, log) => sum + log.carbohydrates,
+        );
+        final totalFats = dailyLogs.fold<double>(
+          0,
+          (sum, log) => sum + log.fat,
+        );
         final remainingCalories = caloricGoal - totalCalories;
 
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 24.0),
           elevation: 2,
           color: const Color(0xFFFFF0F5), // Lavender blush like color
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
                 Text(
                   'Plan: ${dietPlan.replaceAll('Peso', '').trim()}',
-                  style: GoogleFonts.lato(color: const Color(0xFFE57373), fontWeight: FontWeight.bold, fontSize: 16),
+                  style: GoogleFonts.lato(
+                    color: const Color(0xFFE57373),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _buildCalorieInfo('Meta', caloricGoal.toInt(), const Color(0xFFFFA726)),
+                    _buildCalorieInfo(
+                      'Meta',
+                      caloricGoal.toInt(),
+                      const Color(0xFFFFA726),
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Text('-', style: GoogleFonts.montserrat(fontSize: 30, color: Colors.grey)),
+                      child: Text(
+                        '-',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 30,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ),
-                    _buildCalorieInfo('Consumidas', totalCalories.toInt(), Colors.black87),
-                     Padding(
+                    _buildCalorieInfo(
+                      'Consumidas',
+                      totalCalories.toInt(),
+                      Colors.black87,
+                    ),
+                    Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Text('=', style: GoogleFonts.montserrat(fontSize: 30, color: Colors.grey)),
+                      child: Text(
+                        '=',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 30,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ),
-                    _buildCalorieInfo('Restantes', remainingCalories.toInt(), const Color(0xFF66BB6A)),
+                    _buildCalorieInfo(
+                      'Restantes',
+                      remainingCalories.toInt(),
+                      const Color(0xFF66BB6A),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                Divider(color: Colors.grey[300], thickness: 1, indent: 20, endIndent: 20),
+                Divider(
+                  color: Colors.grey[300],
+                  thickness: 1,
+                  indent: 20,
+                  endIndent: 20,
+                ),
                 const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -131,7 +189,7 @@ class _FoodTodayViewState extends State<FoodTodayView> {
                   ],
                 ),
               ],
-            )
+            ),
           ),
         );
       },
@@ -143,10 +201,17 @@ class _FoodTodayViewState extends State<FoodTodayView> {
       children: [
         Text(
           value.toString(),
-          style: GoogleFonts.montserrat(fontSize: 24, fontWeight: FontWeight.bold, color: color),
+          style: GoogleFonts.montserrat(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
         const SizedBox(height: 2),
-        Text(title, style: GoogleFonts.lato(fontSize: 14, color: Colors.black54)),
+        Text(
+          title,
+          style: GoogleFonts.lato(fontSize: 14, color: Colors.black54),
+        ),
       ],
     );
   }
@@ -154,9 +219,22 @@ class _FoodTodayViewState extends State<FoodTodayView> {
   Widget _buildMacroInfo(String title, double value, Color color) {
     return Column(
       children: [
-        Text(title, style: GoogleFonts.lato(fontSize: 14, fontWeight: FontWeight.bold, color: color)),
+        Text(
+          title,
+          style: GoogleFonts.lato(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
         const SizedBox(height: 4),
-        Text('${value.toStringAsFixed(0)} g', style: GoogleFonts.montserrat(fontSize: 16, fontWeight: FontWeight.w600)),
+        Text(
+          '${value.toStringAsFixed(0)} g',
+          style: GoogleFonts.montserrat(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -166,7 +244,12 @@ class _FoodTodayViewState extends State<FoodTodayView> {
       context: context,
       builder: (context) {
         final mealTypes = ['Desayuno', 'Almuerzo', 'Cena', 'Snacks'];
-        final mealIcons = [Icons.free_breakfast, Icons.lunch_dining, Icons.dinner_dining, Icons.fastfood];
+        final mealIcons = [
+          Icons.free_breakfast,
+          Icons.lunch_dining,
+          Icons.dinner_dining,
+          Icons.fastfood,
+        ];
 
         return Wrap(
           children: List.generate(mealTypes.length, (index) {
@@ -178,7 +261,10 @@ class _FoodTodayViewState extends State<FoodTodayView> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditMealScreen(mealType: mealTypes[index], date: _selectedDate),
+                    builder: (context) => EditMealScreen(
+                      mealType: mealTypes[index],
+                      date: _selectedDate,
+                    ),
                   ),
                 );
               },

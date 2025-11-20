@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/food/food_log_list_view.dart';
 import 'package:myapp/screens/food/food_today_screen.dart';
@@ -13,7 +12,8 @@ class FoodScreen extends StatefulWidget {
   State<FoodScreen> createState() => _FoodScreenState();
 }
 
-class _FoodScreenState extends State<FoodScreen> with SingleTickerProviderStateMixin {
+class _FoodScreenState extends State<FoodScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -47,7 +47,9 @@ class _FoodScreenState extends State<FoodScreen> with SingleTickerProviderStateM
             Tab(icon: Icon(Icons.today), text: 'Hoy'),
             Tab(icon: Icon(Icons.history), text: 'Historial'),
           ],
-          labelColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+          labelColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : Colors.black,
           unselectedLabelColor: Colors.grey,
           indicatorColor: Theme.of(context).colorScheme.primary,
         ),

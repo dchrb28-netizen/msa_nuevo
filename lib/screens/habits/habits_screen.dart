@@ -12,8 +12,11 @@ class HabitsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final appBarColor = Theme.of(context).appBarTheme.backgroundColor ?? themeProvider.seedColor;
-    final isDark = ThemeData.estimateBrightnessForColor(appBarColor) == Brightness.dark;
+    final appBarColor =
+        Theme.of(context).appBarTheme.backgroundColor ??
+        themeProvider.seedColor;
+    final isDark =
+        ThemeData.estimateBrightnessForColor(appBarColor) == Brightness.dark;
     final tabColor = isDark ? Colors.white : Colors.black;
 
     return DefaultTabController(
@@ -30,17 +33,17 @@ class HabitsScreen extends StatelessWidget {
             labelColor: tabColor,
             unselectedLabelColor: tabColor.withAlpha(180),
             tabs: const [
-              Tab(icon: Icon(Icons.notifications_outlined), text: 'Recordatorios'),
+              Tab(
+                icon: Icon(Icons.notifications_outlined),
+                text: 'Recordatorios',
+              ),
               Tab(icon: Icon(Icons.hourglass_empty_outlined), text: 'Ayuno'),
             ],
           ),
         ),
         // El TabBarView ahora contiene la RemindersScreen con su propio Scaffold y FAB.
         body: const TabBarView(
-          children: [
-            RemindersScreen(),
-            IntermittentFastingScreen(),
-          ],
+          children: [RemindersScreen(), IntermittentFastingScreen()],
         ),
       ),
     );

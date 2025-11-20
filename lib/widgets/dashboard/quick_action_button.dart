@@ -30,15 +30,19 @@ class QuickActionButton extends StatelessWidget {
               color: Colors.black.withAlpha((255 * 0.05).round()),
               blurRadius: 10,
               offset: const Offset(0, 4),
-            )
-          ]
+            ),
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 36, color: colorScheme.primary),
             const SizedBox(height: 12),
-            Text(label, textAlign: TextAlign.center, style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.lato(fontWeight: FontWeight.bold),
+            ),
           ],
         ),
       ),

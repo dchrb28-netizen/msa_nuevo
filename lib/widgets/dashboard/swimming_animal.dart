@@ -21,14 +21,19 @@ class SwimmingAnimal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tween = MovieTween()
-      ..scene(
-        begin: const Duration(milliseconds: 0),
-        end: duration,
-      ).tween('x', Tween<double>(begin: -size, end: 400.0), curve: Curves.easeInOutSine)
-      ..scene(
-        begin: const Duration(milliseconds: 0),
-        end: duration,
-      ).tween('y', Tween<double>(begin: initialY, end: initialY + Random().nextDouble() * 100 - 50), curve: Curves.easeInOutSine)
+      ..scene(begin: const Duration(milliseconds: 0), end: duration).tween(
+        'x',
+        Tween<double>(begin: -size, end: 400.0),
+        curve: Curves.easeInOutSine,
+      )
+      ..scene(begin: const Duration(milliseconds: 0), end: duration).tween(
+        'y',
+        Tween<double>(
+          begin: initialY,
+          end: initialY + Random().nextDouble() * 100 - 50,
+        ),
+        curve: Curves.easeInOutSine,
+      )
       ..scene(
         begin: const Duration(milliseconds: 0),
         end: duration,

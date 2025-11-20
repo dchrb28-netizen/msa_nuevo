@@ -17,7 +17,9 @@ class FoodLogListView extends StatelessWidget {
           return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
         }
 
-        final dailyLogs = box.values.where((log) => isSameDay(log.date, date)).toList();
+        final dailyLogs = box.values
+            .where((log) => isSameDay(log.date, date))
+            .toList();
 
         if (dailyLogs.isEmpty) {
           return Center(
@@ -33,25 +35,38 @@ class FoodLogListView extends StatelessWidget {
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 80), // Padding to avoid overlap with FAB
+          padding: const EdgeInsets.fromLTRB(
+            24,
+            0,
+            24,
+            80,
+          ), // Padding to avoid overlap with FAB
           itemCount: dailyLogs.length,
           itemBuilder: (context, index) {
             final log = dailyLogs[index];
             return Card(
-                margin: const EdgeInsets.symmetric(vertical: 6.0),
-                elevation: 1,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                child: ListTile(
-                  title: Text(log.foodName, style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
-                  subtitle: Text(
-                      '${log.calories.toStringAsFixed(0)} kcal | P: ${log.protein.toStringAsFixed(0)}g, C: ${log.carbohydrates.toStringAsFixed(0)}g, G: ${log.fat.toStringAsFixed(0)}g',
-                      style: GoogleFonts.lato(fontSize: 12, color: Colors.black54),
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                    onPressed: () => _confirmDelete(context, box, log),
-                  ),
+              margin: const EdgeInsets.symmetric(vertical: 6.0),
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ListTile(
+                title: Text(
+                  log.foodName,
+                  style: GoogleFonts.lato(fontWeight: FontWeight.bold),
                 ),
+                subtitle: Text(
+                  '${log.calories.toStringAsFixed(0)} kcal | P: ${log.protein.toStringAsFixed(0)}g, C: ${log.carbohydrates.toStringAsFixed(0)}g, G: ${log.fat.toStringAsFixed(0)}g',
+                  style: GoogleFonts.lato(fontSize: 12, color: Colors.black54),
+                ),
+                trailing: IconButton(
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.redAccent,
+                  ),
+                  onPressed: () => _confirmDelete(context, box, log),
+                ),
+              ),
             );
           },
         );
@@ -65,7 +80,9 @@ class FoodLogListView extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Confirmar Eliminación'),
-          content: Text('¿Estás seguro de que quieres eliminar el registro de "${log.foodName}"?'),
+          content: Text(
+            '¿Estás seguro de que quieres eliminar el registro de "${log.foodName}"?',
+          ),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancelar'),

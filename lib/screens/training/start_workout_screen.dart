@@ -10,9 +10,7 @@ class StartWorkoutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Empezar Entrenamiento'),
-      ),
+      appBar: AppBar(title: const Text('Empezar Entrenamiento')),
       body: Consumer<RoutineProvider>(
         builder: (context, provider, child) {
           if (provider.routines.isEmpty) {
@@ -28,7 +26,10 @@ class StartWorkoutScreen extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  title: Text(routine.name, style: Theme.of(context).textTheme.titleLarge),
+                  title: Text(
+                    routine.name,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   subtitle: Text(routine.description),
                   onTap: () {
                     Navigator.of(context).pushReplacement(

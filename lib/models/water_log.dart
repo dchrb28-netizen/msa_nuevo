@@ -16,5 +16,10 @@ class WaterLog extends HiveObject {
   @HiveField(3) // Added userId
   final String userId;
 
-  WaterLog({required this.id, required this.amount, required this.timestamp, required this.userId});
+  WaterLog({
+    required this.id,
+    required this.amount,
+    required this.timestamp,
+    required this.userId,
+  });
 }

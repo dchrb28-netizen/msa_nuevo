@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
@@ -48,13 +47,18 @@ class ProfileEditView extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 80,
-                  backgroundColor:
-                      Theme.of(context).colorScheme.surface.withAlpha(200),
-                  backgroundImage:
-                      profileImageBytes != null ? MemoryImage(profileImageBytes!) : null,
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.surface.withAlpha(200),
+                  backgroundImage: profileImageBytes != null
+                      ? MemoryImage(profileImageBytes!)
+                      : null,
                   child: profileImageBytes == null
-                      ? Icon(Icons.person,
-                          size: 80, color: Theme.of(context).colorScheme.primary)
+                      ? Icon(
+                          Icons.person,
+                          size: 80,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
                       : null,
                 ),
                 Positioned(
@@ -151,7 +155,8 @@ class ProfileEditView extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
+                borderRadius: BorderRadius.circular(30),
+              ),
             ),
             child: const Text('Guardar Cambios'),
           ),
@@ -198,10 +203,7 @@ class ProfileEditView extends StatelessWidget {
         fillColor: Theme.of(context).colorScheme.surface.withAlpha(200),
       ),
       items: items.keys.map((String key) {
-        return DropdownMenuItem<String>(
-          value: key,
-          child: Text(items[key]!),
-        );
+        return DropdownMenuItem<String>(value: key, child: Text(items[key]!));
       }).toList(),
       onChanged: onChanged,
     );

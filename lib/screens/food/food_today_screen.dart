@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/food_log.dart';
@@ -15,9 +14,7 @@ class FoodTodayScreen extends StatelessWidget {
   void _navigateToLogScreen(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => FoodLogScreen(
-          onAddFoodLog: onAddFoodLog,
-        ),
+        builder: (context) => FoodLogScreen(onAddFoodLog: onAddFoodLog),
       ),
     );
   }
@@ -34,8 +31,8 @@ class FoodTodayScreen extends StatelessWidget {
           final todayLogs = box.values.where((log) {
             final now = DateTime.now();
             return log.date.year == now.year &&
-                   log.date.month == now.month &&
-                   log.date.day == now.day;
+                log.date.month == now.month &&
+                log.date.day == now.day;
           }).toList();
 
           double caloriesConsumed = 0;
@@ -78,7 +75,10 @@ class FoodTodayScreen extends StatelessWidget {
                     label: const Text('Registrar Comida'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      textStyle: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),

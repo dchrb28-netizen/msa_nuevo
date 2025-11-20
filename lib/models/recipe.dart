@@ -51,10 +51,10 @@ class Recipe extends HiveObject {
         (json['pagemap']['cse_thumbnail'] as List).isNotEmpty) {
       imageUrl = json['pagemap']['cse_thumbnail'][0]['src'];
     } else if (json.containsKey('pagemap') &&
-               json['pagemap'].containsKey('metatags') &&
-               json['pagemap']['metatags'] is List &&
-               (json['pagemap']['metatags'] as List).isNotEmpty &&
-               json['pagemap']['metatags'][0].containsKey('og:image')) {
+        json['pagemap'].containsKey('metatags') &&
+        json['pagemap']['metatags'] is List &&
+        (json['pagemap']['metatags'] as List).isNotEmpty &&
+        json['pagemap']['metatags'][0].containsKey('og:image')) {
       imageUrl = json['pagemap']['metatags'][0]['og:image'];
     }
 

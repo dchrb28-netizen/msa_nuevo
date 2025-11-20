@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/dashboard_screen.dart';
 import 'package:myapp/screens/menus_screen.dart';
@@ -66,10 +65,7 @@ class _MainScreenState extends State<MainScreen>
             : null,
       ),
       drawer: const DrawerMenu(),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: widgetOptions,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: widgetOptions),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

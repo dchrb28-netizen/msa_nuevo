@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/user.dart';
@@ -37,7 +36,7 @@ class WaterIntakeProvider with ChangeNotifier {
     _selectedDate = newDate;
     notifyListeners();
   }
-  
+
   void goToPreviousDay() {
     _selectedDate = _selectedDate.subtract(const Duration(days: 1));
     notifyListeners();
@@ -51,23 +50,28 @@ class WaterIntakeProvider with ChangeNotifier {
   double getWaterIntakeForDate(User? currentUser, DateTime date) {
     if (currentUser == null) return 0;
     return _waterLogBox.values
-        .where((log) =>
-            log.userId == currentUser.id &&
-            log.timestamp.year == date.year &&
-            log.timestamp.month == date.month &&
-            log.timestamp.day == date.day)
+        .where(
+          (log) =>
+              log.userId == currentUser.id &&
+              log.timestamp.year == date.year &&
+              log.timestamp.month == date.month &&
+              log.timestamp.day == date.day,
+        )
         .fold(0.0, (sum, item) => sum + item.amount);
   }
-  
+
   List<WaterLog> getLogsForSelectedDate(User? currentUser) {
-     if (currentUser == null) return [];
-     return _waterLogBox.values
-            .where((log) =>
-                log.userId == currentUser.id &&
-                log.timestamp.year == _selectedDate.year &&
-                log.timestamp.month == _selectedDate.month &&
-                log.timestamp.day == _selectedDate.day)
-            .toList()..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    if (currentUser == null) return [];
+    return _waterLogBox.values
+        .where(
+          (log) =>
+              log.userId == currentUser.id &&
+              log.timestamp.year == _selectedDate.year &&
+              log.timestamp.month == _selectedDate.month &&
+              log.timestamp.day == _selectedDate.day,
+        )
+        .toList()
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
   }
 
   void addWaterLog(double amount, User currentUser) {
@@ -81,8 +85,8 @@ class WaterIntakeProvider with ChangeNotifier {
   }
 
   void editWaterLog(WaterLog log, double newAmount) {
-      log.amount = newAmount;
-      log.save();
+    log.amount = newAmount;
+    log.save();
   }
 
   void deleteWaterLog(WaterLog log) {
@@ -90,7 +94,9 @@ class WaterIntakeProvider with ChangeNotifier {
   }
 
   void showEditGoalDialog(BuildContext context) {
-    final TextEditingController controller = TextEditingController(text: _dailyGoal.toString());
+    final TextEditingController controller = TextEditingController(
+      text: _dailyGoal.toString(),
+    );
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

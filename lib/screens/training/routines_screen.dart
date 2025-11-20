@@ -9,11 +9,9 @@ class RoutinesScreen extends StatelessWidget {
   const RoutinesScreen({super.key});
 
   void _navigateAndAddRoutine(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const EditRoutineScreen(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const EditRoutineScreen()));
   }
 
   @override
@@ -24,7 +22,10 @@ class RoutinesScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8.0,
+              vertical: 12.0,
+            ),
             child: Wrap(
               spacing: 8.0, // Space between chips
               runSpacing: 4.0, // Space between rows of chips
@@ -64,22 +65,30 @@ class RoutinesScreen extends StatelessWidget {
                     final routine = routines[index];
                     return Card(
                       margin: const EdgeInsets.symmetric(
-                          horizontal: 8.0, vertical: 6.0),
+                        horizontal: 8.0,
+                        vertical: 6.0,
+                      ),
                       elevation: 4,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: ListTile(
-                          title: Text(routine.name,
-                              style: Theme.of(context).textTheme.titleLarge),
+                          title: Text(
+                            routine.name,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
                           subtitle: Text(routine.description),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.play_arrow_rounded,
-                                    color: Colors.green, size: 30),
+                                icon: const Icon(
+                                  Icons.play_arrow_rounded,
+                                  color: Colors.green,
+                                  size: 30,
+                                ),
                                 tooltip: 'Iniciar Entrenamiento',
                                 onPressed: () {
                                   Navigator.of(context).push(
@@ -91,14 +100,17 @@ class RoutinesScreen extends StatelessWidget {
                                 },
                               ),
                               IconButton(
-                                icon: const Icon(Icons.edit_outlined,
-                                    color: Colors.blueAccent),
+                                icon: const Icon(
+                                  Icons.edit_outlined,
+                                  color: Colors.blueAccent,
+                                ),
                                 tooltip: 'Editar Rutina',
                                 onPressed: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          EditRoutineScreen(routineId: routine.id),
+                                      builder: (context) => EditRoutineScreen(
+                                        routineId: routine.id,
+                                      ),
                                     ),
                                   );
                                 },
@@ -110,9 +122,12 @@ class RoutinesScreen extends StatelessWidget {
                                       context: context,
                                       builder: (BuildContext ctx) {
                                         return AlertDialog(
-                                          title: const Text('Confirmar Borrado'),
+                                          title: const Text(
+                                            'Confirmar Borrado',
+                                          ),
                                           content: Text(
-                                              '¿Estás seguro de que quieres eliminar la rutina "${routine.name}"?'),
+                                            '¿Estás seguro de que quieres eliminar la rutina "${routine.name}"?',
+                                          ),
                                           actions: <Widget>[
                                             TextButton(
                                               child: const Text('Cancelar'),
@@ -121,11 +136,16 @@ class RoutinesScreen extends StatelessWidget {
                                               },
                                             ),
                                             TextButton(
-                                              child: const Text('Eliminar',
-                                                  style: TextStyle(
-                                                      color: Colors.red)),
+                                              child: const Text(
+                                                'Eliminar',
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                ),
+                                              ),
                                               onPressed: () {
-                                                provider.deleteRoutine(routine.id);
+                                                provider.deleteRoutine(
+                                                  routine.id,
+                                                );
                                                 Navigator.of(ctx).pop();
                                               },
                                             ),
@@ -137,15 +157,17 @@ class RoutinesScreen extends StatelessWidget {
                                 },
                                 itemBuilder: (BuildContext context) =>
                                     <PopupMenuEntry<String>>[
-                                  const PopupMenuItem<String>(
-                                    value: 'delete',
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete_outline,
-                                          color: Colors.redAccent),
-                                      title: Text('Eliminar'),
-                                    ),
-                                  ),
-                                ],
+                                      const PopupMenuItem<String>(
+                                        value: 'delete',
+                                        child: ListTile(
+                                          leading: Icon(
+                                            Icons.delete_outline,
+                                            color: Colors.redAccent,
+                                          ),
+                                          title: Text('Eliminar'),
+                                        ),
+                                      ),
+                                    ],
                               ),
                             ],
                           ),

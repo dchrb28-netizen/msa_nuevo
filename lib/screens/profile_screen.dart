@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -72,8 +71,12 @@ class ProfileScreenState extends State<ProfileScreen> {
   void _loadUserData(User? user) {
     _nameController = TextEditingController(text: user?.name ?? '');
     _ageController = TextEditingController(text: user?.age.toString() ?? '0');
-    _heightController = TextEditingController(text: user?.height.toString() ?? '0');
-    _weightController = TextEditingController(text: user?.weight.toString() ?? '0');
+    _heightController = TextEditingController(
+      text: user?.height.toString() ?? '0',
+    );
+    _weightController = TextEditingController(
+      text: user?.weight.toString() ?? '0',
+    );
     _selectedGender = user?.gender ?? _genderOptions.keys.first;
     _activityLevel = user?.activityLevel ?? _activityLevelOptions.keys.first;
     _profileImageBytes = user?.profileImageBytes;
@@ -90,7 +93,10 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
 
     if (image != null) {
       final bytes = await image.readAsBytes();
@@ -198,16 +204,18 @@ class ProfileScreenState extends State<ProfileScreen> {
                         activityLevelOptions: _activityLevelOptions,
                         onPickImage: _pickImage,
                         onSaveProfile: _saveProfile,
-                        onGenderChanged: (value) => setState(() => _selectedGender = value),
-                        onActivityLevelChanged: (value) => setState(() => _activityLevel = value),
+                        onGenderChanged: (value) =>
+                            setState(() => _selectedGender = value),
+                        onActivityLevelChanged: (value) =>
+                            setState(() => _activityLevel = value),
                       )
                     : (user != null
-                        ? ProfileReadView(
-                            user: user,
-                            genderOptions: _genderOptions,
-                            activityLevelOptions: _activityLevelOptions,
-                          )
-                        : const SizedBox.shrink()),
+                          ? ProfileReadView(
+                              user: user,
+                              genderOptions: _genderOptions,
+                              activityLevelOptions: _activityLevelOptions,
+                            )
+                          : const SizedBox.shrink()),
               ),
             ),
         ],

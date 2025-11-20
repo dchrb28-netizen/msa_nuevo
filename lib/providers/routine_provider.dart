@@ -8,7 +8,9 @@ import 'package:myapp/models/routine_log.dart';
 class RoutineProvider with ChangeNotifier {
   final Box<Routine> _routineBox = Hive.box<Routine>('routines');
   final Box<RoutineLog> _routineLogBox = Hive.box<RoutineLog>('routine_logs');
-  final Box<RoutineExercise> _routineExerciseBox = Hive.box<RoutineExercise>('routine_exercises');
+  final Box<RoutineExercise> _routineExerciseBox = Hive.box<RoutineExercise>(
+    'routine_exercises',
+  );
   final Box<Exercise> _exerciseBox = Hive.box<Exercise>('exercises');
 
   // Helper method to load associated exercises into RoutineExercise objects
@@ -38,7 +40,9 @@ class RoutineProvider with ChangeNotifier {
   Routine? getRoutineForDay(String dayOfWeek) {
     try {
       // Find the first routine that matches the day of the week, case-insensitive
-      final routine = routines.firstWhere((r) => r.dayOfWeek?.toLowerCase() == dayOfWeek.toLowerCase());
+      final routine = routines.firstWhere(
+        (r) => r.dayOfWeek?.toLowerCase() == dayOfWeek.toLowerCase(),
+      );
       _loadExercisesForRoutine(routine); // Ensure its exercises are loaded
       return routine;
     } catch (e) {
@@ -51,7 +55,11 @@ class RoutineProvider with ChangeNotifier {
 
   // ****** Routine Methods ******
 
-  Future<Routine> addRoutine(String name, String description, String? dayOfWeek) async {
+  Future<Routine> addRoutine(
+    String name,
+    String description,
+    String? dayOfWeek,
+  ) async {
     final routine = Routine(
       id: DateTime.now().toString(), // Using a simpler unique ID
       name: name,
@@ -60,8 +68,8 @@ class RoutineProvider with ChangeNotifier {
     );
     await _routineBox.put(routine.id, routine);
     routine.exercises = HiveList(_routineExerciseBox);
-    await routine.save(); 
-    
+    await routine.save();
+
     // Even though it's new, we call this for consistency.
     _loadExercisesForRoutine(routine);
 
@@ -69,12 +77,17 @@ class RoutineProvider with ChangeNotifier {
     return routine;
   }
 
-  Future<void> updateRoutine(Routine routine, List<RoutineExercise> updatedExercises) async {
+  Future<void> updateRoutine(
+    Routine routine,
+    List<RoutineExercise> updatedExercises,
+  ) async {
     final HiveList<RoutineExercise> hiveList = routine.exercises!;
 
     final List<RoutineExercise> toDelete = [];
     for (var existingExercise in hiveList) {
-      if (!updatedExercises.any((element) => element.key == existingExercise.key)) {
+      if (!updatedExercises.any(
+        (element) => element.key == existingExercise.key,
+      )) {
         toDelete.add(existingExercise);
       }
     }
@@ -96,7 +109,7 @@ class RoutineProvider with ChangeNotifier {
 
     // After saving, reload the exercise data to ensure the UI has full objects.
     _loadExercisesForRoutine(routine);
-    
+
     notifyListeners();
   }
 
@@ -105,7 +118,7 @@ class RoutineProvider with ChangeNotifier {
     if (routine != null && routine.exercises != null) {
       final exercisesToDelete = routine.exercises!.toList();
       for (var ex in exercisesToDelete) {
-         await ex.delete();
+        await ex.delete();
       }
     }
     await _routineBox.delete(id);
@@ -121,10 +134,12 @@ class RoutineProvider with ChangeNotifier {
 
   List<RoutineLog> getRoutineLogsByDate(DateTime date) {
     return _routineLogBox.values
-        .where((log) =>
-            log.date.year == date.year &&
-            log.date.month == date.month &&
-            log.date.day == date.day)
+        .where(
+          (log) =>
+              log.date.year == date.year &&
+              log.date.month == date.month &&
+              log.date.day == date.day,
+        )
         .toList();
   }
 }

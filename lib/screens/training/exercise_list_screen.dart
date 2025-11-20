@@ -14,7 +14,10 @@ class ExerciseListScreen extends StatelessWidget {
     );
 
     if (newExercise != null && context.mounted) {
-      Provider.of<ExerciseProvider>(context, listen: false).addExercise(newExercise);
+      Provider.of<ExerciseProvider>(
+        context,
+        listen: false,
+      ).addExercise(newExercise);
     }
   }
 
@@ -27,7 +30,10 @@ class ExerciseListScreen extends StatelessWidget {
     );
 
     if (updatedExercise != null && context.mounted) {
-      Provider.of<ExerciseProvider>(context, listen: false).updateExercise(updatedExercise);
+      Provider.of<ExerciseProvider>(
+        context,
+        listen: false,
+      ).updateExercise(updatedExercise);
     }
   }
 

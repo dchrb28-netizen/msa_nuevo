@@ -32,9 +32,7 @@ class _SelectExerciseScreenState extends State<SelectExerciseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Seleccionar Ejercicio'),
-      ),
+      appBar: AppBar(title: const Text('Seleccionar Ejercicio')),
       body: Column(
         children: [
           Padding(
@@ -55,13 +53,18 @@ class _SelectExerciseScreenState extends State<SelectExerciseScreen> {
                 final filteredExercises = allExercises.where((exercise) {
                   final query = _searchQuery.toLowerCase();
                   final nameMatch = exercise.name.toLowerCase().contains(query);
-                  final muscleMatch = (exercise.muscleGroup?.toLowerCase() ?? '').contains(query);
+                  final muscleMatch =
+                      (exercise.muscleGroup?.toLowerCase() ?? '').contains(
+                        query,
+                      );
                   return nameMatch || muscleMatch;
                 }).toList();
 
                 if (filteredExercises.isEmpty) {
                   return const Center(
-                    child: Text('No se encontraron ejercicios. Puedes añadirlos en la biblioteca.'),
+                    child: Text(
+                      'No se encontraron ejercicios. Puedes añadirlos en la biblioteca.',
+                    ),
                   );
                 }
 
@@ -71,7 +74,9 @@ class _SelectExerciseScreenState extends State<SelectExerciseScreen> {
                     final exercise = filteredExercises[index];
                     return ListTile(
                       title: Text(exercise.name),
-                      subtitle: Text('${exercise.muscleGroup ?? 'N/A'} | ${exercise.equipment ?? 'N/A'}'),
+                      subtitle: Text(
+                        '${exercise.muscleGroup ?? 'N/A'} | ${exercise.equipment ?? 'N/A'}',
+                      ),
                       onTap: () {
                         Navigator.of(context).pop(exercise);
                       },

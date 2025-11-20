@@ -9,7 +9,8 @@ class WaterTodayScreen extends StatefulWidget {
   State<WaterTodayScreen> createState() => _WaterTodayScreenState();
 }
 
-class _WaterTodayScreenState extends State<WaterTodayScreen> with SingleTickerProviderStateMixin {
+class _WaterTodayScreenState extends State<WaterTodayScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -36,10 +37,7 @@ class _WaterTodayScreenState extends State<WaterTodayScreen> with SingleTickerPr
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          WaterTodayView(),
-          WaterHistoryScreen(),
-        ],
+        children: const [WaterTodayView(), WaterHistoryScreen()],
       ),
     );
   }

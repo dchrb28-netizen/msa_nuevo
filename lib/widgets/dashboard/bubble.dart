@@ -7,11 +7,7 @@ class Bubble extends StatelessWidget {
   final double size;
   final double initialX;
 
-  const Bubble({
-    super.key,
-    required this.size,
-    required this.initialX,
-  });
+  const Bubble({super.key, required this.size, required this.initialX});
 
   @override
   Widget build(BuildContext context) {

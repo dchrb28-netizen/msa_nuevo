@@ -15,7 +15,12 @@ class ExerciseLibraryScreen extends StatefulWidget {
 class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
   String _searchQuery = '';
   String _selectedDifficulty = 'Todos';
-  final List<String> _difficultyLevels = ['Todos', 'Principiante', 'Intermedio', 'Avanzado'];
+  final List<String> _difficultyLevels = [
+    'Todos',
+    'Principiante',
+    'Intermedio',
+    'Avanzado',
+  ];
 
   void _navigateToDetail(Exercise exercise) {
     Navigator.push(
@@ -27,7 +32,10 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
   }
 
   Future<void> _navigateAndSaveChanges(Exercise? exercise) async {
-    final exerciseProvider = Provider.of<ExerciseProvider>(context, listen: false);
+    final exerciseProvider = Provider.of<ExerciseProvider>(
+      context,
+      listen: false,
+    );
 
     final result = await Navigator.push(
       context,
@@ -46,13 +54,18 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
   }
 
   Future<void> _deleteExercise(Exercise exercise) async {
-    final exerciseProvider = Provider.of<ExerciseProvider>(context, listen: false);
+    final exerciseProvider = Provider.of<ExerciseProvider>(
+      context,
+      listen: false,
+    );
 
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Eliminar Ejercicio'),
-        content: const Text('¿Estás seguro de que quieres eliminar este ejercicio?'),
+        content: const Text(
+          '¿Estás seguro de que quieres eliminar este ejercicio?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -94,7 +107,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
     }
   }
 
-    Color _getDifficultyColor(String? difficulty) {
+  Color _getDifficultyColor(String? difficulty) {
     switch (difficulty) {
       case 'Principiante':
         return Colors.green.shade600;
@@ -150,24 +163,30 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
           child: Consumer<ExerciseProvider>(
             builder: (context, provider, child) {
               if (provider.exercises.isEmpty) {
-                return const Center(child: Text("No hay ejercicios. ¡Añade uno nuevo!"));
+                return const Center(
+                  child: Text("No hay ejercicios. ¡Añade uno nuevo!"),
+                );
               }
 
               final searchedExercises = provider.exercises.where((exercise) {
                 final query = _searchQuery.toLowerCase();
                 return exercise.name.toLowerCase().contains(query) ||
-                    (exercise.muscleGroup?.toLowerCase() ?? '').contains(query) ||
+                    (exercise.muscleGroup?.toLowerCase() ?? '').contains(
+                      query,
+                    ) ||
                     (exercise.equipment?.toLowerCase() ?? '').contains(query);
               }).toList();
 
               final filteredExercises = _selectedDifficulty == 'Todos'
-                ? searchedExercises
-                : searchedExercises.where((exercise) {
-                    return exercise.difficulty == _selectedDifficulty;
-                  }).toList();
+                  ? searchedExercises
+                  : searchedExercises.where((exercise) {
+                      return exercise.difficulty == _selectedDifficulty;
+                    }).toList();
 
               if (filteredExercises.isEmpty) {
-                return const Center(child: Text('No se encontraron ejercicios.'));
+                return const Center(
+                  child: Text('No se encontraron ejercicios.'),
+                );
               }
 
               final groupedExercises = <String, List<Exercise>>{};
@@ -183,7 +202,9 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
               final muscleGroups = groupedExercises.keys.toList()..sort();
 
               return ListView.builder(
-                padding: const EdgeInsets.only(bottom: 80.0), // Padding for the main FAB
+                padding: const EdgeInsets.only(
+                  bottom: 80.0,
+                ), // Padding for the main FAB
                 itemCount: muscleGroups.length,
                 itemBuilder: (context, index) {
                   final muscleGroup = muscleGroups[index];
@@ -191,8 +212,13 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
 
                   return Card(
                     elevation: 4,
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     color: theme.colorScheme.surfaceContainerHighest,
                     child: ExpansionTile(
                       leading: Icon(
@@ -209,7 +235,9 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                       children: exercisesInGroup.map((exercise) {
                         return ListTile(
                           isThreeLine: true,
-                          leading: exercise.imageUrl != null && exercise.imageUrl!.isNotEmpty
+                          leading:
+                              exercise.imageUrl != null &&
+                                  exercise.imageUrl!.isNotEmpty
                               ? ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: Image.network(
@@ -217,25 +245,42 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                                     width: 50,
                                     height: 50,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => 
-                                      const Icon(Icons.image, size: 30),
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(Icons.image, size: 30),
                                   ),
                                 )
                               : const Icon(Icons.image, size: 30),
-                          title: Text(exercise.name, style: theme.textTheme.titleMedium),
+                          title: Text(
+                            exercise.name,
+                            style: theme.textTheme.titleMedium,
+                          ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(exercise.equipment ?? 'N/A', style: theme.textTheme.bodyMedium),
+                              Text(
+                                exercise.equipment ?? 'N/A',
+                                style: theme.textTheme.bodyMedium,
+                              ),
                               const SizedBox(height: 4),
                               Chip(
                                 label: Text(exercise.difficulty ?? 'N/A'),
-                                backgroundColor: _getDifficultyColor(exercise.difficulty),
-                                labelStyle: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                                backgroundColor: _getDifficultyColor(
+                                  exercise.difficulty,
+                                ),
+                                labelStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 0,
+                                ),
                                 visualDensity: VisualDensity.compact,
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              )
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                              ),
                             ],
                           ),
                           onTap: () => _navigateToDetail(exercise),
@@ -243,12 +288,19 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.edit, color: Colors.blueGrey),
-                                onPressed: () => _navigateAndSaveChanges(exercise),
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: Colors.blueGrey,
+                                ),
+                                onPressed: () =>
+                                    _navigateAndSaveChanges(exercise),
                                 tooltip: 'Editar Ejercicio',
                               ),
                               IconButton(
-                                icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.redAccent,
+                                ),
                                 onPressed: () => _deleteExercise(exercise),
                                 tooltip: 'Eliminar Ejercicio',
                               ),

@@ -6,12 +6,8 @@ class RewardsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Recompensas'),
-      ),
-      body: const Center(
-        child: Text('Pantalla de Recompensas'),
-      ),
+      appBar: AppBar(title: const Text('Recompensas')),
+      body: const Center(child: Text('Pantalla de Recompensas')),
     );
   }
 }

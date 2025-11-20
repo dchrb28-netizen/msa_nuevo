@@ -65,9 +65,7 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registrar Comida'),
-      ),
+      appBar: AppBar(title: const Text('Registrar Comida')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -79,9 +77,21 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                 _buildCaloriesHeader(context),
                 const SizedBox(height: 24),
                 _buildTextField(_foodNameController, 'Nombre de la Comida'),
-                _buildTextField(_caloriesController, 'Calorías', isNumber: true),
-                _buildTextField(_proteinController, 'Proteínas (g)', isNumber: true),
-                _buildTextField(_carbohydratesController, 'Carbohidratos (g)', isNumber: true),
+                _buildTextField(
+                  _caloriesController,
+                  'Calorías',
+                  isNumber: true,
+                ),
+                _buildTextField(
+                  _proteinController,
+                  'Proteínas (g)',
+                  isNumber: true,
+                ),
+                _buildTextField(
+                  _carbohydratesController,
+                  'Carbohidratos (g)',
+                  isNumber: true,
+                ),
                 _buildTextField(_fatController, 'Grasas (g)', isNumber: true),
                 const SizedBox(height: 24),
                 _buildMealTypeDropdown(),
@@ -90,9 +100,12 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: _submitForm,
-                   style: ElevatedButton.styleFrom(
+                  style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   child: const Text('Guardar Registro'),
                 ),
@@ -126,12 +139,17 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
         }
 
         final dailyLogs = box.values.where((log) => isSameDay(log.date, now));
-        final totalCalories = dailyLogs.fold<double>(0, (sum, log) => sum + log.calories);
+        final totalCalories = dailyLogs.fold<double>(
+          0,
+          (sum, log) => sum + log.calories,
+        );
         final remainingCalories = caloricGoal - totalCalories;
 
         return Card(
           elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -140,22 +158,45 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Chip(
-                      avatar: Icon(planDetails[dietPlan]?['icon'] ?? Icons.help, color: Colors.black87, size: 18),
-                      label: Text('Plan: $dietPlan', style: GoogleFonts.lato(fontWeight: FontWeight.bold, color: Colors.black87)),
-                      backgroundColor: planDetails[dietPlan]?['color'] ?? Colors.grey.shade300,
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      avatar: Icon(
+                        planDetails[dietPlan]?['icon'] ?? Icons.help,
+                        color: Colors.black87,
+                        size: 18,
+                      ),
+                      label: Text(
+                        'Plan: $dietPlan',
+                        style: GoogleFonts.lato(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      backgroundColor:
+                          planDetails[dietPlan]?['color'] ??
+                          Colors.grey.shade300,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                     ),
                   ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _buildCalorieInfo('Meta', caloricGoal.toInt(), Colors.blue),
-                    _buildCalorieInfo('Consumido', totalCalories.toInt(), Colors.orange),
-                    _buildCalorieInfo('Restante', remainingCalories.toInt(), Colors.green),
+                    _buildCalorieInfo(
+                      'Consumido',
+                      totalCalories.toInt(),
+                      Colors.orange,
+                    ),
+                    _buildCalorieInfo(
+                      'Restante',
+                      remainingCalories.toInt(),
+                      Colors.green,
+                    ),
                   ],
                 ),
               ],
-            )
+            ),
           ),
         );
       },
@@ -165,7 +206,10 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
   Widget _buildCalorieInfo(String title, int value, Color color) {
     return Column(
       children: [
-        Text(title, style: GoogleFonts.lato(fontSize: 14, color: Colors.grey[600])),
+        Text(
+          title,
+          style: GoogleFonts.lato(fontSize: 14, color: Colors.grey[600]),
+        ),
         const SizedBox(height: 4),
         Text(
           value.toString(),
@@ -179,7 +223,11 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, {bool isNumber = false}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label, {
+    bool isNumber = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
@@ -188,7 +236,9 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
           labelText: label,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        keyboardType: isNumber ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
+        keyboardType: isNumber
+            ? const TextInputType.numberWithOptions(decimal: true)
+            : TextInputType.text,
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Por favor, ingrese un valor';
@@ -210,10 +260,7 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       items: _mealTypes.map((String type) {
-        return DropdownMenuItem<String>(
-          value: type,
-          child: Text(type),
-        );
+        return DropdownMenuItem<String>(value: type, child: Text(type));
       }).toList(),
       onChanged: (newValue) {
         if (newValue != null) {

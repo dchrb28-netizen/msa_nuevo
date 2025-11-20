@@ -11,11 +11,7 @@ class HistoryScreen extends StatelessWidget {
     // This widget only provides the TabBarView.
     // The Scaffold, AppBar, and TabBar are now handled by MainScreen.
     return const TabBarView(
-      children: [
-        WaterLogScreen(),
-        FoodLogScreen(),
-        BodyMeasurementScreen(),
-      ],
+      children: [WaterLogScreen(), FoodLogScreen(), BodyMeasurementScreen()],
     );
   }
 }

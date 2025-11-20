@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
@@ -23,8 +22,8 @@ class UserRecipe extends HiveObject {
   final List<String> instructions;
 
   @HiveField(5)
-  final Uint8List? imageBytes; 
-  
+  final Uint8List? imageBytes;
+
   @HiveField(6)
   final String? category;
 
@@ -36,7 +35,6 @@ class UserRecipe extends HiveObject {
 
   @HiveField(9)
   bool isFavorite;
-
 
   UserRecipe({
     required this.title,

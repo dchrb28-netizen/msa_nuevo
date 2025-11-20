@@ -17,7 +17,8 @@ final List<Exercise> exercises = [
     intermediateReps: '12-18',
     advancedSets: '5',
     advancedReps: '20-30',
-    recommendations: 'Mantén el cuerpo recto, baja lentamente y empuja explosivamente.',
+    recommendations:
+        'Mantén el cuerpo recto, baja lentamente y empuja explosivamente.',
   ),
   Exercise(
     id: 'chest_002',
@@ -73,7 +74,8 @@ final List<Exercise> exercises = [
   Exercise(
     id: 'chest_005',
     name: 'Fondos entre sillas (modificado)',
-    description: 'Fondos usando dos sillas o borde de la cama para pecho y tríceps.',
+    description:
+        'Fondos usando dos sillas o borde de la cama para pecho y tríceps.',
     type: 'Fuerza',
     muscleGroup: 'Pecho',
     equipment: 'Sillas',
@@ -119,12 +121,14 @@ final List<Exercise> exercises = [
     intermediateReps: '12-18',
     advancedSets: '4',
     advancedReps: '15-20',
-    recommendations: 'Mantén una ligera flexión de codos y controla el movimiento.',
+    recommendations:
+        'Mantén una ligera flexión de codos y controla el movimiento.',
   ),
   Exercise(
     id: 'chest_008',
     name: 'Flexiones inclinadas con rotación',
-    description: 'Flexión seguida de giro hacia un lado para trabajo unilateral.',
+    description:
+        'Flexión seguida de giro hacia un lado para trabajo unilateral.',
     type: 'Fuerza',
     muscleGroup: 'Pecho',
     equipment: 'Ninguno',
@@ -136,7 +140,8 @@ final List<Exercise> exercises = [
     intermediateReps: '8-12 por lado',
     advancedSets: '5',
     advancedReps: '12-18 por lado',
-    recommendations: 'Gira la cadera y el torso al subir para añadir estabilidad.',
+    recommendations:
+        'Gira la cadera y el torso al subir para añadir estabilidad.',
   ),
   Exercise(
     id: 'chest_009',
@@ -158,7 +163,8 @@ final List<Exercise> exercises = [
   Exercise(
     id: 'chest_010',
     name: 'Press de pecho con una mano (mochila)',
-    description: 'Press unilateral para balance y fuerza con carga improvisada.',
+    description:
+        'Press unilateral para balance y fuerza con carga improvisada.',
     type: 'Fuerza',
     muscleGroup: 'Pecho',
     equipment: 'Mochila/Botellas',
@@ -170,7 +176,8 @@ final List<Exercise> exercises = [
     intermediateReps: '8-12 por lado',
     advancedSets: '5',
     advancedReps: '12-18 por lado',
-    recommendations: 'Controla la estabilidad del hombro durante el movimiento.',
+    recommendations:
+        'Controla la estabilidad del hombro durante el movimiento.',
   ),
   Exercise(
     id: 'chest_011',
@@ -222,7 +229,8 @@ final List<Exercise> exercises = [
     intermediateReps: '10-12 por lado',
     advancedSets: '5',
     advancedReps: '12-18 por lado',
-    recommendations: 'Apoya la mano libre en una superficie estable para control.',
+    recommendations:
+        'Apoya la mano libre en una superficie estable para control.',
   ),
   Exercise(
     id: 'back_003',
@@ -239,7 +247,8 @@ final List<Exercise> exercises = [
     intermediateReps: '30-45s',
     advancedSets: '5',
     advancedReps: '45-60s',
-    recommendations: 'Eleva brazos y piernas simultáneamente sin forzar el cuello.',
+    recommendations:
+        'Eleva brazos y piernas simultáneamente sin forzar el cuello.',
   ),
   Exercise(
     id: 'back_004',
@@ -256,12 +265,14 @@ final List<Exercise> exercises = [
     intermediateReps: '10-12 por lado',
     advancedSets: '4',
     advancedReps: '12-15 por lado',
-    recommendations: 'Extiende brazo y pierna opuestos manteniendo la pelvis estable.',
+    recommendations:
+        'Extiende brazo y pierna opuestos manteniendo la pelvis estable.',
   ),
   Exercise(
     id: 'back_005',
     name: 'Remo invertido bajo mesa',
-    description: 'Remo corporal usando una mesa sólida para tracción invertida.',
+    description:
+        'Remo corporal usando una mesa sólida para tracción invertida.',
     type: 'Fuerza',
     muscleGroup: 'Espalda',
     equipment: 'Mesa',
@@ -307,7 +318,8 @@ final List<Exercise> exercises = [
     intermediateReps: '10-15',
     advancedSets: '4',
     advancedReps: '12-20',
-    recommendations: 'Mantén un arco suave en los codos y controla el movimiento.',
+    recommendations:
+        'Mantén un arco suave en los codos y controla el movimiento.',
   ),
   Exercise(
     id: 'back_008',
@@ -346,7 +358,8 @@ final List<Exercise> exercises = [
   Exercise(
     id: 'back_010',
     name: 'Chin-up asistido (toalla/puerta)',
-    description: 'Dominada con agarre supino asistida con apoyo si es necesario.',
+    description:
+        'Dominada con agarre supino asistida con apoyo si es necesario.',
     type: 'Fuerza',
     muscleGroup: 'Espalda',
     equipment: 'Barra/Toalla',
@@ -375,7 +388,8 @@ final List<Exercise> exercises = [
     intermediateReps: '12-20',
     advancedSets: '5',
     advancedReps: '15-25',
-    recommendations: 'Controla la distancia y mantén omóplatos juntos al finalizar.',
+    recommendations:
+        'Controla la distancia y mantén omóplatos juntos al finalizar.',
   ),
 
   // PIERNAS (11 ejercicios caseros)
@@ -394,12 +408,14 @@ final List<Exercise> exercises = [
     intermediateReps: '15-20',
     advancedSets: '5',
     advancedReps: '20-30',
-    recommendations: 'Baja hasta que los muslos queden al menos paralelos al suelo.',
+    recommendations:
+        'Baja hasta que los muslos queden al menos paralelos al suelo.',
   ),
   Exercise(
     id: 'legs_002',
     name: 'Sentadilla sumo',
-    description: 'Sentadilla con piernas más abiertas para enfoque en aductores.',
+    description:
+        'Sentadilla con piernas más abiertas para enfoque en aductores.',
     type: 'Fuerza',
     muscleGroup: 'Piernas',
     equipment: 'Ninguno',
@@ -530,7 +546,8 @@ final List<Exercise> exercises = [
     intermediateReps: '6-8 por pierna',
     advancedSets: '5',
     advancedReps: '8-12 por pierna',
-    recommendations: 'Usa un apoyo para bajar con control y subir explosivamente.',
+    recommendations:
+        'Usa un apoyo para bajar con control y subir explosivamente.',
   ),
   Exercise(
     id: 'legs_010',
@@ -583,7 +600,8 @@ final List<Exercise> exercises = [
     intermediateReps: '8-12',
     advancedSets: '5',
     advancedReps: '12-20',
-    recommendations: 'Mantén la cadera elevada y baja la cabeza hacia el suelo.',
+    recommendations:
+        'Mantén la cadera elevada y baja la cabeza hacia el suelo.',
   ),
   Exercise(
     id: 'shld_002',
@@ -617,7 +635,8 @@ final List<Exercise> exercises = [
     intermediateReps: '10-12',
     advancedSets: '5',
     advancedReps: '12-18',
-    recommendations: 'Evita arquear la espalda; usa piernas si necesitas impulso.',
+    recommendations:
+        'Evita arquear la espalda; usa piernas si necesitas impulso.',
   ),
   Exercise(
     id: 'shld_004',
@@ -673,7 +692,8 @@ final List<Exercise> exercises = [
   Exercise(
     id: 'shld_007',
     name: 'Y-raises en el suelo',
-    description: 'Elevación en Y para la parte posterior y estabilizadores del hombro.',
+    description:
+        'Elevación en Y para la parte posterior y estabilizadores del hombro.',
     type: 'Fuerza',
     muscleGroup: 'Hombros',
     equipment: 'Ninguno/Botella ligera',
@@ -702,7 +722,8 @@ final List<Exercise> exercises = [
     intermediateReps: '10-12',
     advancedSets: '4',
     advancedReps: '12-15',
-    recommendations: 'Ligero peso y movimiento controlado para la salud del hombro.',
+    recommendations:
+        'Ligero peso y movimiento controlado para la salud del hombro.',
   ),
   Exercise(
     id: 'shld_009',
@@ -719,7 +740,8 @@ final List<Exercise> exercises = [
     intermediateReps: '8-12',
     advancedSets: '5',
     advancedReps: '10-15',
-    recommendations: 'Usa piernas para asistir, pero mantén control sobre el hombro.',
+    recommendations:
+        'Usa piernas para asistir, pero mantén control sobre el hombro.',
   ),
   Exercise(
     id: 'shld_010',
@@ -772,7 +794,8 @@ final List<Exercise> exercises = [
     intermediateReps: '10-15',
     advancedSets: '4',
     advancedReps: '12-20',
-    recommendations: 'Mantén codos pegados al torso y evita impulso del cuerpo.',
+    recommendations:
+        'Mantén codos pegados al torso y evita impulso del cuerpo.',
   ),
   Exercise(
     id: 'arms_002',
@@ -857,7 +880,8 @@ final List<Exercise> exercises = [
     intermediateReps: '12-15 por brazo',
     advancedSets: '4',
     advancedReps: '15-20 por brazo',
-    recommendations: 'Mantén el brazo paralelo al torso y extiende completamente.',
+    recommendations:
+        'Mantén el brazo paralelo al torso y extiende completamente.',
   ),
   Exercise(
     id: 'arms_007',
@@ -925,7 +949,8 @@ final List<Exercise> exercises = [
     intermediateReps: '8-12',
     advancedSets: '5',
     advancedReps: '12-20',
-    recommendations: 'Mantén el cuerpo recto y sube con el pecho hacia la barra.',
+    recommendations:
+        'Mantén el cuerpo recto y sube con el pecho hacia la barra.',
   ),
   Exercise(
     id: 'arms_011',
@@ -942,7 +967,8 @@ final List<Exercise> exercises = [
     intermediateReps: '10-15',
     advancedSets: '4',
     advancedReps: '12-18',
-    recommendations: 'Controla el arco de los codos para proteger la articulación.',
+    recommendations:
+        'Controla el arco de los codos para proteger la articulación.',
   ),
 
   // ABDOMEN / CORE (11 ejercicios caseros)
@@ -961,7 +987,8 @@ final List<Exercise> exercises = [
     intermediateReps: '45-60s',
     advancedSets: '5',
     advancedReps: '90-120s',
-    recommendations: 'Mantén línea recta de cabeza a talones y respira controlado.',
+    recommendations:
+        'Mantén línea recta de cabeza a talones y respira controlado.',
   ),
   Exercise(
     id: 'abs_002',
@@ -1034,7 +1061,8 @@ final List<Exercise> exercises = [
   Exercise(
     id: 'abs_006',
     name: 'V-ups',
-    description: 'Ejercicio avanzado que combina crunch y elevación de piernas.',
+    description:
+        'Ejercicio avanzado que combina crunch y elevación de piernas.',
     type: 'Fuerza',
     muscleGroup: 'Abdomen',
     equipment: 'Ninguno',
@@ -1063,7 +1091,8 @@ final List<Exercise> exercises = [
     intermediateReps: '40-60s',
     advancedSets: '5',
     advancedReps: '60-90s',
-    recommendations: 'Mantén la espalda baja pegada al suelo y piernas ligeramente elevadas.',
+    recommendations:
+        'Mantén la espalda baja pegada al suelo y piernas ligeramente elevadas.',
   ),
   Exercise(
     id: 'abs_008',
@@ -1119,7 +1148,8 @@ final List<Exercise> exercises = [
   Exercise(
     id: 'abs_011',
     name: 'Crunch inverso',
-    description: 'Cruches enfocados en la flexión de la cadera para el abdomen inferior.',
+    description:
+        'Cruches enfocados en la flexión de la cadera para el abdomen inferior.',
     type: 'Fuerza',
     muscleGroup: 'Abdomen',
     equipment: 'Ninguno',
@@ -1131,7 +1161,8 @@ final List<Exercise> exercises = [
     intermediateReps: '15-20',
     advancedSets: '5',
     advancedReps: '20-30',
-    recommendations: 'Eleva las piernas y contrae el abdomen sin tirar del cuello.',
+    recommendations:
+        'Eleva las piernas y contrae el abdomen sin tirar del cuello.',
   ),
 
   // CARDIO (12 ejercicios caseros)
@@ -1240,7 +1271,8 @@ final List<Exercise> exercises = [
   Exercise(
     id: 'crd_007',
     name: 'Tabata jump squats',
-    description: 'Intervalos cortos de alta intensidad (20/10) con jump squats.',
+    description:
+        'Intervalos cortos de alta intensidad (20/10) con jump squats.',
     type: 'Cardio',
     muscleGroup: 'Cardio',
     equipment: 'Ninguno',
@@ -1303,7 +1335,8 @@ final List<Exercise> exercises = [
     intermediateReps: '45-60s',
     advancedSets: '5',
     advancedReps: '60-90s',
-    recommendations: 'Aterriza con rodilla suavemente y utiliza brazos para impulso.',
+    recommendations:
+        'Aterriza con rodilla suavemente y utiliza brazos para impulso.',
   ),
   Exercise(
     id: 'crd_011',
@@ -1320,7 +1353,8 @@ final List<Exercise> exercises = [
     intermediateReps: '30-45s',
     advancedSets: '8',
     advancedReps: '45-60s',
-    recommendations: 'Protege rodillas y sube con potencia manteniendo respiración.',
+    recommendations:
+        'Protege rodillas y sube con potencia manteniendo respiración.',
   ),
   Exercise(
     id: 'crd_012',
@@ -1337,14 +1371,16 @@ final List<Exercise> exercises = [
     intermediateReps: '8-12',
     advancedSets: '5',
     advancedReps: '12-20',
-    recommendations: 'Prioriza técnica y suaviza el aterrizaje para proteger rodillas.',
+    recommendations:
+        'Prioriza técnica y suaviza el aterrizaje para proteger rodillas.',
   ),
 
   // YOGA (10 ejercicios: Principiante -> Intermedio -> Avanzado)
   Exercise(
     id: 'yoga_001',
     name: 'Tadasana (Postura de la montaña)',
-    description: 'Postura de pie que mejora la postura, la respiración y el equilibrio.',
+    description:
+        'Postura de pie que mejora la postura, la respiración y el equilibrio.',
     type: 'Flexibilidad/Yoga',
     muscleGroup: 'Yoga',
     equipment: 'Mat opcional',
@@ -1356,12 +1392,14 @@ final List<Exercise> exercises = [
     intermediateReps: '60-90s',
     advancedSets: '3',
     advancedReps: '90-120s',
-    recommendations: 'Mantén la columna larga, hombros relajados y respira profundo y constante.',
+    recommendations:
+        'Mantén la columna larga, hombros relajados y respira profundo y constante.',
   ),
   Exercise(
     id: 'yoga_002',
     name: 'Adho Mukha Svanasana (Perro hacia abajo)',
-    description: 'Estiramiento global del cuerpo que alarga la columna y fortalece brazos y piernas.',
+    description:
+        'Estiramiento global del cuerpo que alarga la columna y fortalece brazos y piernas.',
     type: 'Flexibilidad/Yoga',
     muscleGroup: 'Yoga',
     equipment: 'Mat',
@@ -1373,12 +1411,14 @@ final List<Exercise> exercises = [
     intermediateReps: '40-60s',
     advancedSets: '4',
     advancedReps: '60-90s',
-    recommendations: 'Empuja las manos contra el suelo, alarga la columna y mantiene talones dirigidos hacia el suelo.',
+    recommendations:
+        'Empuja las manos contra el suelo, alarga la columna y mantiene talones dirigidos hacia el suelo.',
   ),
   Exercise(
     id: 'yoga_003',
     name: 'Balasana (Postura del niño)',
-    description: 'Postura de descanso que alarga la espalda baja y relaja el cuerpo.',
+    description:
+        'Postura de descanso que alarga la espalda baja y relaja el cuerpo.',
     type: 'Flexibilidad/Yoga',
     muscleGroup: 'Yoga',
     equipment: 'Mat',
@@ -1390,12 +1430,14 @@ final List<Exercise> exercises = [
     intermediateReps: '90-180s',
     advancedSets: '2',
     advancedReps: '3-5 min',
-    recommendations: 'Respira profundamente y relaja hombros y nuca; útil como pausa entre secuencias.',
+    recommendations:
+        'Respira profundamente y relaja hombros y nuca; útil como pausa entre secuencias.',
   ),
   Exercise(
     id: 'yoga_004',
     name: 'Bhujangasana (Cobra)',
-    description: 'Extensión suave de la columna para fortalecer la espalda y abrir el pecho.',
+    description:
+        'Extensión suave de la columna para fortalecer la espalda y abrir el pecho.',
     type: 'Flexibilidad/Yoga',
     muscleGroup: 'Yoga',
     equipment: 'Mat',
@@ -1407,12 +1449,14 @@ final List<Exercise> exercises = [
     intermediateReps: '20-40s',
     advancedSets: '4',
     advancedReps: '40-60s',
-    recommendations: 'Activa el core al subir y evita forzar la zona lumbar; mira ligeramente hacia adelante.',
+    recommendations:
+        'Activa el core al subir y evita forzar la zona lumbar; mira ligeramente hacia adelante.',
   ),
   Exercise(
     id: 'yoga_005',
     name: 'Virabhadrasana II (Guerrero II)',
-    description: 'Postura de pie para fuerza en piernas, apertura de caderas y estabilidad.',
+    description:
+        'Postura de pie para fuerza en piernas, apertura de caderas y estabilidad.',
     type: 'Flexibilidad/Yoga',
     muscleGroup: 'Yoga',
     equipment: 'Mat',
@@ -1424,12 +1468,14 @@ final List<Exercise> exercises = [
     intermediateReps: '30-60s por lado',
     advancedSets: '4',
     advancedReps: '60-90s por lado',
-    recommendations: 'Alinea la rodilla con el tobillo y extiende los brazos en línea paralela al suelo.',
+    recommendations:
+        'Alinea la rodilla con el tobillo y extiende los brazos en línea paralela al suelo.',
   ),
   Exercise(
     id: 'yoga_006',
     name: 'Vrksasana (Postura del árbol)',
-    description: 'Ejercicio de equilibrio y concentración que fortalece tobillo y piernas.',
+    description:
+        'Ejercicio de equilibrio y concentración que fortalece tobillo y piernas.',
     type: 'Flexibilidad/Yoga',
     muscleGroup: 'Yoga',
     equipment: 'Mat',
@@ -1441,12 +1487,14 @@ final List<Exercise> exercises = [
     intermediateReps: '30-60s por lado',
     advancedSets: '4',
     advancedReps: '60-90s por lado (sin apoyo)',
-    recommendations: 'Fija la mirada en un punto; usa pared si hace falta y eleva la planta del pie a la zona interna del muslo para más desafío.',
+    recommendations:
+        'Fija la mirada en un punto; usa pared si hace falta y eleva la planta del pie a la zona interna del muslo para más desafío.',
   ),
   Exercise(
     id: 'yoga_007',
     name: 'Setu Bandha Sarvangasana (Puente)',
-    description: 'Puente para abrir el pecho, fortalecer glúteos y espalda baja.',
+    description:
+        'Puente para abrir el pecho, fortalecer glúteos y espalda baja.',
     type: 'Flexibilidad/Yoga',
     muscleGroup: 'Yoga',
     equipment: 'Mat',
@@ -1458,12 +1506,14 @@ final List<Exercise> exercises = [
     intermediateReps: '30-60s',
     advancedSets: '4',
     advancedReps: '60-90s',
-    recommendations: 'Aprieta glúteos al subir y evita forzar la nuca; puedes elevar una pierna para dificultad avanzada.',
+    recommendations:
+        'Aprieta glúteos al subir y evita forzar la nuca; puedes elevar una pierna para dificultad avanzada.',
   ),
   Exercise(
     id: 'yoga_008',
     name: 'Ardha Chandrasana (Media luna)',
-    description: 'Postura de apertura lateral y equilibrio que trabaja piernas, cadera y core.',
+    description:
+        'Postura de apertura lateral y equilibrio que trabaja piernas, cadera y core.',
     type: 'Flexibilidad/Yoga',
     muscleGroup: 'Yoga',
     equipment: 'Mat',
@@ -1475,12 +1525,14 @@ final List<Exercise> exercises = [
     intermediateReps: '20-40s por lado',
     advancedSets: '4',
     advancedReps: '40-60s por lado',
-    recommendations: 'Usa bloque o pared para apoyo si hace falta; busca apertura lateral sin perder alineación de cadera.',
+    recommendations:
+        'Usa bloque o pared para apoyo si hace falta; busca apertura lateral sin perder alineación de cadera.',
   ),
   Exercise(
     id: 'yoga_009',
     name: 'Salabhasana (Saltamontes/locust)',
-    description: 'Fortalece la espalda baja y erectores espinales; buena para postura.',
+    description:
+        'Fortalece la espalda baja y erectores espinales; buena para postura.',
     type: 'Flexibilidad/Yoga',
     muscleGroup: 'Yoga',
     equipment: 'Mat',
@@ -1492,7 +1544,8 @@ final List<Exercise> exercises = [
     intermediateReps: '20-40s',
     advancedSets: '4',
     advancedReps: '40-60s',
-    recommendations: 'Eleva pecho y piernas simultáneamente manteniendo el cuello neutro; realiza series controladas.',
+    recommendations:
+        'Eleva pecho y piernas simultáneamente manteniendo el cuello neutro; realiza series controladas.',
   ),
   Exercise(
     id: 'yoga_010',
@@ -1509,7 +1562,7 @@ final List<Exercise> exercises = [
     intermediateReps: '20-40s (con control)',
     advancedSets: '5',
     advancedReps: '60s+',
-    recommendations: 'Realiza bajo supervisión si eres nuevo; usa pared y trabaja progresiones (delfín, piernas en L) antes de la inversión completa.',
+    recommendations:
+        'Realiza bajo supervisión si eres nuevo; usa pared y trabaja progresiones (delfín, piernas en L) antes de la inversión completa.',
   ),
 ];
-

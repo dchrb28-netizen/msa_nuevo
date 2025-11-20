@@ -18,7 +18,7 @@ class EditRoutineScreen extends StatefulWidget {
 
 class _EditRoutineScreenState extends State<EditRoutineScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   // Local UI state variables
   late String _routineName;
   late String _routineDescription;
@@ -27,25 +27,40 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
   Routine? _existingRoutine; // The original routine object for updates
   bool _isCreating = true;
 
-  final List<String> _days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  final List<String> _days = [
+    'Lunes',
+    'Martes',
+    'Miércoles',
+    'Jueves',
+    'Viernes',
+    'Sábado',
+    'Domingo',
+  ];
 
   @override
   void initState() {
     super.initState();
-    final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
+    final routineProvider = Provider.of<RoutineProvider>(
+      context,
+      listen: false,
+    );
 
     if (widget.routineId != null) {
       // *** EDITING FLOW ***
       _isCreating = false;
       // 1. Find the fully loaded routine from the provider.
-      _existingRoutine = routineProvider.routines.firstWhere((r) => r.id == widget.routineId!);
-      
+      _existingRoutine = routineProvider.routines.firstWhere(
+        (r) => r.id == widget.routineId!,
+      );
+
       // 2. Populate local state from the existing routine.
       _routineName = _existingRoutine!.name;
       _routineDescription = _existingRoutine!.description;
       _dayOfWeek = _existingRoutine!.dayOfWeek;
       // 3. Create a mutable copy of the exercises for the UI to manipulate.
-      _routineExercises = List<RoutineExercise>.from(_existingRoutine!.exercises ?? []);
+      _routineExercises = List<RoutineExercise>.from(
+        _existingRoutine!.exercises ?? [],
+      );
     } else {
       // *** CREATION FLOW ***
       _isCreating = true;
@@ -62,12 +77,19 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
     }
     _formKey.currentState!.save();
 
-    final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
+    final routineProvider = Provider.of<RoutineProvider>(
+      context,
+      listen: false,
+    );
 
     try {
       if (_isCreating) {
         // 1. Create the routine object first.
-        final newRoutine = await routineProvider.addRoutine(_routineName, _routineDescription, _dayOfWeek);
+        final newRoutine = await routineProvider.addRoutine(
+          _routineName,
+          _routineDescription,
+          _dayOfWeek,
+        );
         // 2. Now update the new routine with the list of exercises from UI state.
         await routineProvider.updateRoutine(newRoutine, _routineExercises);
       } else {
@@ -76,7 +98,10 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
         _existingRoutine!.description = _routineDescription;
         _existingRoutine!.dayOfWeek = _dayOfWeek;
         // 2. Pass the original routine and the updated exercise list to the provider.
-        await routineProvider.updateRoutine(_existingRoutine!, _routineExercises);
+        await routineProvider.updateRoutine(
+          _existingRoutine!,
+          _routineExercises,
+        );
       }
 
       if (mounted) {
@@ -84,18 +109,16 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
       }
     } catch (e) {
       if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error al guardar: $e'))
-          );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al guardar: $e')));
       }
     }
   }
 
   void _navigateAndSelectExercise() async {
     final selectedExercise = await Navigator.of(context).push<Exercise>(
-      MaterialPageRoute(
-        builder: (context) => const SelectExerciseScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const SelectExerciseScreen()),
     );
 
     if (selectedExercise != null) {
@@ -103,7 +126,11 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
     }
   }
 
-  void _showExerciseSettingsDialog({required Exercise exercise, RoutineExercise? routineExercise, int? index}) {
+  void _showExerciseSettingsDialog({
+    required Exercise exercise,
+    RoutineExercise? routineExercise,
+    int? index,
+  }) {
     showDialog(
       context: context,
       builder: (context) {
@@ -130,10 +157,7 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
       appBar: AppBar(
         title: Text(_isCreating ? 'Crear Rutina' : 'Editar Rutina'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _saveRoutine,
-          ),
+          IconButton(icon: const Icon(Icons.save), onPressed: _saveRoutine),
         ],
       ),
       body: Padding(
@@ -174,10 +198,7 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
                   border: OutlineInputBorder(),
                 ),
                 items: _days.map((String day) {
-                  return DropdownMenuItem<String>(
-                    value: day,
-                    child: Text(day),
-                  );
+                  return DropdownMenuItem<String>(value: day, child: Text(day));
                 }).toList(),
                 onChanged: (newValue) {
                   setState(() {
@@ -198,7 +219,9 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
                           return ListTile(
                             key: ValueKey(routineExercise.hashCode),
                             title: Text(routineExercise.exercise.name),
-                            subtitle: Text('${routineExercise.sets} series x ${routineExercise.reps} reps'),
+                            subtitle: Text(
+                              '${routineExercise.sets} series x ${routineExercise.reps} reps',
+                            ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -211,7 +234,10 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
                                   ),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                                  icon: const Icon(
+                                    Icons.delete_outline,
+                                    color: Colors.redAccent,
+                                  ),
                                   onPressed: () {
                                     setState(() {
                                       _routineExercises.removeAt(index);
@@ -278,10 +304,10 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
     _restTime = widget.routineExercise?.restTime;
   }
 
- void _onSave() {
+  void _onSave() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      
+
       final RoutineExercise routineExerciseToSave;
       if (widget.routineExercise != null) {
         // If editing, we update the existing instance.
@@ -301,10 +327,10 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
           weight: _weight,
           restTime: _restTime,
         );
-         // Ensure the exercise object is attached immediately
+        // Ensure the exercise object is attached immediately
         routineExerciseToSave.setExercise(widget.exercise);
       }
-      
+
       widget.onSave(routineExerciseToSave);
       Navigator.of(context).pop();
     }
@@ -325,7 +351,9 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
                 decoration: const InputDecoration(labelText: 'Series'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty || int.tryParse(value) == null) {
+                  if (value == null ||
+                      value.isEmpty ||
+                      int.tryParse(value) == null) {
                     return 'Introduce un número válido';
                   }
                   return null;
@@ -334,7 +362,9 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
               ),
               TextFormField(
                 initialValue: _reps,
-                decoration: const InputDecoration(labelText: 'Repeticiones (ej. 8-12)'),
+                decoration: const InputDecoration(
+                  labelText: 'Repeticiones (ej. 8-12)',
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Introduce las repeticiones';
@@ -346,8 +376,10 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
               TextFormField(
                 initialValue: _weight?.toString() ?? '',
                 decoration: const InputDecoration(labelText: 'Peso (opcional)'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                 validator: (value) {
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                validator: (value) {
                   if (value == null || value.isEmpty) {
                     return null; // Optional field
                   }
@@ -356,13 +388,17 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
                   }
                   return null;
                 },
-                onSaved: (value) => _weight = (value == null || value.isEmpty) ? null : double.tryParse(value),
+                onSaved: (value) => _weight = (value == null || value.isEmpty)
+                    ? null
+                    : double.tryParse(value),
               ),
               TextFormField(
                 initialValue: _restTime?.toString() ?? '',
-                decoration: const InputDecoration(labelText: 'Descanso (segundos, opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Descanso (segundos, opcional)',
+                ),
                 keyboardType: TextInputType.number,
-                 validator: (value) {
+                validator: (value) {
                   if (value == null || value.isEmpty) {
                     return null; // Optional field
                   }
@@ -371,7 +407,9 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
                   }
                   return null;
                 },
-                onSaved: (value) => _restTime = (value == null || value.isEmpty) ? null : int.tryParse(value),
+                onSaved: (value) => _restTime = (value == null || value.isEmpty)
+                    ? null
+                    : int.tryParse(value),
               ),
             ],
           ),
@@ -382,10 +420,7 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancelar'),
         ),
-        ElevatedButton(
-          onPressed: _onSave,
-          child: const Text('Guardar'),
-        ),
+        ElevatedButton(onPressed: _onSave, child: const Text('Guardar')),
       ],
     );
   }

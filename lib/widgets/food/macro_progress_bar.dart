@@ -22,13 +22,22 @@ class MacroProgressBar extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+        Text(
+          title,
+          style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('${consumed.toStringAsFixed(0)} / ${goal.toStringAsFixed(0)} g', style: textTheme.bodySmall),
-            Text('${(progress * 100).toStringAsFixed(0)}%', style: textTheme.bodySmall),
+            Text(
+              '${consumed.toStringAsFixed(0)} / ${goal.toStringAsFixed(0)} g',
+              style: textTheme.bodySmall,
+            ),
+            Text(
+              '${(progress * 100).toStringAsFixed(0)}%',
+              style: textTheme.bodySmall,
+            ),
           ],
         ),
         const SizedBox(height: 4),

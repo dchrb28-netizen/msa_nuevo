@@ -7,15 +7,11 @@ class ExerciseLogScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registrar Ejercicio'),
-      ),
+      appBar: AppBar(title: const Text('Registrar Ejercicio')),
       body: const Stack(
         children: [
           ScreenBackground(screenName: 'entrenamiento'),
-          Center(
-            child: Text('Aquí podrás registrar tus ejercicios.'),
-          ),
+          Center(child: Text('Aquí podrás registrar tus ejercicios.')),
         ],
       ),
     );

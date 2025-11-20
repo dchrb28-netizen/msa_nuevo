@@ -15,7 +15,8 @@ class TrainingScreen extends StatefulWidget {
   State<TrainingScreen> createState() => _TrainingScreenState();
 }
 
-class _TrainingScreenState extends State<TrainingScreen> with SingleTickerProviderStateMixin {
+class _TrainingScreenState extends State<TrainingScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -40,9 +41,7 @@ class _TrainingScreenState extends State<TrainingScreen> with SingleTickerProvid
   Future<void> _navigateAndAddExercise() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const EditExerciseScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const EditExerciseScreen()),
     );
 
     if (result is Exercise) {
@@ -55,7 +54,7 @@ class _TrainingScreenState extends State<TrainingScreen> with SingleTickerProvid
     switch (_tabController.index) {
       case 0:
         // Floating action button for Routines tab is removed.
-        return null; 
+        return null;
       case 1:
         return FloatingActionButton.extended(
           onPressed: _navigateAndAddExercise,
@@ -76,23 +75,14 @@ class _TrainingScreenState extends State<TrainingScreen> with SingleTickerProvid
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(
-              icon: Icon(Icons.fitness_center),
-              text: 'Rutinas',
-            ),
-            Tab(
-              icon: Icon(Icons.local_library),
-              text: 'Biblioteca',
-            ),
+            Tab(icon: Icon(Icons.fitness_center), text: 'Rutinas'),
+            Tab(icon: Icon(Icons.local_library), text: 'Biblioteca'),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          RoutinesScreen(),
-          ExerciseLibraryScreen(),
-        ],
+        children: const [RoutinesScreen(), ExerciseLibraryScreen()],
       ),
       floatingActionButton: _getFloatingActionButton(),
     );

@@ -41,7 +41,7 @@ class AboutScreen extends StatelessWidget {
               textAlign: TextAlign.justify,
             ),
             const SizedBox(height: 24),
-            
+
             Text(
               'Funcionalidades',
               style: TextStyle(
@@ -51,11 +51,27 @@ class AboutScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            _buildFeatureRow(context, Icons.fitness_center, 'Seguimiento de Entrenamientos'),
-            _buildFeatureRow(context, Icons.fastfood, 'Control de Nutrición e Hidratación'),
-            _buildFeatureRow(context, Icons.show_chart, 'Visualización de Progreso y Metas'),
-            _buildFeatureRow(context, Icons.emoji_events, 'Recompensas para mantener la motivación'),
-            
+            _buildFeatureRow(
+              context,
+              Icons.fitness_center,
+              'Seguimiento de Entrenamientos',
+            ),
+            _buildFeatureRow(
+              context,
+              Icons.fastfood,
+              'Control de Nutrición e Hidratación',
+            ),
+            _buildFeatureRow(
+              context,
+              Icons.show_chart,
+              'Visualización de Progreso y Metas',
+            ),
+            _buildFeatureRow(
+              context,
+              Icons.emoji_events,
+              'Recompensas para mantener la motivación',
+            ),
+
             const SizedBox(height: 24),
 
             Text(
@@ -75,33 +91,35 @@ class AboutScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.email, color: Colors.blueAccent),
               title: const Text('misaludactiva373@gmail.com'),
-              onTap: () => _launchUrl('mailto:misaludactiva373@gmail.com', context),
+              onTap: () =>
+                  _launchUrl('mailto:misaludactiva373@gmail.com', context),
             ),
             ListTile(
               leading: const Icon(Icons.phone, color: Colors.green),
               title: const Text('+56964022892'),
               onTap: () => _launchUrl('tel:+56964022892', context),
             ),
-             ListTile(
+            ListTile(
               leading: const Icon(Icons.link, color: Colors.purple),
               title: const Text('Instagram'),
-              onTap: () => _launchUrl('https://www.instagram.com/msa37_3', context),
+              onTap: () =>
+                  _launchUrl('https://www.instagram.com/msa37_3', context),
             ),
             ListTile(
               leading: const Icon(Icons.facebook, color: Colors.indigo),
               title: const Text('Facebook'),
-              onTap: () => _launchUrl('https://www.facebook.com/profile.php?id=61580423445819', context),
+              onTap: () => _launchUrl(
+                'https://www.facebook.com/profile.php?id=61580423445819',
+                context,
+              ),
             ),
-            
+
             const SizedBox(height: 32),
 
             const Center(
               child: Column(
                 children: [
-                  Text(
-                    'Versión 1.0.0',
-                    style: TextStyle(color: Colors.grey),
-                  ),
+                  Text('Versión 1.0.0', style: TextStyle(color: Colors.grey)),
                   SizedBox(height: 4),
                   Text(
                     '© 2025 Mi Salud Activa',
@@ -128,19 +146,23 @@ class AboutScreen extends StatelessWidget {
       ),
     );
   }
-  
+
   Future<void> _launchUrl(String url, BuildContext context) async {
     final Uri uri = Uri.parse(url);
     try {
-       if (!await launchUrl(uri)) {
-         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('No se pudo abrir $url')));
-         }
-       }
+      if (!await launchUrl(uri)) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('No se pudo abrir $url')));
+        }
+      }
     } catch (e) {
-       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error al intentar abrir el enlace.')));
-       }
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al intentar abrir el enlace.')),
+        );
+      }
     }
   }
 }

@@ -75,7 +75,9 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.exercise == null ? 'Crear Ejercicio' : 'Editar Ejercicio'),
+        title: Text(
+          widget.exercise == null ? 'Crear Ejercicio' : 'Editar Ejercicio',
+        ),
         centerTitle: true,
         elevation: 0,
       ),
@@ -93,49 +95,68 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => 
-                      const Center(child: Icon(Icons.image_not_supported, size: 50)),
+                    errorBuilder: (context, error, stackTrace) => const Center(
+                      child: Icon(Icons.image_not_supported, size: 50),
+                    ),
                   ),
                 ),
               const SizedBox(height: 24),
               Card(
                 elevation: 2,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
                       TextFormField(
                         initialValue: _name,
-                        decoration: const InputDecoration(labelText: 'Nombre del Ejercicio'),
-                        validator: (value) => (value == null || value.isEmpty) ? 'Por favor, introduce un nombre' : null,
+                        decoration: const InputDecoration(
+                          labelText: 'Nombre del Ejercicio',
+                        ),
+                        validator: (value) => (value == null || value.isEmpty)
+                            ? 'Por favor, introduce un nombre'
+                            : null,
                         onSaved: (value) => _name = value!,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         initialValue: _muscleGroup,
-                        decoration: const InputDecoration(labelText: 'Grupo Muscular'),
-                        validator: (value) => (value == null || value.isEmpty) ? 'Por favor, introduce un grupo muscular' : null,
+                        decoration: const InputDecoration(
+                          labelText: 'Grupo Muscular',
+                        ),
+                        validator: (value) => (value == null || value.isEmpty)
+                            ? 'Por favor, introduce un grupo muscular'
+                            : null,
                         onSaved: (value) => _muscleGroup = value!,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         initialValue: _equipment,
-                        decoration: const InputDecoration(labelText: 'Equipamiento'),
-                        validator: (value) => (value == null || value.isEmpty) ? 'Por favor, introduce el equipamiento' : null,
+                        decoration: const InputDecoration(
+                          labelText: 'Equipamiento',
+                        ),
+                        validator: (value) => (value == null || value.isEmpty)
+                            ? 'Por favor, introduce el equipamiento'
+                            : null,
                         onSaved: (value) => _equipment = value!,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         initialValue: _description,
-                        decoration: const InputDecoration(labelText: 'Descripción'),
+                        decoration: const InputDecoration(
+                          labelText: 'Descripción',
+                        ),
                         maxLines: 3,
                         onSaved: (value) => _description = value ?? '',
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         initialValue: _imageUrl,
-                        decoration: const InputDecoration(labelText: 'URL de la Imagen'),
+                        decoration: const InputDecoration(
+                          labelText: 'URL de la Imagen',
+                        ),
                         onSaved: (value) => _imageUrl = value ?? '',
                       ),
                     ],
@@ -145,7 +166,9 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
               const SizedBox(height: 24),
               Card(
                 elevation: 2,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -153,12 +176,16 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
                     children: [
                       DropdownButtonFormField<String>(
                         initialValue: _difficulty,
-                        decoration: const InputDecoration(labelText: 'Dificultad'),
+                        decoration: const InputDecoration(
+                          labelText: 'Dificultad',
+                        ),
                         items: ['Principiante', 'Intermedio', 'Avanzado']
-                            .map((label) => DropdownMenuItem(
-                                  value: label,
-                                  child: Text(label),
-                                ))
+                            .map(
+                              (label) => DropdownMenuItem(
+                                value: label,
+                                child: Text(label),
+                              ),
+                            )
                             .toList(),
                         onChanged: (value) {
                           setState(() {
@@ -170,23 +197,32 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         initialValue: _recommendations,
-                        decoration: const InputDecoration(labelText: 'Recomendaciones Generales'),
+                        decoration: const InputDecoration(
+                          labelText: 'Recomendaciones Generales',
+                        ),
                         maxLines: 3,
                         onSaved: (value) => _recommendations = value ?? '',
-                      ), 
+                      ),
                       const SizedBox(height: 24),
-                      Text('Recomendaciones por Nivel', style: theme.textTheme.titleLarge),
+                      Text(
+                        'Recomendaciones por Nivel',
+                        style: theme.textTheme.titleLarge,
+                      ),
                       const SizedBox(height: 16),
                       // Beginner
                       Text('Principiante', style: theme.textTheme.titleMedium),
                       TextFormField(
                         initialValue: _beginnerSets,
-                        decoration: const InputDecoration(labelText: 'Series (Principiante)'),
+                        decoration: const InputDecoration(
+                          labelText: 'Series (Principiante)',
+                        ),
                         onSaved: (value) => _beginnerSets = value ?? '',
                       ),
                       TextFormField(
                         initialValue: _beginnerReps,
-                        decoration: const InputDecoration(labelText: 'Reps/Tiempo (Principiante)'),
+                        decoration: const InputDecoration(
+                          labelText: 'Reps/Tiempo (Principiante)',
+                        ),
                         onSaved: (value) => _beginnerReps = value ?? '',
                       ),
                       const Divider(height: 32),
@@ -194,12 +230,16 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
                       Text('Intermedio', style: theme.textTheme.titleMedium),
                       TextFormField(
                         initialValue: _intermediateSets,
-                        decoration: const InputDecoration(labelText: 'Series (Intermedio)'),
+                        decoration: const InputDecoration(
+                          labelText: 'Series (Intermedio)',
+                        ),
                         onSaved: (value) => _intermediateSets = value ?? '',
                       ),
                       TextFormField(
                         initialValue: _intermediateReps,
-                        decoration: const InputDecoration(labelText: 'Reps/Tiempo (Intermedio)'),
+                        decoration: const InputDecoration(
+                          labelText: 'Reps/Tiempo (Intermedio)',
+                        ),
                         onSaved: (value) => _intermediateReps = value ?? '',
                       ),
                       const Divider(height: 32),
@@ -207,12 +247,16 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
                       Text('Avanzado', style: theme.textTheme.titleMedium),
                       TextFormField(
                         initialValue: _advancedSets,
-                        decoration: const InputDecoration(labelText: 'Series (Avanzado)'),
+                        decoration: const InputDecoration(
+                          labelText: 'Series (Avanzado)',
+                        ),
                         onSaved: (value) => _advancedSets = value ?? '',
                       ),
                       TextFormField(
                         initialValue: _advancedReps,
-                        decoration: const InputDecoration(labelText: 'Reps/Tiempo (Avanzado)'),
+                        decoration: const InputDecoration(
+                          labelText: 'Reps/Tiempo (Avanzado)',
+                        ),
                         onSaved: (value) => _advancedReps = value ?? '',
                       ),
                     ],
@@ -226,7 +270,9 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
                 label: const Text('Guardar Cambios'),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  textStyle: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],

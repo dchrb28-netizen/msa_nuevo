@@ -1,6 +1,6 @@
 // lib/models/workout_session.dart
 import 'package:uuid/uuid.dart';
-import 'package:myapp/models/set_log.dart'; 
+import 'package:myapp/models/set_log.dart';
 
 // Representa todas las series registradas para un solo ejercicio dentro de una sesión de entrenamiento.
 class PerformedExerciseLog {

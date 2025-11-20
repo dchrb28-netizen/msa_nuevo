@@ -36,7 +36,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     _startTime = DateTime.now(); // Se guarda la hora de inicio
     _setsData = {
       for (var i = 0; i < (widget.routine.exercises?.length ?? 0); i++)
-        i: List.generate(widget.routine.exercises![i].sets, (_) => null)
+        i: List.generate(widget.routine.exercises![i].sets, (_) => null),
     };
   }
 
@@ -47,7 +47,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   // ... (el resto de los métodos como _startRestTimer, _cancelRestTimer, etc. se mantienen igual)
-void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
+  void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
     if (restTimeInSeconds <= 0) return;
 
     _cancelRestTimer();
@@ -77,9 +77,13 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
       _countdownTime = 0;
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    final exerciseProvider = Provider.of<ExerciseProvider>(context, listen: false);
+    final exerciseProvider = Provider.of<ExerciseProvider>(
+      context,
+      listen: false,
+    );
     final routineExercises = widget.routine.exercises;
 
     return Scaffold(
@@ -99,11 +103,15 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
               itemCount: routineExercises.length,
               itemBuilder: (context, index) {
                 final routineExercise = routineExercises[index];
-                final Exercise? exercise = exerciseProvider.getExerciseById(routineExercise.exerciseId);
+                final Exercise? exercise = exerciseProvider.getExerciseById(
+                  routineExercise.exerciseId,
+                );
 
                 if (exercise == null) {
                   return ListTile(
-                    title: Text('Ejercicio no encontrado (ID: ${routineExercise.exerciseId})'),
+                    title: Text(
+                      'Ejercicio no encontrado (ID: ${routineExercise.exerciseId})',
+                    ),
                     leading: const Icon(Icons.error_outline, color: Colors.red),
                   );
                 }
@@ -118,18 +126,28 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
           label: const Text('Finalizar Entrenamiento'),
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
-            textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            textStyle: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          onPressed: _isResting ? null : () => _finishWorkout(context: context), // Pasamos el context
+          onPressed: _isResting
+              ? null
+              : () => _finishWorkout(context: context), // Pasamos el context
         ),
       ),
     );
   }
 
-  Widget _buildExerciseCard(Exercise exercise, RoutineExercise routineExercise, int exerciseIndex) {
+  Widget _buildExerciseCard(
+    Exercise exercise,
+    RoutineExercise routineExercise,
+    int exerciseIndex,
+  ) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final List<SetLog?> loggedSets = _setsData[exerciseIndex]!;
-    final bool isCurrentlyResting = _isResting && _restingExerciseIndex == exerciseIndex;
+    final bool isCurrentlyResting =
+        _isResting && _restingExerciseIndex == exerciseIndex;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -140,22 +158,41 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(exercise.name, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              exercise.name,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
-            Text('${routineExercise.sets} series x ${routineExercise.reps} reps', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[600])),
-            if (routineExercise.restTime != null && routineExercise.restTime! > 0 && !isCurrentlyResting)
+            Text(
+              '${routineExercise.sets} series x ${routineExercise.reps} reps',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+            ),
+            if (routineExercise.restTime != null &&
+                routineExercise.restTime! > 0 &&
+                !isCurrentlyResting)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Row(
                   children: [
-                    Icon(Icons.timer_outlined, size: 20, color: Colors.grey[600]),
+                    Icon(
+                      Icons.timer_outlined,
+                      size: 20,
+                      color: Colors.grey[600],
+                    ),
                     const SizedBox(width: 4),
-                    Text('${routineExercise.restTime} seg de descanso', style: Theme.of(context).textTheme.bodyMedium),
+                    Text(
+                      '${routineExercise.restTime} seg de descanso',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ],
                 ),
               ),
             const SizedBox(height: 16),
-            
+
             if (isCurrentlyResting)
               _buildTimerWidget(routineExercise.restTime!)
             else
@@ -166,13 +203,28 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
                   final bool isCompleted = loggedSets[setIndex] != null;
 
                   return OutlinedButton(
-                    onPressed: () => _showLogSetDialog(exerciseIndex, setIndex, routineExercise),
+                    onPressed: () => _showLogSetDialog(
+                      exerciseIndex,
+                      setIndex,
+                      routineExercise,
+                    ),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: isCompleted ? colorScheme.onPrimary : colorScheme.primary,
-                      backgroundColor: isCompleted ? colorScheme.primary : Colors.transparent,
-                      side: BorderSide(color: colorScheme.primary.withAlpha(128)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      foregroundColor: isCompleted
+                          ? colorScheme.onPrimary
+                          : colorScheme.primary,
+                      backgroundColor: isCompleted
+                          ? colorScheme.primary
+                          : Colors.transparent,
+                      side: BorderSide(
+                        color: colorScheme.primary.withAlpha(128),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -188,20 +240,20 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
                 }),
               ),
             if (loggedSets.any((log) => log != null)) ...[
-                const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 8),
-                Text("Registros:", style: Theme.of(context).textTheme.titleSmall),
-                const SizedBox(height: 8),
-                ...List.generate(loggedSets.length, (setIndex) {
-                  final log = loggedSets[setIndex];
-                  if (log == null) return const SizedBox.shrink();
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 4.0),
-                    child: Text('  • Set ${setIndex + 1}: ${log.toString()}'),
-                  );
-                }),
-            ]
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 8),
+              Text("Registros:", style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 8),
+              ...List.generate(loggedSets.length, (setIndex) {
+                final log = loggedSets[setIndex];
+                if (log == null) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 4.0),
+                  child: Text('  • Set ${setIndex + 1}: ${log.toString()}'),
+                );
+              }),
+            ],
           ],
         ),
       ),
@@ -219,7 +271,13 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
           children: [
             Icon(Icons.timer, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 8),
-            Text('$_countdownTime', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+            Text(
+              '$_countdownTime',
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
             const SizedBox(width: 4),
             Text('seg', style: Theme.of(context).textTheme.titleMedium),
           ],
@@ -231,13 +289,22 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
           borderRadius: BorderRadius.circular(3),
         ),
         const SizedBox(height: 12),
-        TextButton(onPressed: _cancelRestTimer, child: const Text('Saltar Descanso')),
+        TextButton(
+          onPressed: _cancelRestTimer,
+          child: const Text('Saltar Descanso'),
+        ),
       ],
     );
   }
 
-  void _showLogSetDialog(int exerciseIndex, int setIndex, RoutineExercise routineExercise) {
-    final repsController = TextEditingController(text: routineExercise.reps.split('-').first);
+  void _showLogSetDialog(
+    int exerciseIndex,
+    int setIndex,
+    RoutineExercise routineExercise,
+  ) {
+    final repsController = TextEditingController(
+      text: routineExercise.reps.split('-').first,
+    );
 
     double? initialWeight;
     if (setIndex > 0 && _setsData[exerciseIndex]![setIndex - 1] != null) {
@@ -246,7 +313,9 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
       initialWeight = routineExercise.weight;
     }
 
-    final weightController = TextEditingController(text: initialWeight?.toString() ?? '');
+    final weightController = TextEditingController(
+      text: initialWeight?.toString() ?? '',
+    );
 
     showDialog(
       context: context,
@@ -258,13 +327,21 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
             children: [
               TextField(
                 controller: repsController,
-                decoration: const InputDecoration(labelText: 'Repeticiones', icon: Icon(Icons.repeat)),
+                decoration: const InputDecoration(
+                  labelText: 'Repeticiones',
+                  icon: Icon(Icons.repeat),
+                ),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: weightController,
-                decoration: const InputDecoration(labelText: 'Peso (kg) (Opcional)', icon: Icon(Icons.fitness_center)),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                  labelText: 'Peso (kg) (Opcional)',
+                  icon: Icon(Icons.fitness_center),
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
               ),
             ],
           ),
@@ -278,29 +355,43 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
               onPressed: () {
                 final int? reps = int.tryParse(repsController.text);
                 final String weightText = weightController.text;
-                final double? weight = weightText.isEmpty ? null : double.tryParse(weightText);
+                final double? weight = weightText.isEmpty
+                    ? null
+                    : double.tryParse(weightText);
 
                 if (reps != null) {
-                   if (weightText.isNotEmpty && weight == null) {
+                  if (weightText.isNotEmpty && weight == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('El peso introducido no es un número válido.')),
+                      const SnackBar(
+                        content: Text(
+                          'El peso introducido no es un número válido.',
+                        ),
+                      ),
                     );
                     return;
                   }
 
                   setState(() {
-                    _setsData[exerciseIndex]![setIndex] = SetLog(reps: reps, weight: weight ?? 0.0);
+                    _setsData[exerciseIndex]![setIndex] = SetLog(
+                      reps: reps,
+                      weight: weight ?? 0.0,
+                    );
                   });
                   Navigator.of(ctx).pop();
 
                   final bool isLastSet = setIndex == routineExercise.sets - 1;
-                  if (!isLastSet && routineExercise.restTime != null && routineExercise.restTime! > 0) {
+                  if (!isLastSet &&
+                      routineExercise.restTime != null &&
+                      routineExercise.restTime! > 0) {
                     _startRestTimer(exerciseIndex, routineExercise.restTime!);
                   }
-
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Por favor, introduce un número válido de repeticiones.')),
+                    const SnackBar(
+                      content: Text(
+                        'Por favor, introduce un número válido de repeticiones.',
+                      ),
+                    ),
                   );
                 }
               },
@@ -317,14 +408,19 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
       builder: (BuildContext ctx) {
         return AlertDialog(
           title: const Text('¿Finalizar Entrenamiento?'),
-          content: const Text('¿Estás seguro de que quieres terminar la sesión? El progreso no guardado se perderá.'),
+          content: const Text(
+            '¿Estás seguro de que quieres terminar la sesión? El progreso no guardado se perderá.',
+          ),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancelar'),
               onPressed: () => Navigator.of(ctx).pop(),
             ),
             TextButton(
-              child: const Text('Finalizar', style: TextStyle(color: Colors.red)),
+              child: const Text(
+                'Finalizar',
+                style: TextStyle(color: Colors.red),
+              ),
               onPressed: () {
                 _timer?.cancel();
                 Navigator.of(ctx).pop();
@@ -342,26 +438,41 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
 
     final durationInMinutes = DateTime.now().difference(_startTime).inMinutes;
 
-    final historyProvider = Provider.of<WorkoutHistoryProvider>(context, listen: false);
-    final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
-    final exerciseProvider = Provider.of<ExerciseProvider>(context, listen: false);
+    final historyProvider = Provider.of<WorkoutHistoryProvider>(
+      context,
+      listen: false,
+    );
+    final routineProvider = Provider.of<RoutineProvider>(
+      context,
+      listen: false,
+    );
+    final exerciseProvider = Provider.of<ExerciseProvider>(
+      context,
+      listen: false,
+    );
     final List<PerformedExerciseLog> performedExercisesForHistory = [];
     final List<ExerciseLog> exerciseLogsForRoutineLog = [];
 
     _setsData.forEach((exerciseIndex, logs) {
       final routineExercise = widget.routine.exercises![exerciseIndex];
-      final exercise = exerciseProvider.getExerciseById(routineExercise.exerciseId);
-      final List<SetLog> completedSets = logs.where((log) => log != null).cast<SetLog>().toList();
+      final exercise = exerciseProvider.getExerciseById(
+        routineExercise.exerciseId,
+      );
+      final List<SetLog> completedSets = logs
+          .where((log) => log != null)
+          .cast<SetLog>()
+          .toList();
 
       if (exercise != null && completedSets.isNotEmpty) {
-        performedExercisesForHistory.add(PerformedExerciseLog(
-          exerciseName: exercise.name,
-          sets: completedSets,
-        ));
-        exerciseLogsForRoutineLog.add(ExerciseLog(
-          exercise: exercise,
-          sets: completedSets,
-        ));
+        performedExercisesForHistory.add(
+          PerformedExerciseLog(
+            exerciseName: exercise.name,
+            sets: completedSets,
+          ),
+        );
+        exerciseLogsForRoutineLog.add(
+          ExerciseLog(exercise: exercise, sets: completedSets),
+        );
       }
     });
 
@@ -369,7 +480,11 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
 
     if (performedExercisesForHistory.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se ha registrado ninguna serie. El entrenamiento no se guardará.')),
+        const SnackBar(
+          content: Text(
+            'No se ha registrado ninguna serie. El entrenamiento no se guardará.',
+          ),
+        ),
       );
       return;
     }
@@ -396,7 +511,7 @@ void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('¡Entrenamiento guardado! Buen trabajo.')),
     );
-    
+
     Navigator.of(context).pop();
   }
 }

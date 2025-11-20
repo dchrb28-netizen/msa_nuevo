@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -43,7 +42,10 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
             startingDayOfWeek: StartingDayOfWeek.monday,
             headerStyle: HeaderStyle(
               titleCentered: true,
-              titleTextStyle: GoogleFonts.montserrat(fontWeight: FontWeight.bold, fontSize: 18),
+              titleTextStyle: GoogleFonts.montserrat(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
               formatButtonDecoration: BoxDecoration(
                 color: themeProvider.seedColor,
                 borderRadius: BorderRadius.circular(20.0),
@@ -85,17 +87,26 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   itemCount: 7,
                   itemBuilder: (context, index) {
-                    final firstDayOfWeek = _focusedDay.subtract(Duration(days: _focusedDay.weekday - 1));
+                    final firstDayOfWeek = _focusedDay.subtract(
+                      Duration(days: _focusedDay.weekday - 1),
+                    );
                     final day = firstDayOfWeek.add(Duration(days: index));
-                    final formattedDay = DateFormat('EEEE, d MMMM', 'es_ES').format(day);
+                    final formattedDay = DateFormat(
+                      'EEEE, d MMMM',
+                      'es_ES',
+                    ).format(day);
                     final isSelected = isSameDay(day, _selectedDay);
 
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 8),
                       elevation: isSelected ? 6 : 2,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       clipBehavior: Clip.antiAlias,
-                      color: isSelected ? themeProvider.seedColor.withAlpha(26) : null,
+                      color: isSelected
+                          ? themeProvider.seedColor.withAlpha(26)
+                          : null,
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
@@ -110,10 +121,34 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
                               ),
                             ),
                             const Divider(height: 20),
-                            _buildMealRow(context, 'Desayuno', Icons.free_breakfast, day, mealPlan),
-                            _buildMealRow(context, 'Almuerzo', Icons.lunch_dining, day, mealPlan),
-                            _buildMealRow(context, 'Cena', Icons.dinner_dining, day, mealPlan),
-                            _buildMealRow(context, 'Snacks', Icons.fastfood, day, mealPlan),
+                            _buildMealRow(
+                              context,
+                              'Desayuno',
+                              Icons.free_breakfast,
+                              day,
+                              mealPlan,
+                            ),
+                            _buildMealRow(
+                              context,
+                              'Almuerzo',
+                              Icons.lunch_dining,
+                              day,
+                              mealPlan,
+                            ),
+                            _buildMealRow(
+                              context,
+                              'Cena',
+                              Icons.dinner_dining,
+                              day,
+                              mealPlan,
+                            ),
+                            _buildMealRow(
+                              context,
+                              'Snacks',
+                              Icons.fastfood,
+                              day,
+                              mealPlan,
+                            ),
                           ],
                         ),
                       ),
@@ -128,7 +163,13 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
     );
   }
 
-  Widget _buildMealRow(BuildContext context, String meal, IconData icon, DateTime day, MealPlanProvider mealPlan) {
+  Widget _buildMealRow(
+    BuildContext context,
+    String meal,
+    IconData icon,
+    DateTime day,
+    MealPlanProvider mealPlan,
+  ) {
     final mealText = mealPlan.getMealTextForDay(day, meal);
     final isMealPlanned = mealText.isNotEmpty;
 
@@ -146,20 +187,34 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(icon, color: Theme.of(context).colorScheme.primary.withAlpha(204), size: 22),
+            Icon(
+              icon,
+              color: Theme.of(context).colorScheme.primary.withAlpha(204),
+              size: 22,
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(meal, style: GoogleFonts.lato(fontSize: 17, fontWeight: FontWeight.w600)),
+                  Text(
+                    meal,
+                    style: GoogleFonts.lato(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     isMealPlanned ? mealText : 'Toca para añadir una comida',
                     style: GoogleFonts.lato(
                       fontSize: 15,
-                      color: isMealPlanned ? Colors.grey[700] : Colors.grey[500],
-                      fontStyle: isMealPlanned ? FontStyle.normal : FontStyle.italic,
+                      color: isMealPlanned
+                          ? Colors.grey[700]
+                          : Colors.grey[500],
+                      fontStyle: isMealPlanned
+                          ? FontStyle.normal
+                          : FontStyle.italic,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -181,13 +236,21 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
           color: Colors.redAccent.withAlpha(230),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           alignment: Alignment.centerLeft,
-          child: const Icon(Icons.delete_outline, color: Colors.white, size: 30),
+          child: const Icon(
+            Icons.delete_outline,
+            color: Colors.white,
+            size: 30,
+          ),
         ),
         secondaryBackground: Container(
           color: Colors.redAccent.withAlpha(230),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           alignment: Alignment.centerRight,
-          child: const Icon(Icons.delete_outline, color: Colors.white, size: 30),
+          child: const Icon(
+            Icons.delete_outline,
+            color: Colors.white,
+            size: 30,
+          ),
         ),
         onDismissed: (direction) {
           final originalMealText = mealPlan.getMealTextForDay(day, meal);

@@ -16,7 +16,12 @@ class TrainingScreen extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateRoutineScreen()));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const CreateRoutineScreen(),
+            ),
+          );
         },
         label: const Text('Crear Rutina'),
         icon: const Icon(Icons.add),
@@ -28,7 +33,11 @@ class TrainingScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.fitness_center_outlined, size: 80, color: Colors.grey),
+                    const Icon(
+                      Icons.fitness_center_outlined,
+                      size: 80,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(height: 20),
                     Text(
                       'No hay rutinas',
@@ -38,16 +47,23 @@ class TrainingScreen extends StatelessWidget {
                     Text(
                       'Crea tu primera rutina de entrenamiento para empezar a registrar tu progreso.',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 30),
                     ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateRoutineScreen()));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CreateRoutineScreen(),
+                          ),
+                        );
                       },
                       icon: const Icon(Icons.add_circle_outline),
                       label: const Text('Crea tu primera rutina'),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -74,7 +90,9 @@ class TrainingScreen extends StatelessWidget {
           // Iniciar entrenamiento
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => WorkoutScreen(routine: routine)),
+            MaterialPageRoute(
+              builder: (context) => WorkoutScreen(routine: routine),
+            ),
           );
         },
         child: Padding(
@@ -84,26 +102,32 @@ class TrainingScreen extends StatelessWidget {
             children: [
               Text(
                 routine.name,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
                 '$exerciseCount ${exerciseCount == 1 ? 'ejercicio' : 'ejercicios'}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
               ),
               const SizedBox(height: 16),
               Align(
                 alignment: Alignment.centerRight,
                 child: FilledButton(
                   onPressed: () {
-                     Navigator.push(
+                    Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => WorkoutScreen(routine: routine)),
+                      MaterialPageRoute(
+                        builder: (context) => WorkoutScreen(routine: routine),
+                      ),
                     );
                   },
                   child: const Text('Empezar Entrenamiento'),
                 ),
-              )
+              ),
             ],
           ),
         ),

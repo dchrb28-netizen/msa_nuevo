@@ -27,8 +27,10 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
     super.initState();
     if (isEditing) {
       _titleController = TextEditingController(text: widget.reminder!.title);
-      _selectedTime =
-          TimeOfDay(hour: widget.reminder!.hour, minute: widget.reminder!.minute);
+      _selectedTime = TimeOfDay(
+        hour: widget.reminder!.hour,
+        minute: widget.reminder!.minute,
+      );
       _selectedDays = List.from(widget.reminder!.days);
     } else {
       _titleController = TextEditingController();
@@ -96,9 +98,9 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       children: [
         Text(
           'Repetir en:',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -142,9 +144,13 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       Reminder? existingDuplicate;
       try {
         existingDuplicate = remindersBox.values.firstWhere(
-          (r) => r.id != (isEditing ? widget.reminder!.id : null) && r.hour == _selectedTime.hour && r.minute == _selectedTime.minute && listEquals(r.days, _selectedDays),
+          (r) =>
+              r.id != (isEditing ? widget.reminder!.id : null) &&
+              r.hour == _selectedTime.hour &&
+              r.minute == _selectedTime.minute &&
+              listEquals(r.days, _selectedDays),
         );
-      } catch(e) {
+      } catch (e) {
         existingDuplicate = null;
       }
 
@@ -153,10 +159,18 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Duplicado detectado'),
-            content: const Text('Ya existe un recordatorio a la misma hora y días. ¿Deseas crear otro igual?'),
+            content: const Text(
+              'Ya existe un recordatorio a la misma hora y días. ¿Deseas crear otro igual?',
+            ),
             actions: [
-              TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancelar')),
-              TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Crear')),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Crear'),
+              ),
             ],
           ),
         );
@@ -165,7 +179,10 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
 
       // Cancel old notifications if editing
       if (isEditing) {
-        await notificationService.cancelWeeklyNotifications(widget.reminder!.id.hashCode, widget.reminder!.days);
+        await notificationService.cancelWeeklyNotifications(
+          widget.reminder!.id.hashCode,
+          widget.reminder!.days,
+        );
       }
 
       final reminderId = isEditing ? widget.reminder!.id : const Uuid().v4();
@@ -186,10 +203,18 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       if (reminder.isActive) {
         try {
           await notificationService.scheduleWeeklyNotification(
-              reminder.id.hashCode, reminder.title, 'Es hora de tu hábito diario.', _selectedTime, _selectedDays);
+            reminder.id.hashCode,
+            reminder.title,
+            'Es hora de tu hábito diario.',
+            _selectedTime,
+            _selectedDays,
+          );
         } catch (e) {
           // If scheduling fails, deactivate the reminder and inform the user
-          await remindersBox.put(reminder.id, reminder.copyWith(isActive: false));
+          await remindersBox.put(
+            reminder.id,
+            reminder.copyWith(isActive: false),
+          );
           if (mounted) {
             await showDialog<void>(
               context: context,
@@ -197,7 +222,10 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                 title: const Text('Error al programar'),
                 content: Text('No se pudo programar la notificación: $e'),
                 actions: [
-                  TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Aceptar')),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Aceptar'),
+                  ),
                 ],
               ),
             );
@@ -211,11 +239,16 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         await showDialog<void>(
           context: context,
           builder: (dialogContext) => AlertDialog(
-            title: Text(isEditing ? 'Recordatorio actualizado' : 'Recordatorio guardado'),
+            title: Text(
+              isEditing ? 'Recordatorio actualizado' : 'Recordatorio guardado',
+            ),
             content: const Text('Tu recordatorio se guardó correctamente.'),
             actions: [
               // Use the dialog's context to pop the dialog.
-              TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Aceptar')),
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('Aceptar'),
+              ),
             ],
           ),
         );
@@ -252,8 +285,9 @@ class _DayButton extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color:
-              isSelected ? colorScheme.primary : colorScheme.surfaceContainerHighest.withAlpha(100),
+          color: isSelected
+              ? colorScheme.primary
+              : colorScheme.surfaceContainerHighest.withAlpha(100),
           borderRadius: BorderRadius.circular(12),
           boxShadow: isSelected
               ? [
@@ -261,7 +295,7 @@ class _DayButton extends StatelessWidget {
                     color: colorScheme.primary.withAlpha(100),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
-                  )
+                  ),
                 ]
               : [],
         ),

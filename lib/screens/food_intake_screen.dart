@@ -9,7 +9,8 @@ class FoodIntakeScreen extends StatefulWidget {
   State<FoodIntakeScreen> createState() => _FoodIntakeScreenState();
 }
 
-class _FoodIntakeScreenState extends State<FoodIntakeScreen> with SingleTickerProviderStateMixin {
+class _FoodIntakeScreenState extends State<FoodIntakeScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -36,10 +37,7 @@ class _FoodIntakeScreenState extends State<FoodIntakeScreen> with SingleTickerPr
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          FoodTodayView(),
-          FoodHistoryScreen(),
-        ],
+        children: const [FoodTodayView(), FoodHistoryScreen()],
       ),
     );
   }

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -38,20 +37,20 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-       body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              _buildWelcomeHeader(context),
-              const SizedBox(height: 24),
-              _buildTrainingCard(context),
-              const SizedBox(height: 24),
-              _buildDailyProgressRings(context),
-              const SizedBox(height: 24),
-              _buildMotivationalCard(),
-            ],
-          ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildWelcomeHeader(context),
+            const SizedBox(height: 24),
+            _buildTrainingCard(context),
+            const SizedBox(height: 24),
+            _buildDailyProgressRings(context),
+            const SizedBox(height: 24),
+            _buildMotivationalCard(),
+          ],
         ),
+      ),
     );
   }
 
@@ -81,9 +80,10 @@ class DashboardScreen extends StatelessWidget {
                     Text(
                       '${_getGreeting()}, ${user?.name ?? 'Invitado'}',
                       style: GoogleFonts.montserrat(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onSurface),
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ],
                 ),
@@ -95,7 +95,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-   Widget _buildTrainingCard(BuildContext context) {
+  Widget _buildTrainingCard(BuildContext context) {
     // 1. Obtener el día de la semana actual en español.
     final String dayOfWeek = DateFormat('EEEE', 'es_ES').format(DateTime.now());
 
@@ -103,14 +103,20 @@ class DashboardScreen extends StatelessWidget {
     return Consumer<RoutineProvider>(
       builder: (context, routineProvider, child) {
         // 3. Obtener la rutina del proveedor.
-        final Routine? todayRoutine = routineProvider.getRoutineForDay(dayOfWeek);
+        final Routine? todayRoutine = routineProvider.getRoutineForDay(
+          dayOfWeek,
+        );
         final bool isRestDay = todayRoutine == null;
 
         return Card(
           elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           // 4. Cambiar el color y el contenido según si es día de descanso.
-          color: isRestDay ? Colors.grey[800] : Theme.of(context).colorScheme.primaryContainer,
+          color: isRestDay
+              ? Colors.grey[800]
+              : Theme.of(context).colorScheme.primaryContainer,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -118,17 +124,23 @@ class DashboardScreen extends StatelessWidget {
                 Text(
                   isRestDay ? '¡A recargar energías!' : 'Tu Reto de Hoy',
                   style: GoogleFonts.montserrat(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isRestDay ? Colors.white : Theme.of(context).colorScheme.onPrimaryContainer),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isRestDay
+                        ? Colors.white
+                        : Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   isRestDay ? 'Día de Descanso' : todayRoutine.name,
                   style: GoogleFonts.lato(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                      color: isRestDay ? Colors.white : Theme.of(context).colorScheme.onPrimaryContainer),
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: isRestDay
+                        ? Colors.white
+                        : Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
                 ),
                 // 5. Mostrar el botón solo si hay una rutina.
                 if (!isRestDay)
@@ -139,7 +151,13 @@ class DashboardScreen extends StatelessWidget {
                       label: const Text('Comenzar'),
                       onPressed: () {
                         // Navegar a la pantalla de entrenamiento con la rutina obtenida.
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => WorkoutScreen(routine: todayRoutine)));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                WorkoutScreen(routine: todayRoutine),
+                          ),
+                        );
                       },
                     ),
                   ),
@@ -159,11 +177,20 @@ class DashboardScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Text('Consejo del Día', style: GoogleFonts.montserrat(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(
+              'Consejo del Día',
+              style: GoogleFonts.montserrat(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             Text(
               _getMotivationalQuote(),
-              style: GoogleFonts.lato(fontSize: 14, fontStyle: FontStyle.italic),
+              style: GoogleFonts.lato(
+                fontSize: 14,
+                fontStyle: FontStyle.italic,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -195,13 +222,33 @@ class DashboardScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Progreso Diario', style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(
+                  'Progreso Diario',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 if (user != null && !user.isGuest)
                   Chip(
-                    avatar: Icon(planDetails[dietPlan]?['icon'] ?? Icons.help, color: Colors.black87, size: 18),
-                    label: Text(dietPlan, style: GoogleFonts.lato(fontWeight: FontWeight.bold, color: Colors.black87)),
-                    backgroundColor: planDetails[dietPlan]?['color'] ?? Colors.grey.shade300,
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    avatar: Icon(
+                      planDetails[dietPlan]?['icon'] ?? Icons.help,
+                      color: Colors.black87,
+                      size: 18,
+                    ),
+                    label: Text(
+                      dietPlan,
+                      style: GoogleFonts.lato(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    backgroundColor:
+                        planDetails[dietPlan]?['color'] ?? Colors.grey.shade300,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                   ),
               ],
             ),
@@ -233,8 +280,13 @@ class DashboardScreen extends StatelessWidget {
         }
 
         final dailyLogs = box.values.where((log) => isSameDay(log.date, now));
-        final totalCalories = dailyLogs.fold<double>(0, (sum, log) => sum + log.calories);
-        final percent = caloricGoal > 0 ? (totalCalories / caloricGoal).clamp(0.0, 1.0) : 0.0;
+        final totalCalories = dailyLogs.fold<double>(
+          0,
+          (sum, log) => sum + log.calories,
+        );
+        final percent = caloricGoal > 0
+            ? (totalCalories / caloricGoal).clamp(0.0, 1.0)
+            : 0.0;
 
         return Column(
           children: [
@@ -242,16 +294,29 @@ class DashboardScreen extends StatelessWidget {
               radius: 45.0,
               lineWidth: 10.0,
               percent: percent,
-              center: Icon(Icons.local_fire_department, color: Colors.orange, size: 30),
+              center: Icon(
+                Icons.local_fire_department,
+                color: Colors.orange,
+                size: 30,
+              ),
               progressColor: Colors.orange,
               backgroundColor: Colors.orange.shade100,
               circularStrokeCap: CircularStrokeCap.round,
             ),
             const SizedBox(height: 8),
             if (caloricGoal > 0)
-              Text('${totalCalories.toInt()} / ${caloricGoal.toInt()}', style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
+              Text(
+                '${totalCalories.toInt()} / ${caloricGoal.toInt()}',
+                style: GoogleFonts.lato(fontWeight: FontWeight.bold),
+              ),
             if (caloricGoal <= 0)
-              Text('Sin meta', style: GoogleFonts.lato(fontWeight: FontWeight.bold, color: Colors.grey)),
+              Text(
+                'Sin meta',
+                style: GoogleFonts.lato(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+              ),
             Text('kcal', style: GoogleFonts.lato(color: Colors.grey)),
           ],
         );
@@ -271,9 +336,16 @@ class DashboardScreen extends StatelessWidget {
           return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
         }
 
-        final dailyLogs = box.values.where((log) => isSameDay(log.timestamp, now));
-        final totalWater = dailyLogs.fold<double>(0, (sum, log) => sum + log.amount);
-        final percent = waterGoal > 0 ? (totalWater / waterGoal).clamp(0.0, 1.0) : 0.0;
+        final dailyLogs = box.values.where(
+          (log) => isSameDay(log.timestamp, now),
+        );
+        final totalWater = dailyLogs.fold<double>(
+          0,
+          (sum, log) => sum + log.amount,
+        );
+        final percent = waterGoal > 0
+            ? (totalWater / waterGoal).clamp(0.0, 1.0)
+            : 0.0;
 
         return Column(
           children: [
@@ -288,9 +360,18 @@ class DashboardScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             if (waterGoal > 0)
-              Text('${totalWater.toInt()} / $waterGoal', style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
+              Text(
+                '${totalWater.toInt()} / $waterGoal',
+                style: GoogleFonts.lato(fontWeight: FontWeight.bold),
+              ),
             if (waterGoal <= 0)
-              Text('Sin meta', style: GoogleFonts.lato(fontWeight: FontWeight.bold, color: Colors.grey)),
+              Text(
+                'Sin meta',
+                style: GoogleFonts.lato(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+              ),
             Text('ml', style: GoogleFonts.lato(color: Colors.grey)),
           ],
         );
@@ -322,7 +403,10 @@ class DashboardScreen extends StatelessWidget {
               circularStrokeCap: CircularStrokeCap.round,
             ),
             const SizedBox(height: 8),
-            Text(trainedToday ? '¡Hecho!' : 'Pendiente', style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
+            Text(
+              trainedToday ? '¡Hecho!' : 'Pendiente',
+              style: GoogleFonts.lato(fontWeight: FontWeight.bold),
+            ),
             Text('Hoy', style: GoogleFonts.lato(color: Colors.grey)),
           ],
         );

@@ -1,4 +1,3 @@
-
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 
@@ -15,16 +14,48 @@ class MealPlanProvider with ChangeNotifier {
   final Map<int, Map<String, Meal>> _weeklyPlan = {
     1: {
       'Desayuno': Meal(description: 'Avena con Frutos Rojos'),
-      'Almuerzo': Meal(description: 'Pechuga de Pollo a la Plancha, Ensalada Mixta'),
+      'Almuerzo': Meal(
+        description: 'Pechuga de Pollo a la Plancha, Ensalada Mixta',
+      ),
       'Cena': Meal(),
       'Snacks': Meal(),
     },
-    2: {'Desayuno': Meal(), 'Almuerzo': Meal(), 'Cena': Meal(), 'Snacks': Meal()},
-    3: {'Desayuno': Meal(), 'Almuerzo': Meal(), 'Cena': Meal(), 'Snacks': Meal()},
-    4: {'Desayuno': Meal(), 'Almuerzo': Meal(), 'Cena': Meal(), 'Snacks': Meal()},
-    5: {'Desayuno': Meal(), 'Almuerzo': Meal(), 'Cena': Meal(), 'Snacks': Meal()},
-    6: {'Desayuno': Meal(), 'Almuerzo': Meal(), 'Cena': Meal(), 'Snacks': Meal()},
-    7: {'Desayuno': Meal(), 'Almuerzo': Meal(), 'Cena': Meal(), 'Snacks': Meal()},
+    2: {
+      'Desayuno': Meal(),
+      'Almuerzo': Meal(),
+      'Cena': Meal(),
+      'Snacks': Meal(),
+    },
+    3: {
+      'Desayuno': Meal(),
+      'Almuerzo': Meal(),
+      'Cena': Meal(),
+      'Snacks': Meal(),
+    },
+    4: {
+      'Desayuno': Meal(),
+      'Almuerzo': Meal(),
+      'Cena': Meal(),
+      'Snacks': Meal(),
+    },
+    5: {
+      'Desayuno': Meal(),
+      'Almuerzo': Meal(),
+      'Cena': Meal(),
+      'Snacks': Meal(),
+    },
+    6: {
+      'Desayuno': Meal(),
+      'Almuerzo': Meal(),
+      'Cena': Meal(),
+      'Snacks': Meal(),
+    },
+    7: {
+      'Desayuno': Meal(),
+      'Almuerzo': Meal(),
+      'Cena': Meal(),
+      'Snacks': Meal(),
+    },
   };
 
   Map<int, Map<String, Meal>> get weeklyPlan => _weeklyPlan;
@@ -65,15 +96,20 @@ class MealPlanProvider with ChangeNotifier {
     final meal = _weeklyPlan[weekday]?[mealType];
     if (meal != null) {
       meal.isCompleted = !meal.isCompleted;
-      developer.log('Toggled $mealType for day $weekday to ${meal.isCompleted}', name: 'MealPlanProvider');
+      developer.log(
+        'Toggled $mealType for day $weekday to ${meal.isCompleted}',
+        name: 'MealPlanProvider',
+      );
       notifyListeners();
     }
   }
   // --- END NEW FUNCTIONALITY ---
 
-
   void repeatWeek(DateTime currentWeek) {
-    developer.log('Función "Repetir Semana" llamada. Lógica pendiente de implementación.', name: 'MealPlanProvider');
+    developer.log(
+      'Función "Repetir Semana" llamada. Lógica pendiente de implementación.',
+      name: 'MealPlanProvider',
+    );
     notifyListeners();
   }
 }

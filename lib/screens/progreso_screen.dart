@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -27,7 +26,13 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: Text('Tu Progreso', style: GoogleFonts.montserrat(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimaryContainer)),
+            title: Text(
+              'Tu Progreso',
+              style: GoogleFonts.montserrat(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+            ),
             centerTitle: true,
             elevation: 0,
             backgroundColor: Colors.transparent,
@@ -53,7 +58,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
     );
   }
 
-    Widget _buildBodyMeasurementCard() {
+  Widget _buildBodyMeasurementCard() {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -62,14 +67,22 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Medidas Corporales ($_selectedPeriod)', style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              'Medidas Corporales ($_selectedPeriod)',
+              style: GoogleFonts.montserrat(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 16),
             SizedBox(
               height: 200,
               child: ValueListenableBuilder(
-                valueListenable: Hive.box<BodyMeasurement>('body_measurements').listenable(),
+                valueListenable: Hive.box<BodyMeasurement>(
+                  'body_measurements',
+                ).listenable(),
                 builder: (context, Box<BodyMeasurement> box, _) {
-                   final now = DateTime.now();
+                  final now = DateTime.now();
                   DateTime startDate;
                   switch (_selectedPeriod) {
                     case 'Último Mes':
@@ -82,11 +95,18 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                       startDate = now.subtract(const Duration(days: 7));
                   }
 
-                  final measurements = box.values.where((m) => m.timestamp.isAfter(startDate)).toList()
-                    ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+                  final measurements =
+                      box.values
+                          .where((m) => m.timestamp.isAfter(startDate))
+                          .toList()
+                        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
                   if (measurements.length < 2) {
-                    return const Center(child: Text('No hay suficientes datos de medidas corporales.'));
+                    return const Center(
+                      child: Text(
+                        'No hay suficientes datos de medidas corporales.',
+                      ),
+                    );
                   }
 
                   final first = measurements.first;
@@ -108,34 +128,58 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                     first.thigh ?? 0,
                   ];
 
-
                   return RadarChart(
                     RadarChartData(
                       dataSets: [
                         RadarDataSet(
-                          dataEntries: initialData.map((d) => RadarEntry(value: d)).toList(),
+                          dataEntries: initialData
+                              .map((d) => RadarEntry(value: d))
+                              .toList(),
                           borderColor: Colors.grey,
                           borderWidth: 1,
                         ),
                         RadarDataSet(
-                          dataEntries: data.map((d) => RadarEntry(value: d)).toList(),
+                          dataEntries: data
+                              .map((d) => RadarEntry(value: d))
+                              .toList(),
                           borderColor: Theme.of(context).colorScheme.primary,
-                          fillColor: Theme.of(context).colorScheme.primary.withAlpha(100),
+                          fillColor: Theme.of(
+                            context,
+                          ).colorScheme.primary.withAlpha(100),
                           borderWidth: 2,
                         ),
                       ],
                       tickCount: 5,
-                      ticksTextStyle: const TextStyle(color: Colors.transparent, fontSize: 10),
+                      ticksTextStyle: const TextStyle(
+                        color: Colors.transparent,
+                        fontSize: 10,
+                      ),
                       getTitle: (index, angle) {
-                        final titles = ['Pecho', 'Brazo', 'Cintura', 'Cadera', 'Muslo'];
-                        return RadarChartTitle(text: titles[index], angle: angle);
+                        final titles = [
+                          'Pecho',
+                          'Brazo',
+                          'Cintura',
+                          'Cadera',
+                          'Muslo',
+                        ];
+                        return RadarChartTitle(
+                          text: titles[index],
+                          angle: angle,
+                        );
                       },
-                      gridBorderData: const BorderSide(color: Colors.grey, width: 1),
+                      gridBorderData: const BorderSide(
+                        color: Colors.grey,
+                        width: 1,
+                      ),
                       radarShape: RadarShape.circle,
                       radarBackgroundColor: Colors.transparent,
                       borderData: FlBorderData(show: false),
-                      radarBorderData: const BorderSide(color: Colors.transparent),
-                      tickBorderData: const BorderSide(color: Colors.transparent),
+                      radarBorderData: const BorderSide(
+                        color: Colors.transparent,
+                      ),
+                      tickBorderData: const BorderSide(
+                        color: Colors.transparent,
+                      ),
                     ),
                   );
                 },
@@ -174,65 +218,87 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
   }
 
   Widget _buildWaterIntakeCard() {
-  // TODO: Obtener el objetivo de agua desde la configuración del usuario
-  final double waterGoal = 2000; // Objetivo de ejemplo: 2000 ml
+    // TODO: Obtener el objetivo de agua desde la configuración del usuario
+    final double waterGoal = 2000; // Objetivo de ejemplo: 2000 ml
 
-  return Card(
-    elevation: 4,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Consumo de Agua ($_selectedPeriod)', style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 200,
-            child: ValueListenableBuilder(
-              valueListenable: Hive.box<WaterLog>('water_logs').listenable(),
-              builder: (context, Box<WaterLog> box, _) {
-                final now = DateTime.now();
-                DateTime startDate;
-                switch (_selectedPeriod) {
-                  case 'Último Mes':
-                    startDate = now.subtract(const Duration(days: 30));
-                    break;
-                  case 'Último Año':
-                    startDate = now.subtract(const Duration(days: 365));
-                    break;
-                  default:
-                    startDate = now.subtract(const Duration(days: 7));
-                }
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Consumo de Agua ($_selectedPeriod)',
+              style: GoogleFonts.montserrat(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 200,
+              child: ValueListenableBuilder(
+                valueListenable: Hive.box<WaterLog>('water_logs').listenable(),
+                builder: (context, Box<WaterLog> box, _) {
+                  final now = DateTime.now();
+                  DateTime startDate;
+                  switch (_selectedPeriod) {
+                    case 'Último Mes':
+                      startDate = now.subtract(const Duration(days: 30));
+                      break;
+                    case 'Último Año':
+                      startDate = now.subtract(const Duration(days: 365));
+                      break;
+                    default:
+                      startDate = now.subtract(const Duration(days: 7));
+                  }
 
-                final logs = box.values.where((log) => log.timestamp.isAfter(startDate)).toList();
+                  final logs = box.values
+                      .where((log) => log.timestamp.isAfter(startDate))
+                      .toList();
 
-                if (logs.isEmpty) {
-                  return const Center(child: Text('No hay datos de consumo de agua.'));
-                }
+                  if (logs.isEmpty) {
+                    return const Center(
+                      child: Text('No hay datos de consumo de agua.'),
+                    );
+                  }
 
-                final dailyTotals = <DateTime, double>{};
+                  final dailyTotals = <DateTime, double>{};
                   for (var log in logs) {
-                    final day = DateTime(log.timestamp.year, log.timestamp.month, log.timestamp.day);
+                    final day = DateTime(
+                      log.timestamp.year,
+                      log.timestamp.month,
+                      log.timestamp.day,
+                    );
                     dailyTotals[day] = (dailyTotals[day] ?? 0) + log.amount;
                   }
-                  
-                final chartData = dailyTotals.entries.toList()..sort((a,b) => a.key.compareTo(b.key));
 
+                  final chartData = dailyTotals.entries.toList()
+                    ..sort((a, b) => a.key.compareTo(b.key));
 
-                return LineChart(
-                  LineChartData(
-                    gridData: FlGridData(
-                      show: true,
-                      drawVerticalLine: true,
-                      getDrawingHorizontalLine: (value) => const FlLine(color: Colors.white10, strokeWidth: 1),
-                      getDrawingVerticalLine: (value) => const FlLine(color: Colors.white10, strokeWidth: 1),
-                    ),
-                    titlesData: FlTitlesData(
-                        leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                         bottomTitles: AxisTitles(
+                  return LineChart(
+                    LineChartData(
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: true,
+                        getDrawingHorizontalLine: (value) =>
+                            const FlLine(color: Colors.white10, strokeWidth: 1),
+                        getDrawingVerticalLine: (value) =>
+                            const FlLine(color: Colors.white10, strokeWidth: 1),
+                      ),
+                      titlesData: FlTitlesData(
+                        leftTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
                             reservedSize: 30,
@@ -241,10 +307,16 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                               final index = value.toInt();
                               if (index >= 0 && index < chartData.length) {
                                 final date = chartData[index].key;
-                                if(chartData.length > 7 && index % (chartData.length / 7).round() !=0) return const SizedBox.shrink();
+                                if (chartData.length > 7 &&
+                                    index % (chartData.length / 7).round() != 0) {
+                                  return const SizedBox.shrink();
+                                }
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(DateFormat.MMMd().format(date), style: const TextStyle(fontSize: 10)),
+                                  child: Text(
+                                    DateFormat.MMMd().format(date),
+                                    style: const TextStyle(fontSize: 10),
+                                  ),
                                 );
                               }
                               return const Text('');
@@ -252,42 +324,74 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                           ),
                         ),
                       ),
-                    borderData: FlBorderData(show: true, border: Border.all(color: const Color(0xff37434d), width: 1)),
-                    extraLinesData: ExtraLinesData(
-                      horizontalLines: [
-                        HorizontalLine(
-                          y: waterGoal,
-                          color: Colors.green.withAlpha(204),
-                          strokeWidth: 2,
-                          dashArray: [5, 5],
-                          label: HorizontalLineLabel(
+                      borderData: FlBorderData(
+                        show: true,
+                        border: Border.all(
+                          color: const Color(0xff37434d),
+                          width: 1,
+                        ),
+                      ),
+                      extraLinesData: ExtraLinesData(
+                        horizontalLines: [
+                          HorizontalLine(
+                            y: waterGoal,
+                            color: Colors.green.withAlpha(204),
+                            strokeWidth: 2,
+                            dashArray: [5, 5],
+                            label: HorizontalLineLabel(
+                              show: true,
+                              alignment: Alignment.topRight,
+                              padding: const EdgeInsets.only(
+                                right: 5,
+                                bottom: 2,
+                              ),
+                              style: TextStyle(
+                                color: Colors.green[100],
+                                fontSize: 10,
+                              ),
+                              labelResolver: (line) =>
+                                  'Meta: ${line.y.toInt()} ml',
+                            ),
+                          ),
+                        ],
+                      ),
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: chartData
+                              .asMap()
+                              .entries
+                              .map(
+                                (e) => FlSpot(e.key.toDouble(), e.value.value),
+                              )
+                              .toList(),
+                          isCurved: true,
+                          color: Theme.of(context).colorScheme.secondary,
+                          barWidth: 4,
+                          isStrokeCapRound: true,
+                          dotData: FlDotData(
                             show: true,
-                            alignment: Alignment.topRight,
-                            padding: const EdgeInsets.only(right: 5, bottom: 2),
-                            style: TextStyle(color: Colors.green[100], fontSize: 10),
-                            labelResolver: (line) => 'Meta: ${line.y.toInt()} ml',
-                          )
+                            getDotPainter: (spot, percent, barData, index) {
+                              final isGoalMet =
+                                  barData.spots[index].y >= waterGoal;
+                              return FlDotCirclePainter(
+                                radius: 6,
+                                color: isGoalMet
+                                    ? Colors.greenAccent
+                                    : Theme.of(context).colorScheme.secondary,
+                                strokeWidth: 1,
+                                strokeColor: Colors.white,
+                              );
+                            },
+                          ),
+                          belowBarData: BarAreaData(
+                            show: true,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.secondary.withAlpha(50),
+                          ),
                         ),
                       ],
-                    ),
-                    lineBarsData: [
-                      LineChartBarData(
-                        spots: chartData.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value.value)).toList(),
-                        isCurved: true,
-                        color: Theme.of(context).colorScheme.secondary,
-                        barWidth: 4,
-                        isStrokeCapRound: true,
-                        dotData: FlDotData(
-                          show: true,
-                          getDotPainter: (spot, percent, barData, index) {
-                            final isGoalMet = barData.spots[index].y >= waterGoal;
-                            return FlDotCirclePainter(radius: 6, color: isGoalMet ? Colors.greenAccent : Theme.of(context).colorScheme.secondary, strokeWidth: 1, strokeColor: Colors.white);
-                          },
-                        ),
-                        belowBarData: BarAreaData(show: true, color: Theme.of(context).colorScheme.secondary.withAlpha(50)),
-                      ),
-                    ],
-                     lineTouchData: LineTouchData(
+                      lineTouchData: LineTouchData(
                         touchTooltipData: LineTouchTooltipData(
                           getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
                             return touchedBarSpots.map((barSpot) {
@@ -296,11 +400,17 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                               final data = chartData[index];
                               return LineTooltipItem(
                                 '${data.value.toInt()} ml ',
-                                const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                                 children: [
                                   TextSpan(
                                     text: DateFormat.yMMMd().format(data.key),
-                                    style: TextStyle(color: Colors.grey[400], fontWeight: FontWeight.normal),
+                                    style: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontWeight: FontWeight.normal,
+                                    ),
                                   ),
                                 ],
                               );
@@ -308,16 +418,16 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                           },
                         ),
                       ),
-                  ),
-                );
-              },
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildWeightProgressCard() {
     return Card(
@@ -328,12 +438,20 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Progreso de Peso ($_selectedPeriod)', style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              'Progreso de Peso ($_selectedPeriod)',
+              style: GoogleFonts.montserrat(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 16),
             SizedBox(
               height: 200,
               child: ValueListenableBuilder(
-                valueListenable: Hive.box<BodyMeasurement>('body_measurements').listenable(),
+                valueListenable: Hive.box<BodyMeasurement>(
+                  'body_measurements',
+                ).listenable(),
                 builder: (context, Box<BodyMeasurement> box, _) {
                   final now = DateTime.now();
                   DateTime startDate;
@@ -348,11 +466,22 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                       startDate = now.subtract(const Duration(days: 7));
                   }
 
-                  final measurements = box.values.where((m) => m.timestamp.isAfter(startDate) && m.weight != null).toList()
-                    ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+                  final measurements =
+                      box.values
+                          .where(
+                            (m) =>
+                                m.timestamp.isAfter(startDate) &&
+                                m.weight != null,
+                          )
+                          .toList()
+                        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
                   if (measurements.length < 2) {
-                    return const Center(child: Text('No hay suficientes datos para mostrar el progreso.'));
+                    return const Center(
+                      child: Text(
+                        'No hay suficientes datos para mostrar el progreso.',
+                      ),
+                    );
                   }
 
                   double minY = double.infinity;
@@ -371,22 +500,34 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                       maxIndex = i;
                     }
                   }
-                  
-                  final spots = measurements.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value.weight!)).toList();
+
+                  final spots = measurements
+                      .asMap()
+                      .entries
+                      .map((e) => FlSpot(e.key.toDouble(), e.value.weight!))
+                      .toList();
 
                   return LineChart(
                     LineChartData(
                       gridData: FlGridData(
                         show: true,
                         drawVerticalLine: true,
-                        getDrawingHorizontalLine: (value) => const FlLine(color: Colors.white10, strokeWidth: 1),
-                        getDrawingVerticalLine: (value) => const FlLine(color: Colors.white10, strokeWidth: 1),
+                        getDrawingHorizontalLine: (value) =>
+                            const FlLine(color: Colors.white10, strokeWidth: 1),
+                        getDrawingVerticalLine: (value) =>
+                            const FlLine(color: Colors.white10, strokeWidth: 1),
                       ),
                       titlesData: FlTitlesData(
-                        leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                         bottomTitles: AxisTitles(
+                        leftTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
                             reservedSize: 30,
@@ -395,10 +536,17 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                               final index = value.toInt();
                               if (index >= 0 && index < measurements.length) {
                                 final date = measurements[index].timestamp;
-                                if(measurements.length > 7 && index % (measurements.length / 7).round() !=0) return const SizedBox.shrink();
+                                if (measurements.length > 7 &&
+                                    index % (measurements.length / 7).round() !=
+                                        0) {
+                                  return const SizedBox.shrink();
+                                }
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(DateFormat.MMMd().format(date), style: const TextStyle(fontSize: 10)),
+                                  child: Text(
+                                    DateFormat.MMMd().format(date),
+                                    style: const TextStyle(fontSize: 10),
+                                  ),
                                 );
                               }
                               return const Text('');
@@ -406,9 +554,15 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                           ),
                         ),
                       ),
-                      borderData: FlBorderData(show: true, border: Border.all(color: const Color(0xff37434d), width: 1)),
+                      borderData: FlBorderData(
+                        show: true,
+                        border: Border.all(
+                          color: const Color(0xff37434d),
+                          width: 1,
+                        ),
+                      ),
                       minX: 0,
-                      maxX: (measurements.length -1).toDouble(),
+                      maxX: (measurements.length - 1).toDouble(),
                       minY: minY - 5,
                       maxY: maxY + 5,
                       lineBarsData: [
@@ -422,14 +576,26 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                             show: true,
                             getDotPainter: (spot, percent, barData, index) {
                               if (index == minIndex || index == maxIndex) {
-                                return FlDotCirclePainter(radius: 8, color: index == minIndex ? Colors.redAccent: Colors.greenAccent, strokeWidth: 2, strokeColor: Colors.white);
+                                return FlDotCirclePainter(
+                                  radius: 8,
+                                  color: index == minIndex
+                                      ? Colors.redAccent
+                                      : Colors.greenAccent,
+                                  strokeWidth: 2,
+                                  strokeColor: Colors.white,
+                                );
                               }
-                              return FlDotCirclePainter(radius: 4, color: Theme.of(context).colorScheme.primary);
-                            }
+                              return FlDotCirclePainter(
+                                radius: 4,
+                                color: Theme.of(context).colorScheme.primary,
+                              );
+                            },
                           ),
                           belowBarData: BarAreaData(
-                            show: true, 
-                            color: Theme.of(context).colorScheme.primary.withAlpha(50),
+                            show: true,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withAlpha(50),
                           ),
                         ),
                       ],
@@ -442,11 +608,19 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                               final measurement = measurements[index];
                               return LineTooltipItem(
                                 '${measurement.weight} kg ',
-                                const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                                 children: [
                                   TextSpan(
-                                    text: DateFormat.yMMMd().format(measurement.timestamp),
-                                    style: TextStyle(color: Colors.grey[400], fontWeight: FontWeight.normal),
+                                    text: DateFormat.yMMMd().format(
+                                      measurement.timestamp,
+                                    ),
+                                    style: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontWeight: FontWeight.normal,
+                                    ),
                                   ),
                                 ],
                               );
@@ -473,63 +647,91 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
     }
 
     return ValueListenableBuilder(
-        valueListenable: Hive.box<RoutineLog>('routine_logs').listenable(),
-        builder: (context, Box<RoutineLog> box, _) {
-          final now = DateTime.now();
-          DateTime startDate;
-          String periodText;
-          switch (_selectedPeriod) {
-            case 'Último Mes':
-              startDate = now.subtract(const Duration(days: 30));
-              periodText = 'en el último mes';
-              break;
-            case 'Último Año':
-              startDate = now.subtract(const Duration(days: 365));
-               periodText = 'en el último año';
-              break;
-            default:
-              startDate = now.subtract(const Duration(days: 7));
-              periodText = 'en los últimos 7 días';
-          }
+      valueListenable: Hive.box<RoutineLog>('routine_logs').listenable(),
+      builder: (context, Box<RoutineLog> box, _) {
+        final now = DateTime.now();
+        DateTime startDate;
+        String periodText;
+        switch (_selectedPeriod) {
+          case 'Último Mes':
+            startDate = now.subtract(const Duration(days: 30));
+            periodText = 'en el último mes';
+            break;
+          case 'Último Año':
+            startDate = now.subtract(const Duration(days: 365));
+            periodText = 'en el último año';
+            break;
+          default:
+            startDate = now.subtract(const Duration(days: 7));
+            periodText = 'en los últimos 7 días';
+        }
 
-          final weeklyLogs = box.values.where((log) => log.date.isAfter(startDate)).toList();
+        final weeklyLogs = box.values
+            .where((log) => log.date.isAfter(startDate))
+            .toList();
 
-          final workoutsThisWeek = weeklyLogs.length;
-          // CORRECCIÓN: Usar el campo correcto `durationInMinutes`
-          final totalMinutes = weeklyLogs.fold<int>(0, (sum, log) => sum + log.durationInMinutes);
-          final timeSpent = formatDuration(totalMinutes);
+        final workoutsThisWeek = weeklyLogs.length;
+        // CORRECCIÓN: Usar el campo correcto `durationInMinutes`
+        final totalMinutes = weeklyLogs.fold<int>(
+          0,
+          (sum, log) => sum + log.durationInMinutes,
+        );
+        final timeSpent = formatDuration(totalMinutes);
 
-          return Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Resumen de Ejercicio ($periodText)', style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Column(
-                        children: [
-                          Text(workoutsThisWeek.toString(), style: GoogleFonts.montserrat(fontSize: 28, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
-                          const Text('Entrenamientos'),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Text(timeSpent, style: GoogleFonts.montserrat(fontSize: 28, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
-                          const Text('Tiempo total'),
-                        ],
-                      ),
-                    ],
+        return Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Resumen de Ejercicio ($periodText)',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          workoutsThisWeek.toString(),
+                          style: GoogleFonts.montserrat(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        const Text('Entrenamientos'),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          timeSpent,
+                          style: GoogleFonts.montserrat(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        const Text('Tiempo total'),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }

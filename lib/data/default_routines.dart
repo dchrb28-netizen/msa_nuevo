@@ -1,4 +1,3 @@
-
 import 'package:hive/hive.dart';
 import 'package:myapp/models/routine.dart';
 import 'package:myapp/models/routine_exercise.dart';
@@ -10,7 +9,7 @@ void createDefaultRoutines() {
   if (routineBox.isEmpty) {
     final routineExerciseBox = Hive.box<RoutineExercise>('routine_exercises');
 
-    // It's a good practice to also ensure the related box is clear 
+    // It's a good practice to also ensure the related box is clear
     // if we are setting up defaults from a clean slate.
     routineExerciseBox.clear();
 

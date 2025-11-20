@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 import 'package:hive/hive.dart';
 
@@ -45,7 +44,7 @@ class User extends HiveObject {
   @HiveField(12)
   double? fatGoal;
 
-  @HiveField(13) 
+  @HiveField(13)
   double? weightGoal;
 
   @HiveField(14) // New field for the user's diet plan
@@ -98,7 +97,9 @@ class User extends HiveObject {
       age: age ?? this.age,
       height: height ?? this.height,
       weight: weight ?? this.weight,
-      profileImageBytes: profileImageBytes ?? this.profileImageBytes, // Changed from profileImagePath
+      profileImageBytes:
+          profileImageBytes ??
+          this.profileImageBytes, // Changed from profileImagePath
       isGuest: isGuest ?? this.isGuest,
       activityLevel: activityLevel ?? this.activityLevel,
       calorieGoal: calorieGoal ?? this.calorieGoal,

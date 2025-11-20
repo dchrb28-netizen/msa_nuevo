@@ -7,7 +7,11 @@ class BubblePainter extends CustomPainter {
       ..color = const Color.fromRGBO(255, 255, 255, 0.3)
       ..style = PaintingStyle.fill;
 
-    canvas.drawCircle(Offset(size.width / 2, size.height / 2), size.width / 2, paint);
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2),
+      size.width / 2,
+      paint,
+    );
   }
 
   @override

@@ -11,8 +11,11 @@ class LogsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final appBarColor = Theme.of(context).appBarTheme.backgroundColor ?? themeProvider.seedColor;
-    final tabColor = ThemeData.estimateBrightnessForColor(appBarColor) == Brightness.dark
+    final appBarColor =
+        Theme.of(context).appBarTheme.backgroundColor ??
+        themeProvider.seedColor;
+    final tabColor =
+        ThemeData.estimateBrightnessForColor(appBarColor) == Brightness.dark
         ? Colors.white
         : Colors.black;
 

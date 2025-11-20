@@ -42,12 +42,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final user = Provider.of<UserProvider>(context, listen: false).user!;
 
     _nameController = TextEditingController(text: user.name);
-    _ageController =
-        TextEditingController(text: user.age > 0 ? user.age.toString() : '');
+    _ageController = TextEditingController(
+      text: user.age > 0 ? user.age.toString() : '',
+    );
     _heightController = TextEditingController(
-        text: user.height > 0 ? user.height.toString() : '');
+      text: user.height > 0 ? user.height.toString() : '',
+    );
     _weightController = TextEditingController(
-        text: user.weight > 0 ? user.weight.toString() : '');
+      text: user.weight > 0 ? user.weight.toString() : '',
+    );
     _selectedGender = user.gender;
     _activityLevel = user.activityLevel;
     _profileImageBytes = user.profileImageBytes;
@@ -64,8 +67,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? image =
-        await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
 
     if (image != null) {
       final bytes = await image.readAsBytes();
@@ -95,7 +100,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       await userProvider.updateUser(updatedUser);
 
       // This check is a good practice in async methods
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('¡Perfil actualizado con éxito!')),
@@ -107,9 +114,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Editar Perfil'),
-      ),
+      appBar: AppBar(title: const Text('Editar Perfil')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
@@ -122,8 +127,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 controller: _nameController,
                 label: 'Nombre',
                 icon: Icons.person_outline,
-                validator: (value) =>
-                    (value == null || value.isEmpty) ? 'Introduce tu nombre' : null,
+                validator: (value) => (value == null || value.isEmpty)
+                    ? 'Introduce tu nombre'
+                    : null,
               ),
               const SizedBox(height: 20),
               _buildTextField(
@@ -132,7 +138,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 icon: Icons.cake_outlined,
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Introduce tu edad';
+                  if (value == null || value.isEmpty) {
+                    return 'Introduce tu edad';
+                  }
                   if (int.tryParse(value) == null || int.parse(value) <= 0) {
                     return 'Introduce una edad válida';
                   }
@@ -146,7 +154,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 icon: Icons.height_outlined,
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Introduce tu altura';
+                  if (value == null || value.isEmpty) {
+                    return 'Introduce tu altura';
+                  }
                   if (double.tryParse(value) == null ||
                       double.parse(value) <= 0) {
                     return 'Introduce una altura válida';
@@ -161,7 +171,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 icon: Icons.monitor_weight_outlined,
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Introduce tu peso';
+                  if (value == null || value.isEmpty) {
+                    return 'Introduce tu peso';
+                  }
                   if (double.tryParse(value) == null ||
                       double.parse(value) <= 0) {
                     return 'Introduce un peso válido';
@@ -175,7 +187,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 initialValue: _selectedGender,
                 items: _genderOptions,
                 onChanged: (value) {
-                  if (value != null) setState(() => _selectedGender = value);
+                  if (value != null) {
+                    setState(() => _selectedGender = value);
+                  }
                 },
               ),
               const SizedBox(height: 24),
@@ -184,7 +198,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 initialValue: _activityLevel,
                 items: _activityLevelOptions,
                 onChanged: (value) {
-                  if (value != null) setState(() => _activityLevel = value);
+                  if (value != null) {
+                    setState(() => _activityLevel = value);
+                  }
                 },
               ),
               const SizedBox(height: 40),
@@ -195,7 +211,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                   textStyle: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -212,10 +230,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         children: [
           CircleAvatar(
             radius: 80,
-            backgroundImage:
-                _profileImageBytes != null ? MemoryImage(_profileImageBytes!) : null,
-            child:
-                _profileImageBytes == null ? const Icon(Icons.person, size: 80) : null,
+            backgroundImage: _profileImageBytes != null
+                ? MemoryImage(_profileImageBytes!)
+                : null,
+            child: _profileImageBytes == null
+                ? const Icon(Icons.person, size: 80)
+                : null,
           ),
           FloatingActionButton(
             onPressed: _pickImage,
@@ -259,10 +279,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       items: items.entries.map((entry) {
-        return DropdownMenuItem<T>(
-          value: entry.key,
-          child: Text(entry.value),
-        );
+        return DropdownMenuItem<T>(value: entry.key, child: Text(entry.value));
       }).toList(),
       onChanged: onChanged,
     );

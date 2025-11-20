@@ -47,7 +47,6 @@ class Exercise extends HiveObject {
   @HiveField(16)
   final String? recommendations;
 
-
   Exercise({
     required this.id,
     required this.name,
@@ -68,7 +67,8 @@ class Exercise extends HiveObject {
     this.recommendations,
   });
 
-  factory Exercise.fromJson(Map<String, dynamic> json) => _$ExerciseFromJson(json);
+  factory Exercise.fromJson(Map<String, dynamic> json) =>
+      _$ExerciseFromJson(json);
 
   Map<String, dynamic> toJson() => _$ExerciseToJson(this);
 }

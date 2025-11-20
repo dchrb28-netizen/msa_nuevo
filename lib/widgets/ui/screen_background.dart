@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class ScreenBackground extends StatelessWidget {
   final String screenName;
 
-  const ScreenBackground({
-    super.key,
-    required this.screenName,
-  });
+  const ScreenBackground({super.key, required this.screenName});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +17,8 @@ class ScreenBackground extends StatelessWidget {
         child: Image.asset(
           imagePath,
           fit: BoxFit.contain,
-          alignment: Alignment.bottomRight, // Posicionar la imagen abajo a la derecha
+          alignment:
+              Alignment.bottomRight, // Posicionar la imagen abajo a la derecha
           errorBuilder: (context, error, stackTrace) {
             return Container(); // No mostrar nada si la imagen no se encuentra
           },

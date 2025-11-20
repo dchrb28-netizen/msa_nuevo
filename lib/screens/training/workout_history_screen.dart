@@ -48,9 +48,14 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
         children: [
           if (_selectedDate != null)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
               child: Chip(
-                label: Text('Filtrando por: ${DateFormat.yMMMd('es').format(_selectedDate!)}'),
+                label: Text(
+                  'Filtrando por: ${DateFormat.yMMMd('es').format(_selectedDate!)}',
+                ),
                 onDeleted: () {
                   setState(() {
                     _selectedDate = null;
@@ -79,7 +84,12 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                   itemCount: history.length,
                   itemBuilder: (context, index) {
                     final session = history[index];
-                    return _buildDismissibleSessionCard(context, session, historyProvider, index);
+                    return _buildDismissibleSessionCard(
+                      context,
+                      session,
+                      historyProvider,
+                      index,
+                    );
                   },
                 );
               },
@@ -98,7 +108,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
           const Icon(Icons.history_toggle_off, size: 80, color: Colors.grey),
           const SizedBox(height: 20),
           Text(
-            _selectedDate == null ? 'Tu historial está vacío' : 'No hay entrenamientos en esta fecha',
+            _selectedDate == null
+                ? 'Tu historial está vacío'
+                : 'No hay entrenamientos en esta fecha',
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
@@ -111,11 +123,19 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
       ),
     );
   }
-  
-  Widget _buildDismissibleSessionCard(BuildContext context, WorkoutSession session, WorkoutHistoryProvider provider, int originalIndex) {
+
+  Widget _buildDismissibleSessionCard(
+    BuildContext context,
+    WorkoutSession session,
+    WorkoutHistoryProvider provider,
+    int originalIndex,
+  ) {
     final theme = Theme.of(context);
     final totalExercises = session.performedExercises.length;
-    final totalSets = session.performedExercises.fold(0, (sum, exercise) => sum + exercise.sets.length);
+    final totalSets = session.performedExercises.fold(
+      0,
+      (sum, exercise) => sum + exercise.sets.length,
+    );
 
     return Dismissible(
       key: ValueKey(session.id),
@@ -124,7 +144,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
         // Primero, borramos la sesión
         final originalSession = session;
         final fullHistory = provider.workoutHistory;
-        final actualIndex = fullHistory.indexWhere((s) => s.id == originalSession.id);
+        final actualIndex = fullHistory.indexWhere(
+          (s) => s.id == originalSession.id,
+        );
 
         provider.deleteWorkoutSession(session.id);
 
@@ -154,7 +176,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
       child: Card(
         elevation: 4,
         margin: const EdgeInsets.symmetric(vertical: 10.0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
         child: InkWell(
           borderRadius: BorderRadius.circular(15.0),
           onTap: () => _navigateToSessionDetail(context, session),
@@ -163,18 +187,42 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(session.routineName, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                Text(
+                  session.routineName,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 8),
-                Text(DateFormat.yMMMMEEEEd('es').add_jm().format(session.date), style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+                Text(
+                  DateFormat.yMMMMEEEEd('es').add_jm().format(session.date),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
                 const SizedBox(height: 16),
                 const Divider(),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildStat(theme, Icons.fitness_center, '$totalExercises', 'Ejercicios'),
-                    _buildStat(theme, Icons.replay, '$totalSets', 'Series totales'),
-                    const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 20),
+                    _buildStat(
+                      theme,
+                      Icons.fitness_center,
+                      '$totalExercises',
+                      'Ejercicios',
+                    ),
+                    _buildStat(
+                      theme,
+                      Icons.replay,
+                      '$totalSets',
+                      'Series totales',
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.grey,
+                      size: 20,
+                    ),
                   ],
                 ),
               ],
@@ -185,7 +233,12 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
     );
   }
 
-  Widget _buildStat(ThemeData theme, IconData icon, String value, String label) {
+  Widget _buildStat(
+    ThemeData theme,
+    IconData icon,
+    String value,
+    String label,
+  ) {
     return Row(
       children: [
         Icon(icon, size: 20, color: theme.colorScheme.primary),
@@ -193,8 +246,16 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-            Text(label, style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey)),
+            Text(
+              value,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
+            ),
           ],
         ),
       ],
@@ -204,7 +265,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
   void _navigateToSessionDetail(BuildContext context, WorkoutSession session) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => WorkoutSessionDetailScreen(session: session)),
+      MaterialPageRoute(
+        builder: (context) => WorkoutSessionDetailScreen(session: session),
+      ),
     );
   }
 }
@@ -221,7 +284,10 @@ class WorkoutSessionDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(session.routineName, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          session.routineName,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(25.0),
@@ -229,7 +295,9 @@ class WorkoutSessionDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Text(
               DateFormat.yMMMMEEEEd('es').add_jm().format(session.date),
-              style: theme.textTheme.titleSmall?.copyWith(color: theme.appBarTheme.foregroundColor?.withAlpha(204)),
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.appBarTheme.foregroundColor?.withAlpha(204),
+              ),
             ),
           ),
         ),
@@ -242,13 +310,20 @@ class WorkoutSessionDetailScreen extends StatelessWidget {
           return Card(
             elevation: 2,
             margin: const EdgeInsets.only(bottom: 20.0),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(performedExercise.exerciseName, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    performedExercise.exerciseName,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const Divider(height: 24),
                   ...List.generate(performedExercise.sets.length, (setIndex) {
                     final set = performedExercise.sets[setIndex];
@@ -256,10 +331,22 @@ class WorkoutSessionDetailScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: Row(
                         children: [
-                          Icon(Icons.check_circle, size: 20, color: theme.colorScheme.primary),
+                          Icon(
+                            Icons.check_circle,
+                            size: 20,
+                            color: theme.colorScheme.primary,
+                          ),
                           const SizedBox(width: 12),
-                          Text('Set ${setIndex + 1}: ', style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
-                          Text('${set.reps} reps con ${set.weight} kg', style: theme.textTheme.bodyLarge),
+                          Text(
+                            'Set ${setIndex + 1}: ',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '${set.reps} reps con ${set.weight} kg',
+                            style: theme.textTheme.bodyLarge,
+                          ),
                         ],
                       ),
                     );

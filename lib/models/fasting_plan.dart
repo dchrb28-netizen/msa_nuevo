@@ -29,10 +29,7 @@ class FastingPlan {
 
   @override
   int get hashCode =>
-      id.hashCode ^
-      name.hashCode ^
-      fastingHours.hashCode ^
-      isCustom.hashCode;
+      id.hashCode ^ name.hashCode ^ fastingHours.hashCode ^ isCustom.hashCode;
 
   FastingPlan copyWith({
     String? id,
@@ -67,9 +64,9 @@ class FastingPlan {
   }
 
   static List<FastingPlan> get defaultPlans => [
-        FastingPlan(name: '16:8', fastingHours: 16),
-        FastingPlan(name: '18:6', fastingHours: 18),
-        FastingPlan(name: '20:4', fastingHours: 20),
-        FastingPlan(name: '12:12', fastingHours: 12),
-      ];
+    FastingPlan(name: '16:8', fastingHours: 16),
+    FastingPlan(name: '18:6', fastingHours: 18),
+    FastingPlan(name: '20:4', fastingHours: 20),
+    FastingPlan(name: '12:12', fastingHours: 12),
+  ];
 }

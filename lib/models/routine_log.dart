@@ -1,4 +1,3 @@
-
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:myapp/models/exercise_log.dart';
@@ -31,6 +30,7 @@ class RoutineLog extends HiveObject {
     this.notes,
   });
 
-  factory RoutineLog.fromJson(Map<String, dynamic> json) => _$RoutineLogFromJson(json);
+  factory RoutineLog.fromJson(Map<String, dynamic> json) =>
+      _$RoutineLogFromJson(json);
   Map<String, dynamic> toJson() => _$RoutineLogToJson(this);
 }

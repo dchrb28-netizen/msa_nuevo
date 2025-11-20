@@ -9,7 +9,9 @@ class BodyMeasurementHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Box<BodyMeasurement> measurementBox = Hive.box<BodyMeasurement>('body_measurements');
+    final Box<BodyMeasurement> measurementBox = Hive.box<BodyMeasurement>(
+      'body_measurements',
+    );
 
     return ValueListenableBuilder(
       valueListenable: measurementBox.listenable(),
@@ -23,22 +25,32 @@ class BodyMeasurementHistoryScreen extends StatelessWidget {
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: ExpansionTile(
-                title: Text('Medición - ${DateFormat.yMMMd('es').format(log.timestamp)}', style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
+                title: Text(
+                  'Medición - ${DateFormat.yMMMd('es').format(log.timestamp)}',
+                  style: GoogleFonts.lato(fontWeight: FontWeight.bold),
+                ),
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        if (log.weight != null) _buildMeasurementRow('Peso', log.weight, 'kg'),
-                        if (log.height != null) _buildMeasurementRow('Altura', log.height, 'cm'),
-                        if (log.waist != null) _buildMeasurementRow('Cintura', log.waist, 'cm'),
-                        if (log.hips != null) _buildMeasurementRow('Caderas', log.hips, 'cm'),
-                        if (log.chest != null) _buildMeasurementRow('Pecho', log.chest, 'cm'),
-                        if (log.arm != null) _buildMeasurementRow('Brazo', log.arm, 'cm'),
-                        if (log.thigh != null) _buildMeasurementRow('Muslo', log.thigh, 'cm'),
+                        if (log.weight != null)
+                          _buildMeasurementRow('Peso', log.weight, 'kg'),
+                        if (log.height != null)
+                          _buildMeasurementRow('Altura', log.height, 'cm'),
+                        if (log.waist != null)
+                          _buildMeasurementRow('Cintura', log.waist, 'cm'),
+                        if (log.hips != null)
+                          _buildMeasurementRow('Caderas', log.hips, 'cm'),
+                        if (log.chest != null)
+                          _buildMeasurementRow('Pecho', log.chest, 'cm'),
+                        if (log.arm != null)
+                          _buildMeasurementRow('Brazo', log.arm, 'cm'),
+                        if (log.thigh != null)
+                          _buildMeasurementRow('Muslo', log.thigh, 'cm'),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             );
@@ -55,7 +67,10 @@ class BodyMeasurementHistoryScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: GoogleFonts.lato()),
-          Text('$value $unit', style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
+          Text(
+            '$value $unit',
+            style: GoogleFonts.lato(fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );

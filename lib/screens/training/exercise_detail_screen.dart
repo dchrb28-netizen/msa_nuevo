@@ -11,14 +11,12 @@ class ExerciseDetailScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     // Determina si hay alguna recomendación general que mostrar.
-    final bool hasGeneralRecommendations = 
-        exercise.recommendations != null && exercise.recommendations!.trim().isNotEmpty;
+    final bool hasGeneralRecommendations =
+        exercise.recommendations != null &&
+        exercise.recommendations!.trim().isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(exercise.name),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text(exercise.name), centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -32,15 +30,18 @@ class ExerciseDetailScreen extends StatelessWidget {
                   height: 250,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => 
-                    const Center(child: Icon(Icons.image_not_supported, size: 100)),
+                  errorBuilder: (context, error, stackTrace) => const Center(
+                    child: Icon(Icons.image_not_supported, size: 100),
+                  ),
                 ),
               ),
             const SizedBox(height: 24),
 
             Text(
               exercise.name,
-              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
 
@@ -59,7 +60,6 @@ class ExerciseDetailScreen extends StatelessWidget {
             // Solo muestra la tarjeta si hay recomendaciones generales.
             if (hasGeneralRecommendations)
               _buildGeneralRecommendationsCard(theme),
-
           ],
         ),
       ),
@@ -74,13 +74,35 @@ class ExerciseDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildInfoRow(theme, Icons.fitness_center, 'Grupo Muscular', exercise.muscleGroup ?? 'N/A'),
+            _buildInfoRow(
+              theme,
+              Icons.fitness_center,
+              'Grupo Muscular',
+              exercise.muscleGroup ?? 'N/A',
+            ),
             const Divider(height: 24),
-            _buildInfoRow(theme, Icons.construction, 'Equipamiento', exercise.equipment ?? 'N/A'),
+            _buildInfoRow(
+              theme,
+              Icons.construction,
+              'Equipamiento',
+              exercise.equipment ?? 'N/A',
+            ),
             const Divider(height: 24),
-            _buildInfoRow(theme, Icons.leaderboard, 'Dificultad', exercise.difficulty ?? 'N/A'),
+            _buildInfoRow(
+              theme,
+              Icons.leaderboard,
+              'Dificultad',
+              exercise.difficulty ?? 'N/A',
+            ),
             const Divider(height: 24),
-             _buildInfoRow(theme, Icons.repeat, 'Medición', (exercise.measurement ?? 'reps') == 'reps' ? 'Repeticiones' : 'Tiempo'),
+            _buildInfoRow(
+              theme,
+              Icons.repeat,
+              'Medición',
+              (exercise.measurement ?? 'reps') == 'reps'
+                  ? 'Repeticiones'
+                  : 'Tiempo',
+            ),
           ],
         ),
       ),
@@ -98,14 +120,34 @@ class ExerciseDetailScreen extends StatelessWidget {
           children: [
             Text(
               'Recomendaciones por Nivel',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
-            _buildRecommendationRow(theme, 'Principiante', exercise.beginnerSets ?? 'N/A', exercise.beginnerReps ?? 'N/A', exercise.measurement ?? 'reps'),
+            _buildRecommendationRow(
+              theme,
+              'Principiante',
+              exercise.beginnerSets ?? 'N/A',
+              exercise.beginnerReps ?? 'N/A',
+              exercise.measurement ?? 'reps',
+            ),
             const Divider(height: 16),
-            _buildRecommendationRow(theme, 'Intermedio', exercise.intermediateSets ?? 'N/A', exercise.intermediateReps ?? 'N/A', exercise.measurement ?? 'reps'),
+            _buildRecommendationRow(
+              theme,
+              'Intermedio',
+              exercise.intermediateSets ?? 'N/A',
+              exercise.intermediateReps ?? 'N/A',
+              exercise.measurement ?? 'reps',
+            ),
             const Divider(height: 16),
-            _buildRecommendationRow(theme, 'Avanzado', exercise.advancedSets ?? 'N/A', exercise.advancedReps ?? 'N/A', exercise.measurement ?? 'reps'),
+            _buildRecommendationRow(
+              theme,
+              'Avanzado',
+              exercise.advancedSets ?? 'N/A',
+              exercise.advancedReps ?? 'N/A',
+              exercise.measurement ?? 'reps',
+            ),
           ],
         ),
       ),
@@ -123,38 +165,55 @@ class ExerciseDetailScreen extends StatelessWidget {
           children: [
             Text(
               'Recomendaciones Generales',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
-            Text(
-              exercise.recommendations!,
-              style: theme.textTheme.bodyLarge,
-            ),
+            Text(exercise.recommendations!, style: theme.textTheme.bodyLarge),
           ],
         ),
       ),
     );
   }
 
-
-  Widget _buildRecommendationRow(ThemeData theme, String level, String sets, String reps, String measurement) {
+  Widget _buildRecommendationRow(
+    ThemeData theme,
+    String level,
+    String sets,
+    String reps,
+    String measurement,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(level, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+        Text(
+          level,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (sets != 'N/A')
               Text('Series: $sets', style: theme.textTheme.bodyLarge),
-            Text('${measurement == 'reps' ? 'Reps' : 'Duración'}: $reps', style: theme.textTheme.bodyLarge),
+            Text(
+              '${measurement == 'reps' ? 'Reps' : 'Duración'}: $reps',
+              style: theme.textTheme.bodyLarge,
+            ),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildInfoRow(ThemeData theme, IconData icon, String label, String value) {
+  Widget _buildInfoRow(
+    ThemeData theme,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Row(
       children: [
         Icon(icon, color: theme.colorScheme.primary, size: 28),
@@ -162,9 +221,19 @@ class ExerciseDetailScreen extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(
+              label,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 2),
-            Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+            Text(
+              value,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
       ],

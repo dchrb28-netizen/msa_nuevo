@@ -67,7 +67,10 @@ class DashboardCard extends StatelessWidget {
               ),
               // Flecha de navegación si hay acción
               if (onTap != null)
-                Icon(Icons.chevron_right, color: Theme.of(context).primaryColor),
+                Icon(
+                  Icons.chevron_right,
+                  color: Theme.of(context).primaryColor,
+                ),
             ],
           ),
         ),

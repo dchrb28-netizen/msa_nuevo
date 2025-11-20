@@ -47,7 +47,10 @@ class _BubbleAnimationState extends State<BubbleAnimation>
       animation: _controller,
       builder: (context, child) {
         return CustomPaint(
-          painter: BubblePainter(bubbles: _bubbles, progress: _controller.value),
+          painter: BubblePainter(
+            bubbles: _bubbles,
+            progress: _controller.value,
+          ),
           child: const SizedBox.expand(),
         );
       },
@@ -67,8 +70,9 @@ class BubblePainter extends CustomPainter {
       // FIX: Use toARGB32() to get alpha component, avoiding deprecated getters.
       final int originalAlpha = (bubble.color.toARGB32() >> 24) & 0xFF;
       final double newAlphaValue = originalAlpha * (1 - progress);
-      final paint = Paint()..color = bubble.color.withAlpha(newAlphaValue.toInt().clamp(0, 255));
-      
+      final paint = Paint()
+        ..color = bubble.color.withAlpha(newAlphaValue.toInt().clamp(0, 255));
+
       final offset = Offset(
         bubble.initialPosition.dx,
         bubble.initialPosition.dy - (progress * bubble.speed * 5),

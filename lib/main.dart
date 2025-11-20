@@ -49,7 +49,10 @@ void main() async {
   // Borramos la caja del disco para forzar una recreación y evitar errores de
   // deserialización por cambio de modelo de datos.
   await Hive.deleteBoxFromDisk('routine_logs');
-  developer.log('Caja [routine_logs] eliminada del disco para migración forzada.', name: 'main.startup');
+  developer.log(
+    'Caja [routine_logs] eliminada del disco para migración forzada.',
+    name: 'main.startup',
+  );
   // *** FIN DE LA SOLUCIÓN DEL ERROR ***
 
   _registerHiveAdapters();
@@ -61,19 +64,31 @@ void main() async {
   await _populateInitialExerciseData();
 
   final userBox = Hive.box<User>('user_box');
-  
+
   developer.log("--- STARTUP DIAGNOSTICS ---", name: 'main.startup');
-  developer.log("Total entries in user_box: ${userBox.values.length}", name: 'main.startup');
+  developer.log(
+    "Total entries in user_box: ${userBox.values.length}",
+    name: 'main.startup',
+  );
   for (var user in userBox.values) {
-    developer.log("User found: name=${user.name}, isGuest=${user.isGuest}, key=${user.key}", name: 'main.startup');
+    developer.log(
+      "User found: name=${user.name}, isGuest=${user.isGuest}, key=${user.key}",
+      name: 'main.startup',
+    );
   }
 
   final activeUser = userBox.get('activeUser');
   final bool profileExists = userBox.values.any((user) => !user.isGuest);
   final bool activeUserExists = activeUser != null;
 
-  developer.log("Active user check (retrieved from key 'activeUser'): $activeUser", name: 'main.startup');
-  developer.log("activeUserExists flag: $activeUserExists", name: 'main.startup');
+  developer.log(
+    "Active user check (retrieved from key 'activeUser'): $activeUser",
+    name: 'main.startup',
+  );
+  developer.log(
+    "activeUserExists flag: $activeUserExists",
+    name: 'main.startup',
+  );
   developer.log("profileExists flag: $profileExists", name: 'main.startup');
 
   String initialRoute;
@@ -157,54 +172,64 @@ Future<void> _populateInitialFoodData() async {
     const uuid = Uuid();
     var food1Id = uuid.v4();
     await foodBox.put(
-        food1Id,
-        Food(
-            id: food1Id,
-            name: 'Manzana',
-            calories: 52,
-            proteins: 0.3,
-            carbohydrates: 14,
-            fats: 0.2));
+      food1Id,
+      Food(
+        id: food1Id,
+        name: 'Manzana',
+        calories: 52,
+        proteins: 0.3,
+        carbohydrates: 14,
+        fats: 0.2,
+      ),
+    );
     var food2Id = uuid.v4();
     await foodBox.put(
-        food2Id,
-        Food(
-            id: food2Id,
-            name: 'Plátano',
-            calories: 89,
-            proteins: 1.1,
-            carbohydrates: 23,
-            fats: 0.3));
+      food2Id,
+      Food(
+        id: food2Id,
+        name: 'Plátano',
+        calories: 89,
+        proteins: 1.1,
+        carbohydrates: 23,
+        fats: 0.3,
+      ),
+    );
     var food3Id = uuid.v4();
     await foodBox.put(
-        food3Id,
-        Food(
-            id: food3Id,
-            name: 'Pechuga de Pollo (a la plancha)',
-            calories: 165,
-            proteins: 31,
-            carbohydrates: 0,
-            fats: 3.6));
+      food3Id,
+      Food(
+        id: food3Id,
+        name: 'Pechuga de Pollo (a la plancha)',
+        calories: 165,
+        proteins: 31,
+        carbohydrates: 0,
+        fats: 3.6,
+      ),
+    );
     var food4Id = uuid.v4();
     await foodBox.put(
-        food4Id,
-        Food(
-            id: food4Id,
-            name: 'Arroz Blanco (cocido)',
-            calories: 130,
-            proteins: 2.7,
-            carbohydrates: 28,
-            fats: 0.3));
+      food4Id,
+      Food(
+        id: food4Id,
+        name: 'Arroz Blanco (cocido)',
+        calories: 130,
+        proteins: 2.7,
+        carbohydrates: 28,
+        fats: 0.3,
+      ),
+    );
     var food5Id = uuid.v4();
     await foodBox.put(
-        food5Id,
-        Food(
-            id: food5Id,
-            name: 'Huevo (cocido)',
-            calories: 155,
-            proteins: 13,
-            carbohydrates: 1.1,
-            fats: 11));
+      food5Id,
+      Food(
+        id: food5Id,
+        name: 'Huevo (cocido)',
+        calories: 155,
+        proteins: 13,
+        carbohydrates: 1.1,
+        fats: 11,
+      ),
+    );
   }
 }
 
@@ -218,40 +243,71 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
-        final textTheme = GoogleFonts.montserratTextTheme(
-          Theme.of(context).textTheme,
-        ).copyWith(
-          displayLarge:
-              const TextStyle(fontSize: 57, fontWeight: FontWeight.bold),
-          displayMedium:
-              const TextStyle(fontSize: 45, fontWeight: FontWeight.bold),
-          displaySmall:
-              const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-          headlineLarge:
-              const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-          headlineMedium:
-              const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-          headlineSmall:
-              const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          titleLarge:
-              const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          titleMedium:
-              const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          titleSmall:
-              const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-          bodyLarge:
-              const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-          bodyMedium:
-              const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-          bodySmall:
-              const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
-          labelLarge:
-              const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          labelMedium:
-              const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-          labelSmall:
-              const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-        );
+        final textTheme =
+            GoogleFonts.montserratTextTheme(
+              Theme.of(context).textTheme,
+            ).copyWith(
+              displayLarge: const TextStyle(
+                fontSize: 57,
+                fontWeight: FontWeight.bold,
+              ),
+              displayMedium: const TextStyle(
+                fontSize: 45,
+                fontWeight: FontWeight.bold,
+              ),
+              displaySmall: const TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+              ),
+              headlineLarge: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+              headlineMedium: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+              headlineSmall: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+              titleLarge: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+              titleMedium: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              titleSmall: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+              bodyLarge: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.normal,
+              ),
+              bodyMedium: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+              ),
+              bodySmall: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.normal,
+              ),
+              labelLarge: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+              labelMedium: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+              labelSmall: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            );
 
         var lightColorScheme = ColorScheme.fromSeed(
           seedColor: themeProvider.seedColor,
@@ -282,8 +338,9 @@ class MyApp extends StatelessWidget {
             iconTheme: IconThemeData(color: lightColorScheme.onPrimary),
             actionsIconTheme: IconThemeData(color: lightColorScheme.onPrimary),
             elevation: 2,
-            titleTextStyle:
-                textTheme.headlineSmall?.copyWith(color: lightColorScheme.onPrimary),
+            titleTextStyle: textTheme.headlineSmall?.copyWith(
+              color: lightColorScheme.onPrimary,
+            ),
           ),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             selectedItemColor: lightColorScheme.primary,
@@ -293,8 +350,9 @@ class MyApp extends StatelessWidget {
           ),
           tabBarTheme: TabBarThemeData(
             labelColor: lightColorScheme.onPrimary,
-            unselectedLabelColor:
-                lightColorScheme.onPrimary.withAlpha((255 * 0.7).round()),
+            unselectedLabelColor: lightColorScheme.onPrimary.withAlpha(
+              (255 * 0.7).round(),
+            ),
             indicatorColor: lightColorScheme.onPrimary,
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
@@ -310,7 +368,9 @@ class MyApp extends StatelessWidget {
           cardTheme: CardThemeData(
             color: lightColorScheme.surfaceContainerHighest,
             elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
           ),
         );
 
@@ -325,8 +385,9 @@ class MyApp extends StatelessWidget {
             iconTheme: IconThemeData(color: darkColorScheme.onPrimary),
             actionsIconTheme: IconThemeData(color: darkColorScheme.onPrimary),
             elevation: 2,
-            titleTextStyle:
-                textTheme.headlineSmall?.copyWith(color: darkColorScheme.onPrimary),
+            titleTextStyle: textTheme.headlineSmall?.copyWith(
+              color: darkColorScheme.onPrimary,
+            ),
           ),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: darkColorScheme.surface,
@@ -337,8 +398,9 @@ class MyApp extends StatelessWidget {
           ),
           tabBarTheme: TabBarThemeData(
             labelColor: darkColorScheme.onPrimary,
-            unselectedLabelColor:
-                darkColorScheme.onPrimary.withAlpha((255 * 0.7).round()),
+            unselectedLabelColor: darkColorScheme.onPrimary.withAlpha(
+              (255 * 0.7).round(),
+            ),
             indicatorColor: darkColorScheme.onPrimary,
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
@@ -354,7 +416,9 @@ class MyApp extends StatelessWidget {
           cardTheme: CardThemeData(
             color: darkColorScheme.surfaceContainerHighest,
             elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
           ),
         );
 
@@ -365,10 +429,7 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
-            Locale('en', ''),
-            Locale('es', ''),
-          ],
+          supportedLocales: const [Locale('en', ''), Locale('es', '')],
           locale: const Locale('es'),
           theme: lightTheme,
           darkTheme: darkTheme,

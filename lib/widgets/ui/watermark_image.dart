@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class WatermarkImage extends StatelessWidget {
@@ -9,7 +8,8 @@ class WatermarkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final imagePath = 'assets/luna_png/luna_${imageName}_${isDarkMode ? 'b' : 'w'}.png';
+    final imagePath =
+        'assets/luna_png/luna_${imageName}_${isDarkMode ? 'b' : 'w'}.png';
 
     return Opacity(
       opacity: 0.1, // Adjust opacity for watermark effect

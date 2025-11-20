@@ -28,7 +28,12 @@ class RemindersScreen extends StatelessWidget {
             );
           }
           return ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 80), // Padding inferior para que el FAB no tape el último elemento
+            padding: const EdgeInsets.fromLTRB(
+              16,
+              16,
+              16,
+              80,
+            ), // Padding inferior para que el FAB no tape el último elemento
             itemCount: reminders.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
@@ -76,7 +81,9 @@ class _ReminderCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     reminder.title,
-                    style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    style: textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -84,15 +91,28 @@ class _ReminderCard extends StatelessWidget {
                   value: reminder.isActive,
                   onChanged: (bool value) async {
                     final updatedReminder = reminder.copyWith(isActive: value);
-                    await Hive.box<Reminder>('reminders').put(reminder.id, updatedReminder);
+                    await Hive.box<Reminder>(
+                      'reminders',
+                    ).put(reminder.id, updatedReminder);
 
                     final notificationService = NotificationService();
-                    final time = TimeOfDay(hour: reminder.hour, minute: reminder.minute);
+                    final time = TimeOfDay(
+                      hour: reminder.hour,
+                      minute: reminder.minute,
+                    );
                     if (value) {
                       await notificationService.scheduleWeeklyNotification(
-                          reminder.id.hashCode, reminder.title, 'Es hora de tu hábito diario.', time, reminder.days);
+                        reminder.id.hashCode,
+                        reminder.title,
+                        'Es hora de tu hábito diario.',
+                        time,
+                        reminder.days,
+                      );
                     } else {
-                      await notificationService.cancelWeeklyNotifications(reminder.id.hashCode, reminder.days);
+                      await notificationService.cancelWeeklyNotifications(
+                        reminder.id.hashCode,
+                        reminder.days,
+                      );
                     }
                   },
                 ),
@@ -101,7 +121,9 @@ class _ReminderCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               _formatTime(context),
-              style: textTheme.titleMedium?.copyWith(color: colorScheme.primary),
+              style: textTheme.titleMedium?.copyWith(
+                color: colorScheme.primary,
+              ),
             ),
             const SizedBox(height: 12),
             _buildDaysRow(context, reminder.days),
@@ -114,7 +136,8 @@ class _ReminderCard extends StatelessWidget {
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddReminderScreen(reminder: reminder),
+                      builder: (context) =>
+                          AddReminderScreen(reminder: reminder),
                     ),
                   ),
                 ),
@@ -123,7 +146,7 @@ class _ReminderCard extends StatelessWidget {
                   onPressed: () => _confirmDelete(context, reminder),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -141,17 +164,25 @@ class _ReminderCard extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Confirmar Eliminación'),
-          content: const Text('¿Estás seguro de que deseas eliminar este recordatorio?'),
+          content: const Text(
+            '¿Estás seguro de que deseas eliminar este recordatorio?',
+          ),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancelar'),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+              child: const Text(
+                'Eliminar',
+                style: TextStyle(color: Colors.red),
+              ),
               onPressed: () async {
                 await Hive.box<Reminder>('reminders').delete(reminder.id);
-                await NotificationService().cancelWeeklyNotifications(reminder.id.hashCode, reminder.days);
+                await NotificationService().cancelWeeklyNotifications(
+                  reminder.id.hashCode,
+                  reminder.days,
+                );
                 if (context.mounted) {
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -188,7 +219,9 @@ class _DayIndicator extends StatelessWidget {
     return Text(
       day,
       style: TextStyle(
-        color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).disabledColor,
+        color: isSelected
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).disabledColor,
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
     );

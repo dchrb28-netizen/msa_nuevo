@@ -1,4 +1,3 @@
-
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:myapp/models/exercise.dart';
@@ -15,11 +14,9 @@ class ExerciseLog extends HiveObject {
   @HiveField(1)
   List<SetLog> sets;
 
-  ExerciseLog({
-    required this.exercise,
-    required this.sets,
-  });
+  ExerciseLog({required this.exercise, required this.sets});
 
-  factory ExerciseLog.fromJson(Map<String, dynamic> json) => _$ExerciseLogFromJson(json);
+  factory ExerciseLog.fromJson(Map<String, dynamic> json) =>
+      _$ExerciseLogFromJson(json);
   Map<String, dynamic> toJson() => _$ExerciseLogToJson(this);
 }

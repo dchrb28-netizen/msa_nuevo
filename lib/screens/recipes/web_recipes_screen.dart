@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class WebRecipesScreen extends StatelessWidget {
@@ -7,9 +6,7 @@ class WebRecipesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Recetas de la Web'),
-      ),
+      appBar: AppBar(title: const Text('Recetas de la Web')),
       body: const Center(
         child: Text('Aquí se mostrarán las recetas de la web.'),
       ),

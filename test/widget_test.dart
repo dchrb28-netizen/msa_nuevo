@@ -88,18 +88,21 @@ void main() {
     await Hive.close();
   });
 
-  testWidgets('App loads main screen without crashing', (WidgetTester tester) async {
+  testWidgets('App loads main screen without crashing', (
+    WidgetTester tester,
+  ) async {
     // Provide a dummy user with all required fields
     final userBox = Hive.box<User>('user_box');
-    await userBox.put('activeUser', 
+    await userBox.put(
+      'activeUser',
       User(
-        id: 'test', 
+        id: 'test',
         name: 'Test User',
         gender: 'Masculino',
         age: 30,
         height: 180,
         weight: 75,
-      )
+      ),
     );
 
     // Build our app with all necessary providers and trigger a frame.

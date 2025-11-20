@@ -20,19 +20,20 @@ class NotificationService {
 
   Future<void> init() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/launcher_icon');
+        AndroidInitializationSettings('@mipmap/launcher_icon');
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
 
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+        );
 
     tz.initializeTimeZones();
     final String timeZoneName = tz.local.name;
@@ -42,9 +43,10 @@ class NotificationService {
     await _requestPermissions();
     // Create Android notification channels explicitly so sound/vibration
     // settings are applied even on API levels that cache channel settings.
-    final androidPlugin =
-        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
 
     const AndroidNotificationChannel weeklyChannel = AndroidNotificationChannel(
       'weekly_notification_channel',
@@ -54,17 +56,21 @@ class NotificationService {
       playSound: true,
     );
 
-    const AndroidNotificationChannel scheduledChannel = AndroidNotificationChannel(
-      'scheduled_notification_channel',
-      'Scheduled Notifications',
-      description: 'Scheduled reminder notifications',
-      importance: Importance.max,
-      playSound: true,
-    );
+    const AndroidNotificationChannel scheduledChannel =
+        AndroidNotificationChannel(
+          'scheduled_notification_channel',
+          'Scheduled Notifications',
+          description: 'Scheduled reminder notifications',
+          importance: Importance.max,
+          playSound: true,
+        );
 
     await androidPlugin?.createNotificationChannel(weeklyChannel);
     await androidPlugin?.createNotificationChannel(scheduledChannel);
-    developer.log('Notification channels created (weekly/scheduled)', name: 'NotificationService.init');
+    developer.log(
+      'Notification channels created (weekly/scheduled)',
+      name: 'NotificationService.init',
+    );
   }
 
   Future<void> _requestPermissions() async {
@@ -73,25 +79,25 @@ class NotificationService {
     }
   }
 
-  Future<void> showNotification(
-    int id,
-    String title,
-    String body,
-  ) async {
-    developer.log('showNotification called id=$id title=$title', name: 'NotificationService.showNotification');
+  Future<void> showNotification(int id, String title, String body) async {
+    developer.log(
+      'showNotification called id=$id title=$title',
+      name: 'NotificationService.showNotification',
+    );
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'fasting_channel',
-      'Fasting Notifications',
-      channelDescription: 'Notifications for fasting milestones',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: false,
-      playSound: true,
-      enableVibration: true,
+          'fasting_channel',
+          'Fasting Notifications',
+          channelDescription: 'Notifications for fasting milestones',
+          importance: Importance.max,
+          priority: Priority.high,
+          showWhen: false,
+          playSound: true,
+          enableVibration: true,
+        );
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
     );
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
       id,
       title,
@@ -101,8 +107,15 @@ class NotificationService {
   }
 
   Future<void> scheduleNotification(
-      int id, String title, String body, DateTime scheduledTime) async {
-    developer.log('scheduleNotification called id=$id scheduledTime=$scheduledTime', name: 'NotificationService.scheduleNotification');
+    int id,
+    String title,
+    String body,
+    DateTime scheduledTime,
+  ) async {
+    developer.log(
+      'scheduleNotification called id=$id scheduledTime=$scheduledTime',
+      name: 'NotificationService.scheduleNotification',
+    );
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
@@ -118,7 +131,11 @@ class NotificationService {
           playSound: true,
           enableVibration: true,
         ),
-         iOS: DarwinNotificationDetails(presentSound: true, presentAlert: true, presentBadge: true),
+        iOS: DarwinNotificationDetails(
+          presentSound: true,
+          presentAlert: true,
+          presentBadge: true,
+        ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
@@ -131,10 +148,15 @@ class NotificationService {
     TimeOfDay time,
     List<bool> days,
   ) async {
-    developer.log('scheduleWeeklyNotification called baseId=$baseId time=${time.hour}:${time.minute}', name: 'NotificationService.scheduleWeeklyNotification');
+    developer.log(
+      'scheduleWeeklyNotification called baseId=$baseId time=${time.hour}:${time.minute}',
+      name: 'NotificationService.scheduleWeeklyNotification',
+    );
     for (int i = 0; i < days.length; i++) {
       if (days[i]) {
-        final dayIndex = i + 1; // flutter_local_notifications uses 1 for Monday, 7 for Sunday
+        final dayIndex =
+            i +
+            1; // flutter_local_notifications uses 1 for Monday, 7 for Sunday
         final notificationId = baseId + dayIndex;
 
         await flutterLocalNotificationsPlugin.zonedSchedule(
@@ -171,8 +193,14 @@ class NotificationService {
 
   tz.TZDateTime _nextInstanceOfTime(TimeOfDay time) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduledDate =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, time.hour, time.minute);
+    tz.TZDateTime scheduledDate = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      time.hour,
+      time.minute,
+    );
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }

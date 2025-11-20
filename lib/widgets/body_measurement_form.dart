@@ -72,7 +72,7 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
         final updatedUser = currentUser.copyWith(weight: weight);
         userProvider.updateUser(updatedUser);
       }
-      
+
       // Limpiar los campos
       _formKey.currentState!.reset();
       _weightController.clear();
@@ -104,11 +104,7 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildTextField(
-                _weightController, 
-                'Peso (kg)',
-                isRequired: true,
-              ),
+              _buildTextField(_weightController, 'Peso (kg)', isRequired: true),
               const SizedBox(height: 12),
               _buildTextField(_chestController, 'Pecho (cm)'),
               const SizedBox(height: 12),
@@ -134,7 +130,11 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, {bool isRequired = false}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label, {
+    bool isRequired = false,
+  }) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -146,7 +146,9 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
         if (isRequired && (value == null || value.trim().isEmpty)) {
           return 'Este campo es obligatorio.';
         }
-        if (value != null && value.isNotEmpty && double.tryParse(value) == null) {
+        if (value != null &&
+            value.isNotEmpty &&
+            double.tryParse(value) == null) {
           return 'Por favor, introduce un número válido.';
         }
         return null;

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/screens/food/food_screen.dart'; // Import the new nested tab screen
@@ -16,7 +15,8 @@ class LogsScreen extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     final appBarColor = themeProvider.seedColor;
-    final tabBarItemColor = ThemeData.estimateBrightnessForColor(appBarColor) == Brightness.dark
+    final tabBarItemColor =
+        ThemeData.estimateBrightnessForColor(appBarColor) == Brightness.dark
         ? Colors.white
         : Colors.black;
 
@@ -31,7 +31,9 @@ class LogsScreen extends StatelessWidget {
           bottom: TabBar(
             indicatorColor: tabBarItemColor,
             labelColor: tabBarItemColor,
-            unselectedLabelColor: tabBarItemColor.withAlpha(178), // Fixed: Used withAlpha instead of withOpacity
+            unselectedLabelColor: tabBarItemColor.withAlpha(
+              178,
+            ), // Fixed: Used withAlpha instead of withOpacity
             tabs: const [
               Tab(icon: Icon(Icons.water_drop), text: 'Agua'),
               Tab(icon: Icon(Icons.fastfood), text: 'Comida'),

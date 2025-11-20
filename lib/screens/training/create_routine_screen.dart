@@ -34,7 +34,8 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
     setState(() {
       final existingExercise = _selectedExercises.firstWhere(
         (e) => e.exercise.id == exercise.id,
-        orElse: () => RoutineExercise(exerciseId: exercise.id, sets: 3, reps: '10'),
+        orElse: () =>
+            RoutineExercise(exerciseId: exercise.id, sets: 3, reps: '10'),
       );
 
       if (_selectedExercises.any((e) => e.exercise.id == exercise.id)) {
@@ -68,18 +69,27 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
               itemCount: _allExercises.length,
               itemBuilder: (context, index) {
                 final exercise = _allExercises[index];
-                final isSelected = _selectedExercises.any((e) => e.exercise.id == exercise.id);
+                final isSelected = _selectedExercises.any(
+                  (e) => e.exercise.id == exercise.id,
+                );
                 final routineExercise = isSelected
-                    ? _selectedExercises.firstWhere((e) => e.exercise.id == exercise.id)
+                    ? _selectedExercises.firstWhere(
+                        (e) => e.exercise.id == exercise.id,
+                      )
                     : null;
 
                 return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 8.0,
+                    horizontal: 16.0,
+                  ),
                   child: Column(
                     children: [
                       ListTile(
                         title: Text(exercise.name),
-                        subtitle: Text(exercise.muscleGroup ?? 'Sin grupo muscular'),
+                        subtitle: Text(
+                          exercise.muscleGroup ?? 'Sin grupo muscular',
+                        ),
                         trailing: Checkbox(
                           value: isSelected,
                           onChanged: (bool? value) {
@@ -90,7 +100,10 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                       ),
                       if (isSelected && routineExercise != null)
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 8.0,
+                          ),
                           child: Column(
                             children: [
                               if (exercise.measurement == 'reps')
@@ -98,12 +111,16 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                                   children: [
                                     Expanded(
                                       child: TextFormField(
-                                        initialValue: routineExercise.sets.toString(),
-                                        decoration: const InputDecoration(labelText: 'Series'),
+                                        initialValue: routineExercise.sets
+                                            .toString(),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Series',
+                                        ),
                                         keyboardType: TextInputType.number,
                                         onChanged: (value) {
                                           setState(() {
-                                            routineExercise.sets = int.tryParse(value) ?? 3;
+                                            routineExercise.sets =
+                                                int.tryParse(value) ?? 3;
                                           });
                                         },
                                       ),
@@ -112,7 +129,9 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                                     Expanded(
                                       child: TextFormField(
                                         initialValue: routineExercise.reps,
-                                        decoration: const InputDecoration(labelText: 'Repeticiones'),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Repeticiones',
+                                        ),
                                         onChanged: (value) {
                                           setState(() {
                                             routineExercise.reps = value;
@@ -124,8 +143,11 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                                 )
                               else if (exercise.measurement == 'time')
                                 TextFormField(
-                                  initialValue: routineExercise.reps, // Usaremos 'reps' para guardar el tiempo
-                                  decoration: const InputDecoration(labelText: 'Tiempo (segundos)'),
+                                  initialValue: routineExercise
+                                      .reps, // Usaremos 'reps' para guardar el tiempo
+                                  decoration: const InputDecoration(
+                                    labelText: 'Tiempo (segundos)',
+                                  ),
                                   keyboardType: TextInputType.number,
                                   onChanged: (value) {
                                     setState(() {
@@ -134,24 +156,35 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                                   },
                                 ),
                               const SizedBox(height: 8.0),
-                               TextFormField(
-                                initialValue: (routineExercise.weight ?? 0).toString(),
-                                decoration: const InputDecoration(labelText: 'Peso (kg)'),
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              TextFormField(
+                                initialValue: (routineExercise.weight ?? 0)
+                                    .toString(),
+                                decoration: const InputDecoration(
+                                  labelText: 'Peso (kg)',
+                                ),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
                                 onChanged: (value) {
                                   setState(() {
-                                    routineExercise.weight = double.tryParse(value) ?? 0;
+                                    routineExercise.weight =
+                                        double.tryParse(value) ?? 0;
                                   });
                                 },
                               ),
                               const SizedBox(height: 8.0),
                               TextFormField(
-                                initialValue: (routineExercise.restTime ?? 60).toString(),
-                                decoration: const InputDecoration(labelText: 'Descanso (segundos)'),
+                                initialValue: (routineExercise.restTime ?? 60)
+                                    .toString(),
+                                decoration: const InputDecoration(
+                                  labelText: 'Descanso (segundos)',
+                                ),
                                 keyboardType: TextInputType.number,
                                 onChanged: (value) {
                                   setState(() {
-                                    routineExercise.restTime = int.tryParse(value) ?? 60;
+                                    routineExercise.restTime =
+                                        int.tryParse(value) ?? 60;
                                   });
                                 },
                               ),

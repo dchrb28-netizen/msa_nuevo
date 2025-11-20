@@ -12,13 +12,13 @@ class ThemeProvider with ChangeNotifier {
   Color get seedColor => _seedColor;
 
   List<Color> get availableColors => const [
-        Colors.blue,
-        Colors.green,
-        Colors.red,
-        Colors.purple,
-        Colors.orange,
-        Colors.teal,
-      ];
+    Colors.blue,
+    Colors.green,
+    Colors.red,
+    Colors.purple,
+    Colors.orange,
+    Colors.teal,
+  ];
 
   ThemeProvider() {
     loadPreferences();
@@ -26,17 +26,17 @@ class ThemeProvider with ChangeNotifier {
 
   Future<void> loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     final themeModeIndex = prefs.getInt(keyThemeMode);
     if (themeModeIndex != null) {
       _themeMode = ThemeMode.values[themeModeIndex];
     }
-    
+
     final seedColorValue = prefs.getInt(keySeedColor);
     if (seedColorValue != null) {
       _seedColor = Color(seedColorValue);
     }
-    
+
     notifyListeners();
   }
 

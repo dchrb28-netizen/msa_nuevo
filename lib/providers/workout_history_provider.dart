@@ -8,7 +8,10 @@ class WorkoutHistoryProvider with ChangeNotifier {
   List<WorkoutSession> get workoutHistory => _workoutHistory;
 
   void addWorkoutSession(WorkoutSession session) {
-    _workoutHistory.insert(0, session); // Insertar al principio para que sea el más reciente
+    _workoutHistory.insert(
+      0,
+      session,
+    ); // Insertar al principio para que sea el más reciente
     notifyListeners();
     developer.log(
       'Workout session for ${session.routineName} on ${session.date} saved. History count: ${_workoutHistory.length}',

@@ -9,7 +9,12 @@ class WaterLogList extends StatelessWidget {
   final Function(DateTime) onDateChanged;
   final List<WaterLog> entries;
 
-  const WaterLogList({super.key, required this.selectedDate, required this.onDateChanged, required this.entries});
+  const WaterLogList({
+    super.key,
+    required this.selectedDate,
+    required this.onDateChanged,
+    required this.entries,
+  });
 
   void _deleteWaterLog(WaterLog log) {
     final box = Hive.box<WaterLog>('water_logs');
@@ -36,9 +41,20 @@ class WaterLogList extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(icon: const Icon(Icons.arrow_back_ios), onPressed: () => onDateChanged(selectedDate.subtract(const Duration(days: 1)))),
-          Text(DateFormat.yMMMMd('es').format(selectedDate), style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold)),
-          IconButton(icon: const Icon(Icons.arrow_forward_ios), onPressed: () => onDateChanged(selectedDate.add(const Duration(days: 1)))),
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () =>
+                onDateChanged(selectedDate.subtract(const Duration(days: 1))),
+          ),
+          Text(
+            DateFormat.yMMMMd('es').format(selectedDate),
+            style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          IconButton(
+            icon: const Icon(Icons.arrow_forward_ios),
+            onPressed: () =>
+                onDateChanged(selectedDate.add(const Duration(days: 1))),
+          ),
         ],
       ),
     );
@@ -46,7 +62,9 @@ class WaterLogList extends StatelessWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final catImagePath = isDarkMode ? 'assets/luna_png/luna_b.png' : 'assets/luna_png/luna_w.png';
+    final catImagePath = isDarkMode
+        ? 'assets/luna_png/luna_b.png'
+        : 'assets/luna_png/luna_w.png';
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -71,7 +89,10 @@ class WaterLogList extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
           child: ListTile(
             leading: const Icon(Icons.local_drink, color: Colors.blueAccent),
-            title: Text('${entry.amount} ml', style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
+            title: Text(
+              '${entry.amount} ml',
+              style: GoogleFonts.lato(fontWeight: FontWeight.bold),
+            ),
             subtitle: Text(DateFormat.jm().format(entry.timestamp)),
             trailing: IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.redAccent),

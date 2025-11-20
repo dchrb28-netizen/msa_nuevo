@@ -35,7 +35,10 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
             calendarFormat: CalendarFormat.month, // Default to month view
             headerStyle: HeaderStyle(
               titleCentered: true,
-              titleTextStyle: GoogleFonts.montserrat(fontWeight: FontWeight.bold, fontSize: 18),
+              titleTextStyle: GoogleFonts.montserrat(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
               formatButtonVisible: false,
             ),
             calendarStyle: CalendarStyle(
@@ -61,7 +64,9 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
           const Divider(height: 1),
           Expanded(
             child: _selectedDay == null
-                ? const Center(child: Text('Selecciona un día para ver el detalle'))
+                ? const Center(
+                    child: Text('Selecciona un día para ver el detalle'),
+                  )
                 : _buildDailyMealDetails(context, _selectedDay!),
           ),
         ],
@@ -72,8 +77,16 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
   Widget _buildDailyMealDetails(BuildContext context, DateTime date) {
     final mealPlanProvider = Provider.of<MealPlanProvider>(context);
     final mealTypes = ['Desayuno', 'Almuerzo', 'Cena', 'Snacks'];
-    final mealIcons = [Icons.free_breakfast, Icons.lunch_dining, Icons.dinner_dining, Icons.fastfood];
-    final meals = { for (var type in mealTypes) type: mealPlanProvider.getMealTextForDay(date, type) };
+    final mealIcons = [
+      Icons.free_breakfast,
+      Icons.lunch_dining,
+      Icons.dinner_dining,
+      Icons.fastfood,
+    ];
+    final meals = {
+      for (var type in mealTypes)
+        type: mealPlanProvider.getMealTextForDay(date, type),
+    };
     final hasAnyMeal = meals.values.any((text) => text.isNotEmpty);
 
     if (!hasAnyMeal) {
@@ -83,12 +96,19 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.calendar_month_outlined, size: 80, color: Colors.grey[400]),
+              Icon(
+                Icons.calendar_month_outlined,
+                size: 80,
+                color: Colors.grey[400],
+              ),
               const SizedBox(height: 20),
               Text(
                 'Sin comidas planificadas',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.montserrat(fontSize: 22, fontWeight: FontWeight.bold),
+                style: GoogleFonts.montserrat(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 10),
               Text(
@@ -108,12 +128,16 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
       itemBuilder: (context, index) {
         final mealType = mealTypes[index];
         final mealText = meals[mealType]!;
-        if (mealText.isEmpty) return const SizedBox.shrink(); // Don't show empty cards
+        if (mealText.isEmpty) {
+          return const SizedBox.shrink(); // Don't show empty cards
+        }
 
         return Card(
           elevation: 2,
           margin: const EdgeInsets.only(bottom: 12.0),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -121,18 +145,29 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
               children: [
                 Row(
                   children: [
-                    Icon(mealIcons[index], color: Theme.of(context).colorScheme.primary, size: 20),
+                    Icon(
+                      mealIcons[index],
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 20,
+                    ),
                     const SizedBox(width: 12),
                     Text(
                       mealType,
-                      style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.lato(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
                 const Divider(height: 20),
                 Text(
                   mealText,
-                  style: GoogleFonts.lato(fontSize: 15, color: Colors.black87, height: 1.4),
+                  style: GoogleFonts.lato(
+                    fontSize: 15,
+                    color: Colors.black87,
+                    height: 1.4,
+                  ),
                 ),
               ],
             ),

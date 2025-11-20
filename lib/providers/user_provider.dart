@@ -31,7 +31,7 @@ class UserProvider with ChangeNotifier {
     } else {
       _user = null;
     }
-    
+
     notifyListeners();
   }
 

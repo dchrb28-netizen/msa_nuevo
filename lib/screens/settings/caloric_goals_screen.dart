@@ -12,7 +12,12 @@ class CaloricGoalsScreen extends StatefulWidget {
 class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
   double? _tdee;
   late int _selectedPlanIndex;
-  final List<String> _plans = const ['Perder', 'Mantener', 'Ganar', 'Personalizado'];
+  final List<String> _plans = const [
+    'Perder',
+    'Mantener',
+    'Ganar',
+    'Personalizado',
+  ];
   final TextEditingController _customGoalController = TextEditingController();
 
   final Map<String, double> _activityMultipliers = const {
@@ -108,7 +113,11 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
     userProvider.updateUser(updatedUser);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('¡Nueva meta de ${calorieGoal.toStringAsFixed(0)} kcal aplicada!')),
+      SnackBar(
+        content: Text(
+          '¡Nueva meta de ${calorieGoal.toStringAsFixed(0)} kcal aplicada!',
+        ),
+      ),
     );
   }
 
@@ -132,7 +141,9 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
         children: [
           Text(
             'Elige tu Plan Nutricional',
-            style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            style: textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
@@ -150,7 +161,13 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
           if (_plans[_selectedPlanIndex] != 'Personalizado')
             _buildGoalCard(
               plan: _plans[_selectedPlanIndex],
-              calories: (_tdee! + (_plans[_selectedPlanIndex] == 'Perder' ? -500 : _plans[_selectedPlanIndex] == 'Ganar' ? 500 : 0)),
+              calories:
+                  (_tdee! +
+                  (_plans[_selectedPlanIndex] == 'Perder'
+                      ? -500
+                      : _plans[_selectedPlanIndex] == 'Ganar'
+                      ? 500
+                      : 0)),
             )
           else
             _buildCustomGoalCard(),
@@ -187,16 +204,20 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             decoration: BoxDecoration(
-              color: isSelected ? colorScheme.primary.withAlpha(51) : colorScheme.surfaceContainerHighest.withAlpha(128),
+              color: isSelected
+                  ? colorScheme.primary.withAlpha(51)
+                  : colorScheme.surfaceContainerHighest.withAlpha(128),
               borderRadius: BorderRadius.circular(16),
-              border: isSelected ? Border.all(color: colorScheme.primary, width: 2) : null,
+              border: isSelected
+                  ? Border.all(color: colorScheme.primary, width: 2)
+                  : null,
               boxShadow: isSelected
                   ? [
                       BoxShadow(
                         color: colorScheme.primary.withAlpha(77),
                         blurRadius: 10,
                         spreadRadius: 2,
-                      )
+                      ),
                     ]
                   : [],
             ),
@@ -206,15 +227,19 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
                 Icon(
                   planIcons[plan],
                   size: 40,
-                  color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                  color: isSelected
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   plan,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: isSelected
+                        ? colorScheme.primary
+                        : colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -233,22 +258,22 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
         'subtitle': 'Déficit calórico para reducir grasa corporal.',
         'icon': Icons.trending_down,
         'color': Colors.orange.shade300,
-        'darkColor': Colors.orange.shade900
+        'darkColor': Colors.orange.shade900,
       },
       'Mantener': {
         'title': 'Mantenimiento de Peso',
         'subtitle': 'Equilibra tu ingesta para mantener tu peso actual.',
         'icon': Icons.sync,
         'color': Colors.green.shade300,
-        'darkColor': Colors.green.shade900
+        'darkColor': Colors.green.shade900,
       },
       'Ganar': {
         'title': 'Aumento de Masa Muscular',
         'subtitle': 'Superávit calórico para fomentar el crecimiento.',
         'icon': Icons.trending_up,
         'color': Colors.blue.shade300,
-        'darkColor': Colors.blue.shade900
-      }
+        'darkColor': Colors.blue.shade900,
+      },
     };
 
     final details = planDetails[plan]!;
@@ -270,19 +295,28 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(details['title'], style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: details['darkColor'])),
+                      Text(
+                        details['title'],
+                        style: textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: details['darkColor'],
+                        ),
+                      ),
                       const SizedBox(height: 4),
                       Text(details['subtitle'], style: textTheme.bodyMedium),
                     ],
                   ),
-                )
+                ),
               ],
             ),
             const SizedBox(height: 20),
             Text('Meta Sugerida', style: textTheme.labelLarge),
             Text(
               '${calories.toStringAsFixed(0)} kcal',
-              style: textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w900, color: details['darkColor']),
+              style: textTheme.displayMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: details['darkColor'],
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
@@ -292,8 +326,13 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: details['darkColor'],
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 20,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ],
@@ -323,12 +362,21 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Meta Personalizada', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary)),
+                      Text(
+                        'Meta Personalizada',
+                        style: textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.primary,
+                        ),
+                      ),
                       const SizedBox(height: 4),
-                      Text('Define tu propio objetivo calórico diario.', style: textTheme.bodyMedium),
+                      Text(
+                        'Define tu propio objetivo calórico diario.',
+                        style: textTheme.bodyMedium,
+                      ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -337,10 +385,14 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Tu Meta de Calorías (kcal)',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 suffixText: 'kcal',
               ),
-              style: textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold),
+              style: textTheme.displaySmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
@@ -351,7 +403,11 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
                   _applyCalorieGoal(customGoal);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Por favor, introduce un número válido para las calorías.')),
+                    const SnackBar(
+                      content: Text(
+                        'Por favor, introduce un número válido para las calorías.',
+                      ),
+                    ),
                   );
                 }
               },
@@ -360,8 +416,13 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: colorScheme.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 20,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ],
@@ -378,11 +439,16 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.warning_amber_rounded, size: 60, color: Colors.amber),
+            const Icon(
+              Icons.warning_amber_rounded,
+              size: 60,
+              color: Colors.amber,
+            ),
             const SizedBox(height: 20),
             Text(
               'Faltan datos en tu perfil',
-              style: textTheme.headlineSmall, textAlign: TextAlign.center,
+              style: textTheme.headlineSmall,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
             Text(
@@ -394,15 +460,19 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
             ElevatedButton(
               onPressed: () {
                 try {
-                    DefaultTabController.of(context).animateTo(1); 
+                  DefaultTabController.of(context).animateTo(1);
                 } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Navega a la pestaña de Perfil para completar tus datos.'))
-                    );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Navega a la pestaña de Perfil para completar tus datos.',
+                      ),
+                    ),
+                  );
                 }
               },
               child: const Text('Ir a mi Perfil'),
-            )
+            ),
           ],
         ),
       ),

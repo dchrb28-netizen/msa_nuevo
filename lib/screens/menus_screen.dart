@@ -15,10 +15,7 @@ class MenusScreen extends StatelessWidget {
         const WatermarkImage(imageName: 'comida'),
         TabBarView(
           controller: tabController,
-          children: const [
-            TodayMenuScreen(),
-            WeeklyPlannerScreen(),
-          ],
+          children: const [TodayMenuScreen(), WeeklyPlannerScreen()],
         ),
       ],
     );

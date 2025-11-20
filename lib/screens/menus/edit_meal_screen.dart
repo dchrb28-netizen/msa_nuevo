@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:myapp/providers/meal_plan_provider.dart';
 import 'package:provider/provider.dart';
@@ -26,14 +25,13 @@ class _EditMealScreenState extends State<EditMealScreen> {
 
   void _saveMeal() {
     if (!mounted) return;
-    Provider.of<MealPlanProvider>(context, listen: false).updateMealText(
-      widget.date,
-      widget.mealType,
-      _textController.text,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('¡Menú guardado!')),
-    );
+    Provider.of<MealPlanProvider>(
+      context,
+      listen: false,
+    ).updateMealText(widget.date, widget.mealType, _textController.text);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('¡Menú guardado!')));
     Navigator.of(context).pop();
   }
 
@@ -50,9 +48,7 @@ class _EditMealScreenState extends State<EditMealScreen> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Planificar ${widget.mealType}'),
-      ),
+      appBar: AppBar(title: Text('Planificar ${widget.mealType}')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -61,12 +57,16 @@ class _EditMealScreenState extends State<EditMealScreen> {
             children: [
               Text(
                 'Detalles del Menú',
-                style: textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 12),
               Text(
                 'Planifica aquí los alimentos para el ${widget.mealType.toLowerCase()}.',
-                style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+                style: textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 24),
               TextFormField(
@@ -76,7 +76,8 @@ class _EditMealScreenState extends State<EditMealScreen> {
                 style: textTheme.bodyLarge,
                 decoration: InputDecoration(
                   labelText: 'Describe el menú',
-                  hintText: 'Ej: Pechuga de pollo a la plancha, arroz integral y brócoli al vapor.',
+                  hintText:
+                      'Ej: Pechuga de pollo a la plancha, arroz integral y brócoli al vapor.',
                   prefixIcon: const Icon(Icons.edit_note_outlined),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15.0),

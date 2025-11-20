@@ -55,56 +55,56 @@ class ObjectivesScreenState extends State<ObjectivesScreen> {
         ),
       );
     } else {
-        final double bmi = _calculateBmi(user.weight, user.height);
-        final String bmiCategory = _getBmiCategory(bmi);
-        final String idealWeightRange = _getIdealWeightRange(user.height);
+      final double bmi = _calculateBmi(user.weight, user.height);
+      final String bmiCategory = _getBmiCategory(bmi);
+      final String idealWeightRange = _getIdealWeightRange(user.height);
 
-        body = SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Tu Índice de Masa Corporal (IMC)',
-                style: Theme.of(context).textTheme.headlineSmall,
+      body = SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Tu Índice de Masa Corporal (IMC)',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tu IMC es ${bmi.toStringAsFixed(1)}, lo que se considera "$bmiCategory".',
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Peso Ideal Sugerido',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Basado en tu altura, un peso saludable para ti estaría en el rango de $idealWeightRange.',
+            ),
+            const SizedBox(height: 24),
+            TextField(
+              controller: _weightGoalController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Mi Meta de Peso (kg)',
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Tu IMC es ${bmi.toStringAsFixed(1)}, lo que se considera "$bmiCategory".',
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Peso Ideal Sugerido',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Basado en tu altura, un peso saludable para ti estaría en el rango de $idealWeightRange.',
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: _weightGoalController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Mi Meta de Peso (kg)',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  // TODO: Guardar la meta de peso
-                },
-                child: const Text('Guardar Meta'),
-              ),
-            ],
-          ),
-        );
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                // TODO: Guardar la meta de peso
+              },
+              child: const Text('Guardar Meta'),
+            ),
+          ],
+        ),
+      );
     }
-    
+
     return Scaffold(
       appBar: AppBar(title: const Text('Objetivos de Peso')),
-      body: body
+      body: body,
     );
   }
 }

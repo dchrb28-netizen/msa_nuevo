@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -18,13 +17,18 @@ class RecipesScreen extends StatefulWidget {
   State<RecipesScreen> createState() => _RecipesScreenState();
 }
 
-class _RecipesScreenState extends State<RecipesScreen> with SingleTickerProviderStateMixin {
+class _RecipesScreenState extends State<RecipesScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTabIndex);
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTabIndex,
+    );
   }
 
   @override
@@ -36,8 +40,11 @@ class _RecipesScreenState extends State<RecipesScreen> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final appBarColor = Theme.of(context).appBarTheme.backgroundColor ?? themeProvider.seedColor;
-    final tabColor = ThemeData.estimateBrightnessForColor(appBarColor) == Brightness.dark
+    final appBarColor =
+        Theme.of(context).appBarTheme.backgroundColor ??
+        themeProvider.seedColor;
+    final tabColor =
+        ThemeData.estimateBrightnessForColor(appBarColor) == Brightness.dark
         ? Colors.white
         : Colors.black;
 
@@ -57,10 +64,7 @@ class _RecipesScreenState extends State<RecipesScreen> with SingleTickerProvider
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          SearchRecipesTab(),
-          FavoriteRecipesTab(),
-        ],
+        children: const [SearchRecipesTab(), FavoriteRecipesTab()],
       ),
     );
   }
@@ -106,13 +110,13 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
   ];
   int? _selectedCategoryIndex;
 
-
   void _searchRecipes() async {
     final String textQuery = _searchController.text.trim();
-    final String categoryQuery = _selectedCategoryIndex != null ? _categories[_selectedCategoryIndex!].label : '';
+    final String categoryQuery = _selectedCategoryIndex != null
+        ? _categories[_selectedCategoryIndex!].label
+        : '';
 
     final String finalQuery = '$textQuery $categoryQuery'.trim();
-
 
     if (finalQuery.isEmpty) {
       setState(() {
@@ -157,9 +161,11 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
     try {
       final bool canLaunch = await canLaunchUrl(uri);
       if (canLaunch) {
-        const launchMode = kIsWeb ? LaunchMode.externalApplication : LaunchMode.platformDefault;
+        const launchMode = kIsWeb
+            ? LaunchMode.externalApplication
+            : LaunchMode.platformDefault;
         if (!await launchUrl(uri, mode: launchMode)) {
-           throw 'No se pudo abrir el enlace.';
+          throw 'No se pudo abrir el enlace.';
         }
       } else {
         throw 'No se puede gestionar esta URL: $url';
@@ -185,61 +191,77 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return StatefulBuilder(builder: (BuildContext context, StateSetter modalState) {
-          return DraggableScrollableSheet(
-            expand: false,
-            initialChildSize: 0.6,
-            maxChildSize: 0.9,
-            builder: (_, controller) {
-              return Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(12),
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter modalState) {
+            return DraggableScrollableSheet(
+              expand: false,
+              initialChildSize: 0.6,
+              maxChildSize: 0.9,
+              builder: (_, controller) {
+                return Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Text('Elige una Categoría', style: Theme.of(context).textTheme.headlineSmall),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        controller: controller,
-                        child: Wrap(
-                          spacing: 12.0,
-                          runSpacing: 12.0,
-                          children: List<Widget>.generate(_categories.length, (int index) {
-                            return _CategoryButton(
-                              label: _categories[index].label,
-                              icon: _categories[index].icon,
-                              isSelected: _selectedCategoryIndex == index,
-                              onTap: () {
-                                setState(() {
-                                  _selectedCategoryIndex = (_selectedCategoryIndex == index) ? null : index;
-                                });
-                                modalState(() {}); // Rebuild the modal to show selection
-                                 Future.delayed(const Duration(milliseconds: 300), () {
-                                  _finalizeCategorySelection();
-                                });
+                      const SizedBox(height: 20),
+                      Text(
+                        'Elige una Categoría',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: controller,
+                          child: Wrap(
+                            spacing: 12.0,
+                            runSpacing: 12.0,
+                            children: List<Widget>.generate(
+                              _categories.length,
+                              (int index) {
+                                return _CategoryButton(
+                                  label: _categories[index].label,
+                                  icon: _categories[index].icon,
+                                  isSelected: _selectedCategoryIndex == index,
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedCategoryIndex =
+                                          (_selectedCategoryIndex == index)
+                                          ? null
+                                          : index;
+                                    });
+                                    modalState(
+                                      () {},
+                                    ); // Rebuild the modal to show selection
+                                    Future.delayed(
+                                      const Duration(milliseconds: 300),
+                                      () {
+                                        _finalizeCategorySelection();
+                                      },
+                                    );
+                                  },
+                                );
                               },
-                            );
-                          }),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        });
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        );
       },
     );
   }
@@ -256,7 +278,7 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
             color: Colors.black.withAlpha(13),
             blurRadius: 10,
             offset: const Offset(0, 4),
-          )
+          ),
         ],
       ),
       child: Column(
@@ -281,11 +303,15 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
             ),
             onSubmitted: (_) => _searchRecipes(),
           ),
-           const SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           ElevatedButton.icon(
             onPressed: _showCategoryModal,
             icon: const Icon(Icons.category_outlined),
-            label: Text(_selectedCategoryIndex == null ? 'Elegir Categorías' : _categories[_selectedCategoryIndex!].label),
+            label: Text(
+              _selectedCategoryIndex == null
+                  ? 'Elegir Categorías'
+                  : _categories[_selectedCategoryIndex!].label,
+            ),
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
@@ -307,108 +333,128 @@ class _SearchRecipesTabState extends State<SearchRecipesTab> {
           child: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : _recipes.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          _message,
-                          style: Theme.of(context).textTheme.titleMedium,
-                          textAlign: TextAlign.center,
-                        ),
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      _message,
+                      style: Theme.of(context).textTheme.titleMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.only(top: 0),
+                  itemCount: _recipes.length,
+                  itemBuilder: (context, index) {
+                    final recipe = _recipes[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
                       ),
-                    )
-                  : ListView.builder(
-                          padding: const EdgeInsets.only(top: 0),
-                          itemCount: _recipes.length,
-                          itemBuilder: (context, index) {
-                            final recipe = _recipes[index];
-                            return Card(
-                              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              clipBehavior: Clip.antiAlias,
-                              child: InkWell(
-                                onTap: () => _launchURL(recipe.link),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Stack(
-                                      alignment: Alignment.topRight,
-                                      children: [
-                                        if (recipe.imageUrl != null)
-                                          Image.network(
-                                            recipe.imageUrl!,
-                                            width: double.infinity,
-                                            height: 180,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) {
-                                              return Container(
-                                                height: 180,
-                                                width: double.infinity,
-                                                color: Colors.grey[300],
-                                                child: const Icon(Icons.restaurant_menu, color: Colors.grey, size: 50),
-                                              );
-                                            },
-                                          )
-                                        else
-                                          Container(
-                                            height: 180,
-                                            color: Colors.grey[300],
-                                            child: const Center(
-                                              child: Icon(Icons.restaurant_menu, size: 50, color: Colors.grey),
-                                            ),
-                                          ),
-                                        IconButton(
-                                          icon: Icon(
-                                            recipe.isFavorite ? Icons.favorite : Icons.favorite_border,
-                                            color: recipe.isFavorite ? Colors.red : Colors.white,
-                                            size: 30,
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-                                              recipe.isFavorite = !recipe.isFavorite;
-                                            });
-                                            final favoritesBox = Hive.box<Recipe>('favorite_recipes');
-                                            if (recipe.isFavorite) {
-                                              favoritesBox.put(recipe.link, recipe);
-                                            } else {
-                                              favoritesBox.delete(recipe.link);
-                                            }
-                                          },
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        onTap: () => _launchURL(recipe.link),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Stack(
+                              alignment: Alignment.topRight,
+                              children: [
+                                if (recipe.imageUrl != null)
+                                  Image.network(
+                                    recipe.imageUrl!,
+                                    width: double.infinity,
+                                    height: 180,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        height: 180,
+                                        width: double.infinity,
+                                        color: Colors.grey[300],
+                                        child: const Icon(
+                                          Icons.restaurant_menu,
+                                          color: Colors.grey,
+                                          size: 50,
                                         ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            recipe.title,
-                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          const SizedBox(height: 8.0),
-                                          Text(
-                                            recipe.snippet,
-                                            style: Theme.of(context).textTheme.bodyMedium,
-                                            maxLines: 3,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ],
+                                      );
+                                    },
+                                  )
+                                else
+                                  Container(
+                                    height: 180,
+                                    color: Colors.grey[300],
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.restaurant_menu,
+                                        size: 50,
+                                        color: Colors.grey,
                                       ),
                                     ),
-                                  ],
+                                  ),
+                                IconButton(
+                                  icon: Icon(
+                                    recipe.isFavorite
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: recipe.isFavorite
+                                        ? Colors.red
+                                        : Colors.white,
+                                    size: 30,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      recipe.isFavorite = !recipe.isFavorite;
+                                    });
+                                    final favoritesBox = Hive.box<Recipe>(
+                                      'favorite_recipes',
+                                    );
+                                    if (recipe.isFavorite) {
+                                      favoritesBox.put(recipe.link, recipe);
+                                    } else {
+                                      favoritesBox.delete(recipe.link);
+                                    }
+                                  },
                                 ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    recipe.title,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    recipe.snippet,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
                               ),
-                            );
-                          },
+                            ),
+                          ],
                         ),
+                      ),
+                    );
+                  },
+                ),
         ),
       ],
     );
@@ -447,7 +493,9 @@ class _CategoryButton extends StatelessWidget {
             color: isSelected ? colorScheme.primary : colorScheme.surface,
             borderRadius: BorderRadius.circular(12.0),
             border: Border.all(
-              color: isSelected ? colorScheme.primary : Theme.of(context).dividerColor,
+              color: isSelected
+                  ? colorScheme.primary
+                  : Theme.of(context).dividerColor,
               width: 1.5,
             ),
             boxShadow: isSelected
@@ -456,19 +504,27 @@ class _CategoryButton extends StatelessWidget {
                       color: colorScheme.primary.withAlpha(77),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
-                    )
+                    ),
                   ]
                 : [],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface, size: 18),
+              Icon(
+                icon,
+                color: isSelected
+                    ? colorScheme.onPrimary
+                    : colorScheme.onSurface,
+                size: 18,
+              ),
               const SizedBox(width: 8.0),
               Text(
                 label,
                 style: TextStyle(
-                  color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+                  color: isSelected
+                      ? colorScheme.onPrimary
+                      : colorScheme.onSurface,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -487,7 +543,8 @@ class FavoriteRecipesTab extends StatefulWidget {
   State<FavoriteRecipesTab> createState() => _FavoriteRecipesTabState();
 }
 
-class _FavoriteRecipesTabState extends State<FavoriteRecipesTab> with SingleTickerProviderStateMixin {
+class _FavoriteRecipesTabState extends State<FavoriteRecipesTab>
+    with SingleTickerProviderStateMixin {
   late TabController _innerTabController;
   int _currentTabIndex = 0;
 
@@ -515,7 +572,9 @@ class _FavoriteRecipesTabState extends State<FavoriteRecipesTab> with SingleTick
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     // Use the primary color from the theme for a consistent look
-    final tabBackgroundColor = themeProvider.seedColor.withAlpha(isDarkMode ? 77 : 26);
+    final tabBackgroundColor = themeProvider.seedColor.withAlpha(
+      isDarkMode ? 77 : 26,
+    );
     final tabLabelColor = Theme.of(context).colorScheme.onSurface;
 
     return Scaffold(
@@ -537,15 +596,17 @@ class _FavoriteRecipesTabState extends State<FavoriteRecipesTab> with SingleTick
       ),
       body: TabBarView(
         controller: _innerTabController,
-        children: const [
-          WebFavoritesTab(),
-          CreatedRecipesTab(),
-        ],
+        children: const [WebFavoritesTab(), CreatedRecipesTab()],
       ),
       floatingActionButton: _currentTabIndex == 1
           ? FloatingActionButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const AddRecipeScreen()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddRecipeScreen(),
+                  ),
+                );
               },
               child: const Icon(Icons.add),
             )
@@ -557,7 +618,7 @@ class _FavoriteRecipesTabState extends State<FavoriteRecipesTab> with SingleTick
 class WebFavoritesTab extends StatelessWidget {
   const WebFavoritesTab({super.key});
 
- @override
+  @override
   Widget build(BuildContext context) {
     final favoritesBox = Hive.box<Recipe>('favorite_recipes');
 
@@ -590,28 +651,33 @@ class WebFavoritesTab extends StatelessWidget {
               child: InkWell(
                 onTap: () async {
                   final Uri uri = Uri.parse(recipe.link);
-                    try {
-                      final bool canLaunch = await canLaunchUrl(uri);
-                      if (canLaunch) {
-                        const launchMode = kIsWeb ? LaunchMode.externalApplication : LaunchMode.platformDefault;
-                        if (!await launchUrl(uri, mode: launchMode)) {
-                          throw 'No se pudo abrir el enlace.';
-                        }
-                      } else {
-                        throw 'No se puede gestionar esta URL: ${recipe.link}';
+                  try {
+                    final bool canLaunch = await canLaunchUrl(uri);
+                    if (canLaunch) {
+                      const launchMode = kIsWeb
+                          ? LaunchMode.externalApplication
+                          : LaunchMode.platformDefault;
+                      if (!await launchUrl(uri, mode: launchMode)) {
+                        throw 'No se pudo abrir el enlace.';
                       }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
-                        );
-                      }
+                    } else {
+                      throw 'No se puede gestionar esta URL: ${recipe.link}';
                     }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(e.toString()),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                     Stack(
+                    Stack(
                       alignment: Alignment.topRight,
                       children: [
                         if (recipe.imageUrl != null)
@@ -625,7 +691,11 @@ class WebFavoritesTab extends StatelessWidget {
                                 height: 180,
                                 width: double.infinity,
                                 color: Colors.grey[300],
-                                child: const Icon(Icons.restaurant_menu, color: Colors.grey, size: 50),
+                                child: const Icon(
+                                  Icons.restaurant_menu,
+                                  color: Colors.grey,
+                                  size: 50,
+                                ),
                               );
                             },
                           )
@@ -634,11 +704,19 @@ class WebFavoritesTab extends StatelessWidget {
                             height: 180,
                             color: Colors.grey[300],
                             child: const Center(
-                              child: Icon(Icons.restaurant_menu, size: 50, color: Colors.grey),
+                              child: Icon(
+                                Icons.restaurant_menu,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
                         IconButton(
-                          icon: const Icon(Icons.favorite, color: Colors.red, size: 30),
+                          icon: const Icon(
+                            Icons.favorite,
+                            color: Colors.red,
+                            size: 30,
+                          ),
                           onPressed: () => favoritesBox.delete(recipe.link),
                         ),
                       ],
@@ -650,9 +728,8 @@ class WebFavoritesTab extends StatelessWidget {
                         children: [
                           Text(
                             recipe.title,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -711,55 +788,61 @@ class CreatedRecipesTab extends StatelessWidget {
               ),
               clipBehavior: Clip.antiAlias,
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Stack(
-                      alignment: Alignment.topRight,
-                      children: [
-                        if (recipe.imageBytes != null)
-                          Image.memory(
-                            recipe.imageBytes!,
-                            width: double.infinity,
-                            height: 180,
-                            fit: BoxFit.cover,
-                          )
-                        else
-                          Container(
-                            height: 180,
-                            color: Colors.grey[300],
-                            child: const Center(
-                              child: Icon(Icons.restaurant_menu, size: 50, color: Colors.grey),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                      if (recipe.imageBytes != null)
+                        Image.memory(
+                          recipe.imageBytes!,
+                          width: double.infinity,
+                          height: 180,
+                          fit: BoxFit.cover,
+                        )
+                      else
+                        Container(
+                          height: 180,
+                          color: Colors.grey[300],
+                          child: const Center(
+                            child: Icon(
+                              Icons.restaurant_menu,
+                              size: 50,
+                              color: Colors.grey,
                             ),
                           ),
-                        IconButton(
-                          icon: Icon(
-                            recipe.isFavorite ? Icons.favorite : Icons.favorite_border,
-                            color: recipe.isFavorite ? Colors.red : Colors.white,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            recipe.isFavorite = !recipe.isFavorite;
-                            recipe.save();
-                          },
                         ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            recipe.title,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (recipe.description != null && recipe.description!.isNotEmpty)
+                      IconButton(
+                        icon: Icon(
+                          recipe.isFavorite
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: recipe.isFavorite ? Colors.red : Colors.white,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          recipe.isFavorite = !recipe.isFavorite;
+                          recipe.save();
+                        },
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          recipe.title,
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (recipe.description != null &&
+                            recipe.description!.isNotEmpty)
                           Padding(
-                            padding: const EdgeInsets.only(top:8.0),
+                            padding: const EdgeInsets.only(top: 8.0),
                             child: Text(
                               recipe.description!,
                               style: Theme.of(context).textTheme.bodyMedium,
@@ -767,11 +850,11 @@ class CreatedRecipesTab extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        ],
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
             );
           },
         );

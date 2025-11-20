@@ -34,7 +34,9 @@ class WeightProgressCard extends StatelessWidget {
           children: [
             Text(
               'Tu Meta de Peso',
-              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             const Icon(Icons.flag_outlined, size: 40, color: Colors.blueAccent),
@@ -61,14 +63,18 @@ class WeightProgressCard extends StatelessWidget {
   }
 
   Widget _buildProgressState(ThemeData theme) {
-    final initialWeight = weightGoal + 15; // Placeholder for a more realistic initial weight
+    final initialWeight =
+        weightGoal + 15; // Placeholder for a more realistic initial weight
     final weightDifference = lastWeight! - weightGoal;
     // Progress calculation: 0.0 means at initial weight, 1.0 means goal is reached.
-    final progress = 1.0 - (weightDifference.abs() / (initialWeight - weightGoal).abs());
+    final progress =
+        1.0 - (weightDifference.abs() / (initialWeight - weightGoal).abs());
     final cappedProgress = math.max(0.0, math.min(1.0, progress));
 
     final bool isLosingWeight = initialWeight > weightGoal;
-    final Color progressColor = (isLosingWeight && lastWeight! <= weightGoal) || (!isLosingWeight && lastWeight! >= weightGoal)
+    final Color progressColor =
+        (isLosingWeight && lastWeight! <= weightGoal) ||
+            (!isLosingWeight && lastWeight! >= weightGoal)
         ? Colors.green.shade500
         : Colors.blueAccent;
     final String message = weightDifference == 0
@@ -83,15 +89,29 @@ class WeightProgressCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('Tu Progreso', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Tu Progreso',
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _buildWeightInfo('Peso Actual', lastWeight!.toStringAsFixed(1), theme),
+                _buildWeightInfo(
+                  'Peso Actual',
+                  lastWeight!.toStringAsFixed(1),
+                  theme,
+                ),
                 const SizedBox(width: 10),
-                _buildWeightInfo('Meta', weightGoal.toStringAsFixed(1), theme, isGoal: true),
+                _buildWeightInfo(
+                  'Meta',
+                  weightGoal.toStringAsFixed(1),
+                  theme,
+                  isGoal: true,
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -109,8 +129,12 @@ class WeightProgressCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  weightDifference <= 0 ? Icons.check_circle_outline : Icons.trending_down,
-                  color: weightDifference <= 0 ? Colors.green.shade600 : Colors.red.shade400,
+                  weightDifference <= 0
+                      ? Icons.check_circle_outline
+                      : Icons.trending_down,
+                  color: weightDifference <= 0
+                      ? Colors.green.shade600
+                      : Colors.red.shade400,
                   size: 20,
                 ),
                 const SizedBox(width: 8),
@@ -118,7 +142,9 @@ class WeightProgressCard extends StatelessWidget {
                   message,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: weightDifference <= 0 ? Colors.green.shade600 : Colors.red.shade400,
+                    color: weightDifference <= 0
+                        ? Colors.green.shade600
+                        : Colors.red.shade400,
                   ),
                 ),
               ],
@@ -129,15 +155,30 @@ class WeightProgressCard extends StatelessWidget {
     );
   }
 
-  Widget _buildWeightInfo(String label, String value, ThemeData theme, {bool isGoal = false}) {
+  Widget _buildWeightInfo(
+    String label,
+    String value,
+    ThemeData theme, {
+    bool isGoal = false,
+  }) {
     return Column(
       children: [
         Text(label, style: theme.textTheme.bodyLarge),
         const SizedBox(height: 4),
         Row(
           children: [
-            if (isGoal) const Icon(Icons.flag_outlined, color: Colors.blueAccent, size: 28),
-            if (!isGoal) Icon(Icons.monitor_weight_outlined, color: theme.colorScheme.primary, size: 28),
+            if (isGoal)
+              const Icon(
+                Icons.flag_outlined,
+                color: Colors.blueAccent,
+                size: 28,
+              ),
+            if (!isGoal)
+              Icon(
+                Icons.monitor_weight_outlined,
+                color: theme.colorScheme.primary,
+                size: 28,
+              ),
             const SizedBox(width: 8),
             Text(
               '$value kg',

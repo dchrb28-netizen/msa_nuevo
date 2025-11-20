@@ -85,8 +85,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             final filteredFoods = allFoods
-                .where((food) =>
-                    food.name.toLowerCase().contains(searchQuery.toLowerCase()))
+                .where(
+                  (food) => food.name.toLowerCase().contains(
+                    searchQuery.toLowerCase(),
+                  ),
+                )
                 .toList();
 
             return AlertDialog(
@@ -147,7 +150,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${_getMealTypeTitle(widget.mealType)} - ${DateFormat.yMMMMEEEEd().format(widget.date)}'),
+        title: Text(
+          '${_getMealTypeTitle(widget.mealType)} - ${DateFormat.yMMMMEEEEd().format(widget.date)}',
+        ),
       ),
       body: ListView.builder(
         itemCount: _foods.length,

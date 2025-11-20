@@ -18,7 +18,9 @@ class ThemeSettingsScreen extends StatelessWidget {
         children: [
           Text(
             'Personaliza la Apariencia',
-            style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            style: textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
           const Text(
@@ -29,9 +31,21 @@ class ThemeSettingsScreen extends StatelessWidget {
           const SizedBox(height: 12),
           SegmentedButton<ThemeMode>(
             segments: const <ButtonSegment<ThemeMode>>[
-              ButtonSegment(value: ThemeMode.light, label: Text('Claro'), icon: Icon(Icons.wb_sunny)),
-              ButtonSegment(value: ThemeMode.dark, label: Text('Oscuro'), icon: Icon(Icons.nightlight_round)),
-              ButtonSegment(value: ThemeMode.system, label: Text('Sistema'), icon: Icon(Icons.auto_awesome)),
+              ButtonSegment(
+                value: ThemeMode.light,
+                label: Text('Claro'),
+                icon: Icon(Icons.wb_sunny),
+              ),
+              ButtonSegment(
+                value: ThemeMode.dark,
+                label: Text('Oscuro'),
+                icon: Icon(Icons.nightlight_round),
+              ),
+              ButtonSegment(
+                value: ThemeMode.system,
+                label: Text('Sistema'),
+                icon: Icon(Icons.auto_awesome),
+              ),
             ],
             selected: {themeProvider.themeMode},
             onSelectionChanged: (Set<ThemeMode> newSelection) {
@@ -56,10 +70,7 @@ class ThemeSettingsScreen extends StatelessWidget {
             width: 44,
             height: 44,
             borderRadius: 22,
-            heading: Text(
-              'Selecciona un color',
-              style: textTheme.titleMedium,
-            ),
+            heading: Text('Selecciona un color', style: textTheme.titleMedium),
             subheading: Text(
               'Arrastra para ajustar la tonalidad',
               style: textTheme.bodySmall,

@@ -5,7 +5,6 @@ part 'routine_exercise.g.dart';
 
 @HiveType(typeId: 18) // Changed from 17 to 18 to resolve conflict
 class RoutineExercise extends HiveObject {
-
   // This field remains as it is, linking to the Exercise model by its ID.
   @HiveField(0)
   late String exerciseId;
@@ -30,7 +29,7 @@ class RoutineExercise extends HiveObject {
     if (_exercise == null) {
       // This is a safeguard, the exercise should be pre-loaded by the provider
       throw StateError('Exercise has not been loaded for RoutineExercise');
-    } 
+    }
     return _exercise!;
   }
 

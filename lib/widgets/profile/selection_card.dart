@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class SelectionCard extends StatelessWidget {
@@ -21,7 +20,9 @@ class SelectionCard extends StatelessWidget {
 
     return Card(
       elevation: isSelected ? 4 : 1,
-      color: isSelected ? colorScheme.primaryContainer : colorScheme.surfaceContainerHighest,
+      color: isSelected
+          ? colorScheme.primaryContainer
+          : colorScheme.surfaceContainerHighest,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: isSelected
@@ -39,13 +40,17 @@ class SelectionCard extends StatelessWidget {
               Icon(
                 icon,
                 size: 40,
-                color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
+                color: isSelected
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurfaceVariant,
               ),
               const SizedBox(height: 8),
               Text(
                 title,
                 style: TextStyle(
-                  color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
+                  color: isSelected
+                      ? colorScheme.onPrimaryContainer
+                      : colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,

@@ -6,7 +6,11 @@ class ExercisesScreen extends StatelessWidget {
   final List<Exercise> exercises;
   final VoidCallback onRefresh;
 
-  const ExercisesScreen({super.key, required this.exercises, required this.onRefresh});
+  const ExercisesScreen({
+    super.key,
+    required this.exercises,
+    required this.onRefresh,
+  });
 
   void _navigateToDetail(BuildContext context, Exercise exercise) async {
     final result = await Navigator.push(
@@ -78,9 +82,14 @@ class ExercisesScreen extends StatelessWidget {
         return Card(
           elevation: 2,
           margin: const EdgeInsets.symmetric(vertical: 8.0),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 10.0,
+              horizontal: 15.0,
+            ),
             leading: CircleAvatar(
               radius: 28,
               backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -90,8 +99,13 @@ class ExercisesScreen extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
             ),
-            title: Text(exercise.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('${exercise.type ?? 'N/A'} - ${exercise.equipment ?? 'N/A'}'),
+            title: Text(
+              exercise.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(
+              '${exercise.type ?? 'N/A'} - ${exercise.equipment ?? 'N/A'}',
+            ),
             trailing: const Icon(Icons.chevron_right_rounded),
             onTap: () => _navigateToDetail(context, exercise),
           ),

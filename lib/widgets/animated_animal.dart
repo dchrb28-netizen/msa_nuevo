@@ -65,11 +65,7 @@ class _AnimatedAnimalState extends State<AnimatedAnimal>
           ),
         );
       },
-      child: Image.asset(
-        widget.imagePath,
-        width: 50,
-        height: 50,
-      ),
+      child: Image.asset(widget.imagePath, width: 50, height: 50),
     );
   }
 }

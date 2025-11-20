@@ -27,13 +27,25 @@ class CircularProgressCard extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            Text(title, style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              title,
+              style: GoogleFonts.montserrat(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 16),
             CircularPercentIndicator(
               radius: 60.0,
               lineWidth: 12.0,
               percent: progress.clamp(0.0, 1.0),
-              center: Text(centerText, style: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold)),
+              center: Text(
+                centerText,
+                style: GoogleFonts.montserrat(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               progressColor: primaryColor,
               backgroundColor: backgroundColor,
               circularStrokeCap: CircularStrokeCap.round,

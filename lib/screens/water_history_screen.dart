@@ -21,22 +21,33 @@ class WaterHistoryScreen extends StatelessWidget {
           valueListenable: Hive.box<WaterLog>('water_logs').listenable(),
           builder: (context, Box<WaterLog> box, _) {
             if (currentUser == null) {
-              return const Center(child: Text('Crea un perfil para ver tu historial.'));
+              return const Center(
+                child: Text('Crea un perfil para ver tu historial.'),
+              );
             }
 
             // Filter logs by the current user's id
-            final userLogs = box.values.where((log) => log.userId == currentUser.id).toList();
+            final userLogs = box.values
+                .where((log) => log.userId == currentUser.id)
+                .toList();
             final Map<DateTime, double> dailyTotals = {};
 
             for (var log in userLogs) {
-              final day = DateTime(log.timestamp.year, log.timestamp.month, log.timestamp.day);
+              final day = DateTime(
+                log.timestamp.year,
+                log.timestamp.month,
+                log.timestamp.day,
+              );
               dailyTotals[day] = (dailyTotals[day] ?? 0) + log.amount;
             }
 
-            final sortedDays = dailyTotals.keys.toList()..sort((a, b) => b.compareTo(a));
+            final sortedDays = dailyTotals.keys.toList()
+              ..sort((a, b) => b.compareTo(a));
 
             if (sortedDays.isEmpty) {
-              return const Center(child: Text('No hay registros de agua todavía.'));
+              return const Center(
+                child: Text('No hay registros de agua todavía.'),
+              );
             }
 
             return ListView.builder(
@@ -45,11 +56,27 @@ class WaterHistoryScreen extends StatelessWidget {
                 final day = sortedDays[index];
                 final total = dailyTotals[day]!;
                 return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: ListTile(
-                    leading: Icon(Icons.calendar_today, color: Theme.of(context).colorScheme.primary),
-                    title: Text(DateFormat.yMMMd('es').format(day), style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
-                    trailing: Text('${total.toInt()} ml', style: GoogleFonts.lato(fontSize: 16, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
+                    leading: Icon(
+                      Icons.calendar_today,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: Text(
+                      DateFormat.yMMMd('es').format(day),
+                      style: GoogleFonts.lato(fontWeight: FontWeight.bold),
+                    ),
+                    trailing: Text(
+                      '${total.toInt()} ml',
+                      style: GoogleFonts.lato(
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 );
               },
