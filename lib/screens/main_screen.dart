@@ -3,6 +3,7 @@ import 'package:myapp/screens/dashboard_screen.dart';
 import 'package:myapp/screens/menus_screen.dart';
 import 'package:myapp/screens/progreso_screen.dart';
 import 'package:myapp/widgets/drawer_menu.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -39,20 +40,20 @@ class _MainScreenState extends State<MainScreen> {
         children: _screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
+            icon: Icon(PhosphorIcons.house(PhosphorIconsStyle.regular)),
+            activeIcon: Icon(PhosphorIcons.house(PhosphorIconsStyle.fill)),
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.restaurant_menu_outlined),
-            activeIcon: Icon(Icons.restaurant_menu),
+            icon: Icon(PhosphorIcons.forkKnife(PhosphorIconsStyle.regular)),
+            activeIcon: Icon(PhosphorIcons.forkKnife(PhosphorIconsStyle.fill)),
             label: 'Menús',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.show_chart_outlined),
-            activeIcon: Icon(Icons.show_chart),
+            icon: Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.regular)),
+            activeIcon: Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.fill)),
             label: 'Progreso',
           ),
         ],
