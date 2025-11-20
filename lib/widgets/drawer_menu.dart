@@ -12,6 +12,7 @@ import 'package:myapp/screens/recipes/recipes_screen.dart';
 import 'package:myapp/screens/settings/about_screen.dart';
 import 'package:myapp/screens/settings_screen.dart';
 import 'package:myapp/screens/training/training_screen.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
 class DrawerMenu extends StatelessWidget {
@@ -104,7 +105,7 @@ class DrawerMenu extends StatelessWidget {
                           : null,
                       child: user?.profileImageBytes == null
                           ? Icon(
-                              Icons.person,
+                              PhosphorIcons.person(),
                               size: 40,
                               color: themeProvider.seedColor,
                             )
@@ -141,7 +142,7 @@ class DrawerMenu extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home, color: themeProvider.seedColor),
+            leading: Icon(PhosphorIcons.house(), color: themeProvider.seedColor),
             title: Text('Inicio', style: GoogleFonts.lato()),
             onTap: () {
               Navigator.pushReplacement(
@@ -154,26 +155,26 @@ class DrawerMenu extends StatelessWidget {
           _buildExpansionTile(
             context,
             title: 'Registro',
-            icon: Icons.edit,
+            icon: PhosphorIcons.notebook(),
             iconColor: Colors.deepPurple,
             children: [
               buildLogListTile(
                 context,
-                icon: Icons.water_drop,
+                icon: PhosphorIcons.drop(),
                 iconColor: Colors.blue,
                 title: 'Ingesta de Agua',
                 tabIndex: 0,
               ),
               buildLogListTile(
                 context,
-                icon: Icons.fastfood,
+                icon: PhosphorIcons.forkKnife(),
                 iconColor: Colors.yellow[700]!,
                 title: 'Comidas',
                 tabIndex: 1,
               ),
               buildLogListTile(
                 context,
-                icon: Icons.straighten,
+                icon: PhosphorIcons.ruler(),
                 iconColor: Colors.teal,
                 title: 'Medidas',
                 tabIndex: 2,
@@ -183,19 +184,19 @@ class DrawerMenu extends StatelessWidget {
           _buildExpansionTile(
             context,
             title: 'Mis Recetas',
-            icon: Icons.menu_book,
+            icon: PhosphorIcons.bookOpen(),
             iconColor: Colors.brown[600]!,
             children: [
               buildListTile(
                 context,
-                icon: Icons.receipt_long,
+                icon: PhosphorIcons.magnifyingGlass(),
                 iconColor: Colors.orange[800]!,
                 title: 'Buscar Recetas',
                 destination: const RecipesScreen(initialTabIndex: 0),
               ),
               buildListTile(
                 context,
-                icon: Icons.favorite,
+                icon: PhosphorIcons.heart(),
                 iconColor: Colors.red[400]!,
                 title: 'Recetas Favoritas',
                 destination: const RecipesScreen(initialTabIndex: 1),
@@ -205,19 +206,19 @@ class DrawerMenu extends StatelessWidget {
           _buildExpansionTile(
             context,
             title: 'Entrenamiento',
-            icon: Icons.fitness_center,
+            icon: PhosphorIcons.barbell(),
             iconColor: Colors.red[700]!,
             children: [
               buildListTile(
                 context,
-                icon: Icons.directions_run,
+                icon: PhosphorIcons.listChecks(),
                 iconColor: Colors.blue[700]!,
                 title: 'Rutinas',
                 destination: const TrainingScreen(initialTabIndex: 0),
               ),
               buildListTile(
                 context,
-                icon: Icons.local_library,
+                icon: PhosphorIcons.books(),
                 iconColor: Colors.pink,
                 title: 'Biblioteca',
                 destination: const TrainingScreen(initialTabIndex: 1),
@@ -227,19 +228,19 @@ class DrawerMenu extends StatelessWidget {
           _buildExpansionTile(
             context,
             title: 'Hábitos',
-            icon: Icons.check_circle_outline,
+            icon: PhosphorIcons.checkCircle(),
             iconColor: Colors.lightGreen[800]!,
             children: [
               buildListTile(
                 context,
-                icon: Icons.notifications,
+                icon: PhosphorIcons.bell(),
                 iconColor: Colors.amber[600]!,
                 title: 'Recordatorios',
                 destination: const HabitsScreen(initialTabIndex: 0),
               ),
               buildListTile(
                 context,
-                icon: Icons.hourglass_empty,
+                icon: PhosphorIcons.hourglass(),
                 iconColor: Colors.lime[700]!,
                 title: 'Ayuno Intermitente',
                 destination: const HabitsScreen(initialTabIndex: 1),
@@ -249,19 +250,19 @@ class DrawerMenu extends StatelessWidget {
           _buildExpansionTile(
             context,
             title: 'Logros',
-            icon: Icons.emoji_events,
+            icon: PhosphorIcons.trophy(),
             iconColor: Colors.amber[900]!,
             children: [
               buildListTile(
                 context,
-                icon: Icons.card_giftcard,
+                icon: PhosphorIcons.gift(),
                 iconColor: Colors.yellow[600]!,
                 title: 'Recompensas',
                 destination: const RewardsScreen(),
               ),
               buildListTile(
                 context,
-                icon: Icons.flag,
+                icon: PhosphorIcons.flag(),
                 iconColor: Colors.deepOrange[400]!,
                 title: 'Metas',
                 destination: const GoalsScreen(),
@@ -271,26 +272,26 @@ class DrawerMenu extends StatelessWidget {
           _buildExpansionTile(
             context,
             title: 'Configuración',
-            icon: Icons.settings,
+            icon: PhosphorIcons.gear(),
             iconColor: Colors.grey[700]!,
             children: [
               buildListTile(
                 context,
-                icon: Icons.calculate,
+                icon: PhosphorIcons.calculator(),
                 iconColor: Colors.green,
                 title: 'Metas Calóricas',
                 destination: const SettingsScreen(initialIndex: 0),
               ),
               buildListTile(
                 context,
-                icon: Icons.monitor_weight,
+                icon: PhosphorIcons.heartbeat(),
                 iconColor: Colors.purple,
                 title: 'Objetivos de Peso',
                 destination: const SettingsScreen(initialIndex: 1),
               ),
               buildListTile(
                 context,
-                icon: Icons.palette,
+                icon: PhosphorIcons.palette(),
                 iconColor: Colors.orange,
                 title: 'Temas',
                 destination: const SettingsScreen(initialIndex: 2),
@@ -299,7 +300,7 @@ class DrawerMenu extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: Icon(Icons.info_outline, color: Colors.blueGrey[500]!),
+            leading: Icon(PhosphorIcons.info(), color: Colors.blueGrey[500]!),
             title: Text('Acerca de', style: GoogleFonts.lato()),
             onTap: () {
               Navigator.pop(context);
@@ -311,7 +312,7 @@ class DrawerMenu extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(
-              Icons.cloud_upload_outlined,
+              PhosphorIcons.cloudArrowUp(),
               color: Colors.blue[800]!,
             ),
             title: Text('Respaldo', style: GoogleFonts.lato()),

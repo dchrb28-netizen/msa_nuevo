@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/widgets/profile/selection_card.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
 class CreateProfileScreen extends StatefulWidget {
@@ -32,17 +33,17 @@ class CreateProfileScreenState extends State<CreateProfileScreen> {
   Uint8List? _profileImageBytes;
 
   final Map<String, Map<String, dynamic>> _genderOptions = {
-    'male': {'label': 'Masculino', 'icon': Icons.male},
-    'female': {'label': 'Femenino', 'icon': Icons.female},
-    'other': {'label': 'Otro', 'icon': Icons.question_mark},
+    'male': {'label': 'Masculino', 'icon': PhosphorIcons.genderMale()},
+    'female': {'label': 'Femenino', 'icon': PhosphorIcons.genderFemale()},
+    'other': {'label': 'Otro', 'icon': PhosphorIcons.genderNeuter()},
   };
 
   final Map<String, Map<String, dynamic>> _activityLevelOptions = {
-    'sedentary': {'label': 'Sedentario', 'icon': Icons.weekend},
-    'light': {'label': 'Ligero', 'icon': Icons.directions_walk},
-    'moderate': {'label': 'Moderado', 'icon': Icons.directions_run},
-    'active': {'label': 'Activo', 'icon': Icons.fitness_center},
-    'very_active': {'label': 'Muy Activo', 'icon': Icons.local_fire_department},
+    'sedentary': {'label': 'Sedentario', 'icon': PhosphorIcons.couch()},
+    'light': {'label': 'Ligero', 'icon': PhosphorIcons.personSimpleWalk()},
+    'moderate': {'label': 'Moderado', 'icon': PhosphorIcons.personSimpleRun()},
+    'active': {'label': 'Activo', 'icon': PhosphorIcons.barbell()},
+    'very_active': {'label': 'Muy Activo', 'icon': PhosphorIcons.fire()},
   };
 
   @override
@@ -170,7 +171,7 @@ class CreateProfileScreenState extends State<CreateProfileScreen> {
                     ? MemoryImage(_profileImageBytes!)
                     : null,
                 child: _profileImageBytes == null
-                    ? const Icon(Icons.camera_alt, size: 50)
+                    ? Icon(PhosphorIcons.camera(), size: 50)
                     : null,
               ),
             ),
@@ -283,13 +284,13 @@ class CreateProfileScreenState extends State<CreateProfileScreen> {
           if (_currentPage > 0)
             TextButton.icon(
               onPressed: _previousPage,
-              icon: const Icon(Icons.arrow_back_ios),
+              icon: Icon(PhosphorIcons.arrowLeft()),
               label: const Text('Anterior'),
             ),
           ElevatedButton.icon(
             onPressed: _nextPage,
             icon: Icon(
-              _currentPage == 2 ? Icons.check : Icons.arrow_forward_ios,
+              _currentPage == 2 ? PhosphorIcons.check() : PhosphorIcons.arrowRight(),
             ),
             label: Text(_currentPage == 2 ? 'Finalizar' : 'Siguiente'),
           ),

@@ -46,6 +46,7 @@ dependencies:
   permission_handler: any
   firebase_core: any
   firebase_ai: any
+  phosphor_flutter: ^2.1.0
 
 dev_dependencies:
   flutter_test:
