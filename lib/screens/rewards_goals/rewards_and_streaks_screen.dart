@@ -3,59 +3,40 @@ import 'package:myapp/screens/rewards_screen.dart';
 import 'package:myapp/screens/rewards_goals/streaks_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class RewardsAndStreaksScreen extends StatefulWidget {
+class RewardsAndStreaksScreen extends StatelessWidget {
   final int initialTabIndex;
 
   const RewardsAndStreaksScreen({super.key, this.initialTabIndex = 0});
 
   @override
-  State<RewardsAndStreaksScreen> createState() =>
-      _RewardsAndStreaksScreenState();
-}
-
-class _RewardsAndStreaksScreenState extends State<RewardsAndStreaksScreen> {
-  late int _currentIndex;
-  final List<Widget> _pages = [
-    const RewardsScreen(), // <- ESTA ES LA LÍNEA CORREGIDA
-    const StreaksScreen(),
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _currentIndex = widget.initialTabIndex;
-  }
-
-  void _onTabTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_currentIndex == 0 ? 'Mis Recompensas' : 'Mis Rachas'),
-        automaticallyImplyLeading: false, // Ocultar el botón de regreso
-      ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onTabTapped,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.trophy()),
-            label: 'Recompensas',
+    return DefaultTabController(
+      initialIndex: initialTabIndex,
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          // Se elimina el título
+          bottom: TabBar(
+            indicatorColor: Theme.of(context).colorScheme.onPrimary,
+            indicatorSize: TabBarIndicatorSize.tab,
+            tabs: [
+              Tab(
+                icon: Icon(PhosphorIcons.trophy()),
+                text: 'Recompensas',
+              ),
+              Tab(
+                icon: Icon(PhosphorIcons.fire()),
+                text: 'Rachas',
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.fire()),
-            label: 'Rachas',
-          ),
-        ],
+        ),
+        body: const TabBarView(
+          children: [
+            RewardsScreen(),
+            StreaksScreen(),
+          ],
+        ),
       ),
     );
   }

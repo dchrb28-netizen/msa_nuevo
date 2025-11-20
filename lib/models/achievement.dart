@@ -17,13 +17,13 @@ class Achievement {
   final String description;
   final IconData icon;
   final AchievementCategory category;
-  final int totalSteps;
-  final String metric; // E.g., 'días', 'litros', 'kg', 'rutinas'
+  final int goal; // Renombrado de totalSteps
+  final String unit; // Añadido
 
   // Estado del usuario
   bool isUnlocked;
   DateTime? unlockedDate;
-  int userProgress;
+  int progress; // Renombrado de userProgress
 
   Achievement({
     required this.id,
@@ -31,17 +31,17 @@ class Achievement {
     required this.description,
     required this.icon,
     required this.category,
-    this.totalSteps = 1, // Por defecto, un logro se completa en 1 paso
-    this.metric = '',
+    this.goal = 1, // Por defecto, un logro se completa en 1 paso
+    this.unit = '',
     this.isUnlocked = false,
     this.unlockedDate,
-    this.userProgress = 0,
+    this.progress = 0,
   });
 
   double get progressPercentage {
-    if (totalSteps <= 0) return 0.0;
+    if (goal <= 0) return 0.0;
     if (isUnlocked) return 1.0;
-    return (userProgress / totalSteps).clamp(0.0, 1.0);
+    return (progress / goal).clamp(0.0, 1.0);
   }
 
   factory Achievement.clone(Achievement source) {
@@ -51,11 +51,11 @@ class Achievement {
       description: source.description,
       icon: source.icon,
       category: source.category,
-      totalSteps: source.totalSteps,
-      metric: source.metric,
+      goal: source.goal,
+      unit: source.unit,
       isUnlocked: source.isUnlocked,
       unlockedDate: source.unlockedDate,
-      userProgress: source.userProgress,
+      progress: source.progress,
     );
   }
 }

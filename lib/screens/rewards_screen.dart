@@ -1,128 +1,194 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:myapp/models/achievement.dart';
-import 'package:myapp/models/user_profile.dart';
 import 'package:myapp/services/achievement_service.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:provider/provider.dart';
-import 'package:collection/collection.dart'; // Para groupBy
 
-class RewardsScreen extends StatelessWidget {
+class RewardsScreen extends StatefulWidget {
   const RewardsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final achievementService = Provider.of<AchievementService>(context);
-    final userProfile = achievementService.userProfile;
-    final achievements = achievementService.getAchievements();
+  State<RewardsScreen> createState() => _RewardsScreenState();
+}
 
-    // Agrupar logros por categoría
-    final achievementsByCategory = groupBy(achievements, (ach) => ach.category);
+class _RewardsScreenState extends State<RewardsScreen> {
+  final AchievementService _achievementService = AchievementService();
+  late Future<Map<String, List<Achievement>>> _groupedAchievementsFuture;
+  int _userLevel = 1;
+  int _userXP = 0;
+  int _xpForNextLevel = 100;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  void _loadData() {
+    _groupedAchievementsFuture = _achievementService.getGroupedAchievements();
+    // Simulación de datos de nivel y XP del usuario
+    // En un futuro, esto debería venir de un servicio de usuario
+    _userLevel = _achievementService.calculateLevel();
+    _userXP = _achievementService.getTotalXP();
+    _xpForNextLevel = _achievementService.getXPForNextLevel(_userLevel);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final NumberFormat xpFormat = NumberFormat('#,##0', 'es_ES');
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mis Recompensas'),
-        elevation: 0,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          _buildLevelProgressCard(context, userProfile),
-          const SizedBox(height: 24),
-          ...AchievementCategory.values.map((category) {
-            final categoryAchievements = achievementsByCategory[category] ?? [];
-            if (categoryAchievements.isEmpty) return const SizedBox.shrink();
-            
-            return _buildCategorySection(context, category, categoryAchievements);
-          }),
-        ],
-      ),
-    );
-  }
+      body: FutureBuilder<Map<String, List<Achievement>>>(
+        future: _groupedAchievementsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error al cargar los logros: ${snapshot.error}'));
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No hay logros para mostrar.'));
+          }
 
-  Widget _buildLevelProgressCard(BuildContext context, UserProfile userProfile) {
-    return Card(
-      elevation: 4,
-      clipBehavior: Clip.antiAlias,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Nivel ${userProfile.level}',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold,
+          final groupedAchievements = snapshot.data!;
+          final sortedCategories = groupedAchievements.keys.toList()..sort();
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // User Level and XP Card
+                Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Nivel $_userLevel',
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                        ),
+                        const SizedBox(height: 8),
+                        LinearProgressIndicator(
+                          value: _userXP / _xpForNextLevel,
+                          minHeight: 12,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            '${xpFormat.format(_userXP)} / ${xpFormat.format(_xpForNextLevel)} XP',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Achievements List
+                ...sortedCategories.map((category) {
+                  final achievements = groupedAchievements[category]!;
+                  return _AchievementCategory(
+                    category: category,
+                    achievements: achievements,
+                  );
+                }), // FIX: Removed .toList()
+              ],
             ),
-            const SizedBox(height: 8),
-            LinearPercentIndicator(
-              padding: EdgeInsets.zero,
-              percent: userProfile.levelProgressPercentage,
-              lineHeight: 12,
-              barRadius: const Radius.circular(6),
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-              progressColor: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                '${userProfile.experiencePoints} / ${userProfile.nextLevelXp} XP',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
+}
 
-  Widget _buildCategorySection(BuildContext context, AchievementCategory category, List<Achievement> achievements) {
-     return Card(
-      margin: const EdgeInsets.only(bottom: 16.0),
-      elevation: 2,
-      child: ExpansionTile(
-        title: Text(category.displayName, style: Theme.of(context).textTheme.titleLarge),
-        children: achievements.map((ach) => _buildAchievementTile(context, ach)).toList(),
+class _AchievementCategory extends StatelessWidget {
+  final String category;
+  final List<Achievement> achievements;
+
+  const _AchievementCategory({
+    required this.category,
+    required this.achievements,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionTile(
+      initiallyExpanded: true,
+      title: Text(
+        category,
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
       ),
+      children: achievements.map((achievement) {
+        return _AchievementTile(achievement: achievement);
+      }).toList(),
     );
   }
+}
 
-  Widget _buildAchievementTile(BuildContext context, Achievement achievement) {
+class _AchievementTile extends StatelessWidget {
+  final Achievement achievement;
+
+  const _AchievementTile({required this.achievement});
+
+  @override
+  Widget build(BuildContext context) {
     final bool isUnlocked = achievement.isUnlocked;
-    final colorScheme = Theme.of(context).colorScheme;
+    final Color progressColor = isUnlocked ? Theme.of(context).colorScheme.primary : Colors.grey.shade400;
 
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: isUnlocked ? colorScheme.primary : colorScheme.surfaceContainerHighest,
-        foregroundColor: isUnlocked ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
-        child: Icon(achievement.icon, size: 24),
+        backgroundColor: isUnlocked ? progressColor.withAlpha((255 * 0.2).round()) : Colors.grey.shade200, // FIX: withOpacity -> withAlpha
+        child: Icon(
+          achievement.icon,
+          color: isUnlocked ? progressColor : Colors.grey.shade600,
+        ),
       ),
-      title: Text(achievement.name, style: TextStyle(fontWeight: FontWeight.bold, color: isUnlocked ? colorScheme.onSurface : colorScheme.onSurface.withAlpha(178))),
+      title: Text(
+        achievement.name,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          decoration: isUnlocked ? TextDecoration.none : TextDecoration.lineThrough,
+        ),
+      ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(achievement.description, style: TextStyle(color: isUnlocked ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withAlpha(178))),
-          if (!isUnlocked && achievement.totalSteps > 1)
+          Text(achievement.description),
+          if (achievement.goal > 1)
             Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: LinearPercentIndicator(
-                padding: EdgeInsets.zero,
-                percent: achievement.progressPercentage,
-                lineHeight: 8,
-                barRadius: const Radius.circular(4),
-                backgroundColor: colorScheme.surfaceContainerHighest,
-                progressColor: colorScheme.secondary,
-                center: Text(
-                  '${achievement.userProgress} / ${achievement.totalSteps} ${achievement.metric}',
-                  style: const TextStyle(fontSize: 10, color: Colors.white),
-                ),
+              padding: const EdgeInsets.only(top: 4.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LinearProgressIndicator(
+                    value: achievement.progress / achievement.goal,
+                    backgroundColor: Colors.grey.shade300,
+                    valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${achievement.progress} / ${achievement.goal} ${achievement.unit}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
               ),
             ),
         ],
       ),
-      trailing: isUnlocked ? Icon(Icons.check_circle, color: Colors.green[600]) : null,
     );
   }
 }
