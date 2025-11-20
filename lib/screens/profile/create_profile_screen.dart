@@ -200,16 +200,18 @@ class CreateProfileScreenState extends State<CreateProfileScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+            Row(
               children: _genderOptions.entries.map((entry) {
-                return SelectionCard(
-                  title: entry.value['label'],
-                  icon: entry.value['icon'],
-                  isSelected: _selectedGender == entry.key,
-                  onTap: () => setState(() => _selectedGender = entry.key),
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: SelectionCard(
+                      title: entry.value['label'],
+                      icon: entry.value['icon'],
+                      isSelected: _selectedGender == entry.key,
+                      onTap: () => setState(() => _selectedGender = entry.key),
+                    ),
+                  ),
                 );
               }).toList(),
             ),

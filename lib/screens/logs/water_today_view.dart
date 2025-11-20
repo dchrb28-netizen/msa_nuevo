@@ -11,7 +11,6 @@ import 'package:provider/provider.dart';
 class WaterTodayView extends StatelessWidget {
   const WaterTodayView({super.key});
 
-  // El `currentUser` ya no es necesario, el provider lo gestiona internamente.
   void _showAddWaterDialog(BuildContext context, WaterIntakeProvider provider) {
     final TextEditingController controller = TextEditingController();
     showDialog(
@@ -33,7 +32,6 @@ class WaterTodayView extends StatelessWidget {
             onPressed: () {
               final amount = double.tryParse(controller.text);
               if (amount != null && amount > 0) {
-                // Llamada corregida: ya no se pasa el usuario.
                 provider.addWaterLog(amount);
                 Navigator.pop(context);
               }
@@ -85,7 +83,6 @@ class WaterTodayView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Escuchamos a ambos providers.
     final userProvider = Provider.of<UserProvider>(context);
     final waterProvider = Provider.of<WaterIntakeProvider>(context);
     final currentUser = userProvider.user;
@@ -110,7 +107,6 @@ class WaterTodayView extends StatelessWidget {
           );
         }
 
-        // Llamadas corregidas: no se pasa el usuario, se obtiene del provider.
         final intakeForSelectedDate =
             waterProvider.getWaterIntakeForDate(waterProvider.selectedDate);
         final logsForSelectedDate = waterProvider.getLogsForSelectedDate();
@@ -136,31 +132,74 @@ class WaterTodayView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Center(
-                  child: Text(
-                    'Meta Diaria: ${waterProvider.dailyGoal.toInt()} ml',
-                    style: GoogleFonts.lato(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
+                if (waterProvider.dailyGoal > 0)
+                  Column(
+                    children: [
+                      Center(
+                        child: Text(
+                          'Meta Diaria: ${waterProvider.dailyGoal.toInt()} ml',
+                          style: GoogleFonts.lato(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () => waterProvider.showEditGoalDialog(context),
+                        icon: const Icon(Icons.edit, size: 16),
+                        label: const Text('Editar meta diaria'),
+                      ),
+                    ],
+                  )
+                else
+                  Card(
+                    elevation: 2,
+                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Establece tu meta de agua',
+                            style: GoogleFonts.lato(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Define una meta diaria para mantenerte hidratado.',
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton.icon(
+                            onPressed: () => waterProvider.showEditGoalDialog(context),
+                            icon: const Icon(Icons.add_circle_outline),
+                            label: const Text('Establecer Meta'),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                TextButton.icon(
-                  // La llamada a showEditGoalDialog ya es correcta.
-                  onPressed: () => waterProvider.showEditGoalDialog(context),
-                  icon: const Icon(Icons.edit, size: 16),
-                  label: const Text('Editar meta diaria'),
-                ),
                 const SizedBox(height: 12),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    // Llamadas a helpers corregidas.
-                    _buildWaterButton(250, waterProvider),
-                    _buildWaterButton(500, waterProvider),
-                    _buildAddCustomButton(context, waterProvider),
+                    Expanded(
+                      child: _buildWaterButton(250, waterProvider),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildWaterButton(500, waterProvider),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildAddCustomButton(context, waterProvider),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -264,30 +303,28 @@ class WaterTodayView extends StatelessWidget {
     );
   }
 
-  // Helper corregido: ya no necesita `currentUser`.
   Widget _buildWaterButton(double amount, WaterIntakeProvider provider) {
     return OutlinedButton.icon(
       onPressed: () => provider.addWaterLog(amount),
-      icon: const Icon(Icons.local_drink_outlined),
-      label: Text('${amount.toInt()} ml'),
+      icon: const Icon(Icons.local_drink_outlined, size: 16),
+      label: Text('${amount.toInt()} ml', style: const TextStyle(fontSize: 12)),
       style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
 
-  // Helper corregido: ya no necesita `currentUser`.
   Widget _buildAddCustomButton(
     BuildContext context,
     WaterIntakeProvider provider,
   ) {
     return OutlinedButton.icon(
       onPressed: () => _showAddWaterDialog(context, provider),
-      icon: const Icon(Icons.add),
-      label: const Text('Otro'),
+      icon: const Icon(Icons.add, size: 16),
+      label: const Text('Otro', style: TextStyle(fontSize: 12)),
       style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );

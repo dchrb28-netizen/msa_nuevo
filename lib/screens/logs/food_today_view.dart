@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/menus/edit_meal_screen.dart';
+import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/screens/food/food_log_list_view.dart';
@@ -80,8 +81,52 @@ class _FoodTodayViewState extends State<FoodTodayView> {
   Widget _buildCaloriesSummaryCard(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = userProvider.user;
-    final caloricGoal = user?.calorieGoal ?? 2000;
+    final caloricGoal = user?.calorieGoal;
     final dietPlan = user?.dietPlan ?? 'Mantener';
+
+    if (caloricGoal == null || caloricGoal == 0) {
+      return Card(
+        margin: const EdgeInsets.symmetric(horizontal: 24.0),
+        elevation: 2,
+        color: const Color(0xFFFFF0F5), // Lavender blush like color
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Text(
+                'Define tu objetivo calórico',
+                style: GoogleFonts.lato(
+                  color: const Color(0xFFE57373),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Aún no has establecido una meta de calorías. ¡Defínela para un mejor seguimiento!',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.settings),
+                label: const Text('Ir a Ajustes'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CaloricGoalsScreen(),
+                    ),
+                  );
+                },
+              )
+            ],
+          ),
+        ),
+      );
+    }
 
     return ValueListenableBuilder(
       valueListenable: Hive.box<FoodLog>('food_logs').listenable(),
@@ -135,40 +180,46 @@ class _FoodTodayViewState extends State<FoodTodayView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _buildCalorieInfo(
-                      'Meta',
-                      caloricGoal.toInt(),
-                      const Color(0xFFFFA726),
+                    Expanded(
+                      child: _buildCalorieInfo(
+                        'Meta',
+                        caloricGoal.toInt(),
+                        const Color(0xFFFFA726),
+                      ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: Text(
                         '-',
                         style: GoogleFonts.montserrat(
-                          fontSize: 30,
+                          fontSize: 24,
                           color: Colors.grey,
                         ),
                       ),
                     ),
-                    _buildCalorieInfo(
-                      'Consumidas',
-                      totalCalories.toInt(),
-                      Colors.black87,
+                    Expanded(
+                      child: _buildCalorieInfo(
+                        'Consumidas',
+                        totalCalories.toInt(),
+                        Colors.black87,
+                      ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: Text(
                         '=',
                         style: GoogleFonts.montserrat(
-                          fontSize: 30,
+                          fontSize: 24,
                           color: Colors.grey,
                         ),
                       ),
                     ),
-                    _buildCalorieInfo(
-                      'Restantes',
-                      remainingCalories.toInt(),
-                      const Color(0xFF66BB6A),
+                    Expanded(
+                      child: _buildCalorieInfo(
+                        'Restantes',
+                        remainingCalories.toInt(),
+                        const Color(0xFF66BB6A),
+                      ),
                     ),
                   ],
                 ),
@@ -183,9 +234,15 @@ class _FoodTodayViewState extends State<FoodTodayView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildMacroInfo('Proteínas', totalProteins, Colors.green),
-                    _buildMacroInfo('Carbs', totalCarbs, Colors.orange),
-                    _buildMacroInfo('Grasas', totalFats, Colors.redAccent),
+                    Expanded(
+                        child: _buildMacroInfo(
+                            'Proteínas', totalProteins, Colors.green)),
+                    Expanded(
+                        child: _buildMacroInfo(
+                            'Carbs', totalCarbs, Colors.orange)),
+                    Expanded(
+                        child: _buildMacroInfo(
+                            'Grasas', totalFats, Colors.redAccent)),
                   ],
                 ),
               ],
@@ -202,15 +259,17 @@ class _FoodTodayViewState extends State<FoodTodayView> {
         Text(
           value.toString(),
           style: GoogleFonts.montserrat(
-            fontSize: 24,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
             color: color,
           ),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 2),
         Text(
           title,
-          style: GoogleFonts.lato(fontSize: 14, color: Colors.black54),
+          style: GoogleFonts.lato(fontSize: 12, color: Colors.black54),
+          textAlign: TextAlign.center,
         ),
       ],
     );
@@ -218,6 +277,8 @@ class _FoodTodayViewState extends State<FoodTodayView> {
 
   Widget _buildMacroInfo(String title, double value, Color color) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           title,
@@ -226,6 +287,7 @@ class _FoodTodayViewState extends State<FoodTodayView> {
             fontWeight: FontWeight.bold,
             color: color,
           ),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 4),
         Text(
@@ -234,6 +296,7 @@ class _FoodTodayViewState extends State<FoodTodayView> {
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
+          textAlign: TextAlign.center,
         ),
       ],
     );
