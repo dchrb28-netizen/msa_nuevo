@@ -5,15 +5,17 @@ import 'package:hive/hive.dart';
 import 'package:myapp/models/fasting_log.dart';
 import 'package:myapp/models/fasting_phase.dart';
 import 'package:myapp/models/fasting_plan.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/services/notification_service.dart';
-import 'package:myapp/services/streaks_service.dart'; // <-- IMPORTADO
+import 'package:myapp/services/streaks_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 class FastingProvider with ChangeNotifier {
   final Box<FastingLog> _fastingBox = Hive.box<FastingLog>('fasting_logs');
   final NotificationService _notificationService = NotificationService();
-  final StreaksService _streaksService = StreaksService(); // <-- INSTANCIADO
+  final StreaksService _streaksService = StreaksService();
+  final AchievementService _achievementService = AchievementService(); // Instancia de AchievementService
   Timer? _timer;
   FastingLog? _currentFast;
   FastingPhase? _previousPhase;
@@ -46,7 +48,7 @@ class FastingProvider with ChangeNotifier {
         if (_previousPhase?.name != newPhase?.name) {
           if (newPhase != null) {
             _notificationService.showNotification(
-              1, // Different ID for phase changes
+              1,
               '¡Nueva Fase Alcanzada!',
               'Has entrado en la fase: ${newPhase.name}',
             );
@@ -54,7 +56,6 @@ class FastingProvider with ChangeNotifier {
           }
         }
 
-        // Check if goal is reached
         if (_currentFast!.durationInSeconds >= goalInSeconds) {
           _notificationService.showNotification(
             0,
@@ -85,6 +86,83 @@ class FastingProvider with ChangeNotifier {
     return _fastingBox.values.where((log) => log.endTime != null).toList()
       ..sort((a, b) => b.endTime!.compareTo(a.endTime!));
   }
+
+  int _getTotalFastingHours() {
+    if (fastingHistory.isEmpty) return 0;
+    final totalDurationInSeconds = fastingHistory.fold<int>(
+      0,
+      (previous, log) => previous + log.endTime!.difference(log.startTime).inSeconds,
+    );
+    return totalDurationInSeconds ~/ 3600; 
+  }
+
+  void _triggerAchievementLogic() {
+    _achievementService.addExperience(15); 
+    _achievementService.updateProgress('first_fast', 1);
+
+    final totalHours = _getTotalFastingHours();
+    _achievementService.updateProgress('cum_fast_24h', totalHours);
+    _achievementService.updateProgress('cum_fast_168h', totalHours);
+    _achievementService.updateProgress('cum_fast_720h', totalHours);
+  }
+
+  Future<void> addManualFastingLog(
+    DateTime startTime,
+    DateTime endTime,
+    String? notes,
+  ) async {
+    if (endTime.isBefore(startTime)) return;
+    const uuid = Uuid();
+    final newLog = FastingLog(
+      id: uuid.v4(),
+      startTime: startTime,
+      endTime: endTime,
+      notes: notes,
+    );
+    await _fastingBox.put(newLog.id, newLog);
+    await _streaksService.updateFastingStreak();
+    _triggerAchievementLogic(); // Lógica de logros
+    _updateFeedingWindow();
+    notifyListeners();
+  }
+
+  Future<void> stopFasting() async {
+    if (!isFasting) return;
+
+    final fastToStop = _currentFast!;
+    _notificationService.cancelNotification(fastToStop.id.hashCode);
+
+    final endTime = DateTime.now();
+    final duration = endTime.difference(fastToStop.startTime);
+
+    if (duration.inMinutes < 1) {
+      await _fastingBox.delete(fastToStop.id);
+      _notificationService.showNotification(
+        0,
+        'Ayuno Cancelado',
+        'El ayuno fue demasiado corto (menos de 1 minuto).',
+      );
+    } else {
+      fastToStop.endTime = endTime;
+      await fastToStop.save();
+      await _streaksService.updateFastingStreak();
+      _triggerAchievementLogic(); // Lógica de logros
+
+      final formatted = _formatDuration(duration);
+      _notificationService.showNotification(
+        0,
+        '¡Ayuno Completado!',
+        'Has completado un ayuno de $formatted. ¡Felicidades!',
+      );
+    }
+
+    _currentFast = null;
+    _previousPhase = null;
+    _updateFeedingWindow();
+    notifyListeners();
+  }
+
+  // ... (El resto de los métodos como startFasting, deleteFastingLog, etc., permanecen igual)
 
   FastingLog? get longestFastLog {
     if (fastingHistory.isEmpty) return null;
@@ -168,27 +246,6 @@ class FastingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addManualFastingLog(
-    DateTime startTime,
-    DateTime endTime,
-    String? notes,
-  ) async {
-    if (endTime.isBefore(startTime)) {
-      return;
-    }
-    const uuid = Uuid();
-    final newLog = FastingLog(
-      id: uuid.v4(),
-      startTime: startTime,
-      endTime: endTime,
-      notes: notes,
-    );
-    await _fastingBox.put(newLog.id, newLog);
-     await _streaksService.updateFastingStreak(); // <-- ACTUALIZAR RACHA
-    _updateFeedingWindow();
-    notifyListeners();
-  }
-
   Future<void> _savePreferences() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('selectedPlanId', _selectedPlan.id);
@@ -258,44 +315,6 @@ class FastingProvider with ChangeNotifier {
       endTime,
     );
 
-    notifyListeners();
-  }
-
-  Future<void> stopFasting() async {
-    if (!isFasting) return;
-
-    final fastToStop = _currentFast!;
-    _notificationService.cancelNotification(fastToStop.id.hashCode);
-
-    final endTime = DateTime.now();
-    final duration = endTime.difference(fastToStop.startTime);
-
-    if (duration.inMinutes < 1) {
-      await _fastingBox.delete(fastToStop.id);
-      _notificationService.showNotification(
-        0,
-        'Ayuno Cancelado',
-        'El ayuno fue demasiado corto para ser registrado (menos de 1 minuto).',
-      );
-    } else {
-      fastToStop.endTime = endTime;
-      try {
-        await fastToStop.save();
-        await _streaksService.updateFastingStreak(); // <-- ACTUALIZAR RACHA
-      } catch (e) {
-        // Manejar error si es necesario
-      }
-      final formatted = _formatDuration(duration);
-      _notificationService.showNotification(
-        0,
-        '¡Ayuno Completado!',
-        'Has completado un ayuno de $formatted. ¡Felicidades!',
-      );
-    }
-
-    _currentFast = null;
-    _previousPhase = null;
-    _updateFeedingWindow();
     notifyListeners();
   }
 

@@ -137,6 +137,8 @@ class NotificationService {
           presentBadge: true,
         ),
       ),
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
@@ -176,6 +178,8 @@ class NotificationService {
             ),
             iOS: DarwinNotificationDetails(presentSound: true),
           ),
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
           androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
           matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
         );

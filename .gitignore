@@ -9,53 +9,49 @@
 .history
 .svn/
 
-# IntelliJ
+# IntelliJ related
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# Visual Studio Code
-.vscode/
-
-# Flutter/Dart
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
+# Flutter/Dart related
 /build/
-/ios/Flutter/App.framework
-/ios/Flutter/Flutter.framework
+/.dart_tool/
+/.flutter-plugins
+/.flutter-plugins-dependencies
+/.pub-cache/
+/.pub/
+/doc/api/
 
-# Android
-/android/app/src/main/assets/flutter_assets/
-/android/app/build/
-/android/build/
-/android/.gradle/
-/android/gradle/
-/android/gradlew
-/android/gradlew.bat
-/android/local.properties
-/android/key.properties
-*.jks
+# Android related
+**/android/generated/
+**/android/build/
+**/android/app/build/
+**/android/app/src/main/assets/flutter_assets/
 
-# iOS
-/ios/Pods/
-/ios/Runner.xcworkspace/
-/ios/Runner/GeneratedPluginRegistrant.*
-/ios/Flutter/ephemeral/
-/ios/DerivedData/
-/ios/ServiceDefinitions.json
-/ios/Podfile.lock
+# iOS related
+**/ios/build/
+**/ios/Flutter/App.framework
+**/ios/Flutter/engine.framework
+**/ios/Flutter/flutter_assets/
+**/ios/Pods/
+**/ios/Runner/GeneratedPluginRegistrant.h
+**/ios/Runner/GeneratedPluginRegistrant.m
+**/ios/Runner.xcworkspace
 
-# Build results
-/build/
+# Build artifacts
+**/build/
 
-# Generated code
-*.g.dart
-*.freezed.dart
+# Web related
+/web/build/
+/web/.dart_tool/
 
-# Other
-pubspec.lock
+# Windows related
+/windows/build/
+
+# Linux related
+/linux/build/
+
+# macOS related
+/macos/build/

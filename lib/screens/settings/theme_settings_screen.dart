@@ -1,6 +1,6 @@
-import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/providers/theme_provider.dart';
+import 'package:myapp/services/achievement_service.dart'; // Importar AchievementService
 import 'package:provider/provider.dart';
 
 class ThemeSettingsScreen extends StatelessWidget {
@@ -9,6 +9,7 @@ class ThemeSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final achievementService = Provider.of<AchievementService>(context, listen: false);
     final textTheme = Theme.of(context).textTheme;
 
     return SingleChildScrollView(
@@ -50,6 +51,7 @@ class ThemeSettingsScreen extends StatelessWidget {
             selected: {themeProvider.themeMode},
             onSelectionChanged: (Set<ThemeMode> newSelection) {
               themeProvider.setThemeMode(newSelection.first);
+              achievementService.updateProgress('exp_theme_change', 1); // Logro por cambiar el tema
             },
             showSelectedIcon: true,
             style: SegmentedButton.styleFrom(
@@ -58,35 +60,39 @@ class ThemeSettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          Text('Color Principal', style: textTheme.titleLarge),
+          Text('Paleta de Colores', style: textTheme.titleLarge),
           const SizedBox(height: 12),
 
-          // Color picker
-          ColorPicker(
-            color: themeProvider.seedColor,
-            onColorChanged: (Color color) {
-              themeProvider.setSeedColor(color);
-            },
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            heading: Text('Selecciona un color', style: textTheme.titleMedium),
-            subheading: Text(
-              'Arrastra para ajustar la tonalidad',
-              style: textTheme.bodySmall,
-            ),
-            pickersEnabled: const <ColorPickerType, bool>{
-              ColorPickerType.both: false,
-              ColorPickerType.primary: true,
-              ColorPickerType.accent: false,
-              ColorPickerType.bw: false,
-              ColorPickerType.custom: false,
-              ColorPickerType.wheel: true,
-            },
-            pickerTypeLabels: const <ColorPickerType, String>{
-              ColorPickerType.primary: 'Primarios',
-              ColorPickerType.wheel: 'Rueda de Color',
-            },
+          // Nueva lista de temas
+          ListView( 
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            children: themeProvider.availableThemes.entries.map((entry) {
+              final String themeName = entry.key;
+              final Color themeColor = entry.value;
+              final bool isSelected = themeProvider.seedColor == themeColor;
+
+              return Card(
+                elevation: isSelected ? 4 : 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: isSelected 
+                      ? BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)
+                      : BorderSide.none,
+                ),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: themeColor,
+                  ),
+                  title: Text(themeName),
+                  trailing: isSelected ? const Icon(Icons.check_circle_rounded) : null,
+                  onTap: () {
+                    themeProvider.setSeedColor(themeColor);
+                    achievementService.updateProgress('exp_theme_change', 1); // Logro por cambiar el tema
+                  },
+                ),
+              );
+            }).toList(),
           ),
         ],
       ),

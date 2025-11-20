@@ -1,30 +1,61 @@
 # Blueprint de la Aplicación de Fitness
 
-## Plan de Cambios Actuales
+## Sistema de Recompensas y Gamificación (v2)
 
-**Objetivo:** Rediseñar la pantalla de inicio para que sea más personalizada, motivadora y funcional.
+**Objetivo:** Implementar un sistema de gamificación completo para aumentar la motivación y el compromiso del usuario, recompensando tanto las acciones diarias como los logros a largo plazo.
 
-**Pasos a Seguir:**
+El sistema se basa en 3 pilares fundamentales:
 
-1.  **Implementar Saludo Dinámico:**
-    *   Cambiar el saludo estático por uno que varíe según la hora del día ("Buenos días", "Buenas tardes", "Buenas noches").
-
-2.  **Mostrar Metas de Progreso Claras:**
-    *   Actualizar los indicadores de progreso diario para mostrar el valor actual junto al objetivo (ej. "1500 / 2500 ml").
-
-3.  **Activar la Tarjeta de Entrenamiento del Día:**
-    *   En lugar de "Pendiente", mostrar la rutina de entrenamiento asignada al día actual según el plan semanal predefinido.
-    *   Añadir un botón para iniciar el entrenamiento directamente.
-
-4.  **Añadir Frase Motivacional Diaria:**
-    *   Crear una nueva tarjeta que muestre un consejo de fitness o una frase motivadora que cambie cada día.
-
-5.  **Pulir la Interfaz de Usuario:**
-    *   Reorganizar la disposición de los elementos para integrar las nuevas funcionalidades.
-    *   Reemplazar la imagen de fondo por una textura o un diseño más profesional y limpio.
+1.  **Puntos de Experiencia (XP):** Otorgados por acciones pequeñas y frecuentes. Son el combustible para subir de nivel. Hay 19 acciones recurrentes que otorgan XP.
+2.  **Niveles y Títulos:** Al acumular XP, el usuario sube de nivel y desbloquea 6 Títulos cosméticos para su perfil (Novato → Aprendiz → Atleta → Competidor → Titán → Leyenda).
+3.  **Logros (Medallas):** Son 49 insignias únicas y coleccionables que se otorgan al alcanzar hitos importantes.
 
 ---
 
+### Categorías de los 49 Logros Únicos
+
+1.  **Logros de "Primera Vez" (Iniciación)**
+    *   **Propósito:** Premiar al usuario por explorar y probar cada funcionalidad.
+    *   **Ejemplos:**
+        *   🏋️ **Primer Sudor** (Primer entrenamiento completado)
+        *   🍎 **Bocado Inicial** (Primera comida registrada)
+        *   ⏳ **Reloj Suizo** (Primer ayuno completado)
+        *   ⚖️ **En la Balanza** (Primer registro de peso)
+        *   🛠️ **Arquitecto Fitness** (Primera rutina creada)
+        *   🧑‍🍳 **Chef Creativo** (Primera receta creada)
+
+2.  **Logros de Rachas (Consistencia Diaria)**
+    *   **Propósito:** Fomentar la creación de hábitos diarios.
+    *   **Ejemplos:**
+        *   🌊 **Río de Vida** (Racha de 7 días de hidratación)
+        *   🧘 **Maestro Zen** (Racha de 7 días de ayuno)
+        *   🔥 **Imparable** (Tener las 5 rachas activas a la vez)
+        *   ☄️ **Llama Eterna** (Alcanzar una racha de 30 días en cualquier categoría)
+
+3.  **Logros Acumulativos (Progreso a Largo Plazo)**
+    *   **Propósito:** Mostrar el resultado del esfuerzo sostenido en el tiempo.
+    *   **Ejemplos:**
+        *   🏞️ **Océano Vital** (Consumir 1,000 litros de agua en total)
+        *   🌋 **Fuerza Volcánica** (Levantar 50,000 kg en total en entrenamientos)
+        *   📖 **Enciclopedia Gastronómica** (Registrar 500 comidas en total)
+        *   🗓️ **Disciplina Mensual** (Acumular 720 horas de ayuno en total)
+
+4.  **Logros de Hitos de Progreso (Metas Personales)**
+    *   **Propósito:** Recompensar el alcance de metas personales de salud.
+    *   **Ejemplos:**
+        *   🎯 **Primer Kilo Menos** (Perder 1 kg de peso)
+        *   🎯 **5 Kilos Abajo** (Perder 5 kg de peso)
+        *   🏆 **Meta Cumplida** (Alcanzar el peso objetivo establecido)
+
+5.  **Logros de Exploración y Personalización**
+    *   **Propósito:** Premiar la curiosidad y el uso de funciones secundarias.
+    *   **Ejemplos:**
+        *   🎨 **Sastre Digital** (Personalizar el tema de la app)
+        *   🧐 **Analista de Datos** (Usar los filtros del historial)
+        *   ❓ **Curioso** (Visitar la pantalla "Acerca de")
+        *   👤 **Identidad Definida** (Completar el perfil de usuario)
+
+---
 ## Descripción General
 
 Esta es una aplicación de fitness desarrollada en Flutter, diseñada para ayudar a los usuarios a crear, seguir y gestionar sus rutinas de entrenamiento. La aplicación permite a los usuarios construir una biblioteca personal de ejercicios, agruparlos en rutinas personalizadas y registrar su progreso.
@@ -37,9 +68,11 @@ Esta es una aplicación de fitness desarrollada en Flutter, diseñada para ayuda
 - **Plan de Entrenamiento Semanal por Día:** La aplicación incluye un plan de entrenamiento semanal precargado y asignado a días específicos.
 - **Gestión de Ejercicios y Rutinas:** Biblioteca de ejercicios y creación de rutinas personalizadas.
 - **Seguimiento de Entrenamientos:** Historial de entrenamientos con funcionalidades avanzadas.
+- **Rachas de Hábitos:** Sistema de seguimiento de rachas para hidratación, registro de comidas, entrenamientos, calorías y ayuno intermitente.
 
 ## Plan de Cambios Anteriores
 
+- **Implementación de Racha de Ayuno:** Se añadió la lógica y la UI para seguir la racha de días consecutivos completando un ayuno intermitente.
 - **Mejora de Gráficos de Progreso:** Se rediseñaron los gráficos de peso y agua para incluir interactividad, indicadores de máximo/mínimo y líneas de objetivo.
 - **Añadir Seguimiento de Consumo de Agua:** Se añadió una tarjeta a la pantalla de progreso con un gráfico del consumo de agua semanal.
 - **Implementación Inicial de Rutinas por Defecto:** Se añadió la lógica para crear un conjunto de rutinas de entrenamiento la primera vez que se inicia la aplicación.

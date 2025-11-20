@@ -3,12 +3,14 @@ import 'package:hive/hive.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/user_provider.dart';
-import 'package:myapp/services/streaks_service.dart'; // Importar el servicio de rachas
+import 'package:myapp/services/achievement_service.dart';
+import 'package:myapp/services/streaks_service.dart';
 import 'package:provider/provider.dart';
 
 class WaterIntakeProvider with ChangeNotifier {
   final Box<WaterLog> waterLogBox = Hive.box<WaterLog>('water_logs');
-  final StreaksService _streaksService = StreaksService(); // Instanciar el servicio
+  final StreaksService _streaksService = StreaksService();
+  final AchievementService _achievementService = AchievementService(); // Instancia del servicio de logros
   double _dailyGoal = 2000; // Default goal
   DateTime _selectedDate = DateTime.now();
   User? _currentUser;
@@ -60,11 +62,33 @@ class WaterIntakeProvider with ChangeNotifier {
       timestamp: _selectedDate,
     );
     await waterLogBox.add(log);
+
+    // --- Lógica de Logros ---
+    _achievementService.addExperience(5); // Otorgar 5 XP
+    _achievementService.updateProgress('first_water_log', 1); // Logro de primer registro
+
+    // Logros acumulativos de consumo de agua
+    final totalWaterIntake = _getTotalWaterIntake();
+    _achievementService.updateProgress('cum_water_10', totalWaterIntake.toInt());
+    _achievementService.updateProgress('cum_water_50', totalWaterIntake.toInt());
+    _achievementService.updateProgress('cum_water_250', totalWaterIntake.toInt());
+    _achievementService.updateProgress('cum_water_1000', totalWaterIntake.toInt());
+
+    // Logros de metas diarias
+    final totalToday = getWaterIntakeForDate(_selectedDate);
+    if (totalToday >= _dailyGoal) {
+      _achievementService.updateProgress('goal_water_daily', 1);
+    }
+    if (totalToday >= 1000) {
+      _achievementService.updateProgress('goal_water_1L', 1);
+    }
+    // --- Fin Lógica de Logros ---
+
     notifyListeners();
 
     // --- Lógica de Rachas ---
-    final totalToday = getWaterIntakeForDate(_selectedDate);
-    if (totalToday >= _dailyGoal) {
+    final totalTodayForStreak = getWaterIntakeForDate(_selectedDate);
+    if (totalTodayForStreak >= _dailyGoal) {
       await _streaksService.updateHydrationStreak();
     }
   }
@@ -89,6 +113,12 @@ class WaterIntakeProvider with ChangeNotifier {
           log.timestamp.day == date.day;
     });
     return logs.fold(0, (sum, log) => sum + log.amount);
+  }
+
+  double _getTotalWaterIntake() {
+    if (_currentUser == null) return 0;
+    final allLogs = waterLogBox.values.where((log) => log.userId == _currentUser!.id);
+    return allLogs.fold(0, (sum, log) => sum + log.amount);
   }
 
   List<WaterLog> getLogsForSelectedDate() {

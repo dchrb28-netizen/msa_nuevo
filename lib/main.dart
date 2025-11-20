@@ -21,6 +21,7 @@ import 'package:myapp/models/routine_exercise.dart';
 import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/models/set_log.dart';
 import 'package:myapp/models/user.dart';
+// import 'package:myapp/models/user_profile.dart'; // Unused import removed
 import 'package:myapp/models/user_recipe.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/exercise_provider.dart';
@@ -35,6 +36,7 @@ import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/profile_selection_screen.dart';
 import 'package:myapp/screens/welcome_screen.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -43,10 +45,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
   await initializeDateFormatting('es', null);
+  
+  // --- ROBUST HIVE STARTUP SEQUENCE ---
   await Hive.initFlutter();
-
   _registerHiveAdapters();
   await _openHiveBoxes();
+  await AchievementService().init();
+  // --- END OF HIVE STARTUP SEQUENCE ---
 
   createDefaultRoutines();
 
@@ -103,6 +108,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => RoutineProvider()),
         ChangeNotifierProvider(create: (context) => ExerciseProvider()),
         ChangeNotifierProvider(create: (context) => WorkoutHistoryProvider()),
+        ChangeNotifierProvider.value(value: AchievementService()), // Use .value constructor for singletons
         ChangeNotifierProxyProvider<UserProvider, WaterIntakeProvider>(
           create: (context) => WaterIntakeProvider(null),
           update: (context, userProvider, previousWaterIntakeProvider) {
@@ -117,6 +123,7 @@ void main() async {
 
 void _registerHiveAdapters() {
   _tryRegisterAdapter(UserAdapter());
+  // UserProfileAdapter is no longer needed.
   _tryRegisterAdapter(FoodAdapter());
   _tryRegisterAdapter(WaterLogAdapter());
   _tryRegisterAdapter(FoodLogAdapter());
@@ -144,6 +151,7 @@ void _tryRegisterAdapter<T>(TypeAdapter<T> adapter) {
 
 Future<void> _openHiveBoxes() async {
   await Hive.openBox<User>('user_box');
+  await Hive.openBox('profile_data'); // Changed to generic box
   await Hive.openBox<Food>('foods');
   await Hive.openBox<WaterLog>('water_logs');
   await Hive.openBox<FoodLog>('food_logs');
@@ -308,7 +316,7 @@ class MyApp extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: lightColorScheme.primary,
               foregroundColor: lightColorScheme.onPrimary,
-              shape: RoundedRectangleBorder(
+              shape: RoundedRectangleBorder( // Corrected typo here
                 borderRadius: BorderRadius.circular(20),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

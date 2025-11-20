@@ -7,7 +7,7 @@ import 'package:myapp/screens/logs_screen.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/recipes/recipes_screen.dart';
-import 'package:myapp/screens/rewards_goals_screen.dart';
+import 'package:myapp/screens/rewards_screen.dart'; 
 import 'package:myapp/screens/settings/about_screen.dart';
 import 'package:myapp/screens/settings_screen.dart';
 import 'package:myapp/screens/training/training_screen.dart';
@@ -32,7 +32,6 @@ class DrawerMenu extends StatelessWidget {
 
     final headerTextColor = textColorForBackground(themeProvider.seedColor);
 
-    // Helper to build list tiles and navigate to the unified LogsScreen
     Widget buildLogListTile(
       BuildContext context, {
       required IconData icon,
@@ -80,66 +79,65 @@ class DrawerMenu extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            padding: EdgeInsets.zero,
-            decoration: BoxDecoration(color: themeProvider.seedColor),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfileScreen(),
-                  ),
-                );
-              },
-              child: Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: headerTextColor,
-                      backgroundImage: user?.profileImageBytes != null
-                          ? MemoryImage(user!.profileImageBytes!)
-                          : null,
-                      child: user?.profileImageBytes == null
-                          ? Icon(
-                              PhosphorIcons.person(),
-                              size: 40,
-                              color: themeProvider.seedColor,
-                            )
-                          : null,
+              padding: EdgeInsets.zero,
+              decoration: BoxDecoration(color: themeProvider.seedColor),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProfileScreen(),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            user?.name ?? 'Invitado',
-                            style: GoogleFonts.montserrat(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: headerTextColor,
-                            ),
-                          ),
-                          Text(
-                            'Toca para ver o editar tu perfil',
-                            style: GoogleFonts.lato(
-                              fontSize: 14,
-                              color: headerTextColor.withAlpha(204),
-                            ),
-                            softWrap: true,
-                          ),
-                        ],
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 30,
+                        backgroundColor: headerTextColor,
+                        backgroundImage: user?.profileImageBytes != null
+                            ? MemoryImage(user!.profileImageBytes!)
+                            : null,
+                        child: user?.profileImageBytes == null
+                            ? Icon(
+                                PhosphorIcons.person(),
+                                size: 40,
+                                color: themeProvider.seedColor,
+                              )
+                            : null,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              user?.name ?? 'Invitado',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: headerTextColor,
+                              ),
+                            ),
+                            Text(
+                              'Toca para ver o editar tu perfil',
+                              style: GoogleFonts.lato(
+                                fontSize: 14,
+                                color: headerTextColor.withAlpha(204),
+                              ),
+                              softWrap: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ),
+              ),), 
           ListTile(
             leading: Icon(PhosphorIcons.house(), color: themeProvider.seedColor),
             title: Text('Inicio', style: GoogleFonts.lato()),
@@ -254,17 +252,17 @@ class DrawerMenu extends StatelessWidget {
             children: [
               buildListTile(
                 context,
-                icon: PhosphorIcons.gift(),
+                icon: PhosphorIcons.medal(), // Icono actualizado
                 iconColor: Colors.yellow[600]!,
-                title: 'Recompensas',
-                destination: const RewardsGoalsScreen(initialTabIndex: 0),
+                title: 'Mis Logros', // Título actualizado
+                destination: const RewardsScreen(), // Destino actualizado
               ),
               buildListTile(
                 context,
                 icon: PhosphorIcons.fire(),
                 iconColor: Colors.deepOrange[400]!,
                 title: 'Rachas',
-                destination: const RewardsGoalsScreen(initialTabIndex: 1),
+                destination: const HabitsScreen(initialTabIndex: 0), // Placeholder
               ),
             ],
           ),

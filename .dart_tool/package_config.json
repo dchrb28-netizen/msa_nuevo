@@ -9,7 +9,7 @@
     },
     {
       "name": "_flutterfire_internals",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/_flutterfire_internals-1.3.64",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/_flutterfire_internals-1.3.57",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -110,12 +110,6 @@
       "languageVersion": "3.8"
     },
     {
-      "name": "cli_util",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/cli_util-0.4.2",
-      "packageUri": "lib/",
-      "languageVersion": "3.4"
-    },
-    {
       "name": "clock",
       "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/clock-1.1.2",
       "packageUri": "lib/",
@@ -153,9 +147,9 @@
     },
     {
       "name": "csslib",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/csslib-1.0.2",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/csslib-0.17.3",
       "packageUri": "lib/",
-      "languageVersion": "3.1"
+      "languageVersion": "2.19"
     },
     {
       "name": "dart_style",
@@ -219,61 +213,61 @@
     },
     {
       "name": "firebase_ai",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_ai-3.6.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_ai-0.1.0",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "firebase_app_check",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_app_check-0.4.1+2",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_app_check-0.3.2+8",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "firebase_app_check_platform_interface",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_app_check_platform_interface-0.2.1+2",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_app_check_platform_interface-0.1.1+8",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "firebase_app_check_web",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_app_check_web-0.2.2",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_app_check_web-0.2.0+12",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
     {
       "name": "firebase_auth",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_auth-6.1.2",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_auth-5.6.1",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "firebase_auth_platform_interface",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_auth_platform_interface-8.1.4",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_auth_platform_interface-7.7.1",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "firebase_auth_web",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_auth_web-6.1.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_auth_web-5.15.1",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
     {
       "name": "firebase_core",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_core-4.2.1",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_core-3.15.0",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "firebase_core_platform_interface",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_core_platform_interface-6.0.2",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_core_platform_interface-5.4.2",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "firebase_core_web",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_core_web-3.3.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/firebase_core_web-2.24.0",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -285,9 +279,9 @@
     },
     {
       "name": "fl_chart",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/fl_chart-1.1.1",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/fl_chart-0.68.0",
       "packageUri": "lib/",
-      "languageVersion": "3.6"
+      "languageVersion": "3.2"
     },
     {
       "name": "flex_color_picker",
@@ -315,45 +309,33 @@
     },
     {
       "name": "flutter_html",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_html-3.0.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_html-3.0.0-beta.2",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
-    },
-    {
-      "name": "flutter_launcher_icons",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_launcher_icons-0.14.4",
-      "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "2.17"
     },
     {
       "name": "flutter_lints",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_lints-6.0.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_lints-4.0.0",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.1"
     },
     {
       "name": "flutter_local_notifications",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_local_notifications-19.5.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_local_notifications-17.2.4",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "2.17"
     },
     {
       "name": "flutter_local_notifications_linux",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-6.0.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-4.0.1",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "2.17"
     },
     {
       "name": "flutter_local_notifications_platform_interface",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-9.1.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-7.2.0",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
-    },
-    {
-      "name": "flutter_local_notifications_windows",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_local_notifications_windows-1.0.3",
-      "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "2.17"
     },
     {
       "name": "flutter_localizations",
@@ -363,7 +345,7 @@
     },
     {
       "name": "flutter_native_splash",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_native_splash-2.4.7",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_native_splash-2.4.4",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -447,9 +429,9 @@
     },
     {
       "name": "html",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/html-0.15.6",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/html-0.15.4",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "2.19"
     },
     {
       "name": "http",
@@ -525,9 +507,9 @@
     },
     {
       "name": "intl",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/intl-0.20.2",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/intl-0.19.0",
       "packageUri": "lib/",
-      "languageVersion": "3.3"
+      "languageVersion": "3.0"
     },
     {
       "name": "io",
@@ -573,9 +555,9 @@
     },
     {
       "name": "lints",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/lints-6.0.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/lints-4.0.0",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.1"
     },
     {
       "name": "list_counter",
@@ -681,13 +663,13 @@
     },
     {
       "name": "permission_handler",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/permission_handler-12.0.1",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/permission_handler-11.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
     {
       "name": "permission_handler_android",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/permission_handler_android-13.0.1",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/permission_handler_android-12.1.0",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
@@ -903,15 +885,15 @@
     },
     {
       "name": "syncfusion_flutter_core",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/syncfusion_flutter_core-31.2.12",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/syncfusion_flutter_core-26.2.14",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "2.17"
     },
     {
       "name": "syncfusion_flutter_gauges",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/syncfusion_flutter_gauges-31.2.12",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/syncfusion_flutter_gauges-26.2.14",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "2.17"
     },
     {
       "name": "table_calendar",
@@ -939,7 +921,7 @@
     },
     {
       "name": "timezone",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/timezone-0.10.1",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/timezone-0.9.4",
       "packageUri": "lib/",
       "languageVersion": "2.19"
     },

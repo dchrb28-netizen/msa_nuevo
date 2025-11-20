@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
-import 'package:myapp/services/streaks_service.dart'; // Importar el servicio de rachas
+import 'package:myapp/services/achievement_service.dart';
+import 'package:myapp/services/streaks_service.dart';
 
-// A simple class to hold the meal's data
 class Meal {
   String description;
   bool isCompleted;
@@ -11,59 +11,25 @@ class Meal {
 }
 
 class MealPlanProvider with ChangeNotifier {
-  final StreaksService _streaksService = StreaksService(); // Instanciar el servicio
+  final StreaksService _streaksService = StreaksService();
+  final AchievementService _achievementService = AchievementService(); // Instancia del servicio de logros
 
-  // The data structure is now a map of Meals
   final Map<int, Map<String, Meal>> _weeklyPlan = {
     1: {
       'Desayuno': Meal(description: 'Avena con Frutos Rojos'),
-      'Almuerzo': Meal(
-        description: 'Pechuga de Pollo a la Plancha, Ensalada Mixta',
-      ),
-      'Cena': Meal(),
-      'Snacks': Meal(),
+      'Almuerzo': Meal(description: 'Pechuga de Pollo a la Plancha, Ensalada Mixta'),
+      'Cena': Meal(), 'Snacks': Meal(),
     },
-    2: {
-      'Desayuno': Meal(),
-      'Almuerzo': Meal(),
-      'Cena': Meal(),
-      'Snacks': Meal(),
-    },
-    3: {
-      'Desayuno': Meal(),
-      'Almuerzo': Meal(),
-      'Cena': Meal(),
-      'Snacks': Meal(),
-    },
-    4: {
-      'Desayuno': Meal(),
-      'Almuerzo': Meal(),
-      'Cena': Meal(),
-      'Snacks': Meal(),
-    },
-    5: {
-      'Desayuno': Meal(),
-      'Almuerzo': Meal(),
-      'Cena': Meal(),
-      'Snacks': Meal(),
-    },
-    6: {
-      'Desayuno': Meal(),
-      'Almuerzo': Meal(),
-      'Cena': Meal(),
-      'Snacks': Meal(),
-    },
-    7: {
-      'Desayuno': Meal(),
-      'Almuerzo': Meal(),
-      'Cena': Meal(),
-      'Snacks': Meal(),
-    },
+    2: {'Desayuno': Meal(), 'Almuerzo': Meal(), 'Cena': Meal(), 'Snacks': Meal()},
+    3: {'Desayuno': Meal(), 'Almuerzo': Meal(), 'Cena': Meal(), 'Snacks': Meal()},
+    4: {'Desayuno': Meal(), 'Almuerzo': Meal(), 'Cena': Meal(), 'Snacks': Meal()},
+    5: {'Desayuno': Meal(), 'Almuerzo': Meal(), 'Cena': Meal(), 'Snacks': Meal()},
+    6: {'Desayuno': Meal(), 'Almuerzo': Meal(), 'Cena': Meal(), 'Snacks': Meal()},
+    7: {'Desayuno': Meal(), 'Almuerzo': Meal(), 'Cena': Meal(), 'Snacks': Meal()},
   };
 
   Map<int, Map<String, Meal>> get weeklyPlan => _weeklyPlan;
 
-  // Returns the full Meal object map for a given day
   Map<String, Meal> getPlanForDay(DateTime day) {
     final weekday = day.weekday;
     final plan = _weeklyPlan[weekday] ?? {};
@@ -74,13 +40,11 @@ class MealPlanProvider with ChangeNotifier {
     return plan;
   }
 
-  // Still needed for the edit screen, returns only the text
   String getMealTextForDay(DateTime day, String mealType) {
     final weekday = day.weekday;
     return _weeklyPlan[weekday]?[mealType]?.description ?? '';
   }
 
-  // Updates the description of a meal
   void updateMealText(DateTime day, String mealType, String newText) {
     final weekday = day.weekday;
     if (_weeklyPlan.containsKey(weekday)) {
@@ -92,7 +56,6 @@ class MealPlanProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Toggles the completion status of a meal
   void toggleMealCompletion(DateTime day, String mealType) {
     final weekday = day.weekday;
     final meal = _weeklyPlan[weekday]?[mealType];
@@ -103,14 +66,38 @@ class MealPlanProvider with ChangeNotifier {
         name: 'MealPlanProvider',
       );
       
-      // --- Lógica de Rachas ---
       if (meal.isCompleted) {
+        // --- Lógica de Logros ---
+        _achievementService.addExperience(10);
+        _achievementService.updateProgress('first_meal', 1);
+
+        final totalMeals = _countTotalCompletedMeals();
+        _achievementService.updateProgress('cum_meals_100', totalMeals);
+        _achievementService.updateProgress('cum_meals_500', totalMeals);
+        
+        // TODO: Implementar lógica para 'Paladar Diverso' (alimentos únicos).
+        // TODO: Implementar lógica para 'Equilibrio Energético' (meta de calorías).
+        // --- Fin Lógica de Logros ---
+
+        // --- Lógica de Rachas ---
         _streaksService.updateMealStreak();
+        // --- Fin Lógica de Rachas ---
       }
-      // --- Fin Lógica de Rachas ---
 
       notifyListeners();
     }
+  }
+
+  int _countTotalCompletedMeals() {
+    int count = 0;
+    _weeklyPlan.forEach((day, meals) {
+      meals.forEach((mealType, meal) {
+        if (meal.isCompleted) {
+          count++;
+        }
+      });
+    });
+    return count;
   }
 
   void repeatWeek(DateTime currentWeek) {

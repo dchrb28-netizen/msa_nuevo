@@ -1,17 +1,43 @@
 import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:myapp/models/workout_session.dart';
-import 'package:myapp/services/streaks_service.dart'; // Importar el servicio de rachas
+import 'package:myapp/services/achievement_service.dart';
+import 'package:myapp/services/streaks_service.dart';
 
 class WorkoutHistoryProvider with ChangeNotifier {
-  final StreaksService _streaksService = StreaksService(); // Instanciar el servicio
+  final StreaksService _streaksService = StreaksService();
+  final AchievementService _achievementService = AchievementService();
   final List<WorkoutSession> _workoutHistory = [];
 
   List<WorkoutSession> get workoutHistory => _workoutHistory;
 
+  // Helper para calcular el peso total levantado en toda la historia
+  int _calculateTotalWeightLifted() {
+    double totalWeight = 0;
+    for (var session in _workoutHistory) {
+      for (var exercise in session.performedExercises) {
+        for (var set in exercise.sets) {
+          totalWeight += set.reps * set.weight;
+        }
+      }
+    }
+    return totalWeight.toInt();
+  }
+
+  // Helper para contar los ejercicios únicos en toda la historia
+  int _countUniqueExercises() {
+    final uniqueExerciseNames = <String>{};
+    for (var session in _workoutHistory) {
+      for (var exercise in session.performedExercises) {
+        uniqueExerciseNames.add(exercise.exerciseName);
+      }
+    }
+    return uniqueExerciseNames.length;
+  }
+
   void addWorkoutSession(WorkoutSession session) {
     _workoutHistory.insert(0, session);
-    notifyListeners();
+    
     developer.log(
       'Workout session for ${session.routineName} on ${session.date} saved. History count: ${_workoutHistory.length}',
       name: 'WorkoutHistoryProvider',
@@ -19,7 +45,30 @@ class WorkoutHistoryProvider with ChangeNotifier {
 
     // --- Lógica de Rachas ---
     _streaksService.updateWorkoutStreak();
-    // --- Fin Lógica de Rachas ---
+    
+    // --- Lógica de Logros ---
+    _achievementService.addExperience(25);
+    _achievementService.updateProgress('first_workout', 1);
+
+    final totalWorkouts = _workoutHistory.length;
+    _achievementService.updateProgress('novice', totalWorkouts);
+    _achievementService.updateProgress('veteran', totalWorkouts);
+    _achievementService.updateProgress('king', totalWorkouts);
+    _achievementService.updateProgress('cum_train_25', totalWorkouts);
+    _achievementService.updateProgress('cum_train_100', totalWorkouts);
+    
+    // Calcular y actualizar logros de levantamiento de peso
+    final totalWeight = _calculateTotalWeightLifted();
+    _achievementService.updateProgress('cum_lift_1k', totalWeight);
+    _achievementService.updateProgress('cum_lift_10k', totalWeight);
+    _achievementService.updateProgress('cum_lift_50k', totalWeight);
+
+    // Calcular y actualizar logro de ejercicios únicos
+    final uniqueExercises = _countUniqueExercises();
+    _achievementService.updateProgress('scholar', uniqueExercises);
+    // --- Fin Lógica de Logros ---
+
+    notifyListeners();
   }
 
   void deleteWorkoutSession(String sessionId) {
@@ -34,7 +83,6 @@ class WorkoutHistoryProvider with ChangeNotifier {
     }
   }
 
-  // Necesario para la función "Deshacer"
   void addWorkoutSessionAtIndex(int index, WorkoutSession session) {
     _workoutHistory.insert(index, session);
     notifyListeners();
@@ -48,7 +96,7 @@ class WorkoutHistoryProvider with ChangeNotifier {
     try {
       return _workoutHistory.firstWhere((s) => s.id == sessionId);
     } catch (e) {
-      return null; // Retorna null si no se encuentra
+      return null;
     }
   }
 }

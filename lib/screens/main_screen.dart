@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/screens/dashboard_screen.dart';
 import 'package:myapp/screens/menus_screen.dart';
 import 'package:myapp/screens/progreso_screen.dart';
+import 'package:myapp/widgets/achievement_snackbar_listener.dart';
 import 'package:myapp/widgets/drawer_menu.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -29,37 +30,39 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('MSA'),
-        elevation: 0,
-      ),
-      drawer: const DrawerMenu(),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.house(PhosphorIconsStyle.duotone)),
-            activeIcon: Icon(PhosphorIcons.house(PhosphorIconsStyle.fill)),
-            label: 'Inicio',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.notebook(PhosphorIconsStyle.duotone)),
-            activeIcon: Icon(PhosphorIcons.notebook(PhosphorIconsStyle.fill)),
-            label: 'Menus',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.duotone)),
-            activeIcon: Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.fill)),
-            label: 'Progreso',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
+    return AchievementSnackbarListener(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('MSA'),
+          elevation: 0,
+        ),
+        drawer: const DrawerMenu(),
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _screens,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(PhosphorIcons.house(PhosphorIconsStyle.duotone)),
+              activeIcon: Icon(PhosphorIcons.house(PhosphorIconsStyle.fill)),
+              label: 'Inicio',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(PhosphorIcons.notebook(PhosphorIconsStyle.duotone)),
+              activeIcon: Icon(PhosphorIcons.notebook(PhosphorIconsStyle.fill)),
+              label: 'Menus',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.duotone)),
+              activeIcon: Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.fill)),
+              label: 'Progreso',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
+        ),
       ),
     );
   }

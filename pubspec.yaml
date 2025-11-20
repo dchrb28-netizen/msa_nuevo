@@ -1,7 +1,6 @@
 name: myapp
 description: "A new Flutter project."
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
@@ -12,82 +11,64 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-
-  intl: any
-  simple_animations: any
-  hive: any
-  hive_flutter: any
-  path_provider: any
-  uuid: any
-  percent_indicator: any
-  image_picker: any
-  provider: any
-  google_fonts: any
-  flex_color_picker: any
-  flutter_colorpicker: any
-  flutter_staggered_animations: any
-  fl_chart: any
-  rive: any
-  shared_preferences: ^2.5.3
-  url_launcher: any
-  json_annotation: any
-  syncfusion_flutter_gauges: any
-  path: any
-  smooth_page_indicator: any
-  freezed_annotation: any
-  table_calendar: any
-  http: any
-  flutter_html: any
-  flutter_local_notifications: any
-  timezone: any
-  timeline_tile: any
-  flutter_native_splash: any
-  permission_handler: any
-  firebase_core: any
-  firebase_ai: any
-  phosphor_flutter: any
+  
+  intl: ^0.19.0
+  simple_animations: ^5.0.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.3
+  uuid: ^4.4.0
+  percent_indicator: ^4.2.5
+  image_picker: ^1.1.2
+  provider: ^6.1.2
+  google_fonts: ^6.2.1
+  flex_color_picker: ^3.5.1
+  flutter_colorpicker: ^1.1.0
+  flutter_staggered_animations: ^1.1.1
+  fl_chart: ^0.68.0
+  rive: ^0.13.4
+  shared_preferences: ^2.2.3
+  url_launcher: ^6.3.0
+  json_annotation: ^4.9.0
+  syncfusion_flutter_gauges: ^26.1.39
+  path: ^1.9.0
+  smooth_page_indicator: ^1.1.0
+  freezed_annotation: ^2.4.1
+  table_calendar: ^3.1.2
+  http: ^1.2.1
+  flutter_html: 3.0.0-beta.2
+  flutter_local_notifications: ^17.2.0
+  timezone: ^0.9.4
+  timeline_tile: ^2.0.0
+  flutter_native_splash: ^2.4.0
+  permission_handler: ^11.3.1
+  firebase_core: ^3.1.0
+  firebase_ai: ^0.1.0
+  phosphor_flutter: ^2.1.0
+  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.10
+  hive_generator: ^2.0.1
+  json_serializable: ^6.8.0
+  freezed: ^2.5.2
 
-  flutter_lints: any
-  json_serializable: any
-  freezed: any
-  flutter_launcher_icons: any
-  hive_generator: any
-  build_runner: any
+# NOTE: This override is a temporary workaround to resolve a dependency conflict
+# between the Flutter SDK (which requires intl 0.20.2) and older packages 
+# like syncfusion_flutter_gauges (which require intl < 0.20.0). This forces 
+# the entire project to use an older, compatible version of intl.
+# This should be removed once all dependencies support the latest intl version.
+dependency_overrides:
+  intl: 0.19.0
 
 flutter:
   uses-material-design: true
-
+  
   assets:
     - assets/acuario/
-    - assets/luna_png/
     - assets/icons/
-
-flutter_launcher_icons:
-  android: "launcher_icon"
-  ios: true
-  image_path: "assets/icons/icon.png"
-  web: 
-    generate: true
-    image_path: "assets/icons/icon.png"
-  windows:
-    generate: true
-    image_path: "assets/icons/icon.png"
-  macos:
-    generate: true
-    image_path: "assets/icons/icon.png"
-
-flutter_native_splash:
-  color: "#FFFFFF"
-  color_dark: "#000000"
-  image: assets/luna_png/luna_splash_w.png
-  image_dark: assets/luna_png/luna_splash_b.png
-
-  android_12:
-    color: "#FFFFFF"
-    color_dark: "#000000"
-    image: assets/luna_png/luna_splash_w.png
-    image_dark: assets/luna_png/luna_splash_b.png
+    - assets/luna_png/
