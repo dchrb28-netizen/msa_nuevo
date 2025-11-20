@@ -10,7 +10,7 @@ class CaloricGoalsScreen extends StatefulWidget {
 }
 
 class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
-  double? _tdee;
+  double _tdee = 0;
   late int _selectedPlanIndex;
   final List<String> _plans = const [
     'Perder',
@@ -74,7 +74,7 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
     } else {
       if (mounted) {
         setState(() {
-          _tdee = null;
+          _tdee = 0;
         });
       }
     }
@@ -130,7 +130,7 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
       return _buildProfileCompletionMessage(context);
     }
 
-    if (_tdee == null) {
+    if (_tdee == 0) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -150,7 +150,7 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
-              'Tu gasto diario estimado es de ${_tdee!.toStringAsFixed(0)} kcal. Selecciona un plan y aplica la meta.',
+              'Tu gasto diario estimado es de ${_tdee.toStringAsFixed(0)} kcal. Selecciona un plan y aplica la meta.',
               textAlign: TextAlign.center,
               style: textTheme.bodyMedium,
             ),
@@ -162,7 +162,7 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
             _buildGoalCard(
               plan: _plans[_selectedPlanIndex],
               calories:
-                  (_tdee! +
+                  (_tdee +
                   (_plans[_selectedPlanIndex] == 'Perder'
                       ? -500
                       : _plans[_selectedPlanIndex] == 'Ganar'

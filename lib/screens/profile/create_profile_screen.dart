@@ -90,17 +90,41 @@ class CreateProfileScreenState extends State<CreateProfileScreen> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final navigator = Navigator.of(context);
 
+    final age = int.tryParse(_ageController.text) ?? 0;
+    final height = double.tryParse(_heightController.text) ?? 0;
+    final weight = double.tryParse(_weightController.text) ?? 0;
+
+    double bmr;
+    if (_selectedGender == 'male') {
+      bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+    } else {
+      bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+    }
+
+    final activityMultipliers = {
+      'sedentary': 1.2,
+      'light': 1.375,
+      'moderate': 1.55,
+      'active': 1.725,
+      'very_active': 1.9,
+    };
+
+    final tdee = bmr * (activityMultipliers[_activityLevel] ?? 1.2);
+
     final updatedUser = User(
-      id: DateTime.now().toIso8601String(),
-      name: _nameController.text,
-      gender: _selectedGender,
-      age: int.tryParse(_ageController.text) ?? 0,
-      height: double.tryParse(_heightController.text) ?? 0,
-      weight: double.tryParse(_weightController.text) ?? 0,
-      activityLevel: _activityLevel,
-      profileImageBytes: _profileImageBytes,
-      isGuest: false,
-    );
+        id: DateTime.now().toIso8601String(),
+        name: _nameController.text,
+        gender: _selectedGender,
+        age: age,
+        height: height,
+        weight: weight,
+        activityLevel: _activityLevel,
+        profileImageBytes: _profileImageBytes,
+        isGuest: false,
+        calorieGoal: tdee,
+        proteinGoal: (tdee * 0.30) / 4,
+        carbGoal: (tdee * 0.40) / 4,
+        fatGoal: (tdee * 0.30) / 9);
     await userProvider.setUser(updatedUser);
     navigator.pushNamedAndRemoveUntil('/', (route) => false);
   }

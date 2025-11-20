@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -120,8 +121,40 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
   Widget _buildCaloriesHeader(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = userProvider.user;
-    final caloricGoal = user?.calorieGoal ?? 2000;
+    final caloricGoal = user?.calorieGoal;
     final dietPlan = user?.dietPlan ?? 'Mantener';
+    final textTheme = Theme.of(context).textTheme;
+
+    if (caloricGoal == null || caloricGoal <= 0) {
+      return Card(
+        elevation: 4,
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Text(
+                'No has establecido tus metas calóricas',
+                style: textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CaloricGoalsScreen(),
+                    ),
+                  );
+                },
+                child: const Text('Establecer Metas'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     final Map<String, dynamic> planDetails = {
       'Perder': {'icon': Icons.trending_down, 'color': Colors.orange.shade300},

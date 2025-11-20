@@ -54,7 +54,7 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
           child: ListView(
             children: [
               CalorieSummaryCard(
-                caloriesGoal: user?.calorieGoal ?? 0,
+                caloriesGoal: user?.calorieGoal,
                 caloriesConsumed:
                     0, // This should be calculated based on the food logs
                 proteinGoal: user?.proteinGoal ?? 0,

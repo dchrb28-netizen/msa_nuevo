@@ -1,9 +1,10 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:myapp/widgets/food/macro_progress_bar.dart';
 
 class CalorieSummaryCard extends StatelessWidget {
-  final double caloriesGoal;
+  final double? caloriesGoal;
   final double caloriesConsumed;
   final double proteinGoal;
   final double proteinConsumed;
@@ -29,7 +30,7 @@ class CalorieSummaryCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    if (caloriesGoal <= 0) {
+    if (caloriesGoal == null || caloriesGoal! <= 0) {
       return Card(
         elevation: 4,
         margin: const EdgeInsets.all(16.0),
@@ -45,7 +46,12 @@ class CalorieSummaryCard extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  // TODO: Implement navigation to goal setting screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CaloricGoalsScreen(),
+                    ),
+                  );
                 },
                 child: const Text('Establecer Metas'),
               ),
@@ -55,12 +61,12 @@ class CalorieSummaryCard extends StatelessWidget {
       );
     }
 
-    final caloriesRemaining = (caloriesGoal - caloriesConsumed).clamp(
+    final caloriesRemaining = (caloriesGoal! - caloriesConsumed).clamp(
       0.0,
-      caloriesGoal,
+      caloriesGoal!,
     );
-    final calorieProgress = caloriesGoal > 0
-        ? (caloriesConsumed / caloriesGoal).clamp(0.0, 1.0)
+    final calorieProgress = caloriesGoal! > 0
+        ? (caloriesConsumed / caloriesGoal!).clamp(0.0, 1.0)
         : 0.0;
 
     return Card(
@@ -107,7 +113,7 @@ class CalorieSummaryCard extends StatelessWidget {
                   children: [
                     _buildCalorieStat(
                       'Meta',
-                      caloriesGoal,
+                      caloriesGoal!,
                       textTheme,
                       colorScheme.onSurface,
                     ),
