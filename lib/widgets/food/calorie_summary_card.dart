@@ -28,6 +28,33 @@ class CalorieSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+
+    if (caloriesGoal <= 0) {
+      return Card(
+        elevation: 4,
+        margin: const EdgeInsets.all(16.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Text(
+                'No has establecido tus metas calóricas',
+                style: textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // TODO: Implement navigation to goal setting screen
+                },
+                child: const Text('Establecer Metas'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final caloriesRemaining = (caloriesGoal - caloriesConsumed).clamp(0.0, caloriesGoal);
     final calorieProgress = caloriesGoal > 0 ? (caloriesConsumed / caloriesGoal).clamp(0.0, 1.0) : 0.0;
 
@@ -49,7 +76,7 @@ class CalorieSummaryCard extends StatelessWidget {
                     painter: CalorieRingPainter(
                       progress: calorieProgress,
                       color: colorScheme.primary,
-                      backgroundColor: colorScheme.primary.withAlpha((255 * 0.2).round()), // CORREGIDO
+                      backgroundColor: colorScheme.primary.withAlpha((255 * 0.2).round()),
                     ),
                     child: Center(
                       child: Column(

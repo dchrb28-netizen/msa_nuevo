@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/food.dart';
+import 'package:myapp/widgets/food/calorie_summary_card.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+
+import 'package:myapp/providers/user_provider.dart';
 
 class RegisterFoodScreen extends StatefulWidget {
   const RegisterFoodScreen({super.key});
@@ -38,6 +42,9 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.user;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Registrar Comida'),
@@ -48,6 +55,16 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              CalorieSummaryCard(
+                caloriesGoal: user?.calorieGoal ?? 0,
+                caloriesConsumed: 0, // This should be calculated based on the food logs
+                proteinGoal: user?.proteinGoal ?? 0,
+                proteinConsumed: 0, // This should be calculated based on the food logs
+                carbsGoal: user?.carbGoal ?? 0, // Corrected from carbsGoal
+                carbsConsumed: 0, // This should be calculated based on the food logs
+                fatsGoal: user?.fatGoal ?? 0,
+                fatsConsumed: 0, // This should be calculated based on the food logs
+              ),
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
