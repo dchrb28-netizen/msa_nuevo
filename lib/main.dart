@@ -45,16 +45,6 @@ void main() async {
   await initializeDateFormatting('es', null);
   await Hive.initFlutter();
 
-  // *** INICIO DE LA SOLUCIÓN DEL ERROR (Intento 2) ***
-  // Borramos la caja del disco para forzar una recreación y evitar errores de
-  // deserialización por cambio de modelo de datos.
-  await Hive.deleteBoxFromDisk('routine_logs');
-  developer.log(
-    'Caja [routine_logs] eliminada del disco para migración forzada.',
-    name: 'main.startup',
-  );
-  // *** FIN DE LA SOLUCIÓN DEL ERROR ***
-
   _registerHiveAdapters();
   await _openHiveBoxes();
 
@@ -116,9 +106,6 @@ void main() async {
         ChangeNotifierProxyProvider<UserProvider, WaterIntakeProvider>(
           create: (context) => WaterIntakeProvider(null),
           update: (context, userProvider, previousWaterIntakeProvider) {
-            // El 'previousWaterIntakeProvider' no se necesita realmente aquí, pero es
-            // parte de la firma. Se crea una nueva instancia o se actualiza una
-            // existente basándose en el UserProvider.
             return WaterIntakeProvider(userProvider);
           },
         ),
@@ -252,70 +239,24 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         final textTheme =
-            GoogleFonts.montserratTextTheme(
-              Theme.of(context).textTheme,
-            ).copyWith(
-              displayLarge: const TextStyle(
-                fontSize: 57,
-                fontWeight: FontWeight.bold,
-              ),
-              displayMedium: const TextStyle(
-                fontSize: 45,
-                fontWeight: FontWeight.bold,
-              ),
-              displaySmall: const TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-              ),
-              headlineLarge: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
-              headlineMedium: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-              headlineSmall: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-              titleLarge: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-              titleMedium: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              titleSmall: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-              bodyLarge: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
-              ),
-              bodyMedium: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.normal,
-              ),
-              bodySmall: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.normal,
-              ),
-              labelLarge: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-              labelMedium: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-              labelSmall: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-              ),
-            );
+            GoogleFonts.montserratTextTheme(Theme.of(context).textTheme)
+                .copyWith(
+          displayLarge: const TextStyle(fontSize: 57, fontWeight: FontWeight.bold),
+          displayMedium: const TextStyle(fontSize: 45, fontWeight: FontWeight.bold),
+          displaySmall: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+          headlineLarge: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          headlineMedium: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          headlineSmall: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          titleLarge: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          titleMedium: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          titleSmall: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          bodyLarge: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+          bodyMedium: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+          bodySmall: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+          labelLarge: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          labelMedium: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          labelSmall: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        );
 
         var lightColorScheme = ColorScheme.fromSeed(
           seedColor: themeProvider.seedColor,
