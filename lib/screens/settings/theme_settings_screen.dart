@@ -1,10 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:myapp/providers/theme_provider.dart';
-import 'package:myapp/services/achievement_service.dart'; // Importar AchievementService
+import 'package:myapp/services/achievement_service.dart';
 import 'package:provider/provider.dart';
 
 class ThemeSettingsScreen extends StatelessWidget {
   const ThemeSettingsScreen({super.key});
+
+  void _showColorPickerDialog(
+      BuildContext context, ThemeProvider themeProvider, AchievementService achievementService) {
+    Color pickerColor = themeProvider.seedColor;
+    final Color originalColor = themeProvider.seedColor; // Guardar el color original
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Elige un color'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: pickerColor,
+              onColorChanged: (Color color) {
+                // Actualización en tiempo real
+                themeProvider.setSeedColor(color);
+                pickerColor = color; // Actualizar el color del picker
+              },
+              pickerAreaHeightPercent: 0.8,
+              enableAlpha: false,
+              displayThumbColor: true,
+              paletteType: PaletteType.hsv,
+              labelTypes: const [],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                // Revertir al color original si se cancela
+                themeProvider.setSeedColor(originalColor);
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Guardar'),
+              onPressed: () {
+                // Guardar el color seleccionado y registrar el logro
+                themeProvider.setSeedColor(pickerColor);
+                achievementService.updateProgress('exp_theme_change', 1);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +101,7 @@ class ThemeSettingsScreen extends StatelessWidget {
             selected: {themeProvider.themeMode},
             onSelectionChanged: (Set<ThemeMode> newSelection) {
               themeProvider.setThemeMode(newSelection.first);
-              achievementService.updateProgress('exp_theme_change', 1); // Logro por cambiar el tema
+              achievementService.updateProgress('exp_theme_change', 1);
             },
             showSelectedIcon: true,
             style: SegmentedButton.styleFrom(
@@ -60,40 +110,23 @@ class ThemeSettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          Text('Paleta de Colores', style: textTheme.titleLarge),
+          Text('Color Principal', style: textTheme.titleLarge),
           const SizedBox(height: 12),
-
-          // Nueva lista de temas
-          ListView( 
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            children: themeProvider.availableThemes.entries.map((entry) {
-              final String themeName = entry.key;
-              final Color themeColor = entry.value;
-              final bool isSelected = themeProvider.seedColor == themeColor;
-
-              return Card(
-                elevation: isSelected ? 4 : 1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: isSelected 
-                      ? BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)
-                      : BorderSide.none,
-                ),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: themeColor,
-                  ),
-                  title: Text(themeName),
-                  trailing: isSelected ? const Icon(Icons.check_circle_rounded) : null,
-                  onTap: () {
-                    themeProvider.setSeedColor(themeColor);
-                    achievementService.updateProgress('exp_theme_change', 1); // Logro por cambiar el tema
-                  },
-                ),
-              );
-            }).toList(),
-          ),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: ListTile(
+              onTap: () {
+                _showColorPickerDialog(context, themeProvider, achievementService);
+              },
+              leading: CircleAvatar(
+                backgroundColor: themeProvider.seedColor,
+                radius: 20,
+              ),
+              title: const Text('Color principal actual'),
+              subtitle: const Text('Toca para seleccionar un nuevo color'),
+              trailing: const Icon(Icons.colorize),
+            ),
+          )
         ],
       ),
     );
