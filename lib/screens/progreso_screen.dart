@@ -207,8 +207,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
   }
 
   Widget _buildWaterIntakeCard() {
-    // TODO: Obtener el objetivo de agua desde la configuración del usuario
-    final double waterGoal = 2000; // Objetivo de ejemplo: 2000 ml
+    const double waterGoal = 2000; // Objetivo de ejemplo: 2000 ml
 
     return Card(
       elevation: 4,

@@ -292,7 +292,7 @@ class DashboardScreen extends StatelessWidget {
                   radius: 45.0,
                   lineWidth: 10.0,
                   percent: percent,
-                  center: Icon(
+                  center: const Icon(
                     Icons.local_fire_department,
                     color: Colors.orange,
                     size: 30,
@@ -342,7 +342,7 @@ class DashboardScreen extends StatelessWidget {
               radius: 45.0,
               lineWidth: 10.0,
               percent: percent,
-              center: Icon(Icons.water_drop, color: Colors.blue, size: 30),
+              center: const Icon(Icons.water_drop, color: Colors.blue, size: 30),
               progressColor: Colors.blue,
               backgroundColor: Colors.blue.shade100,
               circularStrokeCap: CircularStrokeCap.round,
@@ -389,7 +389,7 @@ class DashboardScreen extends StatelessWidget {
               lineWidth: 10.0,
               percent: percent,
               center:
-                  Icon(Icons.fitness_center, color: Colors.green, size: 30),
+                  const Icon(Icons.fitness_center, color: Colors.green, size: 30),
               progressColor: Colors.green,
               backgroundColor: Colors.green.shade100,
               circularStrokeCap: CircularStrokeCap.round,
