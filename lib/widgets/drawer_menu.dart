@@ -48,7 +48,7 @@ class DrawerMenu extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => LogsScreen(initialTabIndex: tabIndex),
+              builder: (context) => const LogsScreen(),
             ),
           );
         },
@@ -166,7 +166,7 @@ class DrawerMenu extends StatelessWidget {
               ),
               buildLogListTile(
                 context,
-                icon: PhosphorIcons.forkKnife(),
+                icon: PhosphorIcons.hamburger(),
                 iconColor: Colors.yellow[700]!,
                 title: 'Comidas',
                 tabIndex: 1,

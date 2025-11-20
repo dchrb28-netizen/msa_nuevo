@@ -1,53 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/providers/theme_provider.dart';
-import 'package:myapp/screens/food/food_screen.dart'; // Import the new nested tab screen
+import 'package:google_fonts/google_fonts.dart';
+import 'package:myapp/screens/food/food_screen.dart';
 import 'package:myapp/screens/logs/body_measurement_screen.dart';
-import 'package:myapp/screens/logs/water_log_screen.dart';
+import 'package:myapp/screens/water_today_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:provider/provider.dart';
 
-class LogsScreen extends StatelessWidget {
-  final int initialTabIndex;
+class LogsScreen extends StatefulWidget {
+  const LogsScreen({super.key});
 
-  const LogsScreen({super.key, this.initialTabIndex = 0});
+  @override
+  State<LogsScreen> createState() => _LogsScreenState();
+}
+
+class _LogsScreenState extends State<LogsScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-
-    final appBarColor = themeProvider.seedColor;
-    final tabBarItemColor =
-        ThemeData.estimateBrightnessForColor(appBarColor) == Brightness.dark
-            ? Colors.white
-            : Colors.black;
-
-    return DefaultTabController(
-      initialIndex: initialTabIndex,
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: appBarColor,
-          foregroundColor: tabBarItemColor,
-          bottom: TabBar(
-            indicatorColor: tabBarItemColor,
-            labelColor: tabBarItemColor,
-            unselectedLabelColor: tabBarItemColor.withAlpha(
-              178,
-            ), // Fixed: Used withAlpha instead of withOpacity
-            tabs: [
-              Tab(icon: Icon(PhosphorIcons.drop(PhosphorIconsStyle.regular)), text: 'Agua'),
-              Tab(icon: Icon(PhosphorIcons.bowlFood(PhosphorIconsStyle.regular)), text: 'Comida'),
-              Tab(icon: Icon(PhosphorIcons.ruler(PhosphorIconsStyle.regular)), text: 'Medidas'),
-            ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Registros',
+          style: GoogleFonts.lato(
+            fontWeight: FontWeight.bold,
           ),
         ),
-        body: const TabBarView(
-          children: [
-            WaterLogScreen(),
-            FoodScreen(), // <-- Here is the new integrated screen!
-            BodyMeasurementScreen(),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(
+              icon: Icon(PhosphorIcons.drop(PhosphorIconsStyle.duotone)),
+              text: 'Agua',
+            ),
+            Tab(
+              icon: Icon(PhosphorIcons.hamburger(PhosphorIconsStyle.duotone)),
+              text: 'Comida',
+            ),
+            Tab(
+              icon: Icon(PhosphorIcons.ruler(PhosphorIconsStyle.duotone)),
+              text: 'Medidas',
+            ),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: const [
+          WaterTodayScreen(),
+          FoodScreen(),
+          BodyMeasurementScreen(),
+        ],
       ),
     );
   }

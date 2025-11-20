@@ -3,6 +3,7 @@ import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/screens/logs/body_measurement_screen.dart';
 import 'package:myapp/screens/logs/food_log_screen.dart';
 import 'package:myapp/screens/logs/water_log_screen.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
 class LogsScreen extends StatelessWidget {
@@ -27,10 +28,10 @@ class LogsScreen extends StatelessWidget {
             indicatorColor: tabColor,
             labelColor: tabColor,
             unselectedLabelColor: tabColor.withAlpha((255 * 0.7).round()),
-            tabs: const [
-              Tab(icon: Icon(Icons.local_drink), text: 'Agua'),
-              Tab(icon: Icon(Icons.fastfood), text: 'Comida'),
-              Tab(icon: Icon(Icons.accessibility), text: 'Medidas'),
+            tabs: [
+              Tab(icon: Icon(PhosphorIcons.drop(PhosphorIconsStyle.duotone)), text: 'Agua'),
+              Tab(icon: Icon(PhosphorIcons.hamburger(PhosphorIconsStyle.duotone)), text: 'Comida'),
+              Tab(icon: Icon(PhosphorIcons.ruler(PhosphorIconsStyle.duotone)), text: 'Medidas'),
             ],
           ),
         ),

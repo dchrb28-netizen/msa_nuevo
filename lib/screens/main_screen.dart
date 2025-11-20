@@ -47,9 +47,9 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.forkKnife(PhosphorIconsStyle.duotone)),
-            activeIcon: Icon(PhosphorIcons.forkKnife(PhosphorIconsStyle.fill)),
-            label: 'Menús',
+            icon: Icon(PhosphorIcons.notebook(PhosphorIconsStyle.duotone)),
+            activeIcon: Icon(PhosphorIcons.notebook(PhosphorIconsStyle.fill)),
+            label: 'Menus',
           ),
           BottomNavigationBarItem(
             icon: Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.duotone)),
