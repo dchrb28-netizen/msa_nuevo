@@ -7,7 +7,7 @@ import 'package:myapp/screens/logs_screen.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/recipes/recipes_screen.dart';
-import 'package:myapp/screens/rewards_screen.dart'; 
+import 'package:myapp/screens/rewards_goals/rewards_and_streaks_screen.dart';
 import 'package:myapp/screens/settings/about_screen.dart';
 import 'package:myapp/screens/settings_screen.dart';
 import 'package:myapp/screens/training/training_screen.dart';
@@ -255,14 +255,14 @@ class DrawerMenu extends StatelessWidget {
                 icon: PhosphorIcons.medal(), // Icono actualizado
                 iconColor: Colors.yellow[600]!,
                 title: 'Mis Logros', // Título actualizado
-                destination: const RewardsScreen(), // Destino actualizado
+                destination: const RewardsAndStreaksScreen(initialTabIndex: 0),
               ),
               buildListTile(
                 context,
                 icon: PhosphorIcons.fire(),
                 iconColor: Colors.deepOrange[400]!,
                 title: 'Rachas',
-                destination: const HabitsScreen(initialTabIndex: 0), // Placeholder
+                destination: const RewardsAndStreaksScreen(initialTabIndex: 1),
               ),
             ],
           ),

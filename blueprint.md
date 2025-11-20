@@ -62,6 +62,7 @@ Esta es una aplicación de fitness desarrollada en Flutter, diseñada para ayuda
 
 ## Características Implementadas
 
+- **Navegación Unificada de Recompensas y Rachas:** Las secciones de "Logros" y "Rachas" se han unificado bajo una única pantalla con una barra de navegación inferior, mejorando la experiencia de usuario.
 - **Gráficos de Progreso Avanzados:** Gráficos de línea interactivos para el seguimiento del peso y el consumo de agua, con indicadores de máximo/mínimo y líneas de objetivo.
 - **Seguimiento de Progreso a Largo Plazo:** Pantalla dedicada para visualizar el progreso de peso y el resumen de actividad semanal.
 - **Dashboard Diario:** Vista principal centrada en el progreso del día actual (calorías, agua, entrenamiento).
@@ -72,6 +73,7 @@ Esta es una aplicación de fitness desarrollada en Flutter, diseñada para ayuda
 
 ## Plan de Cambios Anteriores
 
+- **Reestructuración de la Navegación de Recompensas y Rachas:** Se unificaron las pantallas de "Mis Logros" y "Rachas" en una sola vista con una barra de navegación inferior, accesible desde la sección "Hitos" del menú.
 - **Implementación de Racha de Ayuno:** Se añadió la lógica y la UI para seguir la racha de días consecutivos completando un ayuno intermitente.
 - **Mejora de Gráficos de Progreso:** Se rediseñaron los gráficos de peso y agua para incluir interactividad, indicadores de máximo/mínimo y líneas de objetivo.
 - **Añadir Seguimiento de Consumo de Agua:** Se añadió una tarjeta a la pantalla de progreso con un gráfico del consumo de agua semanal.
