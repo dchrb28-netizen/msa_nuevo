@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
-import 'package:myapp/screens/achievements/goals_screen.dart';
-import 'package:myapp/screens/achievements/rewards_screen.dart';
 import 'package:myapp/screens/habits/habits_screen.dart';
 import 'package:myapp/screens/logs_screen.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/recipes/recipes_screen.dart';
+import 'package:myapp/screens/rewards_goals_screen.dart';
 import 'package:myapp/screens/settings/about_screen.dart';
 import 'package:myapp/screens/settings_screen.dart';
 import 'package:myapp/screens/training/training_screen.dart';
@@ -249,7 +248,7 @@ class DrawerMenu extends StatelessWidget {
           ),
           _buildExpansionTile(
             context,
-            title: 'Logros',
+            title: 'Recompensas y Metas',
             icon: PhosphorIcons.trophy(),
             iconColor: Colors.amber[900]!,
             children: [
@@ -258,14 +257,14 @@ class DrawerMenu extends StatelessWidget {
                 icon: PhosphorIcons.gift(),
                 iconColor: Colors.yellow[600]!,
                 title: 'Recompensas',
-                destination: const RewardsScreen(),
+                destination: const RewardsGoalsScreen(initialTabIndex: 0),
               ),
               buildListTile(
                 context,
                 icon: PhosphorIcons.flag(),
                 iconColor: Colors.deepOrange[400]!,
                 title: 'Metas',
-                destination: const GoalsScreen(),
+                destination: const RewardsGoalsScreen(initialTabIndex: 1),
               ),
             ],
           ),
