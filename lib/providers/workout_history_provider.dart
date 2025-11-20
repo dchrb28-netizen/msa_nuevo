@@ -1,22 +1,25 @@
 import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:myapp/models/workout_session.dart';
+import 'package:myapp/services/streaks_service.dart'; // Importar el servicio de rachas
 
 class WorkoutHistoryProvider with ChangeNotifier {
+  final StreaksService _streaksService = StreaksService(); // Instanciar el servicio
   final List<WorkoutSession> _workoutHistory = [];
 
   List<WorkoutSession> get workoutHistory => _workoutHistory;
 
   void addWorkoutSession(WorkoutSession session) {
-    _workoutHistory.insert(
-      0,
-      session,
-    ); // Insertar al principio para que sea el más reciente
+    _workoutHistory.insert(0, session);
     notifyListeners();
     developer.log(
       'Workout session for ${session.routineName} on ${session.date} saved. History count: ${_workoutHistory.length}',
       name: 'WorkoutHistoryProvider',
     );
+
+    // --- Lógica de Rachas ---
+    _streaksService.updateWorkoutStreak();
+    // --- Fin Lógica de Rachas ---
   }
 
   void deleteWorkoutSession(String sessionId) {

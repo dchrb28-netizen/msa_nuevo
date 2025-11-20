@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:myapp/services/streaks_service.dart'; // Importar el servicio de rachas
 
 // A simple class to hold the meal's data
 class Meal {
@@ -10,6 +11,8 @@ class Meal {
 }
 
 class MealPlanProvider with ChangeNotifier {
+  final StreaksService _streaksService = StreaksService(); // Instanciar el servicio
+
   // The data structure is now a map of Meals
   final Map<int, Map<String, Meal>> _weeklyPlan = {
     1: {
@@ -89,7 +92,6 @@ class MealPlanProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // --- NEW FUNCTIONALITY ---
   // Toggles the completion status of a meal
   void toggleMealCompletion(DateTime day, String mealType) {
     final weekday = day.weekday;
@@ -100,10 +102,16 @@ class MealPlanProvider with ChangeNotifier {
         'Toggled $mealType for day $weekday to ${meal.isCompleted}',
         name: 'MealPlanProvider',
       );
+      
+      // --- Lógica de Rachas ---
+      if (meal.isCompleted) {
+        _streaksService.updateMealStreak();
+      }
+      // --- Fin Lógica de Rachas ---
+
       notifyListeners();
     }
   }
-  // --- END NEW FUNCTIONALITY ---
 
   void repeatWeek(DateTime currentWeek) {
     developer.log(

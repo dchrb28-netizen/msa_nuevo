@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/food/food_log_list_view.dart';
 import 'package:myapp/screens/food/food_today_screen.dart';
-import 'package:myapp/models/food_log.dart';
-import 'package:hive/hive.dart';
 
 class FoodScreen extends StatefulWidget {
   // This is no longer a full screen, but the nested tab view for foods.
@@ -28,13 +26,6 @@ class _FoodScreenState extends State<FoodScreen>
     super.dispose();
   }
 
-  void _addFoodLog(FoodLog log) {
-    final foodLogBox = Hive.box<FoodLog>('food_logs');
-    foodLogBox.put(log.id, log);
-    // Switch to the history tab after adding a log
-    _tabController.animateTo(1);
-  }
-
   @override
   Widget build(BuildContext context) {
     // Returns a Column with the nested TabBar and TabBarView.
@@ -57,7 +48,7 @@ class _FoodScreenState extends State<FoodScreen>
           child: TabBarView(
             controller: _tabController,
             children: [
-              FoodTodayScreen(onAddFoodLog: _addFoodLog),
+              const FoodTodayScreen(), // <-- ERROR CORREGIDO AQUÍ
               FoodLogListView(date: DateTime.now()),
             ],
           ),

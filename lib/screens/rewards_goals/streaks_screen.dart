@@ -175,7 +175,6 @@ class StreakCard extends StatelessWidget {
   }
 
   Widget _buildMilestoneTracker(BuildContext context) {
-    final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
