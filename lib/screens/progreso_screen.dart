@@ -62,11 +62,13 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                 Icon(PhosphorIcons.ruler(PhosphorIconsStyle.duotone),
                     color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 8),
-                Text(
-                  'Medidas Corporales ($_selectedPeriod)',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    'Medidas Corporales ($_selectedPeriod)',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -229,11 +231,13 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                 Icon(PhosphorIcons.drop(PhosphorIconsStyle.duotone),
                     color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 8),
-                Text(
-                  'Consumo de Agua ($_selectedPeriod)',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    'Consumo de Agua ($_selectedPeriod)',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -447,11 +451,13 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                 Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.duotone),
                     color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 8),
-                Text(
-                  'Progreso de Peso ($_selectedPeriod)',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    'Progreso de Peso ($_selectedPeriod)',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -703,11 +709,13 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                     Icon(PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
                         color: Theme.of(context).colorScheme.primary),
                     const SizedBox(width: 8),
-                    Text(
-                      'Resumen de Ejercicio ($periodText)',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Text(
+                        'Resumen de Ejercicio ($periodText)',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],

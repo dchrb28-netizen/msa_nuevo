@@ -251,9 +251,9 @@ class DashboardScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildCaloriesRing(context),
-                _buildWaterRing(context), 
-                _buildTrainingRing(),
+                Expanded(child: _buildCaloriesRing(context)),
+                Expanded(child: _buildWaterRing(context)),
+                Expanded(child: _buildTrainingRing()),
               ],
             ),
           ],
@@ -307,6 +307,7 @@ class DashboardScreen extends StatelessWidget {
                   Text(
                     '${totalCalories.toInt()} / ${caloricGoal.toInt()}',
                     style: GoogleFonts.lato(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
                   ),
                 if (caloricGoal <= 0)
                   Text(
@@ -315,8 +316,13 @@ class DashboardScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: Colors.grey,
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                Text('kcal', style: GoogleFonts.lato(color: Colors.grey)),
+                Text(
+                  'kcal',
+                  style: GoogleFonts.lato(color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
               ],
             );
           },
@@ -349,6 +355,7 @@ class DashboardScreen extends StatelessWidget {
               Text(
                 '${totalWater.toInt()} / ${waterGoal.toInt()}',
                 style: GoogleFonts.lato(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
             if (waterGoal <= 0)
               Text(
@@ -357,8 +364,13 @@ class DashboardScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: Colors.grey,
                 ),
+                textAlign: TextAlign.center,
               ),
-            Text('ml', style: GoogleFonts.lato(color: Colors.grey)),
+            Text(
+              'ml',
+              style: GoogleFonts.lato(color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
           ],
         );
       },
@@ -394,8 +406,13 @@ class DashboardScreen extends StatelessWidget {
             Text(
               trainedToday ? '¡Hecho!' : 'Pendiente',
               style: GoogleFonts.lato(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
-            Text('Hoy', style: GoogleFonts.lato(color: Colors.grey)),
+            Text(
+              'Hoy',
+              style: GoogleFonts.lato(color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
           ],
         );
       },
