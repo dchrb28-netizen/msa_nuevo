@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/screens/menus/today_menu_screen.dart';
 import 'package:myapp/screens/menus/weekly_planner_screen.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class MenusScreen extends StatefulWidget {
   const MenusScreen({super.key});
 
   @override
-  _MenusScreenState createState() => _MenusScreenState();
+  MenusScreenState createState() => MenusScreenState();
 }
 
-class _MenusScreenState extends State<MenusScreen> with TickerProviderStateMixin {
+class MenusScreenState extends State<MenusScreen> with TickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -32,13 +33,19 @@ class _MenusScreenState extends State<MenusScreen> with TickerProviderStateMixin
         TabBar(
           controller: _tabController,
           labelColor: Theme.of(context).colorScheme.onSurface,
-          unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.6).round()),
           indicatorColor: Theme.of(context).colorScheme.primary,
           labelStyle: GoogleFonts.lato(fontWeight: FontWeight.bold),
           unselectedLabelStyle: GoogleFonts.lato(),
-          tabs: const [
-            Tab(text: 'Menú de Hoy'),
-            Tab(text: 'Planificador Semanal'),
+          tabs: [
+            Tab(
+              icon: Icon(PhosphorIcons.calendarCheck()),
+              text: 'Menú de Hoy',
+            ),
+            Tab(
+              icon: Icon(PhosphorIcons.calendar()),
+              text: 'Planificador Semanal',
+            ),
           ],
         ),
         Expanded(

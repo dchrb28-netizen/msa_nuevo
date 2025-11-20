@@ -25,22 +25,11 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
         const WatermarkImage(imageName: 'progreso'),
         Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            title: Text(
-              'Tu Progreso',
-              style: GoogleFonts.montserrat(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
-            ),
-            centerTitle: true,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-          ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
+                const SizedBox(height: 40), // Added padding to compensate for appbar
                 _buildDateFilter(),
                 const SizedBox(height: 24),
                 _buildWeightProgressCard(),

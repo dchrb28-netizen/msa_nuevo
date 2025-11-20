@@ -25,7 +25,6 @@ class LogsScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Mis Registros'), // Add a title for context
           backgroundColor: appBarColor,
           foregroundColor: tabBarItemColor,
           bottom: TabBar(

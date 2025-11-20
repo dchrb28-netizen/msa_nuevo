@@ -10,7 +10,7 @@ class ProfileSelectionScreen extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Seleccionar Perfil')),
+      appBar: AppBar(),
       body: ListView.builder(
         itemCount: userProvider.users.length,
         itemBuilder: (context, index) {
