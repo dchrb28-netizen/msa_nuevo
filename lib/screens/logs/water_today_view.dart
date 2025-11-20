@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:myapp/models/user.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/providers/water_intake_provider.dart';
@@ -12,11 +11,8 @@ import 'package:provider/provider.dart';
 class WaterTodayView extends StatelessWidget {
   const WaterTodayView({super.key});
 
-  void _showAddWaterDialog(
-    BuildContext context,
-    User currentUser,
-    WaterIntakeProvider provider,
-  ) {
+  // El `currentUser` ya no es necesario, el provider lo gestiona internamente.
+  void _showAddWaterDialog(BuildContext context, WaterIntakeProvider provider) {
     final TextEditingController controller = TextEditingController();
     showDialog(
       context: context,
@@ -37,7 +33,8 @@ class WaterTodayView extends StatelessWidget {
             onPressed: () {
               final amount = double.tryParse(controller.text);
               if (amount != null && amount > 0) {
-                provider.addWaterLog(amount, currentUser);
+                // Llamada corregida: ya no se pasa el usuario.
+                provider.addWaterLog(amount);
                 Navigator.pop(context);
               }
             },
@@ -88,199 +85,189 @@ class WaterTodayView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Escuchamos a ambos providers.
     final userProvider = Provider.of<UserProvider>(context);
+    final waterProvider = Provider.of<WaterIntakeProvider>(context);
     final currentUser = userProvider.user;
+
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final String catImagePath = isDarkMode
         ? 'assets/images/gato_agua_dark.png'
         : 'assets/images/gato_agua_light.png';
 
-    return Consumer<WaterIntakeProvider>(
-      builder: (context, waterProvider, child) {
-        return ValueListenableBuilder(
-          valueListenable: waterProvider.waterLogBox.listenable(),
-          builder: (context, Box<WaterLog> box, _) {
-            if (currentUser == null) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'Por favor, crea un perfil de usuario para poder registrar tu ingesta de agua.',
-                    textAlign: TextAlign.center,
+    return ValueListenableBuilder(
+      valueListenable: waterProvider.waterLogBox.listenable(),
+      builder: (context, Box<WaterLog> box, _) {
+        if (currentUser == null) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Por favor, crea un perfil de usuario para poder registrar tu ingesta de agua.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
+
+        // Llamadas corregidas: no se pasa el usuario, se obtiene del provider.
+        final intakeForSelectedDate =
+            waterProvider.getWaterIntakeForDate(waterProvider.selectedDate);
+        final logsForSelectedDate = waterProvider.getLogsForSelectedDate();
+
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  height: 250,
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: AquariumWidget(
+                      totalWater: intakeForSelectedDate,
+                      dailyGoal: waterProvider.dailyGoal,
+                    ),
                   ),
                 ),
-              );
-            }
-
-            final intakeForSelectedDate = waterProvider.getWaterIntakeForDate(
-              currentUser,
-              waterProvider.selectedDate,
-            );
-            final logsForSelectedDate = waterProvider.getLogsForSelectedDate(
-              currentUser,
-            );
-
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                const SizedBox(height: 12),
+                Center(
+                  child: Text(
+                    'Meta Diaria: ${waterProvider.dailyGoal.toInt()} ml',
+                    style: GoogleFonts.lato(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton.icon(
+                  // La llamada a showEditGoalDialog ya es correcta.
+                  onPressed: () => waterProvider.showEditGoalDialog(context),
+                  icon: const Icon(Icons.edit, size: 16),
+                  label: const Text('Editar meta diaria'),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    SizedBox(
-                      height: 250,
-                      child: Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: AquariumWidget(
-                          totalWater: intakeForSelectedDate,
-                          dailyGoal: waterProvider.dailyGoal,
-                        ),
+                    // Llamadas a helpers corregidas.
+                    _buildWaterButton(250, waterProvider),
+                    _buildWaterButton(500, waterProvider),
+                    _buildAddCustomButton(context, waterProvider),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios),
+                      onPressed: waterProvider.goToPreviousDay,
+                    ),
+                    Text(
+                      DateFormat.yMMMMd(
+                        'es',
+                      ).format(waterProvider.selectedDate),
+                      style: GoogleFonts.lato(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Center(
-                      child: Text(
-                        'Meta Diaria: ${waterProvider.dailyGoal.toInt()} ml',
-                        style: GoogleFonts.lato(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextButton.icon(
-                      onPressed: () =>
-                          waterProvider.showEditGoalDialog(context),
-                      icon: const Icon(Icons.edit, size: 16),
-                      label: const Text('Editar meta diaria'),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildWaterButton(250, currentUser, waterProvider),
-                        _buildWaterButton(500, currentUser, waterProvider),
-                        _buildAddCustomButton(
-                          context,
-                          currentUser,
-                          waterProvider,
-                        ), // Correctly pass context
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back_ios),
-                          onPressed: waterProvider.goToPreviousDay,
-                        ),
-                        Text(
-                          DateFormat.yMMMMd(
-                            'es',
-                          ).format(waterProvider.selectedDate),
-                          style: GoogleFonts.lato(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.arrow_forward_ios),
-                          onPressed: waterProvider.goToNextDay,
-                        ),
-                      ],
-                    ),
-                    const Divider(),
-                    Stack(
-                      children: [
-                        if (logsForSelectedDate.isEmpty)
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 60.0),
-                            child: Center(
-                              child: Text('Aún no has añadido agua hoy.'),
-                            ),
-                          )
-                        else
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: logsForSelectedDate.length,
-                            itemBuilder: (context, index) {
-                              final log = logsForSelectedDate[index];
-                              return ListTile(
-                                leading: const Icon(
-                                  Icons.local_drink,
-                                  color: Colors.blue,
-                                ),
-                                title: Text(
-                                  '${log.amount.toInt()} ml',
-                                  style: GoogleFonts.lato(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  DateFormat.jm('es').format(log.timestamp),
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.edit,
-                                        color: Colors.grey,
-                                      ),
-                                      onPressed: () => _editWaterLogDialog(
-                                        context,
-                                        log,
-                                        waterProvider,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Colors.redAccent,
-                                      ),
-                                      onPressed: () =>
-                                          waterProvider.deleteWaterLog(log),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Image.asset(
-                            catImagePath,
-                            width: 100,
-                            height: 100,
-                            errorBuilder: (c, o, s) => const SizedBox(),
-                          ),
-                        ),
-                      ],
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward_ios),
+                      onPressed: waterProvider.goToNextDay,
                     ),
                   ],
                 ),
-              ),
-            );
-          },
+                const Divider(),
+                Stack(
+                  children: [
+                    if (logsForSelectedDate.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 60.0),
+                        child: Center(
+                          child: Text('Aún no has añadido agua hoy.'),
+                        ),
+                      )
+                    else
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: logsForSelectedDate.length,
+                        itemBuilder: (context, index) {
+                          final log = logsForSelectedDate[index];
+                          return ListTile(
+                            leading: const Icon(
+                              Icons.local_drink,
+                              color: Colors.blue,
+                            ),
+                            title: Text(
+                              '${log.amount.toInt()} ml',
+                              style: GoogleFonts.lato(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              DateFormat.jm('es').format(log.timestamp),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () => _editWaterLogDialog(
+                                    context,
+                                    log,
+                                    waterProvider,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.redAccent,
+                                  ),
+                                  onPressed: () =>
+                                      waterProvider.deleteWaterLog(log),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Image.asset(
+                        catImagePath,
+                        width: 100,
+                        height: 100,
+                        errorBuilder: (c, o, s) => const SizedBox(),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
   }
 
-  Widget _buildWaterButton(
-    double amount,
-    User currentUser,
-    WaterIntakeProvider provider,
-  ) {
+  // Helper corregido: ya no necesita `currentUser`.
+  Widget _buildWaterButton(double amount, WaterIntakeProvider provider) {
     return OutlinedButton.icon(
-      onPressed: () => provider.addWaterLog(amount, currentUser),
+      onPressed: () => provider.addWaterLog(amount),
       icon: const Icon(Icons.local_drink_outlined),
       label: Text('${amount.toInt()} ml'),
       style: OutlinedButton.styleFrom(
@@ -290,14 +277,13 @@ class WaterTodayView extends StatelessWidget {
     );
   }
 
-  // Correctly accept context as a parameter
+  // Helper corregido: ya no necesita `currentUser`.
   Widget _buildAddCustomButton(
     BuildContext context,
-    User currentUser,
     WaterIntakeProvider provider,
   ) {
     return OutlinedButton.icon(
-      onPressed: () => _showAddWaterDialog(context, currentUser, provider),
+      onPressed: () => _showAddWaterDialog(context, provider),
       icon: const Icon(Icons.add),
       label: const Text('Otro'),
       style: OutlinedButton.styleFrom(

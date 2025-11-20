@@ -3,9 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/models/routine.dart';
-import 'package:myapp/models/water_log.dart';
 import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/providers/routine_provider.dart';
+import 'package:myapp/providers/water_intake_provider.dart';
 import 'package:myapp/screens/training/workout_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/user_provider.dart';
@@ -96,13 +96,10 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildTrainingCard(BuildContext context) {
-    // 1. Obtener el día de la semana actual en español.
     final String dayOfWeek = DateFormat('EEEE', 'es_ES').format(DateTime.now());
 
-    // 2. Usar el Consumer para escuchar cambios en RoutineProvider.
     return Consumer<RoutineProvider>(
       builder: (context, routineProvider, child) {
-        // 3. Obtener la rutina del proveedor.
         final Routine? todayRoutine = routineProvider.getRoutineForDay(
           dayOfWeek,
         );
@@ -113,7 +110,6 @@ class DashboardScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          // 4. Cambiar el color y el contenido según si es día de descanso.
           color: isRestDay
               ? Colors.grey[800]
               : Theme.of(context).colorScheme.primaryContainer,
@@ -142,7 +138,6 @@ class DashboardScreen extends StatelessWidget {
                         : Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 ),
-                // 5. Mostrar el botón solo si hay una rutina.
                 if (!isRestDay)
                   Padding(
                     padding: const EdgeInsets.only(top: 20.0),
@@ -150,7 +145,6 @@ class DashboardScreen extends StatelessWidget {
                       icon: const Icon(Icons.play_arrow_rounded),
                       label: const Text('Comenzar'),
                       onPressed: () {
-                        // Navegar a la pantalla de entrenamiento con la rutina obtenida.
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -200,7 +194,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildDailyProgressRings(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = userProvider.user;
     final dietPlan = user?.dietPlan ?? 'Mantener';
 
@@ -257,7 +251,7 @@ class DashboardScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildCaloriesRing(context),
-                _buildWaterRing(context),
+                _buildWaterRing(context), // <--- Este es el widget que vamos a arreglar
                 _buildTrainingRing(),
               ],
             ),
@@ -268,85 +262,80 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildCaloriesRing(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final caloricGoal = userProvider.user?.calorieGoal ?? 0;
+    return Consumer<UserProvider>(
+      builder: (context, userProvider, child) {
+        final caloricGoal = userProvider.user?.calorieGoal ?? 0;
 
-    return ValueListenableBuilder(
-      valueListenable: Hive.box<FoodLog>('food_logs').listenable(),
-      builder: (context, Box<FoodLog> box, _) {
-        final now = DateTime.now();
-        bool isSameDay(DateTime d1, DateTime d2) {
-          return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
-        }
+        return ValueListenableBuilder(
+          valueListenable: Hive.box<FoodLog>('food_logs').listenable(),
+          builder: (context, Box<FoodLog> box, _) {
+            final now = DateTime.now();
+            bool isSameDay(DateTime d1, DateTime d2) {
+              return d1.year == d2.year &&
+                  d1.month == d2.month &&
+                  d1.day == d2.day;
+            }
 
-        final dailyLogs = box.values.where((log) => isSameDay(log.date, now));
-        final totalCalories = dailyLogs.fold<double>(
-          0,
-          (sum, log) => sum + log.calories,
-        );
-        final percent = caloricGoal > 0
-            ? (totalCalories / caloricGoal).clamp(0.0, 1.0)
-            : 0.0;
+            final dailyLogs =
+                box.values.where((log) => isSameDay(log.date, now));
+            final totalCalories = dailyLogs.fold<double>(
+              0,
+              (sum, log) => sum + log.calories,
+            );
+            final percent = caloricGoal > 0
+                ? (totalCalories / caloricGoal).clamp(0.0, 1.0)
+                : 0.0;
 
-        return Column(
-          children: [
-            CircularPercentIndicator(
-              radius: 45.0,
-              lineWidth: 10.0,
-              percent: percent,
-              center: Icon(
-                Icons.local_fire_department,
-                color: Colors.orange,
-                size: 30,
-              ),
-              progressColor: Colors.orange,
-              backgroundColor: Colors.orange.shade100,
-              circularStrokeCap: CircularStrokeCap.round,
-            ),
-            const SizedBox(height: 8),
-            if (caloricGoal > 0)
-              Text(
-                '${totalCalories.toInt()} / ${caloricGoal.toInt()}',
-                style: GoogleFonts.lato(fontWeight: FontWeight.bold),
-              ),
-            if (caloricGoal <= 0)
-              Text(
-                'Sin meta',
-                style: GoogleFonts.lato(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
+            return Column(
+              children: [
+                CircularPercentIndicator(
+                  radius: 45.0,
+                  lineWidth: 10.0,
+                  percent: percent,
+                  center: Icon(
+                    Icons.local_fire_department,
+                    color: Colors.orange,
+                    size: 30,
+                  ),
+                  progressColor: Colors.orange,
+                  backgroundColor: Colors.orange.shade100,
+                  circularStrokeCap: CircularStrokeCap.round,
                 ),
-              ),
-            Text('kcal', style: GoogleFonts.lato(color: Colors.grey)),
-          ],
+                const SizedBox(height: 8),
+                if (caloricGoal > 0)
+                  Text(
+                    '${totalCalories.toInt()} / ${caloricGoal.toInt()}',
+                    style: GoogleFonts.lato(fontWeight: FontWeight.bold),
+                  ),
+                if (caloricGoal <= 0)
+                  Text(
+                    'Sin meta',
+                    style: GoogleFonts.lato(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                Text('kcal', style: GoogleFonts.lato(color: Colors.grey)),
+              ],
+            );
+          },
         );
       },
     );
   }
 
+  // *** INICIO DE LA SOLUCIÓN DEFINITIVA ***
   Widget _buildWaterRing(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final waterGoal = userProvider.user?.waterGoal ?? 0;
+    // 1. Usar un Consumer para escuchar a WaterIntakeProvider.
+    return Consumer<WaterIntakeProvider>(
+      builder: (context, waterProvider, child) {
+        // 2. Obtener los datos directamente del provider.
+        final waterGoal = waterProvider.dailyGoal;
+        final totalWater = waterProvider.getWaterIntakeForDate(DateTime.now());
+        final percent =
+            waterGoal > 0 ? (totalWater / waterGoal).clamp(0.0, 1.0) : 0.0;
 
-    return ValueListenableBuilder(
-      valueListenable: Hive.box<WaterLog>('water_logs').listenable(),
-      builder: (context, Box<WaterLog> box, _) {
-        final now = DateTime.now();
-        bool isSameDay(DateTime d1, DateTime d2) {
-          return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
-        }
-
-        final dailyLogs = box.values.where(
-          (log) => isSameDay(log.timestamp, now),
-        );
-        final totalWater = dailyLogs.fold<double>(
-          0,
-          (sum, log) => sum + log.amount,
-        );
-        final percent = waterGoal > 0
-            ? (totalWater / waterGoal).clamp(0.0, 1.0)
-            : 0.0;
-
+        // 3. Devolver la UI actualizada.
         return Column(
           children: [
             CircularPercentIndicator(
@@ -361,7 +350,7 @@ class DashboardScreen extends StatelessWidget {
             const SizedBox(height: 8),
             if (waterGoal > 0)
               Text(
-                '${totalWater.toInt()} / $waterGoal',
+                '${totalWater.toInt()} / ${waterGoal.toInt()}',
                 style: GoogleFonts.lato(fontWeight: FontWeight.bold),
               ),
             if (waterGoal <= 0)
@@ -378,6 +367,7 @@ class DashboardScreen extends StatelessWidget {
       },
     );
   }
+  // *** FIN DE LA SOLUCIÓN DEFINITIVA ***
 
   Widget _buildTrainingRing() {
     return ValueListenableBuilder(
@@ -388,7 +378,8 @@ class DashboardScreen extends StatelessWidget {
           return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
         }
 
-        final trainedToday = box.values.any((log) => isSameDay(log.date, now));
+        final trainedToday =
+            box.values.any((log) => isSameDay(log.date, now));
         final percent = trainedToday ? 1.0 : 0.0;
 
         return Column(
@@ -397,7 +388,8 @@ class DashboardScreen extends StatelessWidget {
               radius: 45.0,
               lineWidth: 10.0,
               percent: percent,
-              center: Icon(Icons.fitness_center, color: Colors.green, size: 30),
+              center:
+                  Icon(Icons.fitness_center, color: Colors.green, size: 30),
               progressColor: Colors.green,
               backgroundColor: Colors.green.shade100,
               circularStrokeCap: CircularStrokeCap.round,

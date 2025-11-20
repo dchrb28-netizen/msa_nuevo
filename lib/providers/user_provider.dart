@@ -47,9 +47,19 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> updateUser(User updatedUser) async {
-    _user = updatedUser;
-    await _userBox.put(updatedUser.id, updatedUser);
-    loadUsers();
+    // Solo actualiza si el usuario activo es el que se está modificando.
+    if (_user?.id == updatedUser.id) {
+      _user = updatedUser; // 1. Actualiza el estado en el provider.
+      await _userBox.put(updatedUser.id, updatedUser); // 2. Guarda el cambio en la base de datos.
+
+      // 3. Actualiza la lista de usuarios para mantener la consistencia.
+      final index = _users.indexWhere((u) => u.id == updatedUser.id);
+      if (index != -1) {
+        _users[index] = updatedUser;
+      }
+
+      notifyListeners(); // 4. Notifica a todos los oyentes para que se redibujen.
+    }
   }
 
   void setGuestUser() {

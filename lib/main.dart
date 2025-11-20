@@ -113,7 +113,15 @@ void main() async {
         ChangeNotifierProvider(create: (context) => RoutineProvider()),
         ChangeNotifierProvider(create: (context) => ExerciseProvider()),
         ChangeNotifierProvider(create: (context) => WorkoutHistoryProvider()),
-        ChangeNotifierProvider(create: (context) => WaterIntakeProvider()),
+        ChangeNotifierProxyProvider<UserProvider, WaterIntakeProvider>(
+          create: (context) => WaterIntakeProvider(null),
+          update: (context, userProvider, previousWaterIntakeProvider) {
+            // El 'previousWaterIntakeProvider' no se necesita realmente aquí, pero es
+            // parte de la firma. Se crea una nueva instancia o se actualiza una
+            // existente basándose en el UserProvider.
+            return WaterIntakeProvider(userProvider);
+          },
+        ),
       ],
       child: MyApp(initialRoute: initialRoute),
     ),
