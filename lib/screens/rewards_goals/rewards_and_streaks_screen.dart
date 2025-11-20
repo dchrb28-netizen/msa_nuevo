@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/screens/achievements/rewards_screen.dart';
+import 'package:myapp/screens/rewards_screen.dart';
 import 'package:myapp/screens/rewards_goals/streaks_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -16,7 +16,7 @@ class RewardsAndStreaksScreen extends StatefulWidget {
 class _RewardsAndStreaksScreenState extends State<RewardsAndStreaksScreen> {
   late int _currentIndex;
   final List<Widget> _pages = [
-    const RewardsScreen(),
+    const RewardsScreen(), // <- ESTA ES LA LÍNEA CORREGIDA
     const StreaksScreen(),
   ];
 
@@ -37,6 +37,7 @@ class _RewardsAndStreaksScreenState extends State<RewardsAndStreaksScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_currentIndex == 0 ? 'Mis Recompensas' : 'Mis Rachas'),
+        automaticallyImplyLeading: false, // Ocultar el botón de regreso
       ),
       body: IndexedStack(
         index: _currentIndex,
@@ -47,7 +48,7 @@ class _RewardsAndStreaksScreenState extends State<RewardsAndStreaksScreen> {
         onTap: _onTabTapped,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.gift()),
+            icon: Icon(PhosphorIcons.trophy()),
             label: 'Recompensas',
           ),
           BottomNavigationBarItem(
