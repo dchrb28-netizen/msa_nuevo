@@ -88,24 +88,34 @@ void main() {
     await Hive.close();
   });
 
-  testWidgets('App loads main screen without crashing', (
+  testWidgets('App loads main screen when a user is logged in', (
     WidgetTester tester,
   ) async {
-    // Provide a dummy user with all required fields
+    // --- CORRECTED TEST SETUP ---
     final userBox = Hive.box<User>('user_box');
+    final settingsBox = Hive.box('settings');
+    const testUserId = 'test-user-id';
+
+    // 1. Put the user object in the user_box
     await userBox.put(
-      'activeUser',
+      testUserId,
       User(
-        id: 'test',
+        id: testUserId,
         name: 'Test User',
         gender: 'Masculino',
         age: 30,
         height: 180,
         weight: 75,
+        activityLevel: 'sedentary',
+        isGuest: false,
       ),
     );
 
-    // Build our app with all necessary providers and trigger a frame.
+    // 2. Set the active user ID in the settings_box, which UserProvider uses
+    await settingsBox.put('activeUserId', testUserId);
+    
+    // Build our app with all necessary providers.
+    // MyApp no longer takes initialRoute.
     await tester.pumpWidget(
       MultiProvider(
         providers: [
@@ -116,11 +126,11 @@ void main() {
           ChangeNotifierProvider(create: (context) => RoutineProvider()),
           ChangeNotifierProvider(create: (context) => ExerciseProvider()),
         ],
-        child: const MyApp(initialRoute: '/'),
+        child: const MyApp(), // Corrected: Removed initialRoute parameter
       ),
     );
 
-    // Let the UI settle.
+    // Let the UI settle (e.g., for the SplashScreen to navigate).
     await tester.pumpAndSettle();
 
     // Verify that the main screen has loaded by finding a key widget.
