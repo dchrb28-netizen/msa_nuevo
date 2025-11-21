@@ -89,7 +89,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Entrenamiento: \${widget.routine.name}'),
+        title: Text('Entrenamiento: ${widget.routine.name}'),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => _showExitConfirmationDialog(),
@@ -111,7 +111,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 if (exercise == null) {
                   return ListTile(
                     title: Text(
-                      'Ejercicio no encontrado (ID: \${routineExercise.exerciseId})',
+                      'Ejercicio no encontrado (ID: ${routineExercise.exerciseId})',
                     ),
                     leading: const Icon(Icons.error_outline, color: Colors.red),
                   );
@@ -165,7 +165,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              '\${routineExercise.sets} series x \${routineExercise.reps} reps',
+              '${routineExercise.sets} series x ${routineExercise.reps} reps',
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
@@ -184,7 +184,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '\${routineExercise.restTime} seg de descanso',
+                      '${routineExercise.restTime} seg de descanso',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
@@ -231,7 +231,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                           const Icon(Icons.check, size: 18),
                           const SizedBox(width: 6),
                         ],
-                        Text('Set \${setIndex + 1}'),
+                        Text('Set ${setIndex + 1}'),
                       ],
                     ),
                   );
@@ -248,7 +248,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 if (log == null) return const SizedBox.shrink();
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 4.0),
-                  child: Text('  • Set \${setIndex + 1}: \${log.toString()}'),
+                  child: Text('  • Set ${setIndex + 1}: ${log.toString()}'),
                 );
               }),
             ],
@@ -270,7 +270,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             Icon(Icons.timer, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 8),
             Text(
-              '\$_countdownTime',
+              '$_countdownTime',
               style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
@@ -319,7 +319,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: Text('Registrar Set \${setIndex + 1}'),
+          title: Text('Registrar Set ${setIndex + 1}'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
