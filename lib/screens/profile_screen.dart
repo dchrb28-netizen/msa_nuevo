@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/profile/create_profile_screen.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/widgets/profile/profile_edit_view.dart';
 import 'package:myapp/widgets/profile/profile_read_view.dart';
 import 'package:myapp/widgets/ui/watermark_image.dart';
@@ -107,6 +108,27 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  void _checkProfileCompletion() {
+    final name = _nameController.text;
+    final age = int.tryParse(_ageController.text) ?? 0;
+    final height = double.tryParse(_heightController.text) ?? 0;
+    final weight = double.tryParse(_weightController.text) ?? 0;
+    final gender = _selectedGender;
+    final activityLevel = _activityLevel;
+    final image = _profileImageBytes;
+
+    if (name.isNotEmpty &&
+        age > 0 &&
+        height > 0 &&
+        weight > 0 &&
+        gender != null &&
+        activityLevel != null &&
+        image != null) {
+      Provider.of<AchievementService>(context, listen: false)
+          .updateProgress('exp_profile_complete', 1);
+    }
+  }
+
   Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -130,6 +152,9 @@ class ProfileScreenState extends State<ProfileScreen> {
 
       try {
         await userProvider.setUser(updatedUser);
+
+        _checkProfileCompletion();
+
         setState(() {
           _isSaving = false;
           _isEditing = false;

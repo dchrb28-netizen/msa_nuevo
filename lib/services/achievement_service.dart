@@ -105,16 +105,24 @@ class AchievementService extends ChangeNotifier {
     _saveProfile();
   }
 
-  void updateProgress(String achievementId, int progress) {
+  void updateProgress(String achievementId, int progress, {bool cumulative = false}) {
     final achievement = _masterAchievements.firstWhere((a) => a.id == achievementId, orElse: () => throw Exception('Achievement with id $achievementId not found'));
-    if (_userProfile.unlockedAchievements.containsKey(achievementId)) return; 
+    if (_userProfile.unlockedAchievements.containsKey(achievementId)) return;
 
     final currentProgress = _userProfile.achievementProgress[achievementId] ?? 0;
-    if (progress <= currentProgress) return;
+    
+    int newProgress;
+    if (cumulative) {
+      newProgress = currentProgress + progress;
+    } else {
+      newProgress = progress;
+    }
 
-    _userProfile.achievementProgress[achievementId] = progress;
+    if (!cumulative && newProgress <= currentProgress) return;
 
-    if (progress >= achievement.goal) { // FIX: totalSteps -> goal
+    _userProfile.achievementProgress[achievementId] = newProgress;
+
+    if (newProgress >= achievement.goal) {
       _unlockAchievement(achievement);
     }
 
@@ -137,7 +145,6 @@ class AchievementService extends ChangeNotifier {
 
   void _initializeAchievements() {
     _masterAchievements.clear();
-    // FIX: Changed all `totalSteps` to `goal` and `metric` to `unit`
     _masterAchievements.addAll([
       Achievement(id: 'first_water_log', name: 'Primer Trago', description: 'Registra tu ingesta de agua por primera vez.', icon: PhosphorIcons.dropSimple(PhosphorIconsStyle.duotone), category: AchievementCategory.firstSteps),
       Achievement(id: 'first_workout', name: 'Primer Sudor', description: 'Completa tu primer entrenamiento.', icon: PhosphorIcons.barbell(PhosphorIconsStyle.duotone), category: AchievementCategory.firstSteps),

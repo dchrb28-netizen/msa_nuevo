@@ -73,6 +73,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   pinned: false,
+                  automaticallyImplyLeading: false,
                   flexibleSpace: FlexibleSpaceBar(
                     background: _buildLevelCard(xpFormat, theme),
                   ),
@@ -134,7 +135,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
               child: LinearProgressIndicator(
                 value: _userXP / _xpForNextLevel,
                 minHeight: 18,
-                backgroundColor: Colors.white.withAlpha(77), // FIX: withOpacity -> withAlpha
+                backgroundColor: Colors.white.withAlpha(77),
                 valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.onPrimary),
               ),
             ),
@@ -174,7 +175,7 @@ class _AchievementCategoryCard extends StatelessWidget {
       case 'Metas Personales':
         return PhosphorIcons.target(PhosphorIconsStyle.duotone);
       case 'Primeros Pasos':
-        return PhosphorIcons.sneaker(PhosphorIconsStyle.duotone); // FIX: shoe -> sneaker
+        return PhosphorIcons.sneaker(PhosphorIconsStyle.duotone);
       case 'Rachas Legendarias':
         return PhosphorIcons.crown(PhosphorIconsStyle.duotone);
       default:
@@ -227,15 +228,15 @@ class _AchievementTile extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isUnlocked ? progressColor.withAlpha(128) : Colors.grey.shade300, // FIX: withOpacity -> withAlpha
+            color: isUnlocked ? progressColor.withAlpha(128) : Colors.grey.shade300,
           ),
-          color: isUnlocked ? progressColor.withAlpha(26) : Colors.transparent, // FIX: withOpacity -> withAlpha
+          color: isUnlocked ? progressColor.withAlpha(26) : Colors.transparent,
         ),
         child: Row(
           children: [
             CircleAvatar(
               radius: 28,
-              backgroundColor: isUnlocked ? progressColor.withAlpha(51) : Colors.grey.shade200, // FIX: withOpacity -> withAlpha
+              backgroundColor: isUnlocked ? progressColor.withAlpha(51) : Colors.grey.shade200,
               child: Icon(
                 achievement.icon,
                 size: 28,
@@ -258,7 +259,7 @@ class _AchievementTile extends StatelessWidget {
                   Text(
                     achievement.description,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.textTheme.bodyMedium?.color?.withAlpha(204), // FIX: withOpacity -> withAlpha
+                      color: theme.textTheme.bodyMedium?.color?.withAlpha(204),
                     ),
                   ),
                   if (achievement.goal > 1)
