@@ -73,7 +73,15 @@ Esta es una aplicación de fitness desarrollada en Flutter, diseñada para ayuda
 
 ## Plan de Cambios Anteriores
 
-- **Reestructuración de la Navegación de Recompensas y Rachas:** Se unificaron las pantallas de "Mis Logros" y "Rachas" en una sola vista con una barra de navegación inferior, accesible desde la sección "Hitos" del menú.
+- **Refactorización y Limpieza del Código (Análisis Estático):**
+  - **Objetivo:** Eliminar todas las advertencias y errores reportados por `flutter analyze` para mejorar la calidad y robustez del código.
+  - Se corrigieron las advertencias `use_build_context_synchronously` capturando el `BuildContext` antes de operaciones asíncronas.
+  - Se solucionó la advertencia `library_private_types_in_public_api` renombrando clases de estado privadas a públicas.
+  - Se restauró la lógica del método `deleteUser` en el `UserProvider` para que acepte un `userId`, corrigiendo una regresión.
+  - Se actualizó el test de widgets (`widget_test.dart`) para que limpie todos los perfiles de usuario existentes antes de ejecutarse, mejorando su fiabilidad.
+  - **Resultado:** El comando `flutter analyze` ahora reporta **"No issues found!"**.
+
+- **Reestructuración de la Navegación de Recompensas y Rachas:** Se unificaron las pantallas de "Mis Logros" y "Rachas" en una sola vista con una barra de navegación inferior.
 - **Implementación de Racha de Ayuno:** Se añadió la lógica y la UI para seguir la racha de días consecutivos completando un ayuno intermitente.
 - **Mejora de Gráficos de Progreso:** Se rediseñaron los gráficos de peso y agua para incluir interactividad, indicadores de máximo/mínimo y líneas de objetivo.
 - **Añadir Seguimiento de Consumo de Agua:** Se añadió una tarjeta a la pantalla de progreso con un gráfico del consumo de agua semanal.

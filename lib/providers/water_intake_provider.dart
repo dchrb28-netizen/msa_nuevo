@@ -63,30 +63,19 @@ class WaterIntakeProvider with ChangeNotifier {
     );
     await waterLogBox.add(log);
 
-    // --- Lógica de Logros ---
-    _achievementService.addExperience(5); // Otorgar 5 XP
-    _achievementService.updateProgress('first_water_log', 1); // Logro de primer registro
+    // Otorga XP por registrar agua
+    _achievementService.grantExperience(5); 
 
-    // Logros acumulativos de consumo de agua
+    // Actualiza logros relevantes
+    _achievementService.updateProgress('first_water_log', 1);
+
     final totalWaterIntake = _getTotalWaterIntake();
-    _achievementService.updateProgress('cum_water_10', totalWaterIntake.toInt());
-    _achievementService.updateProgress('cum_water_50', totalWaterIntake.toInt());
-    _achievementService.updateProgress('cum_water_250', totalWaterIntake.toInt());
-    _achievementService.updateProgress('cum_water_1000', totalWaterIntake.toInt());
-
-    // Logros de metas diarias
-    final totalToday = getWaterIntakeForDate(_selectedDate);
-    if (totalToday >= _dailyGoal) {
-      _achievementService.updateProgress('goal_water_daily', 1);
-    }
-    if (totalToday >= 1000) {
-      _achievementService.updateProgress('goal_water_1L', 1);
-    }
-    // --- Fin Lógica de Logros ---
+    _achievementService.updateProgress('cum_water_10', totalWaterIntake.toInt(), cumulative: true);
+    _achievementService.updateProgress('cum_water_1000', totalWaterIntake.toInt(), cumulative: true);
 
     notifyListeners();
 
-    // --- Lógica de Rachas ---
+    // Actualiza la racha de hidratación si se cumple la meta
     final totalTodayForStreak = getWaterIntakeForDate(_selectedDate);
     if (totalTodayForStreak >= _dailyGoal) {
       await _streaksService.updateHydrationStreak();

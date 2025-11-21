@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -795,7 +796,7 @@ class CreatedRecipesTab extends StatelessWidget {
                     children: [
                       if (recipe.imageBytes != null)
                         Image.memory(
-                          recipe.imageBytes!,
+                          Uint8List.fromList(recipe.imageBytes!),
                           width: double.infinity,
                           height: 180,
                           fit: BoxFit.cover,
@@ -822,7 +823,7 @@ class CreatedRecipesTab extends StatelessWidget {
                         ),
                         onPressed: () {
                           recipe.isFavorite = !recipe.isFavorite;
-                          recipe.save();
+                          box.put(recipe.id, recipe);
                         },
                       ),
                     ],

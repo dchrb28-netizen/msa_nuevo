@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:hive/hive.dart';
+import 'package:myapp/models/recipe.dart';
 
 part 'user.g.dart';
 
@@ -24,7 +25,7 @@ class User extends HiveObject {
   double weight;
 
   @HiveField(6)
-  Uint8List? profileImageBytes; // Changed from String? profileImagePath
+  Uint8List? profileImageBytes;
 
   @HiveField(7)
   bool isGuest;
@@ -47,11 +48,17 @@ class User extends HiveObject {
   @HiveField(13)
   double? weightGoal;
 
-  @HiveField(14) // New field for the user's diet plan
+  @HiveField(14) 
   String? dietPlan;
 
   @HiveField(15)
   double? waterGoal;
+  
+  @HiveField(16)
+  List<Recipe> favoriteRecipes;
+
+  @HiveField(17)
+  double? initialWeight; // Nuevo campo para el peso inicial
 
   User({
     required this.id,
@@ -60,7 +67,7 @@ class User extends HiveObject {
     required this.age,
     required this.height,
     required this.weight,
-    this.profileImageBytes, // Changed from profileImagePath
+    this.profileImageBytes,
     this.isGuest = false,
     this.activityLevel = 'Sedentaria',
     this.calorieGoal,
@@ -68,9 +75,11 @@ class User extends HiveObject {
     this.carbGoal,
     this.fatGoal,
     this.weightGoal,
-    this.dietPlan = 'Mantener', // Default to 'Mantener'
+    this.dietPlan = 'Mantener',
     this.waterGoal,
-  });
+    List<Recipe>? favoriteRecipes,
+    this.initialWeight, // Añadido al constructor
+  }) : favoriteRecipes = favoriteRecipes ?? [];
 
   User copyWith({
     String? id,
@@ -79,7 +88,7 @@ class User extends HiveObject {
     int? age,
     double? height,
     double? weight,
-    Uint8List? profileImageBytes, // Changed from profileImagePath
+    Uint8List? profileImageBytes,
     bool? isGuest,
     String? activityLevel,
     double? calorieGoal,
@@ -89,6 +98,8 @@ class User extends HiveObject {
     double? weightGoal,
     String? dietPlan,
     double? waterGoal,
+    List<Recipe>? favoriteRecipes,
+    double? initialWeight, // Añadido a copyWith
   }) {
     return User(
       id: id ?? this.id,
@@ -97,9 +108,7 @@ class User extends HiveObject {
       age: age ?? this.age,
       height: height ?? this.height,
       weight: weight ?? this.weight,
-      profileImageBytes:
-          profileImageBytes ??
-          this.profileImageBytes, // Changed from profileImagePath
+      profileImageBytes: profileImageBytes ?? this.profileImageBytes,
       isGuest: isGuest ?? this.isGuest,
       activityLevel: activityLevel ?? this.activityLevel,
       calorieGoal: calorieGoal ?? this.calorieGoal,
@@ -109,6 +118,8 @@ class User extends HiveObject {
       weightGoal: weightGoal ?? this.weightGoal,
       dietPlan: dietPlan ?? this.dietPlan,
       waterGoal: waterGoal ?? this.waterGoal,
+      favoriteRecipes: favoriteRecipes ?? this.favoriteRecipes,
+      initialWeight: initialWeight ?? this.initialWeight, // Añadido a copyWith
     );
   }
 }

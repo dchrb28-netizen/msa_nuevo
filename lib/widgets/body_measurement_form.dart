@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/body_measurement.dart';
+import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -34,63 +36,70 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
   }
 
   void _saveMeasurement() {
-    // Oculta el teclado
     FocusScope.of(context).unfocus();
 
-    if (_formKey.currentState!.validate()) {
-      final weight = double.tryParse(_weightController.text);
-      final chest = double.tryParse(_chestController.text);
-      final arm = double.tryParse(_armController.text);
-      final waist = double.tryParse(_waistController.text);
-      final hips = double.tryParse(_hipsController.text);
-      final thigh = double.tryParse(_thighController.text);
-
-      if (weight == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor, introduce un peso válido.')),
-        );
-        return;
-      }
-
-      final newMeasurement = BodyMeasurement(
-        id: _uuid.v4(),
-        timestamp: DateTime.now(),
-        weight: weight,
-        chest: chest,
-        arm: arm,
-        waist: waist,
-        hips: hips,
-        thigh: thigh,
-      );
-
-      Hive.box<BodyMeasurement>('body_measurements').add(newMeasurement);
-
-      // Actualizar el peso del usuario en el perfil
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final currentUser = userProvider.user;
-      if (currentUser != null) {
-        final updatedUser = currentUser.copyWith(weight: weight);
-        userProvider.updateUser(updatedUser);
-      }
-
-      // Limpiar los campos
-      _formKey.currentState!.reset();
-      _weightController.clear();
-      _chestController.clear();
-      _armController.clear();
-      _waistController.clear();
-      _hipsController.clear();
-      _thighController.clear();
-
-      // Mostrar mensaje de confirmación
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Medición guardada con éxito'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
-      );
+    if (!_formKey.currentState!.validate()) {
+      return;
     }
+
+    final weight = double.tryParse(_weightController.text);
+    if (weight == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, introduce un peso válido.')),
+      );
+      return;
+    }
+
+    final newMeasurement = BodyMeasurement(
+      id: _uuid.v4(),
+      timestamp: DateTime.now(),
+      weight: weight,
+      chest: double.tryParse(_chestController.text),
+      arm: double.tryParse(_armController.text),
+      waist: double.tryParse(_waistController.text),
+      hips: double.tryParse(_hipsController.text),
+      thigh: double.tryParse(_thighController.text),
+    );
+
+    Hive.box<BodyMeasurement>('body_measurements').add(newMeasurement);
+
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final achievementService = Provider.of<AchievementService>(context, listen: false);
+    final User? currentUser = userProvider.user;
+
+    if (currentUser != null) {
+      // --- Lógica de Logros ---
+      achievementService.grantExperience(10);
+      achievementService.updateProgress('first_weight_log', 1);
+
+      if (currentUser.weightGoal != null && weight <= currentUser.weightGoal!) {
+        achievementService.updateProgress('goal_weight_target', 1);
+      }
+      // --- Fin Lógica de Logros ---
+
+      // Actualizar el usuario con el peso actual y, si es necesario, el peso inicial.
+      final updatedUser = currentUser.copyWith(
+        weight: weight,
+        initialWeight: currentUser.initialWeight ?? weight, // Guardar el peso inicial si no existe
+      );
+      userProvider.updateUser(updatedUser);
+    }
+
+    _formKey.currentState!.reset();
+    _weightController.clear();
+    _chestController.clear();
+    _armController.clear();
+    _waistController.clear();
+    _hipsController.clear();
+    _thighController.clear();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Medición guardada con éxito'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   @override
@@ -146,9 +155,7 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
         if (isRequired && (value == null || value.trim().isEmpty)) {
           return 'Este campo es obligatorio.';
         }
-        if (value != null &&
-            value.isNotEmpty &&
-            double.tryParse(value) == null) {
+        if (value != null && value.isNotEmpty && double.tryParse(value) == null) {
           return 'Por favor, introduce un número válido.';
         }
         return null;

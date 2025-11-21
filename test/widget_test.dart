@@ -1,143 +1,73 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
-import 'package:myapp/models/body_measurement.dart';
-import 'package:myapp/models/daily_meal_plan.dart';
-import 'package:myapp/models/exercise.dart';
-import 'package:myapp/models/exercise_log.dart';
-import 'package:myapp/models/fasting_log.dart';
-import 'package:myapp/models/food.dart';
-import 'package:myapp/models/food_log.dart';
-import 'package:myapp/models/meal_entry.dart';
-import 'package:myapp/models/meal_type.dart';
-import 'package:myapp/models/recipe.dart';
-import 'package:myapp/models/reminder.dart';
-import 'package:myapp/models/routine.dart';
-import 'package:myapp/models/routine_exercise.dart';
-import 'package:myapp/models/routine_log.dart';
-import 'package:myapp/models/set_log.dart';
-import 'package:myapp/models/user.dart';
-import 'package:myapp/models/user_recipe.dart';
-import 'package:myapp/models/water_log.dart';
-import 'package:myapp/providers/exercise_provider.dart';
-import 'package:myapp/providers/fasting_provider.dart';
-import 'package:myapp/providers/meal_plan_provider.dart';
-import 'package:myapp/providers/routine_provider.dart';
-import 'package:myapp/providers/theme_provider.dart';
-import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/main.dart';
+import 'package:myapp/models/user.dart';
+import 'package:myapp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
-// Helper to safely register adapters in a test environment
-void _tryRegisterAdapter<T>(TypeAdapter<T> adapter) {
-  if (!Hive.isAdapterRegistered(adapter.typeId)) {
-    Hive.registerAdapter(adapter);
-  }
-}
-
 void main() {
-  // This runs once before all tests
-  setUpAll(() async {
-    // Tests need a path to initialize Hive.
-    // A temporary directory is perfect for this to avoid side effects.
-    final tempDir = await Directory.systemTemp.createTemp('hive_test');
-    Hive.init(tempDir.path);
+  group('Login and User Creation', () {
+    setUpAll(() async {
+      // Initialize Hive for testing
+      Hive.init('test');
+      if (!Hive.isAdapterRegistered(UserAdapter().typeId)) {
+        Hive.registerAdapter(UserAdapter());
+      }
+    });
 
-    // Register all the same adapters as in main.dart
-    _tryRegisterAdapter(UserAdapter());
-    _tryRegisterAdapter(FoodAdapter());
-    _tryRegisterAdapter(WaterLogAdapter());
-    _tryRegisterAdapter(FoodLogAdapter());
-    _tryRegisterAdapter(BodyMeasurementAdapter());
-    _tryRegisterAdapter(MealTypeAdapter());
-    _tryRegisterAdapter(DailyMealPlanAdapter());
-    _tryRegisterAdapter(RecipeAdapter());
-    _tryRegisterAdapter(UserRecipeAdapter());
-    _tryRegisterAdapter(ReminderAdapter());
-    _tryRegisterAdapter(FastingLogAdapter());
-    _tryRegisterAdapter(RoutineAdapter());
-    _tryRegisterAdapter(SetLogAdapter());
-    _tryRegisterAdapter(ExerciseLogAdapter());
-    _tryRegisterAdapter(RoutineLogAdapter());
-    _tryRegisterAdapter(ExerciseAdapter());
-    _tryRegisterAdapter(RoutineExerciseAdapter());
-    _tryRegisterAdapter(MealEntryAdapter());
+    tearDownAll(() async {
+      await Hive.close();
+    });
 
-    // Open all the boxes the app needs
-    await Hive.openBox<User>('user_box');
-    await Hive.openBox<Food>('foods');
-    await Hive.openBox<WaterLog>('water_logs');
-    await Hive.openBox<FoodLog>('food_logs');
-    await Hive.openBox<BodyMeasurement>('body_measurements');
-    await Hive.openBox<DailyMealPlan>('daily_meal_plans');
-    await Hive.openBox('settings');
-    await Hive.openBox<Recipe>('favorite_recipes');
-    await Hive.openBox<UserRecipe>('user_recipes');
-    await Hive.openBox<Reminder>('reminders');
-    await Hive.openBox<FastingLog>('fasting_logs');
-    await Hive.openBox<Routine>('routines');
-    await Hive.openBox<RoutineLog>('routine_logs');
-    await Hive.openBox<Exercise>('exercises');
-    await Hive.openBox<RoutineExercise>('routine_exercises');
-    await Hive.openBox<MealEntry>('meal_entries');
-  });
+    testWidgets('Creates a new user and logs in', (WidgetTester tester) async {
+      // Build our app and trigger a frame.
+      await tester.pumpWidget(const MyApp());
+      await tester.pumpAndSettle(); // Allow providers to initialize
 
-  // This runs once after all tests
-  tearDownAll(() async {
-    await Hive.close();
-  });
+      // We need a context to work with providers, let's find one.
+      final BuildContext context = tester.element(find.byType(MaterialApp));
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-  testWidgets('App loads main screen when a user is logged in', (
-    WidgetTester tester,
-  ) async {
-    // --- CORRECTED TEST SETUP ---
-    final userBox = Hive.box<User>('user_box');
-    final settingsBox = Hive.box('settings');
-    const testUserId = 'test-user-id';
+      // Manually clear ALL existing users for a clean test run.
+      // Create a copy of the list to avoid modification during iteration.
+      final List<User> usersToDelete = List.from(userProvider.users);
+      for (final user in usersToDelete) {
+        await userProvider.deleteUser(user.id);
+      }
+      await tester.pumpAndSettle(); // Let UI update after deletion
 
-    // 1. Put the user object in the user_box
-    await userBox.put(
-      testUserId,
-      User(
-        id: testUserId,
-        name: 'Test User',
-        gender: 'Masculino',
-        age: 30,
-        height: 180,
-        weight: 75,
-        activityLevel: 'sedentary',
-        isGuest: false,
-      ),
-    );
+      // Expect to be on the Welcome/Splash screen, which should guide to profile creation
+      // After deleting all users, we should land on the screen that allows creating a new one.
+      expect(find.text('Crear Perfil'), findsOneWidget, reason: 'Should be on the profile creation prompt screen');
 
-    // 2. Set the active user ID in the settings_box, which UserProvider uses
-    await settingsBox.put('activeUserId', testUserId);
-    
-    // Build our app with all necessary providers.
-    // MyApp no longer takes initialRoute.
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => ThemeProvider()),
-          ChangeNotifierProvider(create: (context) => UserProvider()),
-          ChangeNotifierProvider(create: (context) => FastingProvider()),
-          ChangeNotifierProvider(create: (context) => MealPlanProvider()),
-          ChangeNotifierProvider(create: (context) => RoutineProvider()),
-          ChangeNotifierProvider(create: (context) => ExerciseProvider()),
-        ],
-        child: const MyApp(), // Corrected: Removed initialRoute parameter
-      ),
-    );
+      await tester.tap(find.text('Crear Perfil'));
+      await tester.pumpAndSettle();
 
-    // Let the UI settle (e.g., for the SplashScreen to navigate).
-    await tester.pumpAndSettle();
+      // Now we should be on the profile creation screen
+      expect(find.text('Crea tu Perfil'), findsOneWidget, reason: 'Should navigate to the profile creation screen');
 
-    // Verify that the main screen has loaded by finding a key widget.
-    // The BottomNavigationBar is a good candidate.
-    expect(find.byType(BottomNavigationBar), findsOneWidget);
+      // Enter user data.
+      await tester.enterText(find.byKey(const Key('nameField')), 'Test User');
+      await tester.enterText(find.byKey(const Key('ageField')), '30');
+      await tester.enterText(find.byKey(const Key('heightField')), '175');
+      await tester.enterText(find.byKey(const Key('weightField')), '70');
+      await tester.tap(find.byKey(const Key('genderField')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Masculino').last);
+      await tester.pumpAndSettle();
 
-    // Verify that a piece of text from the Dashboard is visible.
-    expect(find.text('Calorías'), findsOneWidget);
+      // Tap the 'Guardar' button.
+      await tester.tap(find.text('Guardar'));
+      await tester.pumpAndSettle(); // Wait for navigation
+
+      // Verify that the user is redirected to the home screen (e.g., HomeScreen).
+      expect(find.text('Resumen del Día'), findsOneWidget, reason: 'Should be on the main dashboard after profile creation');
+
+      // Verify that the user is saved in the UserProvider.
+      final finalUserProvider = Provider.of<UserProvider>(context, listen: false);
+      expect(finalUserProvider.user, isNotNull);
+      expect(finalUserProvider.user!.name, 'Test User');
+    });
   });
 }

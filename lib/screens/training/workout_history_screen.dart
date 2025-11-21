@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/workout_session.dart';
 import 'package:myapp/providers/workout_history_provider.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:provider/provider.dart';
 
 class WorkoutHistoryScreen extends StatefulWidget {
@@ -14,19 +15,26 @@ class WorkoutHistoryScreen extends StatefulWidget {
 class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
   DateTime? _selectedDate;
 
-  void _presentDatePicker() {
-    showDatePicker(
+  Future<void> _presentDatePicker() async {
+    // Capture the service before the async gap.
+    final achievementService = Provider.of<AchievementService>(context, listen: false);
+
+    final pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
-    ).then((pickedDate) {
-      if (pickedDate == null) {
-        return;
-      }
-      setState(() {
-        _selectedDate = pickedDate;
-      });
+    );
+
+    // After the async gap, check if the widget is still mounted.
+    if (!mounted || pickedDate == null) {
+      return;
+    }
+
+    // Now it's safe to use the service and call setState.
+    achievementService.updateProgress('exp_filter_history', 1);
+    setState(() {
+      _selectedDate = pickedDate;
     });
   }
 
@@ -141,16 +149,12 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
       key: ValueKey(session.id),
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
-        // Primero, borramos la sesión
         final originalSession = session;
         final fullHistory = provider.workoutHistory;
-        final actualIndex = fullHistory.indexWhere(
-          (s) => s.id == originalSession.id,
-        );
+        final actualIndex = fullHistory.indexWhere((s) => s.id == originalSession.id);
 
         provider.deleteWorkoutSession(session.id);
 
-        // Luego, mostramos un SnackBar con la opción de deshacer
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Entrenamiento eliminado'),

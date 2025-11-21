@@ -1,8 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myapp/models/user_recipe.dart';
+import 'package:myapp/services/achievement_service.dart';
+import 'package:provider/provider.dart';
 
 class AddRecipeScreen extends StatefulWidget {
   const AddRecipeScreen({super.key});
@@ -67,33 +69,42 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   }
 
   Future<void> _saveRecipe() async {
-    if (_formKey.currentState!.validate()) {
-      final newRecipe = UserRecipe(
-        title: _titleController.text,
-        description: _descriptionController.text,
-        category: _categoryController.text,
-        cookingTime: int.tryParse(_cookingTimeController.text),
-        servings: int.tryParse(_servingsController.text),
-        ingredients: _ingredientControllers
-            .map((c) => c.text)
-            .where((t) => t.isNotEmpty)
-            .toList(),
-        instructions: _instructionControllers
-            .map((c) => c.text)
-            .where((t) => t.isNotEmpty)
-            .toList(),
-        imageBytes: _imageBytes,
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+
+    final achievementService =
+        Provider.of<AchievementService>(context, listen: false);
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    final newRecipe = UserRecipe(
+      title: _titleController.text,
+      description: _descriptionController.text,
+      category: _categoryController.text,
+      cookingTime: double.tryParse(_cookingTimeController.text),
+      servings: double.tryParse(_servingsController.text),
+      ingredients: _ingredientControllers
+          .map((c) => c.text)
+          .where((t) => t.isNotEmpty)
+          .toList(),
+      instructions: _instructionControllers
+          .map((c) => c.text)
+          .where((t) => t.isNotEmpty)
+          .toList(),
+      imageBytes: _imageBytes?.toList(),
+    );
+
+    final userRecipesBox = Hive.box<UserRecipe>('user_recipes');
+    await userRecipesBox.put(newRecipe.id, newRecipe);
+
+    achievementService.updateProgress('create_recipe', 1);
+
+    if (mounted) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Receta guardada con éxito')),
       );
-
-      final userRecipesBox = Hive.box<UserRecipe>('user_recipes');
-      await userRecipesBox.put(newRecipe.id, newRecipe);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Receta guardada con éxito')),
-        );
-        Navigator.pop(context);
-      }
+      navigator.pop();
     }
   }
 
@@ -149,7 +160,19 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                     decoration: const InputDecoration(
                       labelText: 'Tiempo (min)',
                     ),
-                    keyboardType: TextInputType.number,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Introduce el tiempo';
+                      }
+                      if (double.tryParse(value) == null) {
+                        return 'Introduce un número válido';
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -157,7 +180,19 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                   child: TextFormField(
                     controller: _servingsController,
                     decoration: const InputDecoration(labelText: 'Porciones'),
-                    keyboardType: TextInputType.number,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Introduce las porciones';
+                      }
+                      if (double.tryParse(value) == null) {
+                        return 'Introduce un número válido';
+                      }
+                      return null;
+                    },
                   ),
                 ),
               ],

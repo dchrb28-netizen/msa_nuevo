@@ -24,17 +24,6 @@ class WorkoutHistoryProvider with ChangeNotifier {
     return totalWeight.toInt();
   }
 
-  // Helper para contar los ejercicios únicos en toda la historia
-  int _countUniqueExercises() {
-    final uniqueExerciseNames = <String>{};
-    for (var session in _workoutHistory) {
-      for (var exercise in session.performedExercises) {
-        uniqueExerciseNames.add(exercise.exerciseName);
-      }
-    }
-    return uniqueExerciseNames.length;
-  }
-
   void addWorkoutSession(WorkoutSession session) {
     _workoutHistory.insert(0, session);
     
@@ -47,25 +36,16 @@ class WorkoutHistoryProvider with ChangeNotifier {
     _streaksService.updateWorkoutStreak();
     
     // --- Lógica de Logros ---
-    _achievementService.addExperience(25);
+    _achievementService.grantExperience(25);
     _achievementService.updateProgress('first_workout', 1);
 
     final totalWorkouts = _workoutHistory.length;
-    _achievementService.updateProgress('novice', totalWorkouts);
-    _achievementService.updateProgress('veteran', totalWorkouts);
-    _achievementService.updateProgress('king', totalWorkouts);
-    _achievementService.updateProgress('cum_train_25', totalWorkouts);
-    _achievementService.updateProgress('cum_train_100', totalWorkouts);
+    _achievementService.updateProgress('cum_train_25', totalWorkouts, cumulative: true);
+    _achievementService.updateProgress('cum_train_100', totalWorkouts, cumulative: true);
     
     // Calcular y actualizar logros de levantamiento de peso
     final totalWeight = _calculateTotalWeightLifted();
-    _achievementService.updateProgress('cum_lift_1k', totalWeight);
-    _achievementService.updateProgress('cum_lift_10k', totalWeight);
-    _achievementService.updateProgress('cum_lift_50k', totalWeight);
-
-    // Calcular y actualizar logro de ejercicios únicos
-    final uniqueExercises = _countUniqueExercises();
-    _achievementService.updateProgress('scholar', uniqueExercises);
+    _achievementService.updateProgress('cum_lift_50k', totalWeight, cumulative: true);
     // --- Fin Lógica de Logros ---
 
     notifyListeners();

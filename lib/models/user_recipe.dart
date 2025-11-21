@@ -1,13 +1,12 @@
-import 'dart:typed_data';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
 part 'user_recipe.g.dart';
 
-@HiveType(typeId: 2)
-class UserRecipe extends HiveObject {
+@HiveType(typeId: 18) // <-- CORRECTED TYPE ID
+class UserRecipe {
   @HiveField(0)
-  late String id;
+  String id;
 
   @HiveField(1)
   final String title;
@@ -22,16 +21,16 @@ class UserRecipe extends HiveObject {
   final List<String> instructions;
 
   @HiveField(5)
-  final Uint8List? imageBytes;
+  final List<int>? imageBytes;
 
   @HiveField(6)
   final String? category;
 
   @HiveField(7)
-  final int? cookingTime; // in minutes
+  final double? cookingTime; // in minutes
 
   @HiveField(8)
-  final int? servings;
+  final double? servings;
 
   @HiveField(9)
   bool isFavorite;
@@ -46,7 +45,5 @@ class UserRecipe extends HiveObject {
     this.cookingTime,
     this.servings,
     this.isFavorite = false,
-  }) {
-    id = const Uuid().v4();
-  }
+  }) : id = const Uuid().v4();
 }

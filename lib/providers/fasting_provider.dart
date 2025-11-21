@@ -97,12 +97,10 @@ class FastingProvider with ChangeNotifier {
   }
 
   void _triggerAchievementLogic() {
-    _achievementService.addExperience(15); 
+    _achievementService.grantExperience(15); 
     _achievementService.updateProgress('first_fast', 1);
 
     final totalHours = _getTotalFastingHours();
-    _achievementService.updateProgress('cum_fast_24h', totalHours);
-    _achievementService.updateProgress('cum_fast_168h', totalHours);
     _achievementService.updateProgress('cum_fast_720h', totalHours);
   }
 

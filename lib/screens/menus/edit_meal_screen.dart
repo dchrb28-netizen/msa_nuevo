@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/providers/meal_plan_provider.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:provider/provider.dart';
 
 class EditMealScreen extends StatefulWidget {
@@ -25,13 +26,34 @@ class _EditMealScreenState extends State<EditMealScreen> {
 
   void _saveMeal() {
     if (!mounted) return;
-    Provider.of<MealPlanProvider>(
-      context,
-      listen: false,
-    ).updateMealText(widget.date, widget.mealType, _textController.text);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('¡Menú guardado!')));
+
+    final newText = _textController.text;
+    final mealPlanProvider =
+        Provider.of<MealPlanProvider>(context, listen: false);
+    final originalText =
+        mealPlanProvider.getMealTextForDay(widget.date, widget.mealType);
+
+    // Update the meal text regardless of content
+    mealPlanProvider.updateMealText(widget.date, widget.mealType, newText);
+
+    // If the new text is not empty and the original was, it's a new entry
+    if (newText.isNotEmpty && originalText.isEmpty) {
+      final achievementService =
+          Provider.of<AchievementService>(context, listen: false);
+      achievementService.updateProgress('first_meal', 1);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('¡Menú guardado y logro desbloqueado!')),
+      );
+    } else if (newText.isNotEmpty && originalText.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('¡Menú actualizado!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Menú eliminado.')),
+      );
+    }
+
     Navigator.of(context).pop();
   }
 

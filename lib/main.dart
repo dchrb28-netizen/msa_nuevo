@@ -30,7 +30,7 @@ import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/providers/water_intake_provider.dart';
 import 'package:myapp/providers/workout_history_provider.dart';
-import 'package:myapp/screens/splash_screen.dart'; // Changed from welcome_screen.dart
+import 'package:myapp/screens/splash_screen.dart';
 import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:provider/provider.dart';
@@ -67,16 +67,17 @@ void main() async {
         ChangeNotifierProxyProvider<UserProvider, WaterIntakeProvider>(
           create: (context) => WaterIntakeProvider(null),
           update: (context, userProvider, previousWaterIntakeProvider) {
-            return WaterIntakeProvider(userProvider);
+            // Update the existing provider instance instead of creating a new one.
+            previousWaterIntakeProvider!.updateUser(userProvider);
+            return previousWaterIntakeProvider;
           },
         ),
       ],
-      child: const MyApp(), // Simplified MyApp constructor
+      child: const MyApp(),
     ),
   );
 }
 
-// _registerHiveAdapters, _tryRegisterAdapter, _openHiveBoxes, etc. remain unchanged
 void _registerHiveAdapters() {
   _tryRegisterAdapter(UserAdapter());
   _tryRegisterAdapter(FoodAdapter());
@@ -194,7 +195,7 @@ Future<void> _populateInitialFoodData() async {
 Future<void> _populateInitialExerciseData() async {}
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key}); // Removed initialRoute
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -343,7 +344,7 @@ class MyApp extends StatelessWidget {
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: themeProvider.themeMode,
-          home: const SplashScreen(), // Set SplashScreen as the home
+          home: const SplashScreen(),
         );
       },
     );

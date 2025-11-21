@@ -56,7 +56,7 @@ class MealPlanProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleMealCompletion(DateTime day, String mealType) {
+  void toggleMealCompletion(DateTime day, String mealType) async {
     final weekday = day.weekday;
     final meal = _weeklyPlan[weekday]?[mealType];
     if (meal != null) {
@@ -67,21 +67,17 @@ class MealPlanProvider with ChangeNotifier {
       );
       
       if (meal.isCompleted) {
-        // --- Lógica de Logros ---
-        _achievementService.addExperience(10);
+        // Otorga XP por completar una comida
+        _achievementService.grantExperience(10);
+
+        // Actualiza logros relevantes
         _achievementService.updateProgress('first_meal', 1);
 
         final totalMeals = _countTotalCompletedMeals();
-        _achievementService.updateProgress('cum_meals_100', totalMeals);
-        _achievementService.updateProgress('cum_meals_500', totalMeals);
+        _achievementService.updateProgress('cum_meals_500', totalMeals, cumulative: true);
         
-        // TODO: Implementar lógica para 'Paladar Diverso' (alimentos únicos).
-        // TODO: Implementar lógica para 'Equilibrio Energético' (meta de calorías).
-        // --- Fin Lógica de Logros ---
-
-        // --- Lógica de Rachas ---
-        _streaksService.updateMealStreak();
-        // --- Fin Lógica de Rachas ---
+        // Actualiza la racha de comidas
+        await _streaksService.updateMealStreak();
       }
 
       notifyListeners();

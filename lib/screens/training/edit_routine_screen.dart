@@ -1,11 +1,11 @@
-// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:myapp/models/exercise.dart';
 import 'package:myapp/models/routine.dart';
 import 'package:myapp/models/routine_exercise.dart';
-import 'package:myapp/screens/training/select_exercise_screen.dart';
-import 'package:provider/provider.dart';
 import 'package:myapp/providers/routine_provider.dart';
+import 'package:myapp/screens/training/select_exercise_screen.dart';
+import 'package:myapp/services/achievement_service.dart';
+import 'package:provider/provider.dart';
 
 class EditRoutineScreen extends StatefulWidget {
   final String? routineId;
@@ -19,12 +19,11 @@ class EditRoutineScreen extends StatefulWidget {
 class _EditRoutineScreenState extends State<EditRoutineScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Local UI state variables
   late String _routineName;
   late String _routineDescription;
   late String? _dayOfWeek;
   late List<RoutineExercise> _routineExercises;
-  Routine? _existingRoutine; // The original routine object for updates
+  Routine? _existingRoutine;
   bool _isCreating = true;
 
   final List<String> _days = [
@@ -40,34 +39,21 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
   @override
   void initState() {
     super.initState();
-    final routineProvider = Provider.of<RoutineProvider>(
-      context,
-      listen: false,
-    );
+    final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
 
     if (widget.routineId != null) {
-      // *** EDITING FLOW ***
       _isCreating = false;
-      // 1. Find the fully loaded routine from the provider.
-      _existingRoutine = routineProvider.routines.firstWhere(
-        (r) => r.id == widget.routineId!,
-      );
-
-      // 2. Populate local state from the existing routine.
+      _existingRoutine = routineProvider.routines.firstWhere((r) => r.id == widget.routineId!);
       _routineName = _existingRoutine!.name;
       _routineDescription = _existingRoutine!.description;
       _dayOfWeek = _existingRoutine!.dayOfWeek;
-      // 3. Create a mutable copy of the exercises for the UI to manipulate.
-      _routineExercises = List<RoutineExercise>.from(
-        _existingRoutine!.exercises ?? [],
-      );
+      _routineExercises = List<RoutineExercise>.from(_existingRoutine!.exercises ?? []);
     } else {
-      // *** CREATION FLOW ***
       _isCreating = true;
       _routineName = '';
       _routineDescription = '';
       _dayOfWeek = null;
-      _routineExercises = []; // Start with an empty list.
+      _routineExercises = [];
     }
   }
 
@@ -77,42 +63,33 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
     }
     _formKey.currentState!.save();
 
-    final routineProvider = Provider.of<RoutineProvider>(
-      context,
-      listen: false,
-    );
+    // Capture context-dependent services BEFORE the async gap.
+    final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
+    final achievementService = Provider.of<AchievementService>(context, listen: false);
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
 
     try {
       if (_isCreating) {
-        // 1. Create the routine object first.
         final newRoutine = await routineProvider.addRoutine(
           _routineName,
           _routineDescription,
           _dayOfWeek,
         );
-        // 2. Now update the new routine with the list of exercises from UI state.
         await routineProvider.updateRoutine(newRoutine, _routineExercises);
+        achievementService.updateProgress('create_routine', 1);
       } else {
-        // 1. Update the original routine object with the new name/description.
         _existingRoutine!.name = _routineName;
         _existingRoutine!.description = _routineDescription;
         _existingRoutine!.dayOfWeek = _dayOfWeek;
-        // 2. Pass the original routine and the updated exercise list to the provider.
-        await routineProvider.updateRoutine(
-          _existingRoutine!,
-          _routineExercises,
-        );
+        await routineProvider.updateRoutine(_existingRoutine!, _routineExercises);
       }
+      // Check `mounted` before using the navigator
+      if (mounted) navigator.pop();
 
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error al guardar: $e')));
-      }
+      // Check `mounted` before using the messenger
+      if (mounted) messenger.showSnackBar(SnackBar(content: Text('Error al guardar: $e')));
     }
   }
 
@@ -122,6 +99,7 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
     );
 
     if (selectedExercise != null) {
+      if (!mounted) return;
       _showExerciseSettingsDialog(exercise: selectedExercise);
     }
   }
@@ -192,6 +170,7 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
+                // ignore: deprecated_member_use
                 value: _dayOfWeek,
                 decoration: const InputDecoration(
                   labelText: 'Día de la semana (opcional)',
@@ -310,16 +289,13 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
 
       final RoutineExercise routineExerciseToSave;
       if (widget.routineExercise != null) {
-        // If editing, we update the existing instance.
         routineExerciseToSave = widget.routineExercise!;
         routineExerciseToSave.sets = _sets;
         routineExerciseToSave.reps = _reps;
         routineExerciseToSave.weight = _weight;
         routineExerciseToSave.restTime = _restTime;
-        // Ensure the exercise object is carried over
         routineExerciseToSave.setExercise(widget.exercise);
       } else {
-        // If creating, we make a new instance.
         routineExerciseToSave = RoutineExercise(
           exerciseId: widget.exercise.id,
           sets: _sets,
@@ -327,7 +303,6 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
           weight: _weight,
           restTime: _restTime,
         );
-        // Ensure the exercise object is attached immediately
         routineExerciseToSave.setExercise(widget.exercise);
       }
 
@@ -381,7 +356,7 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return null; // Optional field
+                    return null;
                   }
                   if (double.tryParse(value) == null) {
                     return 'Introduce un número válido';
@@ -400,7 +375,7 @@ class _ExerciseSettingsDialogState extends State<ExerciseSettingsDialog> {
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return null; // Optional field
+                    return null;
                   }
                   if (int.tryParse(value) == null) {
                     return 'Introduce un número válido';

@@ -8,7 +8,7 @@ part of 'user_recipe.dart';
 
 class UserRecipeAdapter extends TypeAdapter<UserRecipe> {
   @override
-  final int typeId = 2;
+  final int typeId = 18;
 
   @override
   UserRecipe read(BinaryReader reader) {
@@ -21,10 +21,10 @@ class UserRecipeAdapter extends TypeAdapter<UserRecipe> {
       description: fields[2] as String?,
       ingredients: (fields[3] as List).cast<String>(),
       instructions: (fields[4] as List).cast<String>(),
-      imageBytes: fields[5] as Uint8List?,
+      imageBytes: (fields[5] as List?)?.cast<int>(),
       category: fields[6] as String?,
-      cookingTime: fields[7] as int?,
-      servings: fields[8] as int?,
+      cookingTime: fields[7] as double?,
+      servings: fields[8] as double?,
       isFavorite: fields[9] as bool,
     )..id = fields[0] as String;
   }

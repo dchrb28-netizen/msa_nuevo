@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:myapp/models/recipe.dart';
 import 'package:myapp/models/user.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:uuid/uuid.dart';
 
 class UserProvider with ChangeNotifier {
@@ -41,19 +43,16 @@ class UserProvider with ChangeNotifier {
       userToSave = user.copyWith(id: const Uuid().v4());
     }
 
-    // Update the user in the database
     await _userBox.put(userToSave.id, userToSave);
     await _settingsBox.put(_activeUserKey, userToSave.id);
 
-    // Update the state in the provider
     _user = userToSave;
 
-    // Manually update the list of users to avoid re-reading from disk
     final index = _users.indexWhere((u) => u.id == userToSave.id);
     if (index != -1) {
-      _users[index] = userToSave; // User updated
+      _users[index] = userToSave;
     } else {
-      _users.add(userToSave); // New user added
+      _users.add(userToSave);
     }
 
     notifyListeners();
@@ -70,6 +69,30 @@ class UserProvider with ChangeNotifier {
       }
 
       notifyListeners();
+    }
+  }
+
+  Future<bool> addFavoriteRecipe(Recipe recipe) async {
+    if (_user != null && !_user!.isGuest) {
+      final updatedFavorites = List<Recipe>.from(_user!.favoriteRecipes)..add(recipe);
+      final updatedUser = _user!.copyWith(favoriteRecipes: updatedFavorites);
+      await updateUser(updatedUser);
+
+      // Actualizar logro
+      AchievementService().updateProgress('exp_add_favorite', 1, cumulative: true);
+      return true;
+    } else {
+      // Indicar que la operación no se realizó por ser invitado
+      return false;
+    }
+  }
+
+  Future<void> removeFavoriteRecipe(Recipe recipe) async {
+    if (_user != null && !_user!.isGuest) {
+      final updatedFavorites = List<Recipe>.from(_user!.favoriteRecipes)
+        ..removeWhere((r) => r.title == recipe.title);
+      final updatedUser = _user!.copyWith(favoriteRecipes: updatedFavorites);
+      await updateUser(updatedUser);
     }
   }
 
@@ -91,8 +114,6 @@ class UserProvider with ChangeNotifier {
   void logout() {
     _settingsBox.delete(_activeUserKey);
     _user = null;
-    // The _users list in memory is still correct.
-    // We just need to notify listeners that the active user is now null.
     notifyListeners();
   }
 
@@ -106,16 +127,13 @@ class UserProvider with ChangeNotifier {
   Future<void> deleteUser(String userId) async {
     final activeUserId = _settingsBox.get(_activeUserKey);
 
-    // Delete from the database
     await _userBox.delete(userId);
 
-    // If the deleted user was the active one, log them out
     if (activeUserId == userId) {
       await _settingsBox.delete(_activeUserKey);
       _user = null;
     }
 
-    // Update the in-memory list
     _users.removeWhere((u) => u.id == userId);
 
     notifyListeners();
