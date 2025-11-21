@@ -46,7 +46,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     super.dispose();
   }
 
-  // ... (el resto de los métodos como _startRestTimer, _cancelRestTimer, etc. se mantienen igual)
   void _startRestTimer(int exerciseIndex, int restTimeInSeconds) {
     if (restTimeInSeconds <= 0) return;
 
@@ -71,11 +70,13 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
   void _cancelRestTimer() {
     _timer?.cancel();
-    setState(() {
-      _isResting = false;
-      _restingExerciseIndex = null;
-      _countdownTime = 0;
-    });
+    if (mounted) {
+      setState(() {
+        _isResting = false;
+        _restingExerciseIndex = null;
+        _countdownTime = 0;
+      });
+    }
   }
 
   @override
@@ -88,7 +89,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Entrenamiento: ${widget.routine.name}'),
+        title: Text('Entrenamiento: \${widget.routine.name}'),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => _showExitConfirmationDialog(),
@@ -110,7 +111,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 if (exercise == null) {
                   return ListTile(
                     title: Text(
-                      'Ejercicio no encontrado (ID: ${routineExercise.exerciseId})',
+                      'Ejercicio no encontrado (ID: \${routineExercise.exerciseId})',
                     ),
                     leading: const Icon(Icons.error_outline, color: Colors.red),
                   );
@@ -131,9 +132,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          onPressed: _isResting
-              ? null
-              : () => _finishWorkout(context: context), // Pasamos el context
+          onPressed: _isResting ? null : _finishWorkout,
         ),
       ),
     );
@@ -166,7 +165,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              '${routineExercise.sets} series x ${routineExercise.reps} reps',
+              '\${routineExercise.sets} series x \${routineExercise.reps} reps',
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
@@ -185,14 +184,13 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${routineExercise.restTime} seg de descanso',
+                      '\${routineExercise.restTime} seg de descanso',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
               ),
             const SizedBox(height: 16),
-
             if (isCurrentlyResting)
               _buildTimerWidget(routineExercise.restTime!)
             else
@@ -233,7 +231,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                           const Icon(Icons.check, size: 18),
                           const SizedBox(width: 6),
                         ],
-                        Text('Set ${setIndex + 1}'),
+                        Text('Set \${setIndex + 1}'),
                       ],
                     ),
                   );
@@ -250,7 +248,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 if (log == null) return const SizedBox.shrink();
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 4.0),
-                  child: Text('  • Set ${setIndex + 1}: ${log.toString()}'),
+                  child: Text('  • Set \${setIndex + 1}: \${log.toString()}'),
                 );
               }),
             ],
@@ -272,11 +270,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             Icon(Icons.timer, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 8),
             Text(
-              '$_countdownTime',
+              '\$_countdownTime',
               style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
             ),
             const SizedBox(width: 4),
             Text('seg', style: Theme.of(context).textTheme.titleMedium),
@@ -321,7 +319,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: Text('Registrar Set ${setIndex + 1}'),
+          title: Text('Registrar Set \${setIndex + 1}'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -355,12 +353,12 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               onPressed: () {
                 final int? reps = int.tryParse(repsController.text);
                 final String weightText = weightController.text;
-                final double? weight = weightText.isEmpty
-                    ? null
-                    : double.tryParse(weightText);
+                final double? weight =
+                    weightText.isEmpty ? null : double.tryParse(weightText);
 
                 if (reps != null) {
                   if (weightText.isNotEmpty && weight == null) {
+                    if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
@@ -386,6 +384,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     _startRestTimer(exerciseIndex, routineExercise.restTime!);
                   }
                 } else {
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text(
@@ -424,7 +423,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               onPressed: () {
                 _timer?.cancel();
                 Navigator.of(ctx).pop();
-                Navigator.of(context).pop();
+                if (mounted) {
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ],
@@ -433,8 +434,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     );
   }
 
-  Future<void> _finishWorkout({required BuildContext context}) async {
+  Future<void> _finishWorkout() async {
     _timer?.cancel();
+    
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     final durationInMinutes = DateTime.now().difference(_startTime).inMinutes;
 
@@ -458,10 +462,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       final exercise = exerciseProvider.getExerciseById(
         routineExercise.exerciseId,
       );
-      final List<SetLog> completedSets = logs
-          .where((log) => log != null)
-          .cast<SetLog>()
-          .toList();
+      final List<SetLog> completedSets =
+          logs.where((log) => log != null).cast<SetLog>().toList();
 
       if (exercise != null && completedSets.isNotEmpty) {
         performedExercisesForHistory.add(
@@ -476,10 +478,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       }
     });
 
-    if (!context.mounted) return;
-
     if (performedExercisesForHistory.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(
         const SnackBar(
           content: Text(
             'No se ha registrado ninguna serie. El entrenamiento no se guardará.',
@@ -489,7 +490,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       return;
     }
 
-    // Guardar con la duración
     final newSession = WorkoutSession(
       routineName: widget.routine.name,
       date: DateTime.now(),
@@ -506,12 +506,12 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     );
     await routineProvider.addRoutineLog(newLog);
 
-    if (!context.mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
+    if (!mounted) return;
+    scaffoldMessenger.showSnackBar(
       const SnackBar(content: Text('¡Entrenamiento guardado! Buen trabajo.')),
     );
 
-    Navigator.of(context).pop();
+    if (!mounted) return;
+    navigator.pop();
   }
 }
