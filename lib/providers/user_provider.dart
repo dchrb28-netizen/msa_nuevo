@@ -47,22 +47,20 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> updateUser(User updatedUser) async {
-    // Solo actualiza si el usuario activo es el que se está modificando.
     if (_user?.id == updatedUser.id) {
-      _user = updatedUser; // 1. Actualiza el estado en el provider.
-      await _userBox.put(updatedUser.id, updatedUser); // 2. Guarda el cambio en la base de datos.
+      _user = updatedUser;
+      await _userBox.put(updatedUser.id, updatedUser);
 
-      // 3. Actualiza la lista de usuarios para mantener la consistencia.
       final index = _users.indexWhere((u) => u.id == updatedUser.id);
       if (index != -1) {
         _users[index] = updatedUser;
       }
 
-      notifyListeners(); // 4. Notifica a todos los oyentes para que se redibujen.
+      notifyListeners();
     }
   }
 
-  void setGuestUser() {
+  void loginAsGuest() {
     final guestUser = User(
       id: 'guest',
       name: 'Invitado',
@@ -80,7 +78,7 @@ class UserProvider with ChangeNotifier {
   void logout() {
     _settingsBox.delete(_activeUserKey);
     _user = null;
-    loadUsers(); // Recargar la lista de usuarios
+    loadUsers();
   }
 
   Future<void> switchUser(String userId) async {
