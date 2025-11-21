@@ -26,6 +26,19 @@ class ProfileSelectionScreen extends StatelessWidget {
         ? 'assets/luna_png/luna_splash_b.png'
         : 'assets/luna_png/luna_splash_w.png';
 
+    // Define explicit colors for better visibility
+    final bodyTextColor = themeProvider.themeMode == ThemeMode.dark
+        ? Colors.grey[300]
+        : Colors.black.withOpacity(0.7);
+
+    final outlinedButtonForegroundColor = themeProvider.themeMode == ThemeMode.dark
+        ? Colors.grey[300]
+        : Colors.black.withOpacity(0.7);
+
+    final outlinedButtonBorderColor = themeProvider.themeMode == ThemeMode.dark
+        ? Colors.grey[700]
+        : Colors.grey[400];
+
     void continueAsGuest() {
       userProvider.loginAsGuest();
       Navigator.of(context).pushReplacement(
@@ -56,7 +69,7 @@ class ProfileSelectionScreen extends StatelessWidget {
               const SizedBox(height: 24),
               Text(
                 '¡Bienvenido a MiSaludActiva!',
-                style: textTheme.headlineSmall?.copyWith(
+                style: textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colorScheme.primary,
                 ),
@@ -65,7 +78,9 @@ class ProfileSelectionScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'Parece que no hay perfiles. ¡Crea uno para empezar a registrar tu progreso o explora la app como invitado!',
-                style: textTheme.bodyLarge,
+                style: textTheme.bodyLarge?.copyWith(
+                  color: bodyTextColor,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
@@ -84,8 +99,8 @@ class ProfileSelectionScreen extends StatelessWidget {
                 label: const Text('Continuar como invitado'),
                 onPressed: continueAsGuest,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: colorScheme.secondary,
-                  side: BorderSide(color: colorScheme.secondary),
+                  foregroundColor: outlinedButtonForegroundColor,
+                  side: BorderSide(color: outlinedButtonBorderColor!),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   textStyle: textTheme.titleMedium,
                 ),
@@ -126,15 +141,11 @@ class ProfileSelectionScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: backgroundColor, // Apply the explicit background color
-      appBar: AppBar(
-        title: const Text('Seleccionar Perfil'),
-        backgroundColor: Colors.transparent, // Make AppBar transparent to see the background
-        elevation: 0,
-        foregroundColor: themeProvider.themeMode == ThemeMode.dark ? Colors.white : Colors.black,
+      body: SafeArea(
+        child: userProvider.users.isEmpty
+            ? noProfilesWidget()
+            : profilesListWidget(),
       ),
-      body: userProvider.users.isEmpty
-          ? noProfilesWidget()
-          : profilesListWidget(),
       floatingActionButton: userProvider.users.isEmpty
           ? null // Hide FAB when there are no profiles
           : FloatingActionButton.extended(
