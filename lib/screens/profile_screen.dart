@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/profile/create_profile_screen.dart';
+import 'package:myapp/screens/profile_selection_screen.dart';
 import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/widgets/profile/profile_edit_view.dart';
 import 'package:myapp/widgets/profile/profile_read_view.dart';
@@ -174,11 +175,21 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _logout() {
-    final navigator = Navigator.of(context);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final navigator = Navigator.of(context);
+
+    // Actualiza el estado del usuario
     userProvider.logout();
-    navigator.pushNamedAndRemoveUntil('/profile_selection', (route) => false);
+
+    // Programa la navegación para que ocurra justo después de que termine el frame actual
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      navigator.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const ProfileSelectionScreen()),
+        (route) => false,
+      );
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -26,14 +26,14 @@ class ProfileSelectionScreen extends StatelessWidget {
         ? 'assets/luna_png/luna_splash_b.png'
         : 'assets/luna_png/luna_splash_w.png';
 
-    void _continueAsGuest() {
+    void continueAsGuest() {
       userProvider.loginAsGuest();
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const MainScreen()),
       );
     }
 
-    void _navigateToCreateProfile() {
+    void navigateToCreateProfile() {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
@@ -72,7 +72,7 @@ class ProfileSelectionScreen extends StatelessWidget {
               ElevatedButton.icon(
                 icon: Icon(PhosphorIcons.userPlus(PhosphorIconsStyle.bold)),
                 label: const Text('Crear Perfil'),
-                onPressed: _navigateToCreateProfile,
+                onPressed: navigateToCreateProfile,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   textStyle: textTheme.titleMedium,
@@ -82,7 +82,7 @@ class ProfileSelectionScreen extends StatelessWidget {
               OutlinedButton.icon(
                 icon: Icon(PhosphorIcons.user(PhosphorIconsStyle.regular)),
                 label: const Text('Continuar como invitado'),
-                onPressed: _continueAsGuest,
+                onPressed: continueAsGuest,
                 style: OutlinedButton.styleFrom(
                   foregroundColor: colorScheme.secondary,
                   side: BorderSide(color: colorScheme.secondary),
@@ -138,7 +138,7 @@ class ProfileSelectionScreen extends StatelessWidget {
       floatingActionButton: userProvider.users.isEmpty
           ? null // Hide FAB when there are no profiles
           : FloatingActionButton.extended(
-              onPressed: _navigateToCreateProfile,
+              onPressed: navigateToCreateProfile,
               label: const Text('Añadir Perfil'),
               icon: Icon(PhosphorIcons.plus(PhosphorIconsStyle.regular)),
             ),
