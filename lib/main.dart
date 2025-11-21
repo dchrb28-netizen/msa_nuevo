@@ -21,7 +21,6 @@ import 'package:myapp/models/routine_exercise.dart';
 import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/models/set_log.dart';
 import 'package:myapp/models/user.dart';
-// import 'package:myapp/models/user_profile.dart'; // Unused import removed
 import 'package:myapp/models/user_recipe.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/exercise_provider.dart';
@@ -32,10 +31,7 @@ import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/providers/water_intake_provider.dart';
 import 'package:myapp/providers/workout_history_provider.dart';
-import 'package:myapp/screens/main_screen.dart';
-import 'package:myapp/screens/profile_screen.dart';
-import 'package:myapp/screens/profile_selection_screen.dart';
-import 'package:myapp/screens/welcome_screen.dart';
+import 'package:myapp/screens/splash_screen.dart'; // Changed from welcome_screen.dart
 import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +41,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
   await initializeDateFormatting('es', null);
-  
+
   // --- ROBUST HIVE STARTUP SEQUENCE ---
   await Hive.initFlutter();
   _registerHiveAdapters();
@@ -58,46 +54,6 @@ void main() async {
   await _populateInitialFoodData();
   await _populateInitialExerciseData();
 
-  final userBox = Hive.box<User>('user_box');
-
-  developer.log("--- STARTUP DIAGNOSTICS ---", name: 'main.startup');
-  developer.log(
-    "Total entries in user_box: ${userBox.values.length}",
-    name: 'main.startup',
-  );
-  for (var user in userBox.values) {
-    developer.log(
-      "User found: name=${user.name}, isGuest=${user.isGuest}, key=${user.key}",
-      name: 'main.startup',
-    );
-  }
-
-  final activeUser = userBox.get('activeUser');
-  final bool profileExists = userBox.values.any((user) => !user.isGuest);
-  final bool activeUserExists = activeUser != null;
-
-  developer.log(
-    "Active user check (retrieved from key 'activeUser'): $activeUser",
-    name: 'main.startup',
-  );
-  developer.log(
-    "activeUserExists flag: $activeUserExists",
-    name: 'main.startup',
-  );
-  developer.log("profileExists flag: $profileExists", name: 'main.startup');
-
-  String initialRoute;
-  if (activeUserExists) {
-    initialRoute = '/';
-  } else if (profileExists) {
-    initialRoute = '/profile_selection';
-  } else {
-    initialRoute = '/welcome';
-  }
-
-  developer.log("Final initialRoute: $initialRoute", name: 'main.startup');
-  developer.log("--- END OF DIAGNOSTICS ---", name: 'main.startup');
-
   runApp(
     MultiProvider(
       providers: [
@@ -108,7 +64,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => RoutineProvider()),
         ChangeNotifierProvider(create: (context) => ExerciseProvider()),
         ChangeNotifierProvider(create: (context) => WorkoutHistoryProvider()),
-        ChangeNotifierProvider.value(value: AchievementService()), // Use .value constructor for singletons
+        ChangeNotifierProvider.value(value: AchievementService()),
         ChangeNotifierProxyProvider<UserProvider, WaterIntakeProvider>(
           create: (context) => WaterIntakeProvider(null),
           update: (context, userProvider, previousWaterIntakeProvider) {
@@ -116,14 +72,14 @@ void main() async {
           },
         ),
       ],
-      child: MyApp(initialRoute: initialRoute),
+      child: const MyApp(), // Simplified MyApp constructor
     ),
   );
 }
 
+// _registerHiveAdapters, _tryRegisterAdapter, _openHiveBoxes, etc. remain unchanged
 void _registerHiveAdapters() {
   _tryRegisterAdapter(UserAdapter());
-  // UserProfileAdapter is no longer needed.
   _tryRegisterAdapter(FoodAdapter());
   _tryRegisterAdapter(WaterLogAdapter());
   _tryRegisterAdapter(FoodLogAdapter());
@@ -151,7 +107,7 @@ void _tryRegisterAdapter<T>(TypeAdapter<T> adapter) {
 
 Future<void> _openHiveBoxes() async {
   await Hive.openBox<User>('user_box');
-  await Hive.openBox('profile_data'); // Changed to generic box
+  await Hive.openBox('profile_data');
   await Hive.openBox<Food>('foods');
   await Hive.openBox<WaterLog>('water_logs');
   await Hive.openBox<FoodLog>('food_logs');
@@ -239,16 +195,13 @@ Future<void> _populateInitialFoodData() async {
 Future<void> _populateInitialExerciseData() async {}
 
 class MyApp extends StatelessWidget {
-  final String initialRoute;
-  const MyApp({super.key, required this.initialRoute});
+  const MyApp({super.key}); // Removed initialRoute
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
-        final textTheme =
-            GoogleFonts.montserratTextTheme(Theme.of(context).textTheme)
-                .copyWith(
+        final textTheme = GoogleFonts.montserratTextTheme(Theme.of(context).textTheme).copyWith(
           displayLarge: const TextStyle(fontSize: 57, fontWeight: FontWeight.bold),
           displayMedium: const TextStyle(fontSize: 45, fontWeight: FontWeight.bold),
           displaySmall: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
@@ -316,7 +269,7 @@ class MyApp extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: lightColorScheme.primary,
               foregroundColor: lightColorScheme.onPrimary,
-              shape: RoundedRectangleBorder( // Corrected typo here
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -391,13 +344,7 @@ class MyApp extends StatelessWidget {
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: themeProvider.themeMode,
-          initialRoute: initialRoute,
-          routes: {
-            '/': (context) => const MainScreen(),
-            '/welcome': (context) => const WelcomeScreen(),
-            '/profile': (context) => const ProfileScreen(),
-            '/profile_selection': (context) => const ProfileSelectionScreen(),
-          },
+          home: const SplashScreen(), // Set SplashScreen as the home
         );
       },
     );
