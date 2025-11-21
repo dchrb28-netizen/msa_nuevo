@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/providers/user_provider.dart';
-import 'package:myapp/screens/menus/edit_meal_screen.dart';
 import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -27,51 +26,41 @@ class _FoodTodayViewState extends State<FoodTodayView> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.chevron_left),
-                  onPressed: () => _changeDate(-1),
-                ),
-                Text(
-                  DateFormat.yMMMd('es').format(_selectedDate),
-                  style: GoogleFonts.lato(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.chevron_right),
-                  onPressed: DateUtils.isSameDay(_selectedDate, DateTime.now())
-                      ? null
-                      : () => _changeDate(1),
-                ),
-              ],
-            ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: 8.0,
           ),
-          _buildCaloriesSummaryCard(context),
-          const SizedBox(height: 16),
-          Expanded(child: FoodLogListView(date: _selectedDate)),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _selectMealTypeAndEdit(context),
-        label: const Text('Registrar'),
-        icon: const Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.chevron_left),
+                onPressed: () => _changeDate(-1),
+              ),
+              Text(
+                DateFormat.yMMMd('es').format(_selectedDate),
+                style: GoogleFonts.lato(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.chevron_right),
+                onPressed: DateUtils.isSameDay(_selectedDate, DateTime.now())
+                    ? null
+                    : () => _changeDate(1),
+              ),
+            ],
+          ),
+        ),
+        _buildCaloriesSummaryCard(context),
+        const SizedBox(height: 16),
+        Expanded(child: FoodLogListView(date: _selectedDate)),
+        const SizedBox(height: 80), // Padding for the FAB
+      ],
     );
   }
 
@@ -296,42 +285,6 @@ class _FoodTodayViewState extends State<FoodTodayView> {
           textAlign: TextAlign.center,
         ),
       ],
-    );
-  }
-
-  void _selectMealTypeAndEdit(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        final mealTypes = ['Desayuno', 'Almuerzo', 'Cena', 'Snacks'];
-        final mealIcons = [
-          Icons.free_breakfast,
-          Icons.lunch_dining,
-          Icons.dinner_dining,
-          Icons.fastfood,
-        ];
-
-        return Wrap(
-          children: List.generate(mealTypes.length, (index) {
-            return ListTile(
-              leading: Icon(mealIcons[index]),
-              title: Text(mealTypes[index]),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditMealScreen(
-                      mealType: mealTypes[index],
-                      date: _selectedDate,
-                    ),
-                  ),
-                );
-              },
-            );
-          }),
-        );
-      },
     );
   }
 }

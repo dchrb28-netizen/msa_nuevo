@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/habits/habits_screen.dart';
-import 'package:myapp/screens/logs_screen.dart';
+import 'package:myapp/screens/logs/logs_screen.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/recipes/recipes_screen.dart';
@@ -47,7 +47,7 @@ class DrawerMenu extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const LogsScreen(),
+              builder: (context) => LogsScreen(initialIndex: tabIndex),
             ),
           );
         },

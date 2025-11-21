@@ -7,7 +7,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
 class LogsScreen extends StatelessWidget {
-  const LogsScreen({super.key});
+  final int initialIndex;
+
+  const LogsScreen({super.key, this.initialIndex = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +23,11 @@ class LogsScreen extends StatelessWidget {
         : Colors.black;
 
     return DefaultTabController(
+      initialIndex: initialIndex,
       length: 3,
       child: Scaffold(
         appBar: AppBar(
+          title: const Text('Registros'),
           bottom: TabBar(
             indicatorColor: tabColor,
             labelColor: tabColor,
