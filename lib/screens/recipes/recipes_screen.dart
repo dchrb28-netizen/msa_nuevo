@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/user_recipe.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/screens/recipes/add_recipe_screen.dart';
+import 'package:myapp/screens/recipes/user_recipe_detail_screen.dart';
 import 'package:myapp/services/recipe_service.dart';
 import 'package:myapp/models/recipe.dart';
 import 'package:provider/provider.dart';
@@ -788,73 +789,83 @@ class CreatedRecipesTab extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               clipBehavior: Clip.antiAlias,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    alignment: Alignment.topRight,
-                    children: [
-                      if (recipe.imageBytes != null)
-                        Image.memory(
-                          Uint8List.fromList(recipe.imageBytes!),
-                          width: double.infinity,
-                          height: 180,
-                          fit: BoxFit.cover,
-                        )
-                      else
-                        Container(
-                          height: 180,
-                          color: Colors.grey[300],
-                          child: const Center(
-                            child: Icon(
-                              Icons.restaurant_menu,
-                              size: 50,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                      IconButton(
-                        icon: Icon(
-                          recipe.isFavorite
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          color: recipe.isFavorite ? Colors.red : Colors.white,
-                          size: 30,
-                        ),
-                        onPressed: () {
-                          recipe.isFavorite = !recipe.isFavorite;
-                          box.put(recipe.id, recipe);
-                        },
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserRecipeDetailScreen(recipe: recipe),
+                    ),
+                  );
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      alignment: Alignment.topRight,
                       children: [
-                        Text(
-                          recipe.title,
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (recipe.description != null &&
-                            recipe.description!.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(
-                              recipe.description!,
-                              style: Theme.of(context).textTheme.bodyMedium,
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
+                        if (recipe.imageBytes != null)
+                          Image.memory(
+                            Uint8List.fromList(recipe.imageBytes!),
+                            width: double.infinity,
+                            height: 180,
+                            fit: BoxFit.cover,
+                          )
+                        else
+                          Container(
+                            height: 180,
+                            color: Colors.grey[300],
+                            child: const Center(
+                              child: Icon(
+                                Icons.restaurant_menu,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
+                        IconButton(
+                          icon: Icon(
+                            recipe.isFavorite
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: recipe.isFavorite ? Colors.red : Colors.white,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            recipe.isFavorite = !recipe.isFavorite;
+                            box.put(recipe.id, recipe);
+                          },
+                        ),
                       ],
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            recipe.title,
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (recipe.description != null &&
+                              recipe.description!.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                recipe.description!,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },

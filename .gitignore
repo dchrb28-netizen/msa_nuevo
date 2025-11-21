@@ -9,49 +9,43 @@
 .history
 .svn/
 
-# IntelliJ related
+# IntelliJ
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# Flutter/Dart related
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
 /build/
-/.dart_tool/
-/.flutter-plugins
-/.flutter-plugins-dependencies
-/.pub-cache/
-/.pub/
-/doc/api/
 
-# Android related
-**/android/generated/
-**/android/build/
-**/android/app/build/
-**/android/app/src/main/assets/flutter_assets/
+# Web
+.dart_tool/build/
+.dart_tool/web/
 
-# iOS related
-**/ios/build/
-**/ios/Flutter/App.framework
-**/ios/Flutter/engine.framework
-**/ios/Flutter/flutter_assets/
-**/ios/Pods/
-**/ios/Runner/GeneratedPluginRegistrant.h
-**/ios/Runner/GeneratedPluginRegistrant.m
-**/ios/Runner.xcworkspace
+# Build and distribution
+/build/
+/ios/Flutter/App.framework
+/ios/Flutter/engine
+/ios/Flutter/flutter_assets/
+/android/app/build/
+/android/.gradle/
+/android/gradle/
+/android/gradlew
+/android/gradlew.bat
 
-# Build artifacts
-**/build/
+# Generated code
+*.g.dart
+*.freezed.dart
 
-# Web related
-/web/build/
-/web/.dart_tool/
+# VS Code
+.vscode/
 
-# Windows related
-/windows/build/
-
-# Linux related
-/linux/build/
-
-# macOS related
-/macos/build/
+# Ignore generating files in the native folders
+/android/key.properties
+/ios/Runner/GoogleService-Info.plist
