@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/screens/logs/food_history_screen.dart';
 import 'package:myapp/screens/logs/food_today_view.dart';
+import 'package:myapp/screens/register_food_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:myapp/screens/menus/edit_meal_screen.dart';
-import 'package:intl/intl.dart';
 
 class FoodLogScreen extends StatefulWidget {
   const FoodLogScreen({super.key});
@@ -14,44 +13,6 @@ class FoodLogScreen extends StatefulWidget {
 }
 
 class _FoodLogScreenState extends State<FoodLogScreen> {
-  final DateTime _selectedDate = DateTime.now();
-
-  void _selectMealTypeAndEdit(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        final mealTypes = ['Desayuno', 'Almuerzo', 'Cena', 'Snacks'];
-        final mealIcons = [
-          Icons.free_breakfast,
-          Icons.lunch_dining,
-          Icons.dinner_dining,
-          Icons.fastfood,
-        ];
-
-        return Wrap(
-          children: List.generate(mealTypes.length, (index) {
-            return ListTile(
-              leading: Icon(mealIcons[index]),
-              title: Text(mealTypes[index]),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditMealScreen(
-                      mealType: mealTypes[index],
-                      date: _selectedDate,
-                    ),
-                  ),
-                );
-              },
-            );
-          }),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -84,7 +45,14 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
           children: [FoodTodayView(), FoodHistoryScreen()],
         ),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => _selectMealTypeAndEdit(context),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const RegisterFoodScreen(),
+              ),
+            );
+          },
           label: const Text('Registrar'),
           icon: const Icon(Icons.add),
         ),
