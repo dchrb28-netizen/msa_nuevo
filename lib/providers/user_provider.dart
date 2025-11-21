@@ -40,16 +40,29 @@ class UserProvider with ChangeNotifier {
     if (user.id == 'guest' || user.id.isEmpty) {
       userToSave = user.copyWith(id: const Uuid().v4());
     }
-    _user = userToSave;
+
+    // Update the user in the database
     await _userBox.put(userToSave.id, userToSave);
     await _settingsBox.put(_activeUserKey, userToSave.id);
-    loadUsers();
+
+    // Update the state in the provider
+    _user = userToSave;
+
+    // Manually update the list of users to avoid re-reading from disk
+    final index = _users.indexWhere((u) => u.id == userToSave.id);
+    if (index != -1) {
+      _users[index] = userToSave; // User updated
+    } else {
+      _users.add(userToSave); // New user added
+    }
+
+    notifyListeners();
   }
 
   Future<void> updateUser(User updatedUser) async {
     if (_user?.id == updatedUser.id) {
-      _user = updatedUser;
       await _userBox.put(updatedUser.id, updatedUser);
+      _user = updatedUser;
 
       final index = _users.indexWhere((u) => u.id == updatedUser.id);
       if (index != -1) {
@@ -78,7 +91,9 @@ class UserProvider with ChangeNotifier {
   void logout() {
     _settingsBox.delete(_activeUserKey);
     _user = null;
-    loadUsers();
+    // The _users list in memory is still correct.
+    // We just need to notify listeners that the active user is now null.
+    notifyListeners();
   }
 
   Future<void> switchUser(String userId) async {
@@ -90,11 +105,19 @@ class UserProvider with ChangeNotifier {
 
   Future<void> deleteUser(String userId) async {
     final activeUserId = _settingsBox.get(_activeUserKey);
+
+    // Delete from the database
+    await _userBox.delete(userId);
+
+    // If the deleted user was the active one, log them out
     if (activeUserId == userId) {
       await _settingsBox.delete(_activeUserKey);
       _user = null;
     }
-    await _userBox.delete(userId);
-    loadUsers();
+
+    // Update the in-memory list
+    _users.removeWhere((u) => u.id == userId);
+
+    notifyListeners();
   }
 }
