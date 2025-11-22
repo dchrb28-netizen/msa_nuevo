@@ -120,8 +120,8 @@ class DrawerMenu extends StatelessWidget {
                         ClipOval(
                           child: Image.asset(
                             frameAsset,
-                            width: 90, // Aumentado para que el marco sea más grande
-                            height: 90, // Aumentado para que el marco sea más grande
+                            width: 100, // Aumentado para que el marco sea más grande
+                            height: 100, // Aumentado para que el marco sea más grande
                             fit: BoxFit.cover,
                           ),
                         ),

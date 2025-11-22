@@ -76,9 +76,8 @@ Esta es una aplicación de fitness desarrollada en Flutter, diseñada para ayuda
 
 - **Mejora Visual de Marcos de Perfil:**
   - **Objetivo:** Aumentar el tamaño y la prominencia de los marcos de perfil del usuario para que sean más visibles y estéticamente atractivos, reflejando mejor el nivel o estatus del usuario.
-  - Se modificó el `DrawerHeader` en `lib/widgets/drawer_menu.dart` para agrandar el marco sin alterar el tamaño de la imagen de perfil.
-  - Se aplicó el mismo ajuste visual en el saludo de bienvenida en `lib/screens/dashboard_screen.dart`.
-  - **Resultado:** Los marcos de perfil ahora tienen un borde más grueso y notorio, mejorando la jerarquía visual en el menú lateral y el dashboard.
+  - Se modificó el `DrawerHeader` en `lib/widgets/drawer_menu.dart` y el `_buildWelcomeHeader` en `lib/screens/dashboard_screen.dart` para agrandar el marco a un tamaño final de 100x100 píxeles, sin alterar el tamaño de la imagen de perfil.
+  - **Resultado:** Los marcos de perfil ahora tienen un borde dorado mucho más grueso y notorio, mejorando la jerarquía visual y el atractivo estético en el menú lateral y el dashboard.
 
 ## Plan de Cambios Anteriores
 
