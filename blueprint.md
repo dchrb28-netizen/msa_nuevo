@@ -62,6 +62,7 @@ Esta es una aplicación de fitness desarrollada en Flutter, diseñada para ayuda
 
 ## Características Implementadas
 
+- **Marcos de Perfil Mejorados:** Se ha mejorado la visibilidad y el diseño de los marcos de nivel del usuario en el menú lateral y el dashboard para un mayor impacto visual.
 - **Navegación Unificada de Recompensas y Rachas:** Las secciones de "Logros" y "Rachas" se han unificado bajo una única pantalla con una barra de navegación inferior, mejorando la experiencia de usuario.
 - **Gráficos de Progreso Avanzados:** Gráficos de línea interactivos para el seguimiento del peso y el consumo de agua, con indicadores de máximo/mínimo y líneas de objetivo.
 - **Seguimiento de Progreso a Largo Plazo:** Pantalla dedicada para visualizar el progreso de peso y el resumen de actividad semanal.
@@ -70,6 +71,14 @@ Esta es una aplicación de fitness desarrollada en Flutter, diseñada para ayuda
 - **Gestión de Ejercicios y Rutinas:** Biblioteca de ejercicios y creación de rutinas personalizadas.
 - **Seguimiento de Entrenamientos:** Historial de entrenamientos con funcionalidades avanzadas.
 - **Rachas de Hábitos:** Sistema de seguimiento de rachas para hidratación, registro de comidas, entrenamientos, calorías y ayuno intermitente.
+
+## Plan de Cambios Actual
+
+- **Mejora Visual de Marcos de Perfil:**
+  - **Objetivo:** Aumentar el tamaño y la prominencia de los marcos de perfil del usuario para que sean más visibles y estéticamente atractivos, reflejando mejor el nivel o estatus del usuario.
+  - Se modificó el `DrawerHeader` en `lib/widgets/drawer_menu.dart` para agrandar el marco sin alterar el tamaño de la imagen de perfil.
+  - Se aplicó el mismo ajuste visual en el saludo de bienvenida en `lib/screens/dashboard_screen.dart`.
+  - **Resultado:** Los marcos de perfil ahora tienen un borde más grueso y notorio, mejorando la jerarquía visual en el menú lateral y el dashboard.
 
 ## Plan de Cambios Anteriores
 

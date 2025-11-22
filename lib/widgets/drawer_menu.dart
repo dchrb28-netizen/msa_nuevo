@@ -117,13 +117,16 @@ class DrawerMenu extends StatelessWidget {
                     Stack(
                       alignment: Alignment.center,
                       children: [
-                        Image.asset(
-                          frameAsset,
-                          width: 60,
-                          height: 60,
+                        ClipOval(
+                          child: Image.asset(
+                            frameAsset,
+                            width: 90, // Aumentado para que el marco sea más grande
+                            height: 90, // Aumentado para que el marco sea más grande
+                            fit: BoxFit.cover,
+                          ),
                         ),
                         CircleAvatar(
-                          radius: 16,
+                          radius: 28, // Se mantiene el tamaño de la imagen de perfil
                           backgroundColor: headerTextColor,
                           backgroundImage: user?.profileImageBytes != null
                               ? MemoryImage(user!.profileImageBytes!)
@@ -131,7 +134,7 @@ class DrawerMenu extends StatelessWidget {
                           child: user?.profileImageBytes == null
                               ? Icon(
                                   PhosphorIcons.person(),
-                                  size: 18,
+                                  size: 30,
                                   color: themeProvider.seedColor,
                                 )
                               : null,
@@ -285,14 +288,14 @@ class DrawerMenu extends StatelessWidget {
                 icon: PhosphorIcons.medal(), // Icono actualizado
                 iconColor: Colors.yellow[600]!,
                 title: 'Mis Logros', // Título actualizado
-                destination: const RewardsAndStreaksScreen(initialTabIndex: 0),
+                destination: const RewardsAndStreaksScreen(),
               ),
               buildListTile(
                 context,
                 icon: PhosphorIcons.fire(),
                 iconColor: Colors.deepOrange[400]!,
                 title: 'Rachas',
-                destination: const RewardsAndStreaksScreen(initialTabIndex: 1),
+                destination: const RewardsAndStreaksScreen(),
               ),
             ],
           ),
