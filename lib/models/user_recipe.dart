@@ -3,7 +3,7 @@ import 'package:uuid/uuid.dart';
 
 part 'user_recipe.g.dart';
 
-@HiveType(typeId: 18) // <-- CORRECTED TYPE ID
+@HiveType(typeId: 19) // Changed to 19 to avoid conflict with RoutineExercise (typeId: 18)
 class UserRecipe {
   @HiveField(0)
   String id;

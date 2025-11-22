@@ -22,7 +22,12 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-  void _checkProfileAndNavigate() {
+  Future<void> _checkProfileAndNavigate() async {
+    // Add a small delay to ensure Hive boxes are fully loaded
+    await Future.delayed(const Duration(milliseconds: 100));
+    
+    if (!mounted) return;
+    
     // We get the provider and navigator once before any async gaps.
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final navigator = Navigator.of(context);

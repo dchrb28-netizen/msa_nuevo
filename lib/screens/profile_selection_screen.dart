@@ -29,11 +29,11 @@ class ProfileSelectionScreen extends StatelessWidget {
     // Define explicit colors for better visibility
     final bodyTextColor = themeProvider.themeMode == ThemeMode.dark
         ? Colors.grey[300]
-        : Colors.black.withOpacity(0.7);
+        : Colors.black.withValues(alpha: 0.7);
 
     final outlinedButtonForegroundColor = themeProvider.themeMode == ThemeMode.dark
         ? Colors.grey[300]
-        : Colors.black.withOpacity(0.7);
+        : Colors.black.withValues(alpha: 0.7);
 
     final outlinedButtonBorderColor = themeProvider.themeMode == ThemeMode.dark
         ? Colors.grey[700]
