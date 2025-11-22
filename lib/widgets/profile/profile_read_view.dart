@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/screens/profile/frames_screen.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:provider/provider.dart';
 
 class ProfileReadView extends StatelessWidget {
   final User user;
@@ -15,21 +17,9 @@ class ProfileReadView extends StatelessWidget {
     required this.activityLevelOptions,
   });
 
-  String getFrameForLevel(String? level) {
-    switch (level?.toLowerCase()) {
-      case 'aprendiz':
-        return 'assets/marcos/marco_aprendiz.png';
-      case 'atleta':
-        return 'assets/marcos/marco_atleta.png';
-      case 'competidor':
-        return 'assets/marcos/marco_competidor.png';
-      case 'leyenda':
-        return 'assets/marcos/marco_leyenda.png';
-      case 'titán':
-        return 'assets/marcos/marco_titán.png';
-      default:
-        return 'assets/marcos/marco_bienvenido.png';
-    }
+  String getFrameForTitle(String? title) {
+      if (title == null) return 'assets/marcos/marco_bienvenido.png';
+      return 'assets/marcos/marco_${title.toLowerCase().replaceAll(' ', '_')}.png';
   }
 
   @override
@@ -37,7 +27,9 @@ class ProfileReadView extends StatelessWidget {
     final profileImage = user.profileImageBytes != null
         ? MemoryImage(user.profileImageBytes!)
         : null;
-    final frameAsset = getFrameForLevel(user.level);
+    final achievementService = Provider.of<AchievementService>(context);
+    final selectedFrame = achievementService.userProfile.selectedTitle;
+    final frameAsset = getFrameForTitle(selectedFrame);
 
     return Center(
       child: Column(
@@ -48,22 +40,32 @@ class ProfileReadView extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               if (user.showProfileFrame ?? true) // Asegura retrocompatibilidad
-                ClipOval(
-                  child: Image.asset(
-                    frameAsset,
-                    width: 220,
-                    height: 220,
-                    fit: BoxFit.cover,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FramesScreen(),
+                      ),
+                    );
+                  },
+                  child: ClipOval(
+                    child: Image.asset(
+                      frameAsset,
+                      width: 250,
+                      height: 250,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               CircleAvatar(
-                radius: 60,
+                radius: 65,
                 backgroundColor: Colors.grey[300],
                 backgroundImage: profileImage,
                 child: profileImage == null
                     ? const Icon(
                         Icons.person,
-                        size: 65,
+                        size: 55,
                         color: Colors.white,
                       )
                     : null,

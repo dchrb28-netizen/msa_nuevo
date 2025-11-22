@@ -14,6 +14,8 @@ class FramesScreen extends StatelessWidget {
     // Lista de todos los marcos disponibles y sus logros asociados
     final allFrames = {
       'Bienvenido': 'welcome_frame', // ID para el marco de bienvenida
+      'Bienvenido1': 'welcome_frame1',
+      'Bienvenido2': 'welcome_frame2',
       'Aprendiz': 'level_up_5',
       'Atleta': 'level_up_10',
       'Competidor': 'level_up_20',
@@ -40,9 +42,7 @@ class FramesScreen extends StatelessWidget {
           final achievementId = allFrames.values.elementAt(index);
           
           // El marco 'Bienvenido' siempre está desbloqueado
-          final isUnlocked = frameName == 'Bienvenido' 
-              ? true 
-              : achievementService.getAchievements().any((a) => a.id == achievementId && a.isUnlocked);
+          final isUnlocked = true;
 
           final achievement = achievementService.getAchievements().firstWhere(
               (a) => a.id == achievementId,
@@ -54,10 +54,7 @@ class FramesScreen extends StatelessWidget {
                   category: AchievementCategory.milestones,
                   isUnlocked: true));
           
-          // Corregir la ruta de la imagen para el marco de bienvenida
-          final imagePath = frameName == 'Bienvenido'
-              ? 'assets/marcos/marco_bienvenido.png'
-              : 'assets/marcos/marco_${frameName.toLowerCase().replaceAll(' ', '_')}.png';
+          final imagePath = 'assets/marcos/marco_${frameName.toLowerCase().replaceAll(' ', '_')}.png';
 
           return GestureDetector(
             onTap: () {

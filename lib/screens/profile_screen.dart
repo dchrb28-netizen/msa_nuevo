@@ -249,11 +249,14 @@ class ProfileScreenState extends State<ProfileScreen> {
                         user: user!,
                       )
                     : (user != null
-                        ? ProfileReadView(
-                            user: user,
-                            genderOptions: _genderOptions,
-                            activityLevelOptions: _activityLevelOptions,
-                          )
+                        ? Consumer<AchievementService>(
+                            builder: (context, achievementService, child) {
+                            return ProfileReadView(
+                              user: user,
+                              genderOptions: _genderOptions,
+                              activityLevelOptions: _activityLevelOptions,
+                            );
+                          })
                         : const SizedBox.shrink()),
               ),
             ),
