@@ -31,22 +31,24 @@ class ProfileReadView extends StatelessWidget {
           Stack(
             alignment: Alignment.center,
             children: [
-              // 1. El marco (agrandado) se dibuja en el fondo.
+              // 1. Marco recortado en forma de círculo.
               if (selectedFrame != null)
-                Image.asset(
-                  'assets/marcos/marco_${selectedFrame!.toLowerCase().replaceAll(' ', '_')}.png',
-                  width: 220,
-                  height: 220,
-                  fit: BoxFit.contain,
+                ClipOval(
+                  child: Image.asset(
+                    'assets/marcos/marco_${selectedFrame!.toLowerCase().replaceAll(' ', '_')}.png',
+                    width: 220, 
+                    height: 220,
+                    fit: BoxFit.cover, // Usar BoxFit.cover para llenar el círculo
+                  ),
                 ),
 
-              // 2. Contenedor circular con la foto de perfil, dibujado encima.
+              // 2. Contenedor circular con la foto de perfil.
               Container(
                 width: 140,
                 height: 140,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.grey[300], // Fondo para el caso de que no haya imagen
+                  color: Colors.grey[300],
                   image: profileImage != null
                       ? DecorationImage(
                           image: profileImage,
@@ -54,7 +56,6 @@ class ProfileReadView extends StatelessWidget {
                         )
                       : null,
                 ),
-                // Si no hay imagen de perfil, muestra un ícono.
                 child: profileImage == null
                     ? const Icon(
                         Icons.person,
@@ -63,31 +64,34 @@ class ProfileReadView extends StatelessWidget {
                       )
                     : null,
               ),
-
-              // 3. Botón para cambiar marcos, siempre visible.
-              Positioned(
-                bottom: 0,
-                left: 0,
-                child: Material(
-                  color: Colors.transparent,
-                  child: IconButton(
-                    icon: Icon(PhosphorIcons.frameCorners(PhosphorIconsStyle.duotone), color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
-                    tooltip: 'Ver Marcos',
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FramesScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 24),
-          Text(user.name, style: Theme.of(context).textTheme.headlineMedium),
+          // 3. Nombre de usuario y botón para cambiar marco en una fila.
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(user.name, style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: Icon(
+                  PhosphorIcons.frameCorners(PhosphorIconsStyle.duotone),
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 32,
+                ),
+                tooltip: 'Cambiar Marco',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FramesScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
           const SizedBox(height: 40),
           _buildInfoCard(context, user),
         ],
