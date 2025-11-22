@@ -114,11 +114,13 @@ class FrameCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(
-                    imagePath,
-                    fit: BoxFit.contain,
-                    color: isUnlocked ? null : Colors.grey.withAlpha(128),
-                    colorBlendMode: isUnlocked ? null : BlendMode.saturation,
+                  ClipOval(
+                    child: Image.asset(
+                      imagePath,
+                      fit: BoxFit.contain,
+                      color: isUnlocked ? null : Colors.grey.withAlpha(128),
+                      colorBlendMode: isUnlocked ? null : BlendMode.saturation,
+                    ),
                   ),
                    if (!isUnlocked)
                     Center(

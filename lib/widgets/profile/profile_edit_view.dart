@@ -68,10 +68,13 @@ class ProfileEditView extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Image.asset(
-                  frameAsset,
-                  width: 220,
-                  height: 220,
+                ClipOval(
+                  child: Image.asset(
+                    frameAsset,
+                    width: 220,
+                    height: 220,
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 CircleAvatar(
                   radius: 60,
