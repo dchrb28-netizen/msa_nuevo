@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:myapp/models/user.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ProfileEditView extends StatelessWidget {
@@ -17,6 +18,7 @@ class ProfileEditView extends StatelessWidget {
   final VoidCallback onSaveProfile;
   final Function(String?) onGenderChanged;
   final Function(String?) onActivityLevelChanged;
+  final User user;
 
   const ProfileEditView({
     super.key,
@@ -34,10 +36,30 @@ class ProfileEditView extends StatelessWidget {
     required this.onSaveProfile,
     required this.onGenderChanged,
     required this.onActivityLevelChanged,
+    required this.user,
   });
+
+  String getFrameForLevel(String? level) {
+    switch (level?.toLowerCase()) {
+      case 'aprendiz':
+        return 'assets/marcos/marco_aprendiz.png';
+      case 'atleta':
+        return 'assets/marcos/marco_atleta.png';
+      case 'competidor':
+        return 'assets/marcos/marco_competidor.png';
+      case 'leyenda':
+        return 'assets/marcos/marco_leyenda.png';
+      case 'titán':
+        return 'assets/marcos/marco_titán.png';
+      default:
+        return 'assets/marcos/marco_bienvenido.png';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final frameAsset = getFrameForLevel(user.level);
+
     return Form(
       key: formKey,
       child: Column(
@@ -46,6 +68,11 @@ class ProfileEditView extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
+                Image.asset(
+                  frameAsset,
+                  width: 220,
+                  height: 220,
+                ),
                 CircleAvatar(
                   radius: 80,
                   backgroundColor: Theme.of(

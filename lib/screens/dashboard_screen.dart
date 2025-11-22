@@ -34,6 +34,23 @@ class DashboardScreen extends StatelessWidget {
     return motivationalQuotes[random.nextInt(motivationalQuotes.length)];
   }
 
+  String getFrameForLevel(String? level) {
+    switch (level?.toLowerCase()) {
+      case 'aprendiz':
+        return 'assets/marcos/marco_aprendiz.png';
+      case 'atleta':
+        return 'assets/marcos/marco_atleta.png';
+      case 'competidor':
+        return 'assets/marcos/marco_competidor.png';
+      case 'leyenda':
+        return 'assets/marcos/marco_leyenda.png';
+      case 'titán':
+        return 'assets/marcos/marco_titán.png';
+      default:
+        return 'assets/marcos/marco_bienvenido.png';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,19 +76,32 @@ class DashboardScreen extends StatelessWidget {
     return Consumer<UserProvider>(
       builder: (context, userProvider, child) {
         final user = userProvider.user;
+        final frameAsset = getFrameForLevel(user?.level);
+
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.white70,
-                backgroundImage: (user?.profileImageBytes != null)
-                    ? MemoryImage(user!.profileImageBytes!)
-                    : null,
-                child: (user?.profileImageBytes == null)
-                    ? Icon(PhosphorIcons.user(PhosphorIconsStyle.duotone), size: 40, color: Colors.grey)
-                    : null,
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Image.asset(
+                    frameAsset,
+                    width: 80,
+                    height: 80,
+                  ),
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.white70,
+                    backgroundImage: (user?.profileImageBytes != null)
+                        ? MemoryImage(user!.profileImageBytes!)
+                        : null,
+                    child: (user?.profileImageBytes == null)
+                        ? Icon(PhosphorIcons.user(PhosphorIconsStyle.duotone),
+                            size: 40, color: Colors.grey)
+                        : null,
+                  ),
+                ],
               ),
               const SizedBox(width: 16),
               Flexible(

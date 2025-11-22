@@ -7,21 +7,37 @@ class ProfileReadView extends StatelessWidget {
   final User user;
   final Map<String, String> genderOptions;
   final Map<String, String> activityLevelOptions;
-  final String? selectedFrame;
 
   const ProfileReadView({
     super.key,
     required this.user,
     required this.genderOptions,
     required this.activityLevelOptions,
-    this.selectedFrame,
   });
+
+  String getFrameForLevel(String? level) {
+    switch (level?.toLowerCase()) {
+      case 'aprendiz':
+        return 'assets/marcos/marco_aprendiz.png';
+      case 'atleta':
+        return 'assets/marcos/marco_atleta.png';
+      case 'competidor':
+        return 'assets/marcos/marco_competidor.png';
+      case 'leyenda':
+        return 'assets/marcos/marco_leyenda.png';
+      case 'titán':
+        return 'assets/marcos/marco_titán.png';
+      default:
+        return 'assets/marcos/marco_bienvenido.png';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final profileImage = user.profileImageBytes != null
         ? MemoryImage(user.profileImageBytes!)
         : null;
+    final frameAsset = getFrameForLevel(user.level);
 
     return Center(
       child: Column(
@@ -31,35 +47,19 @@ class ProfileReadView extends StatelessWidget {
           Stack(
             alignment: Alignment.center,
             children: [
-              // 1. Marco recortado en forma de círculo.
-              if (selectedFrame != null)
-                ClipOval(
-                  child: Image.asset(
-                    'assets/marcos/marco_${selectedFrame!.toLowerCase().replaceAll(' ', '_')}.png',
-                    width: 220,
-                    height: 220,
-                    fit: BoxFit.cover, // Usar BoxFit.cover para llenar el círculo
-                  ),
-                ),
-
-              // 2. Contenedor circular con la foto de perfil (tamaño reducido).
-              Container(
-                width: 130,
-                height: 130,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.grey[300],
-                  image: profileImage != null
-                      ? DecorationImage(
-                          image: profileImage,
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                ),
+              Image.asset(
+                frameAsset,
+                width: 220,
+                height: 220,
+              ),
+              CircleAvatar(
+                radius: 65,
+                backgroundColor: Colors.grey[300],
+                backgroundImage: profileImage,
                 child: profileImage == null
                     ? const Icon(
                         Icons.person,
-                        size: 70, // Ajustar también el ícono por si no hay foto
+                        size: 70,
                         color: Colors.white,
                       )
                     : null,
@@ -67,7 +67,6 @@ class ProfileReadView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-          // 3. Nombre de usuario y botón para cambiar marco en una fila.
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

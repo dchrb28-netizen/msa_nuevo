@@ -194,8 +194,6 @@ class ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).user;
-    final achievementService = Provider.of<AchievementService>(context);
-    final selectedFrame = achievementService.userProfile.selectedTitle;
 
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -247,13 +245,13 @@ class ProfileScreenState extends State<ProfileScreen> {
                             setState(() => _selectedGender = value),
                         onActivityLevelChanged: (value) =>
                             setState(() => _activityLevel = value),
+                        user: user!,
                       )
                     : (user != null
                           ? ProfileReadView(
                               user: user,
                               genderOptions: _genderOptions,
                               activityLevelOptions: _activityLevelOptions,
-                              selectedFrame: selectedFrame,
                             )
                           : const SizedBox.shrink()),
               ),

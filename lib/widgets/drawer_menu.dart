@@ -32,6 +32,25 @@ class DrawerMenu extends StatelessWidget {
 
     final headerTextColor = textColorForBackground(themeProvider.seedColor);
 
+    String getFrameForLevel(String? level) {
+      switch (level?.toLowerCase()) {
+        case 'aprendiz':
+          return 'assets/marcos/marco_aprendiz.png';
+        case 'atleta':
+          return 'assets/marcos/marco_atleta.png';
+        case 'competidor':
+          return 'assets/marcos/marco_competidor.png';
+        case 'leyenda':
+          return 'assets/marcos/marco_leyenda.png';
+        case 'titán':
+          return 'assets/marcos/marco_titán.png';
+        default:
+          return 'assets/marcos/marco_bienvenido.png';
+      }
+    }
+
+    final frameAsset = getFrameForLevel(user?.level);
+
     Widget buildLogListTile(
       BuildContext context, {
       required IconData icon,
@@ -79,65 +98,76 @@ class DrawerMenu extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-              padding: EdgeInsets.zero,
-              decoration: BoxDecoration(color: themeProvider.seedColor),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ProfileScreen(),
-                    ),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundColor: headerTextColor,
-                        backgroundImage: user?.profileImageBytes != null
-                            ? MemoryImage(user!.profileImageBytes!)
-                            : null,
-                        child: user?.profileImageBytes == null
-                            ? Icon(
-                                PhosphorIcons.person(),
-                                size: 40,
-                                color: themeProvider.seedColor,
-                              )
-                            : null,
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              user?.name ?? 'Invitado',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: headerTextColor,
-                              ),
-                            ),
-                            Text(
-                              'Toca para ver o editar tu perfil',
-                              style: GoogleFonts.lato(
-                                fontSize: 14,
-                                color: headerTextColor.withAlpha(204),
-                              ),
-                              softWrap: true,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(color: themeProvider.seedColor),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
                   ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Image.asset(
+                          frameAsset,
+                          width: 80,
+                          height: 80,
+                        ),
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundColor: headerTextColor,
+                          backgroundImage: user?.profileImageBytes != null
+                              ? MemoryImage(user!.profileImageBytes!)
+                              : null,
+                          child: user?.profileImageBytes == null
+                              ? Icon(
+                                  PhosphorIcons.person(),
+                                  size: 40,
+                                  color: themeProvider.seedColor,
+                                )
+                              : null,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            user?.name ?? 'Invitado',
+                            style: GoogleFonts.montserrat(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: headerTextColor,
+                            ),
+                          ),
+                          Text(
+                            'Toca para ver o editar tu perfil',
+                            style: GoogleFonts.lato(
+                              fontSize: 14,
+                              color: headerTextColor.withAlpha(204),
+                            ),
+                            softWrap: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),), 
+              ),
+            ),
+          ),
           ListTile(
             leading: Icon(PhosphorIcons.house(), color: themeProvider.seedColor),
             title: Text('Inicio', style: GoogleFonts.lato()),

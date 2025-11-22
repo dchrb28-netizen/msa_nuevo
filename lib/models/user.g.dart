@@ -35,13 +35,14 @@ class UserAdapter extends TypeAdapter<User> {
       waterGoal: fields[15] as double?,
       favoriteRecipes: (fields[16] as List?)?.cast<Recipe>(),
       initialWeight: fields[17] as double?,
+      level: fields[18] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(19)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -77,7 +78,9 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(16)
       ..write(obj.favoriteRecipes)
       ..writeByte(17)
-      ..write(obj.initialWeight);
+      ..write(obj.initialWeight)
+      ..writeByte(18)
+      ..write(obj.level);
   }
 
   @override
