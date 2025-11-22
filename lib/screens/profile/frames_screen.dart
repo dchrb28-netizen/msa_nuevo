@@ -13,6 +13,7 @@ class FramesScreen extends StatelessWidget {
 
     // Lista de todos los marcos disponibles y sus logros asociados
     final allFrames = {
+      'Bienvenido': 'welcome_frame', // ID para el marco de bienvenida
       'Aprendiz': 'level_up_5',
       'Atleta': 'level_up_10',
       'Competidor': 'level_up_20',
@@ -37,12 +38,26 @@ class FramesScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final frameName = allFrames.keys.elementAt(index);
           final achievementId = allFrames.values.elementAt(index);
-          final achievement = achievementService.getAchievements()
-              .firstWhere((a) => a.id == achievementId, orElse: () => Achievement(id: '', name: '', description: '', icon: Icons.lock, category: AchievementCategory.milestones, isUnlocked: false));
           
-          final isUnlocked = achievement.isUnlocked;
-          final imagePath =
-              'assets/marcos/marco_${frameName.toLowerCase().replaceAll(' ', '_')}.png';
+          // El marco 'Bienvenido' siempre está desbloqueado
+          final isUnlocked = frameName == 'Bienvenido' 
+              ? true 
+              : achievementService.getAchievements().any((a) => a.id == achievementId && a.isUnlocked);
+
+          final achievement = achievementService.getAchievements().firstWhere(
+              (a) => a.id == achievementId,
+              orElse: () => Achievement(
+                  id: '',
+                  name: '',
+                  description: 'Este marco está disponible por defecto.',
+                  icon: Icons.lock,
+                  category: AchievementCategory.milestones,
+                  isUnlocked: true));
+          
+          // Corregir la ruta de la imagen para el marco de bienvenida
+          final imagePath = frameName == 'Bienvenido'
+              ? 'assets/marcos/marco_bienvenido.png'
+              : 'assets/marcos/marco_${frameName.toLowerCase().replaceAll(' ', '_')}.png';
 
           return GestureDetector(
             onTap: () {

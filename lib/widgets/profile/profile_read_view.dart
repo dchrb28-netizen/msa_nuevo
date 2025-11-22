@@ -42,8 +42,8 @@ class ProfileReadView extends StatelessWidget {
 
               // 2. Contenedor circular con la foto de perfil, dibujado encima.
               Container(
-                width: 160,
-                height: 160,
+                width: 140,
+                height: 140,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.grey[300], // Fondo para el caso de que no haya imagen

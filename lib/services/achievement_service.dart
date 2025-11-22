@@ -170,6 +170,8 @@ class AchievementService extends ChangeNotifier {
   void _initializeAchievements() {
     _masterAchievements.clear();
     _masterAchievements.addAll([
+       Achievement(id: 'welcome_frame', name: 'Bienvenido', description: 'Marco de bienvenida por defecto.', icon: PhosphorIcons.star(PhosphorIconsStyle.duotone), category: AchievementCategory.milestones, isUnlocked: true),
+
       // --- First Steps ---
       Achievement(id: 'first_water_log', name: 'Primer Trago', description: 'Registra tu ingesta de agua por primera vez.', icon: PhosphorIcons.dropSimple(PhosphorIconsStyle.duotone), category: AchievementCategory.firstSteps),
       Achievement(id: 'first_workout', name: 'Primer Sudor', description: 'Completa tu primer entrenamiento.', icon: PhosphorIcons.barbell(PhosphorIconsStyle.duotone), category: AchievementCategory.firstSteps),
