@@ -103,6 +103,12 @@ class AchievementService extends ChangeNotifier {
     _commitChanges();
   }
 
+  Future<void> setSelectedTitle(String? title) async {
+    _userProfile.selectedTitle = title;
+    updateProgress('exp_frame_change', 1);
+    await _commitChanges();
+  }
+
   void grantExperience(int points) {
     _addExperience(points);
     _commitChanges();
@@ -206,6 +212,7 @@ class AchievementService extends ChangeNotifier {
       // --- Exploration ---
       Achievement(id: 'exp_profile_complete', name: 'Identidad Definida', description: 'Completa todos los campos de tu perfil.', icon: PhosphorIcons.identificationCard(PhosphorIconsStyle.duotone), category: AchievementCategory.exploration),
       Achievement(id: 'exp_theme_change', name: 'Sastre Digital', description: 'Personaliza el tema de la aplicación.', icon: PhosphorIcons.paintBrush(PhosphorIconsStyle.duotone), category: AchievementCategory.exploration),
+      Achievement(id: 'exp_frame_change', name: 'Artista del Perfil', description: 'Cambia tu marco de perfil por primera vez.', icon: PhosphorIcons.frameCorners(PhosphorIconsStyle.duotone), category: AchievementCategory.exploration),
       Achievement(id: 'exp_about_page', name: 'Curioso', description: 'Visita la pantalla "Acerca de".', icon: PhosphorIcons.question(PhosphorIconsStyle.duotone), category: AchievementCategory.exploration),
       Achievement(id: 'exp_add_favorite', name: 'Gourmet', description: 'Guarda 10 recetas en tus favoritos.', icon: PhosphorIcons.star(PhosphorIconsStyle.duotone), category: AchievementCategory.exploration, goal: 10, unit: 'recetas'),
       Achievement(id: 'exp_filter_history', name: 'Analista de Datos', description: 'Usa los filtros del historial de entrenamiento.', icon: PhosphorIcons.funnel(PhosphorIconsStyle.duotone), category: AchievementCategory.exploration),

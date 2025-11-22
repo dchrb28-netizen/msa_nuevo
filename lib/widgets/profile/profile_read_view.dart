@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/user.dart';
+import 'package:myapp/screens/profile/frames_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ProfileReadView extends StatelessWidget {
   final User user;
   final Map<String, String> genderOptions;
   final Map<String, String> activityLevelOptions;
+  final String? selectedFrame;
 
   const ProfileReadView({
     super.key,
     required this.user,
     required this.genderOptions,
     required this.activityLevelOptions,
+    this.selectedFrame,
   });
 
   @override
@@ -25,16 +28,63 @@ class ProfileReadView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 20),
-          CircleAvatar(
-            radius: 80,
-            backgroundImage: profileImage,
-            child: profileImage == null
-                ? Icon(
-                    PhosphorIcons.user(PhosphorIconsStyle.duotone),
-                    size: 80,
-                    color: Theme.of(context).colorScheme.primary,
-                  )
-                : null,
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              // 1. El marco (agrandado) se dibuja en el fondo.
+              if (selectedFrame != null)
+                Image.asset(
+                  'assets/marcos/marco_${selectedFrame!.toLowerCase().replaceAll(' ', '_')}.png',
+                  width: 220,
+                  height: 220,
+                  fit: BoxFit.contain,
+                ),
+
+              // 2. Contenedor circular con la foto de perfil, dibujado encima.
+              Container(
+                width: 160,
+                height: 160,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.grey[300], // Fondo para el caso de que no haya imagen
+                  image: profileImage != null
+                      ? DecorationImage(
+                          image: profileImage,
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                ),
+                // Si no hay imagen de perfil, muestra un ícono.
+                child: profileImage == null
+                    ? const Icon(
+                        Icons.person,
+                        size: 80,
+                        color: Colors.white,
+                      )
+                    : null,
+              ),
+
+              // 3. Botón para cambiar marcos, siempre visible.
+              Positioned(
+                bottom: 0,
+                left: 0,
+                child: Material(
+                  color: Colors.transparent,
+                  child: IconButton(
+                    icon: Icon(PhosphorIcons.frameCorners(PhosphorIconsStyle.duotone), color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
+                    tooltip: 'Ver Marcos',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FramesScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 24),
           Text(user.name, style: Theme.of(context).textTheme.headlineMedium),
