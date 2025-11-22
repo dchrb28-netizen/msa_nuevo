@@ -31,12 +31,12 @@ class ProfileReadView extends StatelessWidget {
     final selectedFrame = achievementService.userProfile.selectedTitle;
     final frameAsset = getFrameForTitle(selectedFrame);
 
-    return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 20),
-          Stack(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const SizedBox(height: 20),
+        Center(
+          child: Stack(
             alignment: Alignment.center,
             children: [
               if (user.showProfileFrame ?? true) // Asegura retrocompatibilidad
@@ -59,7 +59,7 @@ class ProfileReadView extends StatelessWidget {
                   ),
                 ),
               CircleAvatar(
-                radius: 65,
+                radius: 63,
                 backgroundColor: Colors.grey[300],
                 backgroundImage: profileImage,
                 child: profileImage == null
@@ -72,35 +72,35 @@ class ProfileReadView extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(user.name, style: Theme.of(context).textTheme.headlineMedium),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: Icon(
-                  PhosphorIcons.frameCorners(PhosphorIconsStyle.duotone),
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 32,
-                ),
-                tooltip: 'Cambiar Marco',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const FramesScreen(),
-                    ),
-                  );
-                },
+        ),
+        const SizedBox(height: 24),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(user.name, style: Theme.of(context).textTheme.headlineMedium),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: Icon(
+                PhosphorIcons.frameCorners(PhosphorIconsStyle.duotone),
+                color: Theme.of(context).colorScheme.primary,
+                size: 32,
               ),
-            ],
-          ),
-          const SizedBox(height: 40),
-          _buildInfoCard(context, user),
-        ],
-      ),
+              tooltip: 'Cambiar Marco',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FramesScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 40),
+        _buildInfoCard(context, user),
+      ],
     );
   }
 
