@@ -47,14 +47,15 @@ class ProfileReadView extends StatelessWidget {
           Stack(
             alignment: Alignment.center,
             children: [
-              ClipOval(
-                child: Image.asset(
-                  frameAsset,
-                  width: 220,
-                  height: 220,
-                  fit: BoxFit.cover,
+              if (user.showProfileFrame ?? true) // Asegura retrocompatibilidad
+                ClipOval(
+                  child: Image.asset(
+                    frameAsset,
+                    width: 220,
+                    height: 220,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
               CircleAvatar(
                 radius: 60,
                 backgroundColor: Colors.grey[300],

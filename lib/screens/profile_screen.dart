@@ -32,6 +32,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   String? _selectedGender;
   String? _activityLevel;
   Uint8List? _profileImageBytes;
+  bool _showProfileFrame = true;
 
   final Map<String, String> _genderOptions = {
     'male': 'Masculino',
@@ -83,6 +84,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     _selectedGender = user?.gender ?? _genderOptions.keys.first;
     _activityLevel = user?.activityLevel ?? _activityLevelOptions.keys.first;
     _profileImageBytes = user?.profileImageBytes;
+    _showProfileFrame = user?.showProfileFrame ?? true;
   }
 
   @override
@@ -139,8 +141,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final messenger = ScaffoldMessenger.of(context);
 
-      final updatedUser = User(
-        id: userProvider.user!.id,
+      final updatedUser = userProvider.user!.copyWith(
         name: _nameController.text,
         gender: _selectedGender!,
         age: int.tryParse(_ageController.text) ?? 0,
@@ -148,7 +149,7 @@ class ProfileScreenState extends State<ProfileScreen> {
         weight: double.tryParse(_weightController.text) ?? 0,
         activityLevel: _activityLevel!,
         profileImageBytes: _profileImageBytes,
-        isGuest: false,
+        showProfileFrame: _showProfileFrame,
       );
 
       try {
@@ -178,10 +179,8 @@ class ProfileScreenState extends State<ProfileScreen> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final navigator = Navigator.of(context);
 
-    // Actualiza el estado del usuario
     userProvider.logout();
 
-    // Programa la navegación para que ocurra justo después de que termine el frame actual
     WidgetsBinding.instance.addPostFrameCallback((_) {
       navigator.pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const ProfileSelectionScreen()),
@@ -189,7 +188,6 @@ class ProfileScreenState extends State<ProfileScreen> {
       );
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -239,21 +237,24 @@ class ProfileScreenState extends State<ProfileScreen> {
                         profileImageBytes: _profileImageBytes,
                         genderOptions: _genderOptions,
                         activityLevelOptions: _activityLevelOptions,
+                        showProfileFrame: _showProfileFrame,
                         onPickImage: _pickImage,
                         onSaveProfile: _saveProfile,
                         onGenderChanged: (value) =>
                             setState(() => _selectedGender = value),
                         onActivityLevelChanged: (value) =>
                             setState(() => _activityLevel = value),
+                        onShowProfileFrameChanged: (value) =>
+                            setState(() => _showProfileFrame = value),
                         user: user!,
                       )
                     : (user != null
-                          ? ProfileReadView(
-                              user: user,
-                              genderOptions: _genderOptions,
-                              activityLevelOptions: _activityLevelOptions,
-                            )
-                          : const SizedBox.shrink()),
+                        ? ProfileReadView(
+                            user: user,
+                            genderOptions: _genderOptions,
+                            activityLevelOptions: _activityLevelOptions,
+                          )
+                        : const SizedBox.shrink()),
               ),
             ),
         ],

@@ -117,16 +117,17 @@ class DrawerMenu extends StatelessWidget {
                     Stack(
                       alignment: Alignment.center,
                       children: [
-                        ClipOval(
-                          child: Image.asset(
-                            frameAsset,
-                            width: 100, // Aumentado para que el marco sea más grande
-                            height: 100, // Aumentado para que el marco sea más grande
-                            fit: BoxFit.cover,
+                        if (user?.showProfileFrame ?? true)
+                          ClipOval(
+                            child: Image.asset(
+                              frameAsset,
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
                         CircleAvatar(
-                          radius: 28, // Se mantiene el tamaño de la imagen de perfil
+                          radius: 28,
                           backgroundColor: headerTextColor,
                           backgroundImage: user?.profileImageBytes != null
                               ? MemoryImage(user!.profileImageBytes!)
@@ -285,9 +286,9 @@ class DrawerMenu extends StatelessWidget {
             children: [
               buildListTile(
                 context,
-                icon: PhosphorIcons.medal(), // Icono actualizado
+                icon: PhosphorIcons.medal(),
                 iconColor: Colors.yellow[600]!,
-                title: 'Mis Logros', // Título actualizado
+                title: 'Mis Logros',
                 destination: const RewardsAndStreaksScreen(),
               ),
               buildListTile(

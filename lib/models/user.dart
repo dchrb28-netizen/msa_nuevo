@@ -58,10 +58,13 @@ class User extends HiveObject {
   List<Recipe> favoriteRecipes;
 
   @HiveField(17)
-  double? initialWeight; // Nuevo campo para el peso inicial
+  double? initialWeight;
 
   @HiveField(18)
-  String? level; // Nuevo campo para el nivel
+  String? level;
+
+  @HiveField(19)
+  bool? showProfileFrame; // Puede ser nulo para retrocompatibilidad
 
   User({
     required this.id,
@@ -81,8 +84,9 @@ class User extends HiveObject {
     this.dietPlan = 'Mantener',
     this.waterGoal,
     List<Recipe>? favoriteRecipes,
-    this.initialWeight, // Añadido al constructor
-    this.level, // Añadido al constructor
+    this.initialWeight,
+    this.level,
+    this.showProfileFrame,
   }) : favoriteRecipes = favoriteRecipes ?? [];
 
   User copyWith({
@@ -103,8 +107,9 @@ class User extends HiveObject {
     String? dietPlan,
     double? waterGoal,
     List<Recipe>? favoriteRecipes,
-    double? initialWeight, // Añadido a copyWith
-    String? level, // Añadido a copyWith
+    double? initialWeight,
+    String? level,
+    bool? showProfileFrame,
   }) {
     return User(
       id: id ?? this.id,
@@ -124,8 +129,9 @@ class User extends HiveObject {
       dietPlan: dietPlan ?? this.dietPlan,
       waterGoal: waterGoal ?? this.waterGoal,
       favoriteRecipes: favoriteRecipes ?? this.favoriteRecipes,
-      initialWeight: initialWeight ?? this.initialWeight, // Añadido a copyWith
-      level: level ?? this.level, // Añadido a copyWith
+      initialWeight: initialWeight ?? this.initialWeight,
+      level: level ?? this.level,
+      showProfileFrame: showProfileFrame ?? this.showProfileFrame,
     );
   }
 }

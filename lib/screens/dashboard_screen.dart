@@ -85,16 +85,17 @@ class DashboardScreen extends StatelessWidget {
               Stack(
                 alignment: Alignment.center,
                 children: [
-                  ClipOval(
-                    child: Image.asset(
-                      frameAsset,
-                      width: 100, // Aumentado para que el marco sea más grande
-                      height: 100, // Aumentado para que el marco sea más grande
-                      fit: BoxFit.cover,
+                  if (user?.showProfileFrame ?? true)
+                    ClipOval(
+                      child: Image.asset(
+                        frameAsset,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
                   CircleAvatar(
-                    radius: 28, // Se mantiene el tamaño de la imagen de perfil
+                    radius: 28,
                     backgroundColor: Colors.white70,
                     backgroundImage: (user?.profileImageBytes != null)
                         ? MemoryImage(user!.profileImageBytes!)

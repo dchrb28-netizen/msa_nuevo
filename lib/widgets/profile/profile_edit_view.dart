@@ -18,6 +18,8 @@ class ProfileEditView extends StatelessWidget {
   final VoidCallback onSaveProfile;
   final Function(String?) onGenderChanged;
   final Function(String?) onActivityLevelChanged;
+  final bool showProfileFrame;
+  final Function(bool) onShowProfileFrameChanged;
   final User user;
 
   const ProfileEditView({
@@ -36,6 +38,8 @@ class ProfileEditView extends StatelessWidget {
     required this.onSaveProfile,
     required this.onGenderChanged,
     required this.onActivityLevelChanged,
+    required this.showProfileFrame,
+    required this.onShowProfileFrameChanged,
     required this.user,
   });
 
@@ -68,14 +72,15 @@ class ProfileEditView extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                ClipOval(
-                  child: Image.asset(
-                    frameAsset,
-                    width: 220,
-                    height: 220,
-                    fit: BoxFit.cover,
+                if (showProfileFrame)
+                  ClipOval(
+                    child: Image.asset(
+                      frameAsset,
+                      width: 220,
+                      height: 220,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
                 CircleAvatar(
                   radius: 60,
                   backgroundColor: Theme.of(
@@ -180,6 +185,8 @@ class ProfileEditView extends StatelessWidget {
             items: activityLevelOptions,
             onChanged: onActivityLevelChanged,
           ),
+          const SizedBox(height: 24),
+          _buildShowFrameSwitch(context),
           const SizedBox(height: 32),
           ElevatedButton(
             onPressed: onSaveProfile,
@@ -193,6 +200,17 @@ class ProfileEditView extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildShowFrameSwitch(BuildContext context) {
+    return SwitchListTile(
+      title: const Text('Mostrar marco de perfil'),
+      subtitle: const Text('Activa o desactiva el borde de tu foto.'),
+      value: showProfileFrame,
+      onChanged: onShowProfileFrameChanged,
+      secondary: Icon(PhosphorIcons.frameCorners(PhosphorIconsStyle.duotone)),
+      activeColor: Theme.of(context).colorScheme.primary,
     );
   }
 
