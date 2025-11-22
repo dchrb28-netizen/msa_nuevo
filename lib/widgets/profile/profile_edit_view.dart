@@ -74,7 +74,7 @@ class ProfileEditView extends StatelessWidget {
                   height: 220,
                 ),
                 CircleAvatar(
-                  radius: 80,
+                  radius: 60,
                   backgroundColor: Theme.of(
                     context,
                   ).colorScheme.surface.withAlpha(200),
@@ -84,7 +84,7 @@ class ProfileEditView extends StatelessWidget {
                   child: profileImageBytes == null
                       ? Icon(
                           PhosphorIcons.user(PhosphorIconsStyle.duotone),
-                          size: 80,
+                          size: 65,
                           color: Theme.of(context).colorScheme.primary,
                         )
                       : null,

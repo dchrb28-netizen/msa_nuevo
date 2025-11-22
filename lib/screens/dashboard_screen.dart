@@ -87,18 +87,18 @@ class DashboardScreen extends StatelessWidget {
                 children: [
                   Image.asset(
                     frameAsset,
-                    width: 80,
-                    height: 80,
+                    width: 60,
+                    height: 60,
                   ),
                   CircleAvatar(
-                    radius: 30,
+                    radius: 22,
                     backgroundColor: Colors.white70,
                     backgroundImage: (user?.profileImageBytes != null)
                         ? MemoryImage(user!.profileImageBytes!)
                         : null,
                     child: (user?.profileImageBytes == null)
                         ? Icon(PhosphorIcons.user(PhosphorIconsStyle.duotone),
-                            size: 40, color: Colors.grey)
+                            size: 25, color: Colors.grey)
                         : null,
                   ),
                 ],

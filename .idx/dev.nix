@@ -8,6 +8,7 @@
     pkgs.jdk21
     pkgs.unzip
     pkgs.zip
+    pkgs.git
   ];
   # Sets environment variables in the workspace
   env = {};

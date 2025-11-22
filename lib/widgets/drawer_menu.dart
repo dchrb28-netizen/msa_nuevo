@@ -119,11 +119,11 @@ class DrawerMenu extends StatelessWidget {
                       children: [
                         Image.asset(
                           frameAsset,
-                          width: 80,
-                          height: 80,
+                          width: 60,
+                          height: 60,
                         ),
                         CircleAvatar(
-                          radius: 30,
+                          radius: 22,
                           backgroundColor: headerTextColor,
                           backgroundImage: user?.profileImageBytes != null
                               ? MemoryImage(user!.profileImageBytes!)
@@ -131,7 +131,7 @@ class DrawerMenu extends StatelessWidget {
                           child: user?.profileImageBytes == null
                               ? Icon(
                                   PhosphorIcons.person(),
-                                  size: 40,
+                                  size: 25,
                                   color: themeProvider.seedColor,
                                 )
                               : null,

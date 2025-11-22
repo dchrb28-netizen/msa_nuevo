@@ -53,13 +53,13 @@ class ProfileReadView extends StatelessWidget {
                 height: 220,
               ),
               CircleAvatar(
-                radius: 65,
+                radius: 60,
                 backgroundColor: Colors.grey[300],
                 backgroundImage: profileImage,
                 child: profileImage == null
                     ? const Icon(
                         Icons.person,
-                        size: 70,
+                        size: 65,
                         color: Colors.white,
                       )
                     : null,
