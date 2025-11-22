@@ -91,14 +91,14 @@ class DashboardScreen extends StatelessWidget {
                     height: 60,
                   ),
                   CircleAvatar(
-                    radius: 22,
+                    radius: 16,
                     backgroundColor: Colors.white70,
                     backgroundImage: (user?.profileImageBytes != null)
                         ? MemoryImage(user!.profileImageBytes!)
                         : null,
                     child: (user?.profileImageBytes == null)
                         ? Icon(PhosphorIcons.user(PhosphorIconsStyle.duotone),
-                            size: 25, color: Colors.grey)
+                            size: 18, color: Colors.grey)
                         : null,
                   ),
                 ],
