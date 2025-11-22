@@ -36,16 +36,16 @@ class ProfileReadView extends StatelessWidget {
                 ClipOval(
                   child: Image.asset(
                     'assets/marcos/marco_${selectedFrame!.toLowerCase().replaceAll(' ', '_')}.png',
-                    width: 220, 
+                    width: 220,
                     height: 220,
                     fit: BoxFit.cover, // Usar BoxFit.cover para llenar el círculo
                   ),
                 ),
 
-              // 2. Contenedor circular con la foto de perfil.
+              // 2. Contenedor circular con la foto de perfil (tamaño reducido).
               Container(
-                width: 140,
-                height: 140,
+                width: 130,
+                height: 130,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.grey[300],
@@ -59,7 +59,7 @@ class ProfileReadView extends StatelessWidget {
                 child: profileImage == null
                     ? const Icon(
                         Icons.person,
-                        size: 80,
+                        size: 70, // Ajustar también el ícono por si no hay foto
                         color: Colors.white,
                       )
                     : null,
