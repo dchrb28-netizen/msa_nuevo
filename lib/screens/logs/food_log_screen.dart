@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/screens/logs/food_history_screen.dart';
 import 'package:myapp/screens/logs/food_today_view.dart';
-import 'package:myapp/screens/register_food_screen.dart';
 import 'package:provider/provider.dart';
 
 class FoodLogScreen extends StatefulWidget {
@@ -44,19 +43,6 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
         body: const TabBarView(
           children: [FoodTodayView(), FoodHistoryScreen()],
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const RegisterFoodScreen(),
-              ),
-            );
-          },
-          label: const Text('Registrar'),
-          icon: const Icon(Icons.add),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }

@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:myapp/models/food.dart';
-import 'package:myapp/widgets/food/calorie_summary_card.dart';
-import 'package:provider/provider.dart';
+import 'package:myapp/models/food_log.dart';
 import 'package:uuid/uuid.dart';
-
-import 'package:myapp/providers/user_provider.dart';
 
 class RegisterFoodScreen extends StatefulWidget {
   const RegisterFoodScreen({super.key});
@@ -21,30 +16,26 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
   final _proteinController = TextEditingController();
   final _carbsController = TextEditingController();
   final _fatController = TextEditingController();
+  String _mealType = 'Desayuno';
 
-  final _foodBox = Hive.box<Food>('foods');
-
-  void _saveFood() {
+  void _saveFoodLog() {
     if (_formKey.currentState!.validate()) {
-      final newFood = Food(
+      final newLog = FoodLog(
         id: const Uuid().v4(),
-        name: _nameController.text,
+        foodName: _nameController.text,
+        date: DateTime.now(), // Se usará la fecha actual al guardar
         calories: double.tryParse(_caloriesController.text) ?? 0.0,
-        proteins: double.tryParse(_proteinController.text) ?? 0.0,
+        protein: double.tryParse(_proteinController.text) ?? 0.0,
         carbohydrates: double.tryParse(_carbsController.text) ?? 0.0,
-        fats: double.tryParse(_fatController.text) ?? 0.0,
+        fat: double.tryParse(_fatController.text) ?? 0.0,
+        mealType: _mealType,
       );
-
-      _foodBox.add(newFood);
-      Navigator.pop(context, newFood);
+      Navigator.pop(context, newLog);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
-    final user = userProvider.user;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Registrar Comida')),
       body: Padding(
@@ -53,20 +44,25 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              CalorieSummaryCard(
-                caloriesGoal: user?.calorieGoal,
-                caloriesConsumed:
-                    0, // This should be calculated based on the food logs
-                proteinGoal: user?.proteinGoal ?? 0,
-                proteinConsumed:
-                    0, // This should be calculated based on the food logs
-                carbsGoal: user?.carbGoal ?? 0, // Corrected from carbsGoal
-                carbsConsumed:
-                    0, // This should be calculated based on the food logs
-                fatsGoal: user?.fatGoal ?? 0,
-                fatsConsumed:
-                    0, // This should be calculated based on the food logs
+              DropdownButtonFormField<String>(
+                initialValue: _mealType,
+                decoration: const InputDecoration(
+                  labelText: 'Tipo de Comida',
+                  prefixIcon: Icon(Icons.food_bank_outlined),
+                ),
+                items: ['Desayuno', 'Almuerzo', 'Cena', 'Snack']
+                    .map((label) => DropdownMenuItem(
+                          value: label,
+                          child: Text(label),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _mealType = value!;
+                  });
+                },
               ),
+              const SizedBox(height: 16.0),
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
@@ -88,6 +84,15 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
                   prefixIcon: Icon(Icons.local_fire_department),
                 ),
                 keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Este campo no puede estar vacío';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Introduce un número válido';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16.0),
               TextFormField(
@@ -118,9 +123,9 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
               ),
               const SizedBox(height: 32.0),
               ElevatedButton.icon(
-                onPressed: _saveFood,
+                onPressed: _saveFoodLog,
                 icon: const Icon(Icons.save),
-                label: const Text('Guardar Comida'),
+                label: const Text('Guardar Registro'),
               ),
             ],
           ),

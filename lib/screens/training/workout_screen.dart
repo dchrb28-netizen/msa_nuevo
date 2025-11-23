@@ -10,6 +10,7 @@ import 'package:myapp/models/workout_session.dart';
 import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/providers/workout_history_provider.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:provider/provider.dart';
 
 class WorkoutScreen extends StatefulWidget {
@@ -457,6 +458,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     final List<PerformedExerciseLog> performedExercisesForHistory = [];
     final List<ExerciseLog> exerciseLogsForRoutineLog = [];
 
+    int totalWeightLifted = 0;
+
     _setsData.forEach((exerciseIndex, logs) {
       final routineExercise = widget.routine.exercises![exerciseIndex];
       final exercise = exerciseProvider.getExerciseById(
@@ -475,6 +478,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         exerciseLogsForRoutineLog.add(
           ExerciseLog(exercise: exercise, sets: completedSets),
         );
+
+        for (var set in completedSets) {
+          totalWeightLifted += (set.reps * set.weight).toInt();
+        }
       }
     });
 
@@ -505,6 +512,13 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       durationInMinutes: durationInMinutes,
     );
     await routineProvider.addRoutineLog(newLog);
+
+    final achievementService = AchievementService();
+    achievementService.grantExperience(30);
+    achievementService.updateProgress('first_workout', 1);
+    achievementService.updateProgress('cum_train_25', 1, cumulative: true);
+    achievementService.updateProgress('cum_train_100', 1, cumulative: true);
+    achievementService.updateProgress('cum_lift_50k', totalWeightLifted, cumulative: true);
 
     if (!mounted) return;
     scaffoldMessenger.showSnackBar(

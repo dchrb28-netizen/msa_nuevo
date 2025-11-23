@@ -69,9 +69,9 @@ class WaterIntakeProvider with ChangeNotifier {
     // Actualiza logros relevantes
     _achievementService.updateProgress('first_water_log', 1);
 
-    final totalWaterIntake = _getTotalWaterIntake();
-    _achievementService.updateProgress('cum_water_10', totalWaterIntake.toInt(), cumulative: true);
-    _achievementService.updateProgress('cum_water_1000', totalWaterIntake.toInt(), cumulative: true);
+    // CORRECTED: Pass the incremental amount, not the total.
+    _achievementService.updateProgress('cum_water_10', amount.toInt(), cumulative: true);
+    _achievementService.updateProgress('cum_water_1000', amount.toInt(), cumulative: true);
 
     notifyListeners();
 
@@ -102,12 +102,6 @@ class WaterIntakeProvider with ChangeNotifier {
           log.timestamp.day == date.day;
     });
     return logs.fold(0, (sum, log) => sum + log.amount);
-  }
-
-  double _getTotalWaterIntake() {
-    if (_currentUser == null) return 0;
-    final allLogs = waterLogBox.values.where((log) => log.userId == _currentUser!.id);
-    return allLogs.fold(0, (sum, log) => sum + log.amount);
   }
 
   List<WaterLog> getLogsForSelectedDate() {

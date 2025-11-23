@@ -87,21 +87,10 @@ class FastingProvider with ChangeNotifier {
       ..sort((a, b) => b.endTime!.compareTo(a.endTime!));
   }
 
-  int _getTotalFastingHours() {
-    if (fastingHistory.isEmpty) return 0;
-    final totalDurationInSeconds = fastingHistory.fold<int>(
-      0,
-      (previous, log) => previous + log.endTime!.difference(log.startTime).inSeconds,
-    );
-    return totalDurationInSeconds ~/ 3600; 
-  }
-
-  void _triggerAchievementLogic() {
+  void _triggerAchievementLogic(int hoursFasted) {
     _achievementService.grantExperience(15); 
     _achievementService.updateProgress('first_fast', 1);
-
-    final totalHours = _getTotalFastingHours();
-    _achievementService.updateProgress('cum_fast_720h', totalHours);
+    _achievementService.updateProgress('cum_fast_720h', hoursFasted, cumulative: true);
   }
 
   Future<void> addManualFastingLog(
@@ -119,7 +108,10 @@ class FastingProvider with ChangeNotifier {
     );
     await _fastingBox.put(newLog.id, newLog);
     await _streaksService.updateFastingStreak();
-    _triggerAchievementLogic(); // Lógica de logros
+    
+    final durationInHours = endTime.difference(startTime).inHours;
+    _triggerAchievementLogic(durationInHours);
+
     _updateFeedingWindow();
     notifyListeners();
   }
@@ -144,7 +136,9 @@ class FastingProvider with ChangeNotifier {
       fastToStop.endTime = endTime;
       await fastToStop.save();
       await _streaksService.updateFastingStreak();
-      _triggerAchievementLogic(); // Lógica de logros
+      
+      final durationInHours = duration.inHours;
+      _triggerAchievementLogic(durationInHours);
 
       final formatted = _formatDuration(duration);
       _notificationService.showNotification(
@@ -195,7 +189,11 @@ class FastingProvider with ChangeNotifier {
   void _updateFeedingWindow() {
     if (fastingHistory.isNotEmpty) {
       final lastFast = fastingHistory.first;
-      _feedingWindowDuration = DateTime.now().difference(lastFast.endTime!);
+      if (lastFast.endTime != null) {
+        _feedingWindowDuration = DateTime.now().difference(lastFast.endTime!);
+      } else {
+        _feedingWindowDuration = Duration.zero;
+      }
     } else {
       _feedingWindowDuration = Duration.zero;
     }

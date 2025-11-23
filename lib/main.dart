@@ -13,6 +13,7 @@ import 'package:myapp/models/food.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/models/meal_entry.dart';
 import 'package:myapp/models/meal_type.dart';
+import 'package:myapp/models/meditation_log.dart';
 import 'package:myapp/models/recipe.dart';
 import 'package:myapp/models/reminder.dart';
 import 'package:myapp/models/routine.dart';
@@ -25,6 +26,7 @@ import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/providers/fasting_provider.dart';
 import 'package:myapp/providers/meal_plan_provider.dart';
+import 'package:myapp/providers/meditation_provider.dart';
 import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
@@ -66,6 +68,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => MealPlanProvider()),
         ChangeNotifierProvider(create: (context) => RoutineProvider()),
         ChangeNotifierProvider(create: (context) => ExerciseProvider()),
+        ChangeNotifierProvider(create: (context) => MeditationProvider()),
         ChangeNotifierProvider(create: (context) => WorkoutHistoryProvider()),
         ChangeNotifierProxyProvider<UserProvider, WaterIntakeProvider>(
           create: (context) => WaterIntakeProvider(null),
@@ -99,6 +102,7 @@ void _registerHiveAdapters() {
   _tryRegisterAdapter(ExerciseAdapter());
   _tryRegisterAdapter(RoutineExerciseAdapter());
   _tryRegisterAdapter(MealEntryAdapter());
+  _tryRegisterAdapter(MeditationLogAdapter());
 }
 
 void _tryRegisterAdapter<T>(TypeAdapter<T> adapter) {
@@ -125,6 +129,7 @@ Future<void> _openHiveBoxes() async {
   await Hive.openBox<Exercise>('exercises');
   await Hive.openBox<RoutineExercise>('routine_exercises');
   await Hive.openBox<MealEntry>('meal_entries');
+  await Hive.openBox<MeditationLog>('meditation_logs');
 }
 
 Future<void> _populateInitialFoodData() async {

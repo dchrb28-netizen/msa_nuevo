@@ -6,6 +6,7 @@ import 'package:myapp/models/routine.dart';
 import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/providers/water_intake_provider.dart';
+import 'package:myapp/screens/meditation_screen.dart';
 import 'package:myapp/screens/training/workout_screen.dart';
 import 'package:myapp/services/achievement_service.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -53,6 +54,8 @@ class DashboardScreen extends StatelessWidget {
             _buildTrainingCard(context),
             const SizedBox(height: 24),
             _buildDailyProgressRings(context),
+            const SizedBox(height: 24),
+            _buildMeditationCard(context),
             const SizedBox(height: 24),
             _buildMotivationalCard(),
           ],
@@ -206,6 +209,54 @@ class DashboardScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildMeditationCard(BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MeditationScreen()),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Row(
+            children: [
+              Icon(
+                PhosphorIcons.leaf(PhosphorIconsStyle.duotone),
+                size: 40,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Meditación',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Encuentra tu paz interior.',
+                      style: GoogleFonts.lato(fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios, color: Colors.grey[600]),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

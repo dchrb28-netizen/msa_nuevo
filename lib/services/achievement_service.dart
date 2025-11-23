@@ -177,6 +177,7 @@ class AchievementService extends ChangeNotifier {
       Achievement(id: 'first_workout', name: 'Primer Sudor', description: 'Completa tu primer entrenamiento.', icon: PhosphorIcons.barbell(PhosphorIconsStyle.duotone), category: AchievementCategory.firstSteps),
       Achievement(id: 'first_meal', name: 'Bocado Inicial', description: 'Registra tu primera comida.', icon: PhosphorIcons.appleLogo(PhosphorIconsStyle.duotone), category: AchievementCategory.firstSteps),
       Achievement(id: 'first_fast', name: 'Reloj Suizo', description: 'Completa tu primer ayuno intermitente.', icon: PhosphorIcons.timer(PhosphorIconsStyle.duotone), category: AchievementCategory.firstSteps),
+      Achievement(id: 'first_meditation', name: 'Mente Serena', description: 'Completa tu primera sesión de meditación.', icon: PhosphorIcons.leaf(PhosphorIconsStyle.duotone), category: AchievementCategory.firstSteps),
       Achievement(id: 'first_weight_log', name: 'En la Balanza', description: 'Registra tu peso por primera vez.', icon: PhosphorIcons.scales(PhosphorIconsStyle.duotone), category: AchievementCategory.firstSteps),
       Achievement(id: 'create_routine', name: 'Arquitecto Fitness', description: 'Crea tu primera rutina personalizada.', icon: PhosphorIcons.pencilRuler(PhosphorIconsStyle.duotone), category: AchievementCategory.firstSteps),
       Achievement(id: 'create_recipe', name: 'Chef Creativo', description: 'Crea tu primera receta personalizada.', icon: PhosphorIcons.knife(PhosphorIconsStyle.duotone), category: AchievementCategory.firstSteps),
