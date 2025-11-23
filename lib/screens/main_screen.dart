@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/dashboard_screen.dart';
 import 'package:myapp/screens/menus_screen.dart';
+import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/screens/progreso_screen.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/widgets/achievement_snackbar_listener.dart';
 import 'package:myapp/widgets/drawer_menu.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -25,26 +27,21 @@ class _MainScreenState extends State<MainScreen> {
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      );
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
-  String getFrameForLevel(String? level) {
-    switch (level?.toLowerCase()) {
-      case 'aprendiz':
-        return 'assets/marcos/marco_aprendiz.png';
-      case 'atleta':
-        return 'assets/marcos/marco_atleta.png';
-      case 'competidor':
-        return 'assets/marcos/marco_competidor.png';
-      case 'leyenda':
-        return 'assets/marcos/marco_leyenda.png';
-      case 'titán':
-        return 'assets/marcos/marco_titán.png';
-      default:
-        return 'assets/marcos/marco_bienvenido.png';
-    }
+  String getFrameForTitle(String? title) {
+    if (title == null) return 'assets/marcos/marco_bienvenido.png';
+    return 'assets/marcos/marco_${title.toLowerCase().replaceAll(' ', '_')}.png';
   }
 
   @override
@@ -60,10 +57,11 @@ class _MainScreenState extends State<MainScreen> {
           index: _selectedIndex,
           children: _screens,
         ),
-        bottomNavigationBar: Consumer<UserProvider>(
-          builder: (context, userProvider, child) {
+        bottomNavigationBar: Consumer2<UserProvider, AchievementService>(
+          builder: (context, userProvider, achievementService, child) {
             final user = userProvider.user;
-            final frameAsset = getFrameForLevel(user?.level);
+            final selectedTitle = achievementService.userProfile.selectedTitle;
+            final frameAsset = getFrameForTitle(selectedTitle);
             final imageProvider = user?.profileImageBytes != null
                 ? MemoryImage(user!.profileImageBytes!)
                 : null;

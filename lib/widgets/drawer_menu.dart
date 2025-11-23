@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/screens/habits/habits_screen.dart';
 import 'package:myapp/screens/logs/logs_screen.dart';
 import 'package:myapp/screens/main_screen.dart';
@@ -23,21 +24,9 @@ class DrawerMenu extends StatelessWidget {
         : Colors.black;
   }
 
-  String getFrameForLevel(String? level) {
-    switch (level?.toLowerCase()) {
-      case 'aprendiz':
-        return 'assets/marcos/marco_aprendiz.png';
-      case 'atleta':
-        return 'assets/marcos/marco_atleta.png';
-      case 'competidor':
-        return 'assets/marcos/marco_competidor.png';
-      case 'leyenda':
-        return 'assets/marcos/marco_leyenda.png';
-      case 'titán':
-        return 'assets/marcos/marco_titán.png';
-      default:
-        return 'assets/marcos/marco_bienvenido.png';
-    }
+  String getFrameForTitle(String? title) {
+    if (title == null) return 'assets/marcos/marco_bienvenido.png';
+    return 'assets/marcos/marco_${title.toLowerCase().replaceAll(' ', '_')}.png';
   }
 
   @override
@@ -90,10 +79,11 @@ class DrawerMenu extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          Consumer<UserProvider>(
-            builder: (context, userProvider, child) {
+          Consumer2<UserProvider, AchievementService>(
+            builder: (context, userProvider, achievementService, child) {
               final user = userProvider.user;
-              final frameAsset = getFrameForLevel(user?.level);
+              final selectedTitle = achievementService.userProfile.selectedTitle;
+              final frameAsset = getFrameForTitle(selectedTitle);
               final headerTextColor = textColorForBackground(themeProvider.seedColor);
 
               return DrawerHeader(
