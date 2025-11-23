@@ -1,33 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/user.dart';
+import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/profile/frames_screen.dart';
 import 'package:myapp/services/achievement_service.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
 class ProfileReadView extends StatelessWidget {
-  final User user;
   final Map<String, String> genderOptions;
   final Map<String, String> activityLevelOptions;
 
   const ProfileReadView({
     super.key,
-    required this.user,
     required this.genderOptions,
     required this.activityLevelOptions,
   });
 
   String getFrameForTitle(String? title) {
-      if (title == null) return 'assets/marcos/marco_bienvenido.png';
-      return 'assets/marcos/marco_${title.toLowerCase().replaceAll(' ', '_')}.png';
+    if (title == null) return 'assets/marcos/marco_bienvenido.png';
+    return 'assets/marcos/marco_${title.toLowerCase().replaceAll(' ', '_')}.png';
   }
 
   @override
   Widget build(BuildContext context) {
-    final profileImage = user.profileImageBytes != null
-        ? MemoryImage(user.profileImageBytes!)
-        : null;
+    final userProvider = Provider.of<UserProvider>(context);
     final achievementService = Provider.of<AchievementService>(context);
+    final user = userProvider.user;
+
+    if (user == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final profileImage =
+        user.profileImageBytes != null ? MemoryImage(user.profileImageBytes!) : null;
     final selectedFrame = achievementService.userProfile.selectedTitle;
     final frameAsset = getFrameForTitle(selectedFrame);
 
@@ -39,7 +44,7 @@ class ProfileReadView extends StatelessWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              if (user.showProfileFrame ?? true) // Asegura retrocompatibilidad
+              if (user.showProfileFrame ?? true)
                 GestureDetector(
                   onTap: () {
                     Navigator.push(

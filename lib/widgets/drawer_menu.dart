@@ -17,39 +17,32 @@ import 'package:provider/provider.dart';
 class DrawerMenu extends StatelessWidget {
   const DrawerMenu({super.key});
 
+  Color textColorForBackground(Color backgroundColor) {
+    return ThemeData.estimateBrightnessForColor(backgroundColor) == Brightness.dark
+        ? Colors.white
+        : Colors.black;
+  }
+
+  String getFrameForLevel(String? level) {
+    switch (level?.toLowerCase()) {
+      case 'aprendiz':
+        return 'assets/marcos/marco_aprendiz.png';
+      case 'atleta':
+        return 'assets/marcos/marco_atleta.png';
+      case 'competidor':
+        return 'assets/marcos/marco_competidor.png';
+      case 'leyenda':
+        return 'assets/marcos/marco_leyenda.png';
+      case 'titán':
+        return 'assets/marcos/marco_titán.png';
+      default:
+        return 'assets/marcos/marco_bienvenido.png';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final user = userProvider.user;
-
-    Color textColorForBackground(Color backgroundColor) {
-      return ThemeData.estimateBrightnessForColor(backgroundColor) ==
-              Brightness.dark
-          ? Colors.white
-          : Colors.black;
-    }
-
-    final headerTextColor = textColorForBackground(themeProvider.seedColor);
-
-    String getFrameForLevel(String? level) {
-      switch (level?.toLowerCase()) {
-        case 'aprendiz':
-          return 'assets/marcos/marco_aprendiz.png';
-        case 'atleta':
-          return 'assets/marcos/marco_atleta.png';
-        case 'competidor':
-          return 'assets/marcos/marco_competidor.png';
-        case 'leyenda':
-          return 'assets/marcos/marco_leyenda.png';
-        case 'titán':
-          return 'assets/marcos/marco_titán.png';
-        default:
-          return 'assets/marcos/marco_bienvenido.png';
-      }
-    }
-
-    final frameAsset = getFrameForLevel(user?.level);
 
     Widget buildLogListTile(
       BuildContext context, {
@@ -97,80 +90,88 @@ class DrawerMenu extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
-            padding: EdgeInsets.zero,
-            decoration: BoxDecoration(color: themeProvider.seedColor),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfileScreen(),
-                  ),
-                );
-              },
-              child: Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    Stack(
-                      alignment: Alignment.center,
+          Consumer<UserProvider>(
+            builder: (context, userProvider, child) {
+              final user = userProvider.user;
+              final frameAsset = getFrameForLevel(user?.level);
+              final headerTextColor = textColorForBackground(themeProvider.seedColor);
+
+              return DrawerHeader(
+                padding: EdgeInsets.zero,
+                decoration: BoxDecoration(color: themeProvider.seedColor),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProfileScreen(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
                       children: [
-                        if (user?.showProfileFrame ?? true)
-                          ClipOval(
-                            child: Image.asset(
-                              frameAsset,
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.cover,
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            if (user?.showProfileFrame ?? true)
+                              ClipOval(
+                                child: Image.asset(
+                                  frameAsset,
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            CircleAvatar(
+                              radius: 28,
+                              backgroundColor: headerTextColor,
+                              backgroundImage: user?.profileImageBytes != null
+                                  ? MemoryImage(user!.profileImageBytes!)
+                                  : null,
+                              child: user?.profileImageBytes == null
+                                  ? Icon(
+                                      PhosphorIcons.person(),
+                                      size: 30,
+                                      color: themeProvider.seedColor,
+                                    )
+                                  : null,
                             ),
+                          ],
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                user?.name ?? 'Invitado',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: headerTextColor,
+                                ),
+                              ),
+                              Text(
+                                'Toca para ver o editar tu perfil',
+                                style: GoogleFonts.lato(
+                                  fontSize: 14,
+                                  color: headerTextColor.withAlpha(204),
+                                ),
+                                softWrap: true,
+                              ),
+                            ],
                           ),
-                        CircleAvatar(
-                          radius: 28,
-                          backgroundColor: headerTextColor,
-                          backgroundImage: user?.profileImageBytes != null
-                              ? MemoryImage(user!.profileImageBytes!)
-                              : null,
-                          child: user?.profileImageBytes == null
-                              ? Icon(
-                                  PhosphorIcons.person(),
-                                  size: 30,
-                                  color: themeProvider.seedColor,
-                                )
-                              : null,
                         ),
                       ],
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            user?.name ?? 'Invitado',
-                            style: GoogleFonts.montserrat(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: headerTextColor,
-                            ),
-                          ),
-                          Text(
-                            'Toca para ver o editar tu perfil',
-                            style: GoogleFonts.lato(
-                              fontSize: 14,
-                              color: headerTextColor.withAlpha(204),
-                            ),
-                            softWrap: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
           ListTile(
             leading: Icon(PhosphorIcons.house(), color: themeProvider.seedColor),

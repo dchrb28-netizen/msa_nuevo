@@ -80,7 +80,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  // Make the function async to handle the await keyword
   Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -96,10 +95,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         profileImageBytes: _profileImageBytes,
       );
 
-      // Wait for the user to be updated before proceeding
       await userProvider.updateUser(updatedUser);
 
-      // This check is a good practice in async methods
       if (!mounted) {
         return;
       }
@@ -108,6 +105,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         const SnackBar(content: Text('¡Perfil actualizado con éxito!')),
       );
       Navigator.of(context).pop();
+    }
+  }
+
+  String getFrameForLevel(String? level) {
+    switch (level?.toLowerCase()) {
+      case 'aprendiz':
+        return 'assets/marcos/marco_aprendiz.png';
+      case 'atleta':
+        return 'assets/marcos/marco_atleta.png';
+      case 'competidor':
+        return 'assets/marcos/marco_competidor.png';
+      case 'leyenda':
+        return 'assets/marcos/marco_leyenda.png';
+      case 'titán':
+        return 'assets/marcos/marco_titán.png';
+      default:
+        return 'assets/marcos/marco_bienvenido.png';
     }
   }
 
@@ -127,9 +141,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 controller: _nameController,
                 label: 'Nombre',
                 icon: Icons.person_outline,
-                validator: (value) => (value == null || value.isEmpty)
-                    ? 'Introduce tu nombre'
-                    : null,
+                validator: (value) =>
+                    (value == null || value.isEmpty) ? 'Introduce tu nombre' : null,
               ),
               const SizedBox(height: 20),
               _buildTextField(
@@ -224,26 +237,46 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildImagePicker() {
-    return Center(
-      child: Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          CircleAvatar(
-            radius: 80,
-            backgroundImage: _profileImageBytes != null
-                ? MemoryImage(_profileImageBytes!)
-                : null,
-            child: _profileImageBytes == null
-                ? const Icon(Icons.person, size: 80)
-                : null,
-          ),
-          FloatingActionButton(
-            onPressed: _pickImage,
-            mini: true,
-            child: const Icon(Icons.edit),
-          ),
-        ],
-      ),
+    return Consumer<UserProvider>(
+      builder: (context, userProvider, child) {
+        final user = userProvider.user;
+        final frameAsset = getFrameForLevel(user?.level);
+
+        final imageProvider = _profileImageBytes != null
+            ? MemoryImage(_profileImageBytes!)
+            : (user?.profileImageBytes != null
+                ? MemoryImage(user!.profileImageBytes!)
+                : null);
+
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            if (user?.showProfileFrame ?? true)
+              Image.asset(
+                frameAsset,
+                width: 180,
+                height: 180,
+                fit: BoxFit.cover,
+              ),
+            CircleAvatar(
+              radius: 70,
+              backgroundImage: imageProvider as ImageProvider?,
+              child: imageProvider == null
+                  ? const Icon(Icons.person, size: 70)
+                  : null,
+            ),
+            Positioned(
+              bottom: 8,
+              right: 8,
+              child: FloatingActionButton(
+                onPressed: _pickImage,
+                mini: true,
+                child: const Icon(Icons.edit),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

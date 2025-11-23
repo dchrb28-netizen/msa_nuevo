@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:myapp/models/achievement.dart';
 import 'package:myapp/services/achievement_service.dart';
@@ -11,9 +10,8 @@ class FramesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final achievementService = Provider.of<AchievementService>(context);
 
-    // Lista de todos los marcos disponibles y sus logros asociados
     final allFrames = {
-      'Bienvenido': 'welcome_frame', // ID para el marco de bienvenida
+      'Bienvenido': 'welcome_frame',
       'Bienvenido1': 'welcome_frame1',
       'Bienvenido2': 'welcome_frame2',
       'Aprendiz': 'level_up_5',
@@ -40,20 +38,24 @@ class FramesScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final frameName = allFrames.keys.elementAt(index);
           final achievementId = allFrames.values.elementAt(index);
-          
-          // El marco 'Bienvenido' siempre está desbloqueado
-          final isUnlocked = true;
 
           final achievement = achievementService.getAchievements().firstWhere(
-              (a) => a.id == achievementId,
-              orElse: () => Achievement(
-                  id: '',
-                  name: '',
-                  description: 'Este marco está disponible por defecto.',
-                  icon: Icons.lock,
-                  category: AchievementCategory.milestones,
-                  isUnlocked: true));
-          
+                (a) => a.id == achievementId,
+                orElse: () => Achievement(
+                  id: 'not_found',
+                  name: 'Desconocido',
+                  description: 'Logro aún no definido en el sistema.',
+                  category: AchievementCategory.milestones, // CORREGIDO
+                  icon: Icons.lock_outline,
+                  isUnlocked: false,
+                ),
+              );
+
+          final bool isUnlocked = frameName.toLowerCase().contains('bienvenido') || achievement.isUnlocked;
+          final String achievementDescription = frameName.toLowerCase().contains('bienvenido') 
+              ? 'Disponible desde el inicio.' // CORREGIDO
+              : achievement.description;
+
           final imagePath = 'assets/marcos/marco_${frameName.toLowerCase().replaceAll(' ', '_')}.png';
 
           return GestureDetector(
@@ -63,9 +65,9 @@ class FramesScreen extends StatelessWidget {
                 Navigator.of(context).pop();
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('¡Desbloquea el logro para usar este marco!'),
-                    backgroundColor: Colors.red,
+                  SnackBar(
+                    content: Text('¡Aún no has desbloqueado este marco!'),
+                    backgroundColor: Theme.of(context).colorScheme.error,
                   ),
                 );
               }
@@ -74,7 +76,7 @@ class FramesScreen extends StatelessWidget {
               frameName: frameName,
               imagePath: imagePath,
               isUnlocked: isUnlocked,
-              achievementDescription: achievement.description,
+              achievementDescription: achievementDescription,
             ),
           );
         },
@@ -99,9 +101,12 @@ class FrameCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -111,48 +116,49 @@ class FrameCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  ClipOval(
-                    child: Image.asset(
-                      imagePath,
-                      fit: BoxFit.contain,
-                      color: isUnlocked ? null : Colors.grey.withAlpha(128),
-                      colorBlendMode: isUnlocked ? null : BlendMode.saturation,
-                    ),
+                  Image.asset(
+                    imagePath,
+                    fit: BoxFit.contain,
+                    color: isUnlocked ? null : Colors.grey.withAlpha(100),
+                    colorBlendMode: isUnlocked ? null : BlendMode.saturation,
                   ),
-                   if (!isUnlocked)
+                  if (!isUnlocked)
                     Center(
                       child: Icon(
                         Icons.lock,
                         size: 40.0,
-                        color: Colors.white.withAlpha(204),
+                        color: colors.onSurface.withAlpha(200),
                       ),
                     ),
                 ],
               ),
             ),
           ),
-          Padding(
+          Container(
             padding: const EdgeInsets.all(8.0),
+            color: colors.surfaceContainer.withAlpha(150),
             child: Column(
               children: [
                 Text(
                   frameName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0,
-                  ),
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                   textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 if (!isUnlocked)
                   Padding(
                     padding: const EdgeInsets.only(top: 4.0),
                     child: Text(
                       achievementDescription,
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.grey[600],
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
                       textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
               ],

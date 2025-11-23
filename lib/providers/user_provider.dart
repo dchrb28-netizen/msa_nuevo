@@ -68,7 +68,7 @@ class UserProvider with ChangeNotifier {
         _users[index] = updatedUser;
       }
 
-      notifyListeners();
+      notifyListeners(); // THIS IS THE FIX
     }
   }
 
@@ -78,11 +78,10 @@ class UserProvider with ChangeNotifier {
       final updatedUser = _user!.copyWith(favoriteRecipes: updatedFavorites);
       await updateUser(updatedUser);
 
-      // Actualizar logro
+      // Update achievement
       AchievementService().updateProgress('exp_add_favorite', 1, cumulative: true);
       return true;
     } else {
-      // Indicar que la operación no se realizó por ser invitado
       return false;
     }
   }

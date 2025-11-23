@@ -22,7 +22,6 @@ class ProfileScreen extends StatefulWidget {
 class ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isEditing = false;
-  bool _isLoading = true;
   bool _isSaving = false;
 
   late TextEditingController _nameController;
@@ -32,7 +31,6 @@ class ProfileScreenState extends State<ProfileScreen> {
   String? _selectedGender;
   String? _activityLevel;
   Uint8List? _profileImageBytes;
-  bool _showProfileFrame = true;
 
   final Map<String, String> _genderOptions = {
     'male': 'Masculino',
@@ -56,35 +54,27 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   void _initializeProfile() {
     final user = Provider.of<UserProvider>(context, listen: false).user;
-    final bool isNewUser = user == null || user.isGuest;
-
-    if (isNewUser) {
+    if (user == null || user.isGuest) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
-        );
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
+          );
+        }
       });
     } else {
       _loadUserData(user);
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
-  void _loadUserData(User? user) {
-    _nameController = TextEditingController(text: user?.name ?? '');
-    _ageController = TextEditingController(text: user?.age.toString() ?? '0');
-    _heightController = TextEditingController(
-      text: user?.height.toString() ?? '0',
-    );
-    _weightController = TextEditingController(
-      text: user?.weight.toString() ?? '0',
-    );
-    _selectedGender = user?.gender ?? _genderOptions.keys.first;
-    _activityLevel = user?.activityLevel ?? _activityLevelOptions.keys.first;
-    _profileImageBytes = user?.profileImageBytes;
-    _showProfileFrame = user?.showProfileFrame ?? true;
+  void _loadUserData(User user) {
+    _nameController = TextEditingController(text: user.name);
+    _ageController = TextEditingController(text: user.age.toString());
+    _heightController = TextEditingController(text: user.height.toString());
+    _weightController = TextEditingController(text: user.weight.toString());
+    _selectedGender = user.gender;
+    _activityLevel = user.activityLevel;
+    _profileImageBytes = user.profileImageBytes;
   }
 
   @override
@@ -98,10 +88,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
 
     if (image != null) {
       final bytes = await image.readAsBytes();
@@ -111,157 +98,134 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _checkProfileCompletion() {
-    final name = _nameController.text;
-    final age = int.tryParse(_ageController.text) ?? 0;
-    final height = double.tryParse(_heightController.text) ?? 0;
-    final weight = double.tryParse(_weightController.text) ?? 0;
-    final gender = _selectedGender;
-    final activityLevel = _activityLevel;
-    final image = _profileImageBytes;
-
-    if (name.isNotEmpty &&
-        age > 0 &&
-        height > 0 &&
-        weight > 0 &&
-        gender != null &&
-        activityLevel != null &&
-        image != null) {
-      Provider.of<AchievementService>(context, listen: false)
-          .updateProgress('exp_profile_complete', 1);
+  void _checkProfileCompletion(User user) {
+    if (user.name.isNotEmpty &&
+        user.age > 0 &&
+        user.height > 0 &&
+        user.weight > 0 &&
+        user.gender.isNotEmpty &&
+        user.activityLevel.isNotEmpty &&
+        user.profileImageBytes != null) {
+      Provider.of<AchievementService>(context, listen: false).updateProgress('exp_profile_complete', 1);
     }
   }
 
   Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isSaving = true;
-      });
+      setState(() => _isSaving = true);
 
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final messenger = ScaffoldMessenger.of(context);
 
       final updatedUser = userProvider.user!.copyWith(
         name: _nameController.text,
-        gender: _selectedGender!,
-        age: int.tryParse(_ageController.text) ?? 0,
-        height: double.tryParse(_heightController.text) ?? 0,
-        weight: double.tryParse(_weightController.text) ?? 0,
-        activityLevel: _activityLevel!,
+        gender: _selectedGender,
+        age: int.tryParse(_ageController.text),
+        height: double.tryParse(_heightController.text),
+        weight: double.tryParse(_weightController.text),
+        activityLevel: _activityLevel,
         profileImageBytes: _profileImageBytes,
-        showProfileFrame: _showProfileFrame,
       );
 
       try {
-        await userProvider.setUser(updatedUser);
+        await userProvider.updateUser(updatedUser);
+        _checkProfileCompletion(updatedUser);
 
-        _checkProfileCompletion();
-
-        setState(() {
-          _isSaving = false;
-          _isEditing = false;
-        });
-        messenger.showSnackBar(
-          const SnackBar(content: Text('¡Perfil actualizado con éxito!')),
-        );
+        if (mounted) {
+          setState(() {
+            _isSaving = false;
+            _isEditing = false;
+          });
+          messenger.showSnackBar(
+            const SnackBar(content: Text('¡Perfil actualizado con éxito!')),
+          );
+        }
       } catch (e) {
-        setState(() {
-          _isSaving = false;
-        });
-        messenger.showSnackBar(
-          SnackBar(content: Text('Error al guardar el perfil: $e')),
-        );
+        if (mounted) {
+          setState(() => _isSaving = false);
+          messenger.showSnackBar(SnackBar(content: Text('Error al guardar: $e')));
+        }
       }
     }
   }
 
   void _logout() {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final navigator = Navigator.of(context);
-
-    userProvider.logout();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      navigator.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const ProfileSelectionScreen()),
-        (route) => false,
-      );
-    });
+    Provider.of<UserProvider>(context, listen: false).logout();
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const ProfileSelectionScreen()),
+      (route) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context).user;
+    return Consumer<UserProvider>(
+      builder: (context, userProvider, child) {
+        final user = userProvider.user;
 
-    if (_isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
+        if (user == null || user.isGuest) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEditing ? 'Editar Perfil' : 'Mi Perfil'),
-        centerTitle: true,
-        elevation: 0,
-        actions: [
-          if (!_isEditing)
-            IconButton(
-              icon: Icon(PhosphorIcons.pencilSimple(PhosphorIconsStyle.duotone)),
-              tooltip: 'Editar Perfil',
-              onPressed: () => setState(() => _isEditing = true),
-            ),
-          IconButton(
-            icon: Icon(PhosphorIcons.signOut(PhosphorIconsStyle.duotone)),
-            tooltip: 'Cerrar Sesión',
-            onPressed: _logout,
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          const WatermarkImage(imageName: 'perfil'),
-          if (_isSaving)
-            const Center(child: CircularProgressIndicator())
-          else
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: _isEditing
-                    ? ProfileEditView(
-                        formKey: _formKey,
-                        nameController: _nameController,
-                        ageController: _ageController,
-                        heightController: _heightController,
-                        weightController: _weightController,
-                        selectedGender: _selectedGender,
-                        activityLevel: _activityLevel,
-                        profileImageBytes: _profileImageBytes,
-                        genderOptions: _genderOptions,
-                        activityLevelOptions: _activityLevelOptions,
-                        showProfileFrame: _showProfileFrame,
-                        onPickImage: _pickImage,
-                        onSaveProfile: _saveProfile,
-                        onGenderChanged: (value) =>
-                            setState(() => _selectedGender = value),
-                        onActivityLevelChanged: (value) =>
-                            setState(() => _activityLevel = value),
-                        onShowProfileFrameChanged: (value) =>
-                            setState(() => _showProfileFrame = value),
-                        user: user!,
-                      )
-                    : (user != null
-                        ? Consumer<AchievementService>(
-                            builder: (context, achievementService, child) {
-                            return ProfileReadView(
-                              user: user,
-                              genderOptions: _genderOptions,
-                              activityLevelOptions: _activityLevelOptions,
-                            );
-                          })
-                        : const SizedBox.shrink()),
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(_isEditing ? 'Editar Perfil' : 'Mi Perfil'),
+            centerTitle: true,
+            elevation: 0,
+            actions: [
+              if (!_isEditing)
+                IconButton(
+                  icon: Icon(PhosphorIcons.pencilSimple(PhosphorIconsStyle.duotone)),
+                  tooltip: 'Editar Perfil',
+                  onPressed: () {
+                    _loadUserData(user);
+                    setState(() => _isEditing = true);
+                  },
+                ),
+              IconButton(
+                icon: Icon(PhosphorIcons.signOut(PhosphorIconsStyle.duotone)),
+                tooltip: 'Cerrar Sesión',
+                onPressed: _logout,
               ),
-            ),
-        ],
-      ),
+            ],
+          ),
+          body: Stack(
+            children: [
+              const WatermarkImage(imageName: 'perfil'),
+              if (_isSaving)
+                const Center(child: CircularProgressIndicator())
+              else
+                SafeArea(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24.0),
+                    child: _isEditing
+                        ? ProfileEditView(
+                            formKey: _formKey,
+                            nameController: _nameController,
+                            ageController: _ageController,
+                            heightController: _heightController,
+                            weightController: _weightController,
+                            selectedGender: _selectedGender,
+                            activityLevel: _activityLevel,
+                            profileImageBytes: _profileImageBytes,
+                            genderOptions: _genderOptions,
+                            activityLevelOptions: _activityLevelOptions,
+                            onPickImage: _pickImage,
+                            onSaveProfile: _saveProfile,
+                            onCancel: () => setState(() => _isEditing = false),
+                            onGenderChanged: (value) => setState(() => _selectedGender = value),
+                            onActivityLevelChanged: (value) => setState(() => _activityLevel = value),
+                          )
+                        : ProfileReadView(
+                            genderOptions: _genderOptions,
+                            activityLevelOptions: _activityLevelOptions,
+                          ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
