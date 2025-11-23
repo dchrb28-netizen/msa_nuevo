@@ -52,14 +52,14 @@ class ProfileReadView extends StatelessWidget {
                   child: ClipOval(
                     child: Image.asset(
                       frameAsset,
-                      width: 250,
-                      height: 250,
+                      width: 238,
+                      height: 238,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
               CircleAvatar(
-                radius: 63,
+                radius: 67,
                 backgroundColor: Colors.grey[300],
                 backgroundImage: profileImage,
                 child: profileImage == null
