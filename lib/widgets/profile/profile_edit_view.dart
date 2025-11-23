@@ -22,7 +22,7 @@ class ProfileEditView extends StatelessWidget {
   final Function(String?) onGenderChanged;
   final Function(String?) onActivityLevelChanged;
 
-  ProfileEditView({
+  const ProfileEditView({
     super.key,
     required this.formKey,
     required this.nameController,

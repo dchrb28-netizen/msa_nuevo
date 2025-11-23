@@ -41,12 +41,15 @@ void main() async {
   await NotificationService().init();
   await initializeDateFormatting('es', null);
 
-  // --- ROBUST HIVE STARTUP SEQUENCE ---
+  // --- HIVE DATABASE SETUP ---
   await Hive.initFlutter();
   _registerHiveAdapters();
   await _openHiveBoxes();
-  await AchievementService().init();
-  // --- END OF HIVE STARTUP SEQUENCE ---
+
+  // --- SINGLETON SERVICES SETUP ---
+  // Initialize services AFTER the database is ready.
+  final achievementService = AchievementService();
+  await achievementService.init();
 
   createDefaultRoutines();
 
@@ -56,6 +59,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: achievementService),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => FastingProvider()),
@@ -63,11 +67,9 @@ void main() async {
         ChangeNotifierProvider(create: (context) => RoutineProvider()),
         ChangeNotifierProvider(create: (context) => ExerciseProvider()),
         ChangeNotifierProvider(create: (context) => WorkoutHistoryProvider()),
-        ChangeNotifierProvider.value(value: AchievementService()),
         ChangeNotifierProxyProvider<UserProvider, WaterIntakeProvider>(
           create: (context) => WaterIntakeProvider(null),
           update: (context, userProvider, previousWaterIntakeProvider) {
-            // Update the existing provider instance instead of creating a new one.
             previousWaterIntakeProvider!.updateUser(userProvider);
             return previousWaterIntakeProvider;
           },

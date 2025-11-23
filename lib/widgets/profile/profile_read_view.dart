@@ -24,7 +24,6 @@ class ProfileReadView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    final achievementService = Provider.of<AchievementService>(context);
     final user = userProvider.user;
 
     if (user == null) {
@@ -33,49 +32,55 @@ class ProfileReadView extends StatelessWidget {
 
     final profileImage =
         user.profileImageBytes != null ? MemoryImage(user.profileImageBytes!) : null;
-    final selectedFrame = achievementService.userProfile.selectedTitle;
-    final frameAsset = getFrameForTitle(selectedFrame);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: 20),
         Center(
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              if (user.showProfileFrame ?? true)
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const FramesScreen(),
+          child: Consumer<AchievementService>(
+            builder: (context, achievementService, child) {
+              final selectedFrame = achievementService.userProfile.selectedTitle;
+              final frameAsset = getFrameForTitle(selectedFrame);
+
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (user.showProfileFrame ?? true)
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FramesScreen(),
+                          ),
+                        );
+                      },
+                      child: ClipOval(
+                        child: Image.asset(
+                          frameAsset,
+                          width: 238,
+                          height: 238,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    );
-                  },
-                  child: ClipOval(
-                    child: Image.asset(
-                      frameAsset,
-                      width: 238,
-                      height: 238,
-                      fit: BoxFit.cover,
                     ),
-                  ),
-                ),
-              CircleAvatar(
-                radius: 67,
-                backgroundColor: Colors.grey[300],
-                backgroundImage: profileImage,
-                child: profileImage == null
-                    ? const Icon(
-                        Icons.person,
-                        size: 55,
-                        color: Colors.white,
-                      )
-                    : null,
-              ),
-            ],
+                  child!, 
+                ],
+              );
+            },
+            child: CircleAvatar(
+              radius: 67,
+              backgroundColor: Colors.grey[300],
+              backgroundImage: profileImage,
+              child: profileImage == null
+                  ? const Icon(
+                      Icons.person,
+                      size: 55,
+                      color: Colors.white,
+                    )
+                  : null,
+            ),
           ),
         ),
         const SizedBox(height: 24),

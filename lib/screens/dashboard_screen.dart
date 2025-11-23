@@ -7,6 +7,7 @@ import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/providers/water_intake_provider.dart';
 import 'package:myapp/screens/training/workout_screen.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/user_provider.dart';
@@ -23,7 +24,7 @@ class DashboardScreen extends StatelessWidget {
     if (hour < 12) {
       return 'Buenos días';
     }
-    if (hour < 18) {
+    if (hour < 20) {
       return 'Buenas tardes';
     }
     return 'Buenas noches';
@@ -34,21 +35,9 @@ class DashboardScreen extends StatelessWidget {
     return motivationalQuotes[random.nextInt(motivationalQuotes.length)];
   }
 
-  String getFrameForLevel(String? level) {
-    switch (level?.toLowerCase()) {
-      case 'aprendiz':
-        return 'assets/marcos/marco_aprendiz.png';
-      case 'atleta':
-        return 'assets/marcos/marco_atleta.png';
-      case 'competidor':
-        return 'assets/marcos/marco_competidor.png';
-      case 'leyenda':
-        return 'assets/marcos/marco_leyenda.png';
-      case 'titán':
-        return 'assets/marcos/marco_titán.png';
-      default:
-        return 'assets/marcos/marco_bienvenido.png';
-    }
+  String getFrameForTitle(String? title) {
+    if (title == null) return 'assets/marcos/marco_bienvenido.png';
+    return 'assets/marcos/marco_${title.toLowerCase().replaceAll(' ', '_')}.png';
   }
 
   @override
@@ -73,39 +62,52 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildWelcomeHeader(BuildContext context) {
-    return Consumer<UserProvider>(
-      builder: (context, userProvider, child) {
+    return Consumer<AchievementService>(
+      builder: (context, achievementService, child) {
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
         final user = userProvider.user;
-        final frameAsset = getFrameForLevel(user?.level);
+
+        final selectedTitle = achievementService.userProfile.selectedTitle;
+        final frameAsset = getFrameForTitle(selectedTitle);
+        final imageProvider = (user?.profileImageBytes != null)
+            ? MemoryImage(user!.profileImageBytes!)
+            : null;
 
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
           child: Row(
             children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  if (user?.showProfileFrame ?? true)
-                    ClipOval(
-                      child: Image.asset(
-                        frameAsset,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
+              SizedBox(
+                width: 120,
+                height: 120,
+                child: ClipOval(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      if (user?.showProfileFrame ?? true)
+                        Image.asset(
+                          frameAsset,
+                          width: 150,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        ),
+                      CircleAvatar(
+                        radius: 35,
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .secondaryContainer,
+                        backgroundImage: imageProvider as ImageProvider?,
+                        child: imageProvider == null
+                            ? Icon(PhosphorIcons.user(PhosphorIconsStyle.duotone),
+                                size: 50,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSecondaryContainer)
+                            : null,
                       ),
-                    ),
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: Colors.white70,
-                    backgroundImage: (user?.profileImageBytes != null)
-                        ? MemoryImage(user!.profileImageBytes!)
-                        : null,
-                    child: (user?.profileImageBytes == null)
-                        ? Icon(PhosphorIcons.user(PhosphorIconsStyle.duotone),
-                            size: 30, color: Colors.grey)
-                        : null,
+                    ],
                   ),
-                ],
+                ),
               ),
               const SizedBox(width: 16),
               Flexible(
@@ -113,12 +115,21 @@ class DashboardScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${_getGreeting()}, ${user?.name ?? 'Invitado'}',
+                      '${_getGreeting()}, ',
                       style: GoogleFonts.montserrat(
                         fontSize: 22,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    Text(
+                      user?.name ?? 'Invitado',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -234,10 +245,22 @@ class DashboardScreen extends StatelessWidget {
     final dietPlan = user?.dietPlan ?? 'Mantener';
 
     final Map<String, dynamic> planDetails = {
-      'Perder': {'icon': PhosphorIcons.trendDown(PhosphorIconsStyle.duotone), 'color': Colors.orange.shade300},
-      'Mantener': {'icon': PhosphorIcons.arrowsClockwise(PhosphorIconsStyle.duotone), 'color': Colors.green.shade300},
-      'Ganar': {'icon': PhosphorIcons.trendUp(PhosphorIconsStyle.duotone), 'color': Colors.blue.shade300},
-      'Personalizado': {'icon': PhosphorIcons.pencilSimple(PhosphorIconsStyle.duotone), 'color': Colors.purple.shade300},
+      'Perder': {
+        'icon': PhosphorIcons.trendDown(PhosphorIconsStyle.duotone),
+        'color': Colors.orange.shade300
+      },
+      'Mantener': {
+        'icon': PhosphorIcons.arrowsClockwise(PhosphorIconsStyle.duotone),
+        'color': Colors.green.shade300
+      },
+      'Ganar': {
+        'icon': PhosphorIcons.trendUp(PhosphorIconsStyle.duotone),
+        'color': Colors.blue.shade300
+      },
+      'Personalizado': {
+        'icon': PhosphorIcons.pencilSimple(PhosphorIconsStyle.duotone),
+        'color': Colors.purple.shade300
+      },
     };
 
     return Card(
@@ -263,7 +286,8 @@ class DashboardScreen extends StatelessWidget {
                 if (user != null && !user.isGuest)
                   Chip(
                     avatar: Icon(
-                      planDetails[dietPlan]?['icon'] ?? PhosphorIcons.question(PhosphorIconsStyle.duotone),
+                      planDetails[dietPlan]?['icon'] ??
+                          PhosphorIcons.question(PhosphorIconsStyle.duotone),
                       color: Colors.black87,
                       size: 18,
                     ),
@@ -342,7 +366,8 @@ class DashboardScreen extends StatelessWidget {
                 if (caloricGoal > 0)
                   Text(
                     '${totalCalories.toInt()} / ${caloricGoal.toInt()}',
-                    style: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 12),
+                    style: GoogleFonts.lato(
+                        fontWeight: FontWeight.bold, fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
                 if (caloricGoal <= 0)
@@ -382,7 +407,8 @@ class DashboardScreen extends StatelessWidget {
               radius: 50.0,
               lineWidth: 10.0,
               percent: percent,
-              center: Icon(PhosphorIcons.drop(PhosphorIconsStyle.duotone), color: Colors.blue, size: 30),
+              center: Icon(PhosphorIcons.drop(PhosphorIconsStyle.duotone),
+                  color: Colors.blue, size: 30),
               progressColor: Colors.blue,
               backgroundColor: Colors.blue.shade100,
               circularStrokeCap: CircularStrokeCap.round,
@@ -391,7 +417,8 @@ class DashboardScreen extends StatelessWidget {
             if (waterGoal > 0)
               Text(
                 '${totalWater.toInt()} / ${waterGoal.toInt()}',
-                style: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 12),
+                style: GoogleFonts.lato(
+                    fontWeight: FontWeight.bold, fontSize: 12),
                 textAlign: TextAlign.center,
               ),
             if (waterGoal <= 0)
@@ -421,7 +448,9 @@ class DashboardScreen extends StatelessWidget {
       builder: (context, Box<RoutineLog> box, _) {
         final now = DateTime.now();
         bool isSameDay(DateTime d1, DateTime d2) {
-          return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
+          return d1.year == d2.year &&
+              d1.month == d2.month &&
+              d1.day == d2.day;
         }
 
         final trainedToday =
@@ -434,8 +463,8 @@ class DashboardScreen extends StatelessWidget {
               radius: 50.0,
               lineWidth: 10.0,
               percent: percent,
-              center:
-                  Icon(PhosphorIcons.barbell(PhosphorIconsStyle.duotone), color: Colors.green, size: 30),
+              center: Icon(PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
+                  color: Colors.green, size: 30),
               progressColor: Colors.green,
               backgroundColor: Colors.green.shade100,
               circularStrokeCap: CircularStrokeCap.round,
@@ -443,7 +472,8 @@ class DashboardScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               trainedToday ? '¡Hecho!' : 'Pendiente',
-              style: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 12),
+              style: GoogleFonts.lato(
+                  fontWeight: FontWeight.bold, fontSize: 12),
               textAlign: TextAlign.center,
             ),
             Text(

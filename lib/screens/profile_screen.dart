@@ -157,75 +157,83 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<UserProvider>(
-      builder: (context, userProvider, child) {
-        final user = userProvider.user;
+ @override
+Widget build(BuildContext context) {
+  // This outer consumer handles user changes (like logging out).
+  return Consumer<UserProvider>(
+    builder: (context, userProvider, child) {
+      final user = userProvider.user;
 
-        if (user == null || user.isGuest) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
-        }
+      if (user == null || user.isGuest) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
 
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(_isEditing ? 'Editar Perfil' : 'Mi Perfil'),
-            centerTitle: true,
-            elevation: 0,
-            actions: [
-              if (!_isEditing)
-                IconButton(
-                  icon: Icon(PhosphorIcons.pencilSimple(PhosphorIconsStyle.duotone)),
-                  tooltip: 'Editar Perfil',
-                  onPressed: () {
-                    _loadUserData(user);
-                    setState(() => _isEditing = true);
-                  },
-                ),
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(_isEditing ? 'Editar Perfil' : 'Mi Perfil'),
+          centerTitle: true,
+          elevation: 0,
+          actions: [
+            if (!_isEditing)
               IconButton(
-                icon: Icon(PhosphorIcons.signOut(PhosphorIconsStyle.duotone)),
-                tooltip: 'Cerrar Sesión',
-                onPressed: _logout,
+                icon: Icon(PhosphorIcons.pencilSimple(PhosphorIconsStyle.duotone)),
+                tooltip: 'Editar Perfil',
+                onPressed: () {
+                  _loadUserData(user);
+                  setState(() => _isEditing = true);
+                },
               ),
-            ],
-          ),
-          body: Stack(
-            children: [
-              const WatermarkImage(imageName: 'perfil'),
-              if (_isSaving)
-                const Center(child: CircularProgressIndicator())
-              else
-                SafeArea(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24.0),
-                    child: _isEditing
-                        ? ProfileEditView(
-                            formKey: _formKey,
-                            nameController: _nameController,
-                            ageController: _ageController,
-                            heightController: _heightController,
-                            weightController: _weightController,
-                            selectedGender: _selectedGender,
-                            activityLevel: _activityLevel,
-                            profileImageBytes: _profileImageBytes,
-                            genderOptions: _genderOptions,
-                            activityLevelOptions: _activityLevelOptions,
-                            onPickImage: _pickImage,
-                            onSaveProfile: _saveProfile,
-                            onCancel: () => setState(() => _isEditing = false),
-                            onGenderChanged: (value) => setState(() => _selectedGender = value),
-                            onActivityLevelChanged: (value) => setState(() => _activityLevel = value),
-                          )
-                        : ProfileReadView(
-                            genderOptions: _genderOptions,
-                            activityLevelOptions: _activityLevelOptions,
-                          ),
+            IconButton(
+              icon: Icon(PhosphorIcons.signOut(PhosphorIconsStyle.duotone)),
+              tooltip: 'Cerrar Sesión',
+              onPressed: _logout,
+            ),
+          ],
+        ),
+        body: Stack(
+          children: [
+            const WatermarkImage(imageName: 'perfil'),
+            if (_isSaving)
+              const Center(child: CircularProgressIndicator())
+            else
+              SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24.0),
+                  // This inner consumer specifically listens for achievement changes,
+                  // ensuring that ProfileReadView rebuilds when the frame/title changes.
+                  child: Consumer<AchievementService>(
+                    builder: (context, achievementService, child) {
+                      return _isEditing
+                          ? ProfileEditView(
+                              formKey: _formKey,
+                              nameController: _nameController,
+                              ageController: _ageController,
+                              heightController: _heightController,
+                              weightController: _weightController,
+                              selectedGender: _selectedGender,
+                              activityLevel: _activityLevel,
+                              profileImageBytes: _profileImageBytes,
+                              genderOptions: _genderOptions,
+                              activityLevelOptions: _activityLevelOptions,
+                              onPickImage: _pickImage,
+                              onSaveProfile: _saveProfile,
+                              onCancel: () => setState(() => _isEditing = false),
+                              onGenderChanged: (value) => setState(() => _selectedGender = value),
+                              onActivityLevelChanged: (value) => setState(() => _activityLevel = value),
+                            )
+                          : ProfileReadView(
+                              // Pass the necessary data down to the view
+                              genderOptions: _genderOptions,
+                              activityLevelOptions: _activityLevelOptions,
+                            );
+                    },
                   ),
                 ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+              ),
+          ],
+        ),
+      );
+    },
+  );
+}
 }
