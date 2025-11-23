@@ -1,3 +1,4 @@
+
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/meditation_log.dart';
@@ -5,10 +6,16 @@ import 'package:myapp/services/achievement_service.dart';
 import 'package:uuid/uuid.dart';
 
 class MeditationProvider with ChangeNotifier {
-  final Box<MeditationLog> _meditationLogBox = Hive.box<MeditationLog>('meditation_logs');
+  // Cambiamos la caja para que almacene Strings (JSON) en lugar de objetos complejos.
+  final Box<String> _meditationLogBox = Hive.box<String>('meditation_logs_json');
   final AchievementService _achievementService = AchievementService();
 
-  List<MeditationLog> get meditationLogs => _meditationLogBox.values.toList();
+  List<MeditationLog> get meditationLogs {
+    // Leemos los strings JSON y los convertimos de nuevo a objetos MeditationLog.
+    return _meditationLogBox.values.map((jsonString) {
+      return MeditationLog.fromJson(jsonString);
+    }).toList();
+  }
 
   Future<void> addMeditationLog(DateTime startTime, DateTime endTime) async {
     final duration = endTime.difference(startTime).inSeconds;
@@ -21,12 +28,10 @@ class MeditationProvider with ChangeNotifier {
       durationInSeconds: duration,
     );
 
-    await _meditationLogBox.add(newLog);
+    // Convertimos el objeto a un String JSON antes de guardarlo.
+    await _meditationLogBox.add(newLog.toJson());
 
-    // Otorgar 10 XP por cada sesión de meditación
     _achievementService.grantExperience(10);
-
-    // Actualizar el logro de la primera meditación
     _achievementService.updateProgress('first_meditation', 1);
 
     notifyListeners();

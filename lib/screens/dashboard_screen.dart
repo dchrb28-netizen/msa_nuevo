@@ -46,17 +46,17 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Column(
           children: [
             _buildWelcomeHeader(context),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildTrainingCard(context),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildDailyProgressRings(context),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildMeditationCard(context),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildMotivationalCard(),
           ],
         ),
@@ -77,12 +77,12 @@ class DashboardScreen extends StatelessWidget {
             : null;
 
         return Container(
-          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Row(
             children: [
               SizedBox(
-                width: 120,
-                height: 120,
+                width: 80,
+                height: 80,
                 child: ClipOval(
                   child: Stack(
                     alignment: Alignment.center,
@@ -90,19 +90,19 @@ class DashboardScreen extends StatelessWidget {
                       if (user?.showProfileFrame ?? true)
                         Image.asset(
                           frameAsset,
-                          width: 150,
-                          height: 150,
+                          width: 80,
+                          height: 80,
                           fit: BoxFit.cover,
                         ),
                       CircleAvatar(
-                        radius: 35,
+                        radius: 25,
                         backgroundColor: Theme.of(context)
                             .colorScheme
                             .secondaryContainer,
                         backgroundImage: imageProvider as ImageProvider?,
                         child: imageProvider == null
                             ? Icon(PhosphorIcons.user(PhosphorIconsStyle.duotone),
-                                size: 50,
+                                size: 40,
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onSecondaryContainer)
@@ -120,7 +120,7 @@ class DashboardScreen extends StatelessWidget {
                     Text(
                       '${_getGreeting()}, ',
                       style: GoogleFonts.montserrat(
-                        fontSize: 22,
+                        fontSize: 20,
                         fontWeight: FontWeight.w500,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
@@ -128,7 +128,7 @@ class DashboardScreen extends StatelessWidget {
                     Text(
                       user?.name ?? 'Invitado',
                       style: GoogleFonts.montserrat(
-                        fontSize: 26,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
@@ -163,24 +163,24 @@ class DashboardScreen extends StatelessWidget {
               ? Colors.grey[800]
               : Theme.of(context).colorScheme.primaryContainer,
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
                 Text(
                   isRestDay ? '¡A recargar energías!' : 'Tu Reto de Hoy',
                   style: GoogleFonts.montserrat(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: isRestDay
                         ? Colors.white
                         : Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Text(
                   isRestDay ? 'Día de Descanso' : todayRoutine.name,
                   style: GoogleFonts.lato(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.w600,
                     color: isRestDay
                         ? Colors.white
@@ -189,7 +189,7 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 if (!isRestDay)
                   Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
+                    padding: const EdgeInsets.only(top: 16.0),
                     child: ElevatedButton.icon(
                       icon: Icon(PhosphorIcons.play(PhosphorIconsStyle.duotone)),
                       label: const Text('Comenzar'),
@@ -224,15 +224,15 @@ class DashboardScreen extends StatelessWidget {
           );
         },
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
           child: Row(
             children: [
               Icon(
                 PhosphorIcons.leaf(PhosphorIconsStyle.duotone),
-                size: 40,
+                size: 36,
                 color: Theme.of(context).colorScheme.secondary,
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,7 +240,7 @@ class DashboardScreen extends StatelessWidget {
                     Text(
                       'Meditación',
                       style: GoogleFonts.montserrat(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -252,7 +252,7 @@ class DashboardScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, color: Colors.grey[600]),
+              Icon(Icons.arrow_forward_ios, color: Colors.grey[600], size: 18),
             ],
           ),
         ),
@@ -265,21 +265,21 @@ class DashboardScreen extends StatelessWidget {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         child: Column(
           children: [
             Text(
               'Consejo del Día',
               style: GoogleFonts.montserrat(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Text(
               _getMotivationalQuote(),
               style: GoogleFonts.lato(
-                fontSize: 14,
+                fontSize: 12,
                 fontStyle: FontStyle.italic,
               ),
               textAlign: TextAlign.center,
@@ -340,11 +340,12 @@ class DashboardScreen extends StatelessWidget {
                       planDetails[dietPlan]?['icon'] ??
                           PhosphorIcons.question(PhosphorIconsStyle.duotone),
                       color: Colors.black87,
-                      size: 18,
+                      size: 16,
                     ),
                     label: Text(
                       dietPlan,
                       style: GoogleFonts.lato(
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
@@ -352,15 +353,15 @@ class DashboardScreen extends StatelessWidget {
                     backgroundColor:
                         planDetails[dietPlan]?['color'] ?? Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+                      horizontal: 6,
+                      vertical: 2,
                     ),
                   ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(child: _buildCaloriesRing(context)),
                 Flexible(child: _buildWaterRing(context)),
@@ -401,13 +402,13 @@ class DashboardScreen extends StatelessWidget {
             return Column(
               children: [
                 CircularPercentIndicator(
-                  radius: 50.0,
-                  lineWidth: 10.0,
+                  radius: 40.0,
+                  lineWidth: 8.0,
                   percent: percent,
                   center: Icon(
                     PhosphorIcons.fire(PhosphorIconsStyle.duotone),
                     color: Colors.orange,
-                    size: 30,
+                    size: 28,
                   ),
                   progressColor: Colors.orange,
                   backgroundColor: Colors.orange.shade100,
@@ -455,11 +456,11 @@ class DashboardScreen extends StatelessWidget {
         return Column(
           children: [
             CircularPercentIndicator(
-              radius: 50.0,
-              lineWidth: 10.0,
+              radius: 40.0,
+              lineWidth: 8.0,
               percent: percent,
               center: Icon(PhosphorIcons.drop(PhosphorIconsStyle.duotone),
-                  color: Colors.blue, size: 30),
+                  color: Colors.blue, size: 28),
               progressColor: Colors.blue,
               backgroundColor: Colors.blue.shade100,
               circularStrokeCap: CircularStrokeCap.round,
@@ -511,11 +512,11 @@ class DashboardScreen extends StatelessWidget {
         return Column(
           children: [
             CircularPercentIndicator(
-              radius: 50.0,
-              lineWidth: 10.0,
+              radius: 40.0,
+              lineWidth: 8.0,
               percent: percent,
               center: Icon(PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
-                  color: Colors.green, size: 30),
+                  color: Colors.green, size: 28),
               progressColor: Colors.green,
               backgroundColor: Colors.green.shade100,
               circularStrokeCap: CircularStrokeCap.round,

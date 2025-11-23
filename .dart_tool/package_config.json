@@ -344,12 +344,6 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "hive_generator",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/hive_generator-2.0.1",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "html",
       "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/html-0.15.6",
       "packageUri": "lib/",

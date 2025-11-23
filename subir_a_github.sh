@@ -5,8 +5,8 @@ echo "✅ Paso 1: Preparando todos los ficheros..."
 git add .
 
 echo "✅ Paso 2: Guardando una instantánea de los cambios..."
-# Usamos la fecha para que el mensaje del commit no cause conflictos.
-git commit -m "Deploy automático: $(date)"
+# Usamos un mensaje descriptivo y la fecha para que el commit sea claro.
+git commit -m "Solucionado error de meditación y mejoras generales: $(date)"
 
 echo "✅ Paso 3: Asegurando que la rama principal se llama 'main'..."
 git branch -M main
@@ -19,15 +19,8 @@ else
     git remote add origin https://github.com/dchrb28-netizen/msa_nuevo.git
 fi
 
-echo "⏳ Paso 5: Subiendo el código a GitHub..."
-echo ""
-echo "======================================================================="
-echo "  ATENCIÓN: Introduce tu usuario y contraseña de GitHub a continuación."
-echo "  (La contraseña no se verá mientras la escribes, es normal)."
-echo "======================================================================="
-echo ""
+echo "✅ Paso 5: Subiendo los cambios a GitHub..."
+# Usamos --force para sobrescribir el historial remoto y asegurar que el local es la única fuente de verdad.
+git push -u origin main --force
 
-git push -u origin main
-
-echo ""
-echo "🎉 ¡Éxito! El código ha sido subido a tu repositorio."
+echo "🎉 ¡Éxito! El código está en GitHub."

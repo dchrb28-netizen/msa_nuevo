@@ -13,7 +13,6 @@ import 'package:myapp/models/food.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/models/meal_entry.dart';
 import 'package:myapp/models/meal_type.dart';
-import 'package:myapp/models/meditation_log.dart';
 import 'package:myapp/models/recipe.dart';
 import 'package:myapp/models/reminder.dart';
 import 'package:myapp/models/routine.dart';
@@ -49,7 +48,6 @@ void main() async {
   await _openHiveBoxes();
 
   // --- SINGLETON SERVICES SETUP ---
-  // Initialize services AFTER the database is ready.
   final achievementService = AchievementService();
   await achievementService.init();
 
@@ -102,7 +100,6 @@ void _registerHiveAdapters() {
   _tryRegisterAdapter(ExerciseAdapter());
   _tryRegisterAdapter(RoutineExerciseAdapter());
   _tryRegisterAdapter(MealEntryAdapter());
-  _tryRegisterAdapter(MeditationLogAdapter());
 }
 
 void _tryRegisterAdapter<T>(TypeAdapter<T> adapter) {
@@ -129,7 +126,7 @@ Future<void> _openHiveBoxes() async {
   await Hive.openBox<Exercise>('exercises');
   await Hive.openBox<RoutineExercise>('routine_exercises');
   await Hive.openBox<MealEntry>('meal_entries');
-  await Hive.openBox<MeditationLog>('meditation_logs');
+  await Hive.openBox<String>('meditation_logs_json'); // Open the new box for JSON strings
 }
 
 Future<void> _populateInitialFoodData() async {
