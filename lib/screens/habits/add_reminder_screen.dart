@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/reminder.dart';
 import 'package:myapp/services/notification_service.dart';
+import 'package:myapp/services/foreground_reminder_service.dart';
+import 'package:myapp/services/time_format_service.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class AddReminderScreen extends StatefulWidget {
@@ -74,7 +78,9 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
               const SizedBox(height: 20),
               ListTile(
                 title: const Text('Hora'),
-                trailing: Text(_selectedTime.format(context)),
+                trailing: Text(
+                  Provider.of<TimeFormatService>(context).formatTimeOfDay(_selectedTime, context),
+                ),
                 onTap: _pickTime,
               ),
               const SizedBox(height: 20),
@@ -124,10 +130,27 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   }
 
   Future<void> _pickTime() async {
+    final timeFormatService = Provider.of<TimeFormatService>(context, listen: false);
+    
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: _selectedTime,
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            alwaysUse24HourFormat: timeFormatService.use24HourFormat,
+          ),
+          child: Localizations.override(
+            context: context,
+            locale: timeFormatService.use24HourFormat 
+                ? const Locale('es', 'ES') 
+                : const Locale('en', 'US'),
+            child: child!,
+          ),
+        );
+      },
     );
+    
     if (picked != null && picked != _selectedTime) {
       setState(() {
         _selectedTime = picked;
@@ -201,7 +224,52 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
 
       // Schedule new notifications if active
       if (reminder.isActive) {
+        // Verificar permisos antes de programar
+        final hasPermissions = await notificationService.checkAndRequestPermissions();
+        
+        if (!hasPermissions) {
+          // Desactivar el recordatorio si no hay permisos
+          await remindersBox.put(
+            reminder.id,
+            reminder.copyWith(isActive: false),
+          );
+          
+          if (mounted) {
+            await showDialog<void>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Permisos requeridos'),
+                content: const Text(
+                  'Para programar recordatorios, necesitas habilitar los permisos de notificaciones y alarmas exactas en la configuración de tu dispositivo.\n\n'
+                  'Ve a: Configuración > Aplicaciones > MiSaludActiva > Permisos',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Entendido'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      openAppSettings();
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Abrir Configuración'),
+                  ),
+                ],
+              ),
+            );
+          }
+          return;
+        }
+        
         try {
+          // Log detallado de lo que se está programando
+          debugPrint('📅 PROGRAMANDO RECORDATORIO:');
+          debugPrint('  - Título: ${reminder.title}');
+          debugPrint('  - Hora: ${_selectedTime.hour}:${_selectedTime.minute}');
+          debugPrint('  - Días seleccionados: $_selectedDays');
+          debugPrint('  - ID base: ${reminder.id.hashCode}');
+          
           await notificationService.scheduleWeeklyNotification(
             reminder.id.hashCode,
             reminder.title,
@@ -209,6 +277,11 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
             _selectedTime,
             _selectedDays,
           );
+          
+          // Log de confirmación
+          if (mounted) {
+            debugPrint('✅ Recordatorio programado: ${reminder.title} a las ${Provider.of<TimeFormatService>(context, listen: false).formatTimeOfDay(_selectedTime, context)}');
+          }
         } catch (e) {
           // If scheduling fails, deactivate the reminder and inform the user
           await remindersBox.put(
@@ -220,16 +293,40 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
               context: context,
               builder: (context) => AlertDialog(
                 title: const Text('Error al programar'),
-                content: Text('No se pudo programar la notificación: $e'),
+                content: Text('No se pudo programar la notificación: $e\n\nAsegúrate de que los permisos estén habilitados en la configuración del sistema.'),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Aceptar'),
+                    child: const Text('Cancelar'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      openAppSettings();
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Abrir Configuración'),
                   ),
                 ],
               ),
             );
           }
+          return;
+        }
+      }
+
+      // Reiniciar el servicio foreground para que recargue los recordatorios
+      if (reminder.isActive) {
+        final isServiceRunning = await ForegroundReminderService.isRunning();
+        if (isServiceRunning) {
+          // Reiniciar el servicio para recargar los recordatorios
+          await ForegroundReminderService.stop();
+          await Future.delayed(const Duration(milliseconds: 500));
+          await ForegroundReminderService.start();
+          debugPrint('🔄 Servicio foreground reiniciado para recargar recordatorios');
+        } else {
+          // Iniciar el servicio por primera vez
+          await ForegroundReminderService.start();
+          debugPrint('🚀 Servicio foreground iniciado después de crear recordatorio');
         }
       }
 
@@ -242,7 +339,11 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
             title: Text(
               isEditing ? 'Recordatorio actualizado' : 'Recordatorio guardado',
             ),
-            content: const Text('Tu recordatorio se guardó correctamente.'),
+            content: Text(
+              reminder.isActive 
+                ? 'Tu recordatorio se guardó correctamente.\n\n✅ El servicio de notificaciones exactas está activo.'
+                : 'Tu recordatorio se guardó correctamente.',
+            ),
             actions: [
               // Use the dialog's context to pop the dialog.
               TextButton(

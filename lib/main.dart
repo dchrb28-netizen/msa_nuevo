@@ -34,12 +34,17 @@ import 'package:myapp/providers/workout_history_provider.dart';
 import 'package:myapp/screens/splash_screen.dart';
 import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/services/notification_service.dart';
+import 'package:myapp/services/reminder_backup_service.dart';
+import 'package:myapp/services/time_format_service.dart';
+import 'package:myapp/services/foreground_reminder_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
+  await ReminderBackupService.init();
+  await ReminderBackupService.registerPeriodicCheck();
   await initializeDateFormatting('es', null);
 
   // --- HIVE DATABASE SETUP ---
@@ -50,6 +55,12 @@ void main() async {
   // --- SINGLETON SERVICES SETUP ---
   final achievementService = AchievementService();
   await achievementService.init();
+  
+  final timeFormatService = TimeFormatService();
+  await timeFormatService.loadPreference();
+
+  // --- AUTO-START FOREGROUND SERVICE SI HAY RECORDATORIOS ACTIVOS ---
+  await _autoStartReminderService();
 
   createDefaultRoutines();
 
@@ -60,6 +71,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: achievementService),
+        ChangeNotifierProvider.value(value: timeFormatService),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => FastingProvider()),
@@ -197,6 +209,29 @@ Future<void> _populateInitialFoodData() async {
 }
 
 Future<void> _populateInitialExerciseData() async {}
+
+/// Auto-inicia el servicio foreground si hay recordatorios activos
+Future<void> _autoStartReminderService() async {
+  try {
+    final remindersBox = Hive.box<Reminder>('reminders');
+    
+    // Verificar si hay al menos un recordatorio activo
+    final hasActiveReminders = remindersBox.values.any((reminder) => reminder.isActive);
+    
+    if (hasActiveReminders) {
+      // Verificar si el servicio ya está corriendo
+      final isRunning = await ForegroundReminderService.isRunning();
+      
+      if (!isRunning) {
+        // Iniciar el servicio automáticamente
+        await ForegroundReminderService.start();
+        debugPrint('✅ Servicio de recordatorios auto-iniciado');
+      }
+    }
+  } catch (e) {
+    debugPrint('❌ Error al auto-iniciar servicio de recordatorios: $e');
+  }
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

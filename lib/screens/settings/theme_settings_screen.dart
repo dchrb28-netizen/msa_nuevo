@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/services/achievement_service.dart';
+import 'package:myapp/services/time_format_service.dart';
 import 'package:provider/provider.dart';
 
 class ThemeSettingsScreen extends StatelessWidget {
@@ -60,6 +61,7 @@ class ThemeSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final achievementService = Provider.of<AchievementService>(context, listen: false);
+    final timeFormatService = Provider.of<TimeFormatService>(context);
     final textTheme = Theme.of(context).textTheme;
 
     return SingleChildScrollView(
@@ -126,7 +128,34 @@ class ThemeSettingsScreen extends StatelessWidget {
               subtitle: const Text('Toca para seleccionar un nuevo color'),
               trailing: const Icon(Icons.colorize),
             ),
-          )
+          ),
+          const SizedBox(height: 32),
+          Text('Formato de Hora', style: textTheme.titleLarge),
+          const SizedBox(height: 12),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                SwitchListTile(
+                  value: timeFormatService.use24HourFormat,
+                  onChanged: (value) {
+                    timeFormatService.setTimeFormat(value);
+                  },
+                  title: const Text('Formato de 24 horas'),
+                  subtitle: Text(
+                    timeFormatService.use24HourFormat
+                        ? 'Ejemplo: 14:30'
+                        : 'Ejemplo: 2:30 PM',
+                  ),
+                  secondary: Icon(
+                    timeFormatService.use24HourFormat
+                        ? Icons.access_time
+                        : Icons.schedule,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:myapp/models/workout_session.dart';
 import 'package:myapp/providers/workout_history_provider.dart';
 import 'package:myapp/services/achievement_service.dart';
+import 'package:myapp/services/time_format_service.dart';
 import 'package:provider/provider.dart';
 
 class WorkoutHistoryScreen extends StatefulWidget {
@@ -199,7 +200,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  DateFormat.yMMMMEEEEd('es').add_jm().format(session.date),
+                  '${DateFormat.yMMMMEEEEd('es').format(session.date)} ${Provider.of<TimeFormatService>(context).formatTime(session.date)}',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: Colors.grey[600],
                   ),
@@ -298,7 +299,7 @@ class WorkoutSessionDetailScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Text(
-              DateFormat.yMMMMEEEEd('es').add_jm().format(session.date),
+              '${DateFormat.yMMMMEEEEd('es').format(session.date)} ${Provider.of<TimeFormatService>(context).formatTime(session.date)}',
               style: theme.textTheme.titleSmall?.copyWith(
                 color: theme.appBarTheme.foregroundColor?.withAlpha(204),
               ),

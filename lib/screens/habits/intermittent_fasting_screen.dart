@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:myapp/models/fasting_log.dart';
 import 'package:myapp/models/fasting_phase.dart';
 import 'package:myapp/models/fasting_plan.dart';
 import 'package:myapp/providers/fasting_provider.dart';
+import 'package:myapp/services/time_format_service.dart';
 import 'package:myapp/widgets/sun_moon_timer.dart';
 import 'package:provider/provider.dart';
 import 'package:timeline_tile/timeline_tile.dart';
@@ -174,7 +174,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                   children: [
                     ListTile(
                       title: Text(
-                        'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(editedStartTime)}',
+                        'Inicio: ${Provider.of<TimeFormatService>(context).formatDateTime(editedStartTime)}',
                       ),
                       trailing: const Icon(Icons.edit_calendar),
                       onTap: () async {
@@ -188,9 +188,18 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                         if (date == null) return;
 
                         if (!context.mounted) return;
+                        final timeFormatService = Provider.of<TimeFormatService>(context, listen: false);
                         final time = await showTimePicker(
                           context: context,
                           initialTime: TimeOfDay.fromDateTime(editedStartTime),
+                          builder: (BuildContext context, Widget? child) {
+                            return MediaQuery(
+                              data: MediaQuery.of(context).copyWith(
+                                alwaysUse24HourFormat: timeFormatService.use24HourFormat,
+                              ),
+                              child: child!,
+                            );
+                          },
                         );
                         if (time == null) return;
 
@@ -207,7 +216,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                     ),
                     ListTile(
                       title: Text(
-                        'Fin:      ${editedEndTime != null ? DateFormat('dd/MM/yy HH:mm').format(editedEndTime!) : 'N/A'}',
+                        'Fin:      ${editedEndTime != null ? Provider.of<TimeFormatService>(context).formatDateTime(editedEndTime!) : 'N/A'}',
                       ),
                       trailing: const Icon(Icons.edit_calendar),
                       onTap: () async {
@@ -221,11 +230,20 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                         if (date == null) return;
 
                         if (!context.mounted) return;
+                        final timeFormatService = Provider.of<TimeFormatService>(context, listen: false);
                         final time = await showTimePicker(
                           context: context,
                           initialTime: TimeOfDay.fromDateTime(
                             editedEndTime ?? DateTime.now(),
                           ),
+                          builder: (BuildContext context, Widget? child) {
+                            return MediaQuery(
+                              data: MediaQuery.of(context).copyWith(
+                                alwaysUse24HourFormat: timeFormatService.use24HourFormat,
+                              ),
+                              child: child!,
+                            );
+                          },
                         );
                         if (time == null) return;
 
@@ -475,36 +493,108 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             children: provider.allPlans.map((plan) {
               final isSelected = provider.selectedPlan.id == plan.id;
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                padding: const EdgeInsets.symmetric(horizontal: 6.0),
                 child: GestureDetector(
                   onLongPress: () {
                     if (plan.isCustom) {
                       _showManagePlanOptions(context, plan, provider);
                     }
                   },
-                  child: ChoiceChip(
-                    label: Text(plan.name),
-                    selected: isSelected,
-                    onSelected: provider.isFasting
-                        ? null
-                        : (selected) {
-                            if (selected) {
-                              provider.setPlan(plan);
-                            }
-                          },
-                    selectedColor: theme.colorScheme.primary,
-                    labelStyle: TextStyle(
-                      color: isSelected
-                          ? theme.colorScheme.onPrimary
-                          : theme.textTheme.bodyLarge?.color,
-                    ),
-                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                    shape: RoundedRectangleBorder(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    decoration: BoxDecoration(
+                      gradient: isSelected
+                          ? LinearGradient(
+                              colors: [
+                                theme.colorScheme.primary,
+                                theme.colorScheme.primary.withValues(alpha: 0.8),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            )
+                          : LinearGradient(
+                              colors: [
+                                Colors.grey.shade100,
+                                Colors.grey.shade200,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
+                      border: Border.all(
                         color: isSelected
                             ? theme.colorScheme.primary
                             : Colors.grey.shade300,
+                        width: isSelected ? 3 : 1,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: theme.colorScheme.primary.withValues(alpha: 0.4),
+                                blurRadius: 15,
+                                spreadRadius: 3,
+                                offset: const Offset(0, 5),
+                              ),
+                            ]
+                          : [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 2,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: provider.isFasting
+                            ? null
+                            : () => provider.setPlan(plan),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isSelected ? 28 : 24,
+                            vertical: isSelected ? 16 : 14,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (isSelected) ...[
+                                    Icon(
+                                      Icons.check_circle,
+                                      size: 18,
+                                      color: Colors.white,
+                                    ),
+                                    const SizedBox(width: 6),
+                                  ],
+                                  if (plan.isCustom && !isSelected) ...[
+                                    Icon(
+                                      Icons.star,
+                                      size: 16,
+                                      color: Colors.amber.shade700,
+                                    ),
+                                    const SizedBox(width: 6),
+                                  ],
+                                  Text(
+                                    plan.name,
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Colors.white
+                                          : Colors.grey.shade700,
+                                      fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+                                      fontSize: isSelected ? 17 : 15,
+                                      letterSpacing: isSelected ? 1.0 : 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -513,11 +603,60 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             }).toList(),
           ),
         ),
-        const SizedBox(height: 8),
-        TextButton.icon(
-          icon: const Icon(Icons.add, size: 16),
-          label: const Text('Añadir Plan'),
-          onPressed: () => _showPlanFormDialog(context, provider),
+        const SizedBox(height: 16),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.blue.shade400,
+                Colors.blue.shade600,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(25),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blue.withValues(alpha: 0.3),
+                blurRadius: 8,
+                spreadRadius: 1,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(25),
+              onTap: () => _showPlanFormDialog(context, provider),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.add_circle_outline,
+                      size: 22,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Añadir Plan Personalizado',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -773,7 +912,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text(
-                'Inicio: ${DateFormat('dd/MM/yy HH:mm').format(log.startTime)}\nFin:      ${DateFormat('dd/MM/yy HH:mm').format(log.endTime!)}',
+                'Inicio: ${Provider.of<TimeFormatService>(context).formatDateTime(log.startTime)}\nFin:      ${Provider.of<TimeFormatService>(context).formatDateTime(log.endTime!)}',
                 style: const TextStyle(fontSize: 12),
               ),
               trailing: Row(

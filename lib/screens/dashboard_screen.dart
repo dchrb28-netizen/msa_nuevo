@@ -16,6 +16,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
 import 'package:myapp/data/motivational_quotes.dart';
+import 'package:myapp/widgets/dashboard/pending_reminders_widget.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -51,6 +52,7 @@ class DashboardScreen extends StatelessWidget {
           children: [
             _buildWelcomeHeader(context),
             const SizedBox(height: 16),
+            const PendingRemindersWidget(),
             _buildTrainingCard(context),
             const SizedBox(height: 16),
             _buildDailyProgressRings(context),
@@ -156,6 +158,7 @@ class DashboardScreen extends StatelessWidget {
 
         return Card(
           elevation: 4,
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -164,46 +167,81 @@ class DashboardScreen extends StatelessWidget {
               : Theme.of(context).colorScheme.primaryContainer,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
+            child: Row(
               children: [
-                Text(
-                  isRestDay ? '¡A recargar energías!' : 'Tu Reto de Hoy',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: isRestDay
-                        ? Colors.white
-                        : Theme.of(context).colorScheme.onPrimaryContainer,
+                Icon(
+                  isRestDay 
+                      ? PhosphorIcons.bed(PhosphorIconsStyle.duotone)
+                      : PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
+                  size: 32,
+                  color: isRestDay
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isRestDay ? '¡A recargar energías!' : 'Tu Reto de Hoy',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: isRestDay
+                              ? Colors.white70
+                              : Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        isRestDay ? 'Día de Descanso' : todayRoutine.name,
+                        style: GoogleFonts.lato(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: isRestDay
+                              ? Colors.white
+                              : Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  isRestDay ? 'Día de Descanso' : todayRoutine.name,
-                  style: GoogleFonts.lato(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                    color: isRestDay
-                        ? Colors.white
-                        : Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-                if (!isRestDay)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: ElevatedButton.icon(
-                      icon: Icon(PhosphorIcons.play(PhosphorIconsStyle.duotone)),
-                      label: const Text('Comenzar'),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                WorkoutScreen(routine: todayRoutine),
-                          ),
-                        );
-                      },
+                if (!isRestDay) ...[
+                  const SizedBox(width: 12),
+                  ElevatedButton.icon(
+                    icon: Icon(
+                      PhosphorIcons.play(PhosphorIconsStyle.fill),
+                      size: 16,
+                    ),
+                    label: const Text(
+                      'Comenzar',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              WorkoutScreen(routine: todayRoutine),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
+                ],
               ],
             ),
           ),

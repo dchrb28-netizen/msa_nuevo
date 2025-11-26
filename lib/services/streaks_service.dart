@@ -22,7 +22,8 @@ class StreaksService {
   static const String _mealKey = 'meal';
   static const String _workoutKey = 'workout';
   static const String _calorieKey = 'calorie';
-  static const String _fastingKey = 'fasting'; // <-- NUEVA CLAVE
+  static const String _fastingKey = 'fasting';
+  static const String _meditationKey = 'meditation';
 
   // --- MÉTODOS PÚBLICOS PARA ACTUALIZAR RACHAS ---
 
@@ -30,7 +31,8 @@ class StreaksService {
   Future<void> updateMealStreak() => _updateStreak(_mealKey);
   Future<void> updateWorkoutStreak() => _updateStreak(_workoutKey);
   Future<void> updateCalorieStreak() => _updateStreak(_calorieKey);
-  Future<void> updateFastingStreak() => _updateStreak(_fastingKey); // <-- NUEVO MÉTODO
+  Future<void> updateFastingStreak() => _updateStreak(_fastingKey);
+  Future<void> updateMeditationStreak() => _updateStreak(_meditationKey);
 
   // --- MÉTODOS PÚBLICOS PARA OBTENER RACHAS ---
 
@@ -38,7 +40,8 @@ class StreaksService {
   Future<StreakData> getMealStreak() => _getStreakData(_mealKey);
   Future<StreakData> getWorkoutStreak() => _getStreakData(_workoutKey);
   Future<StreakData> getCalorieStreak() => _getStreakData(_calorieKey);
-  Future<StreakData> getFastingStreak() => _getStreakData(_fastingKey); // <-- NUEVO MÉTODO
+  Future<StreakData> getFastingStreak() => _getStreakData(_fastingKey);
+  Future<StreakData> getMeditationStreak() => _getStreakData(_meditationKey);
 
   // --- LÓGICA INTERNA ---
 

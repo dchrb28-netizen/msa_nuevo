@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/routine_log.dart';
+import 'package:myapp/services/time_format_service.dart';
+import 'package:provider/provider.dart';
 
 class WorkoutLogDetailScreen extends StatelessWidget {
   final RoutineLog log;
@@ -17,7 +19,7 @@ class WorkoutLogDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              DateFormat.yMMMMd('es').add_jm().format(log.date),
+              '${DateFormat.yMMMMd('es').format(log.date)} ${Provider.of<TimeFormatService>(context).formatTime(log.date)}',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             if (log.durationInMinutes > 0) // Condición actualizada

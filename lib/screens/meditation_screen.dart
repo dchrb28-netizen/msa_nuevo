@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/providers/meditation_provider.dart';
+import 'package:myapp/services/time_format_service.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 
@@ -81,14 +82,119 @@ class _MeditationScreenState extends State<MeditationScreen> {
             child: Consumer<MeditationProvider>(
               builder: (context, provider, child) {
                 final logs = provider.meditationLogs;
+                
+                if (logs.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: Text(
+                        'No hay sesiones de meditación registradas.\n¡Comienza tu primera sesión!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ),
+                  );
+                }
+                
                 return ListView.builder(
                   itemCount: logs.length,
                   itemBuilder: (context, index) {
                     final log = logs[index];
-                    return ListTile(
-                      leading: const Icon(Icons.self_improvement),
-                      title: Text('Meditación de ${_formatDuration(log.durationInSeconds)}'),
-                      subtitle: Text(DateFormat.yMMMd('es').add_jm().format(log.startTime)),
+                    return Dismissible(
+                      key: Key(log.id),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        color: Colors.red,
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                      ),
+                      confirmDismiss: (direction) async {
+                        return await showDialog<bool>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Confirmar eliminación'),
+                              content: const Text(
+                                '¿Estás seguro de que deseas eliminar esta sesión de meditación?',
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('Cancelar'),
+                                  onPressed: () => Navigator.of(context).pop(false),
+                                ),
+                                TextButton(
+                                  child: const Text(
+                                    'Eliminar',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                  onPressed: () => Navigator.of(context).pop(true),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      onDismissed: (direction) {
+                        provider.deleteMeditationLog(log.id);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Sesión eliminada'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      child: ListTile(
+                        leading: const Icon(Icons.self_improvement),
+                        title: Text('Meditación de ${_formatDuration(log.durationInSeconds)}'),
+                        subtitle: Text(
+                          '${DateFormat.yMMMd('es').format(log.startTime)} ${Provider.of<TimeFormatService>(context).formatTime(log.startTime)}',
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete_outline, color: Colors.red),
+                          onPressed: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Confirmar eliminación'),
+                                  content: const Text(
+                                    '¿Estás seguro de que deseas eliminar esta sesión de meditación?',
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text('Cancelar'),
+                                      onPressed: () => Navigator.of(context).pop(false),
+                                    ),
+                                    TextButton(
+                                      child: const Text(
+                                        'Eliminar',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                      onPressed: () => Navigator.of(context).pop(true),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                            
+                            if (confirm == true) {
+                              provider.deleteMeditationLog(log.id);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Sesión eliminada'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                        ),
+                      ),
                     );
                   },
                 );

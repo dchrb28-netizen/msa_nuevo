@@ -4,6 +4,7 @@ import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile/create_profile_screen.dart';
+import 'package:myapp/services/backup_service.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -51,6 +52,91 @@ class ProfileSelectionScreen extends StatelessWidget {
         context,
         MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
       );
+    }
+
+    Future<void> restoreBackup() async {
+      try {
+        // Mostrar indicador de carga
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        
+        final backupService = BackupService();
+        final success = await backupService.importBackup();
+        
+        if (context.mounted) {
+          // Cerrar indicador de carga
+          Navigator.of(context).pop();
+          
+          if (success) {
+            // Recargar perfiles después de restaurar
+            userProvider.loadUsers();
+            
+            // Esperar un momento para que se carguen los datos
+            await Future.delayed(const Duration(milliseconds: 500));
+            
+            if (context.mounted) {
+              // Si hay perfiles después de restaurar, entrar automáticamente
+              if (userProvider.users.isNotEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('✅ Respaldo restaurado - Entrando a la app...'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+                
+                // Seleccionar el primer perfil y navegar
+                userProvider.switchUser(userProvider.users.first.id);
+                
+                // Navegar a MainScreen
+                await Future.delayed(const Duration(milliseconds: 500));
+                if (context.mounted) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const MainScreen()),
+                  );
+                }
+              } else {
+                // Si no hay perfiles, solo mostrar mensaje de éxito
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('✅ Respaldo restaurado correctamente'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            }
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('❌ Error al restaurar el respaldo'),
+                backgroundColor: Colors.red,
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        // Cerrar indicador de carga si está abierto
+        if (context.mounted) {
+          Navigator.of(context).pop();
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('❌ Error al restaurar: $e'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
     }
 
     // The main content when no profiles exist
@@ -103,6 +189,17 @@ class ProfileSelectionScreen extends StatelessWidget {
                   side: BorderSide(color: outlinedButtonBorderColor!),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   textStyle: textTheme.titleMedium,
+                ),
+              ),
+              const SizedBox(height: 24),
+              TextButton.icon(
+                icon: Icon(PhosphorIcons.downloadSimple(PhosphorIconsStyle.regular)),
+                label: const Text('Recuperar Respaldo'),
+                onPressed: restoreBackup,
+                style: TextButton.styleFrom(
+                  foregroundColor: colorScheme.secondary,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  textStyle: textTheme.titleSmall,
                 ),
               ),
             ],

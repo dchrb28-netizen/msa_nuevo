@@ -11,9 +11,10 @@ void main() {
     setUpAll(() async {
       // Initialize Hive for testing
       Hive.init('test');
-      if (!Hive.isAdapterRegistered(UserAdapter().typeId)) {
-        Hive.registerAdapter(UserAdapter());
-      }
+      // El adaptador debe ser generado con build_runner
+      // if (!Hive.isAdapterRegistered(0)) {
+      //   Hive.registerAdapter(UserAdapter());
+      // }
     });
 
     tearDownAll(() async {

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/providers/water_intake_provider.dart';
+import 'package:myapp/services/time_format_service.dart';
 import 'package:myapp/widgets/dashboard/aquarium_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -257,7 +258,7 @@ class WaterTodayView extends StatelessWidget {
                               ),
                             ),
                             subtitle: Text(
-                              DateFormat.jm('es').format(log.timestamp),
+                              Provider.of<TimeFormatService>(context).formatTime(log.timestamp),
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,

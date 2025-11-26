@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/water_log.dart';
+import 'package:myapp/services/time_format_service.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
 class WaterLogList extends StatelessWidget {
   final DateTime selectedDate;
@@ -93,7 +95,9 @@ class WaterLogList extends StatelessWidget {
               '${entry.amount} ml',
               style: GoogleFonts.lato(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text(DateFormat.jm().format(entry.timestamp)),
+            subtitle: Text(
+              Provider.of<TimeFormatService>(context).formatTime(entry.timestamp),
+            ),
             trailing: IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
               onPressed: () => _deleteWaterLog(entry),

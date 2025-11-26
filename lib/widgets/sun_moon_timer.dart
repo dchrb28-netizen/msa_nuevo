@@ -100,13 +100,28 @@ class SunMoonTimer extends StatelessWidget {
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: onButtonPressed,
-                  icon: Icon(isFasting ? Icons.stop : Icons.play_arrow),
-                  label: Text(isFasting ? 'Parar' : 'Empezar'),
+                  icon: Icon(
+                    isFasting ? Icons.stop_rounded : Icons.play_arrow_rounded,
+                    size: 24,
+                  ),
+                  label: Text(
+                    isFasting ? 'Parar Ayuno' : 'Empezar Ayuno',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isFasting
-                        ? theme.colorScheme.error
-                        : theme.colorScheme.primary,
+                    backgroundColor: isFasting ? Colors.red : Colors.green,
                     foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
                 ),
               ],

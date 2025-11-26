@@ -70,12 +70,12 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
           end: Alignment.bottomRight,
           colors: [
             Theme.of(context).colorScheme.surface,
-            Theme.of(context).colorScheme.surface.withOpacity(0.8),
+            Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -124,7 +124,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                   _selectedPeriod,
                   style: GoogleFonts.montserrat(
                     fontSize: 13,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -251,10 +251,10 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.7),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -283,7 +283,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                           ? LinearGradient(
                               colors: [
                                 Theme.of(context).colorScheme.primary,
-                                Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                                Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
                               ],
                             )
                           : null,
@@ -291,7 +291,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                       border: Border.all(
                         color: isSelected
                             ? Colors.transparent
-                            : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                            : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -324,12 +324,12 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
           end: Alignment.bottomRight,
           colors: [
             Theme.of(context).colorScheme.surface,
-            Theme.of(context).colorScheme.surface.withOpacity(0.8),
+            Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -352,7 +352,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                       gradient: LinearGradient(
                         colors: [
                           Theme.of(context).colorScheme.secondaryContainer,
-                          Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.7),
+                          Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.7),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(12),
@@ -383,7 +383,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                   _selectedPeriod,
                   style: GoogleFonts.montserrat(
                     fontSize: 13,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -546,11 +546,11 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
     );
   }
 
-  Widget _buildWaterGoalButton() {
+  Widget _buildWeightTrackingCard() {
     return Consumer<UserProvider>(
       builder: (context, userProvider, _) {
         final user = userProvider.user;
-        final hasGoal = user?.waterGoal != null && user!.waterGoal! > 0;
+        final hasGoal = user?.waterGoal != null && (user?.waterGoal ?? 0) > 0;
 
         return Material(
           color: Colors.transparent,
@@ -563,27 +563,27 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                     ? LinearGradient(
                         colors: [
                           Theme.of(context).colorScheme.primaryContainer,
-                          Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7),
+                          Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.7),
                         ],
                       )
                     : LinearGradient(
                         colors: [
-                          Colors.orange.withOpacity(0.15),
-                          Colors.deepOrange.withOpacity(0.1),
+                          Colors.orange.withValues(alpha: 0.15),
+                          Colors.deepOrange.withValues(alpha: 0.1),
                         ],
                       ),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: hasGoal
-                      ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
-                      : Colors.orange.withOpacity(0.4),
+                      ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
+                      : Colors.orange.withValues(alpha: 0.4),
                   width: 1.5,
                 ),
                 boxShadow: [
                   BoxShadow(
                     color: (hasGoal
                         ? Theme.of(context).colorScheme.primary
-                        : Colors.orange).withOpacity(0.15),
+                        : Colors.orange).withValues(alpha: 0.15),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -598,8 +598,8 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: hasGoal
-                            ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
-                            : Colors.orange.withOpacity(0.2),
+                            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.15)
+                            : Colors.orange.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
@@ -615,7 +615,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                     const SizedBox(width: 10),
                     Text(
                       hasGoal
-                          ? 'Meta: ${user!.waterGoal!.toInt()} ml'
+                          ? 'Meta: ${(user?.waterGoal ?? 0).toInt()} ml'
                           : 'Establecer meta diaria',
                       style: GoogleFonts.montserrat(
                         fontSize: 14,
@@ -631,7 +631,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                       Icon(
                         PhosphorIcons.pencilSimple(PhosphorIconsStyle.duotone),
                         size: 16,
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
                       ),
                     ],
                   ],
@@ -710,12 +710,12 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
           end: Alignment.bottomRight,
           colors: [
             Theme.of(context).colorScheme.surface,
-            Theme.of(context).colorScheme.surface.withOpacity(0.8),
+            Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -764,7 +764,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                   _selectedPeriod,
                   style: GoogleFonts.montserrat(
                     fontSize: 13,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -1010,12 +1010,12 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
               end: Alignment.bottomRight,
               colors: [
                 Theme.of(context).colorScheme.surface,
-                Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
               ],
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.red.withOpacity(0.08),
+                color: Colors.red.withValues(alpha: 0.08),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -1039,8 +1039,8 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.red.withOpacity(0.2),
-                              Colors.red.withOpacity(0.1),
+                              Colors.red.withValues(alpha: 0.2),
+                              Colors.red.withValues(alpha: 0.1),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(12),
@@ -1071,7 +1071,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                       periodText,
                       style: GoogleFonts.montserrat(
                         fontSize: 13,
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -1112,12 +1112,12 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
           end: Alignment.bottomRight,
           colors: [
             Theme.of(context).colorScheme.surface,
-            Theme.of(context).colorScheme.surface.withOpacity(0.8),
+            Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.08),
+            color: Colors.orange.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -1139,8 +1139,8 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.orange.withOpacity(0.2),
-                          Colors.orange.withOpacity(0.1),
+                          Colors.orange.withValues(alpha: 0.2),
+                          Colors.orange.withValues(alpha: 0.1),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(12),
@@ -1171,7 +1171,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                   _selectedPeriod,
                   style: GoogleFonts.montserrat(
                     fontSize: 13,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -1251,8 +1251,8 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
-                              Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.1),
+                              Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                              Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(12),
@@ -1264,7 +1264,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                         ),
                       ),
@@ -1317,13 +1317,13 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            color.withOpacity(0.15),
-            color.withOpacity(0.05),
+            color.withValues(alpha: 0.15),
+            color.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
@@ -1334,7 +1334,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
             style: GoogleFonts.montserrat(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: color.withOpacity(0.8),
+              color: color.withValues(alpha: 0.8),
               letterSpacing: 0.5,
             ),
           ),
@@ -1354,7 +1354,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
             style: GoogleFonts.montserrat(
               fontSize: 10,
               fontWeight: FontWeight.w500,
-              color: color.withOpacity(0.6),
+              color: color.withValues(alpha: 0.6),
             ),
           ),
         ],
@@ -1375,13 +1375,13 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            color.withOpacity(0.15),
-            color.withOpacity(0.05),
+            color.withValues(alpha: 0.15),
+            color.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
@@ -1390,7 +1390,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -1416,7 +1416,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
             style: GoogleFonts.montserrat(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
         ],
@@ -1433,12 +1433,12 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
           end: Alignment.bottomRight,
           colors: [
             Theme.of(context).colorScheme.surface,
-            Theme.of(context).colorScheme.surface.withOpacity(0.8),
+            Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.purple.withOpacity(0.08),
+            color: Colors.purple.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -1460,8 +1460,8 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.purple.withOpacity(0.2),
-                          Colors.purple.withOpacity(0.1),
+                          Colors.purple.withValues(alpha: 0.2),
+                          Colors.purple.withValues(alpha: 0.1),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(12),
@@ -1492,7 +1492,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                   _selectedPeriod,
                   style: GoogleFonts.montserrat(
                     fontSize: 13,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -1547,62 +1547,63 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                        _buildStatCard(
-                          icon: PhosphorIcons.listChecks(PhosphorIconsStyle.duotone),
-                          value: totalFasts.toString(),
-                          label: 'Ayunos completados',
-                          color: Colors.purple,
-                        ),
-                        _buildStatCard(
-                          icon: PhosphorIcons.chartBar(PhosphorIconsStyle.duotone),
-                          value: avgHours.toStringAsFixed(1),
-                          label: 'Promedio (horas)',
-                          color: Colors.deepPurple,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.amber.withOpacity(0.2),
-                            Colors.orange.withOpacity(0.1),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.amber.withOpacity(0.5),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            PhosphorIcons.trophy(PhosphorIconsStyle.duotone),
-                            color: Colors.amber,
-                            size: 24,
+                          _buildStatCard(
+                            icon: PhosphorIcons.listChecks(PhosphorIconsStyle.duotone),
+                            value: totalFasts.toString(),
+                            label: 'Ayunos completados',
+                            color: Colors.purple,
                           ),
-                          const SizedBox(width: 10),
-                          Text(
-                            'Récord: ${formatDuration(longestSeconds)}',
-                            style: GoogleFonts.montserrat(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.amber.shade800,
-                              letterSpacing: -0.3,
-                            ),
+                          _buildStatCard(
+                            icon: PhosphorIcons.chartBar(PhosphorIconsStyle.duotone),
+                            value: avgHours.toStringAsFixed(1),
+                            label: 'Promedio (horas)',
+                            color: Colors.deepPurple,
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.amber.withValues(alpha: 0.2),
+                              Colors.orange.withValues(alpha: 0.1),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.amber.withValues(alpha: 0.5),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              PhosphorIcons.trophy(PhosphorIconsStyle.duotone),
+                              color: Colors.amber,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              'Récord: ${formatDuration(longestSeconds)}',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.amber.shade800,
+                                letterSpacing: -0.3,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1617,12 +1618,12 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
           end: Alignment.bottomRight,
           colors: [
             Theme.of(context).colorScheme.surface,
-            Theme.of(context).colorScheme.surface.withOpacity(0.8),
+            Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.teal.withOpacity(0.08),
+            color: Colors.teal.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -1644,8 +1645,8 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.teal.withOpacity(0.2),
-                          Colors.teal.withOpacity(0.1),
+                          Colors.teal.withValues(alpha: 0.2),
+                          Colors.teal.withValues(alpha: 0.1),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(12),
@@ -1676,7 +1677,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                   _selectedPeriod,
                   style: GoogleFonts.montserrat(
                     fontSize: 13,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -1778,13 +1779,13 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.amber.withOpacity(0.2),
-                              Colors.orange.withOpacity(0.1),
+                              Colors.amber.withValues(alpha: 0.2),
+                              Colors.orange.withValues(alpha: 0.1),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.amber.withOpacity(0.5),
+                            color: Colors.amber.withValues(alpha: 0.5),
                             width: 1.5,
                           ),
                         ),

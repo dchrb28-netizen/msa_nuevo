@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/body_measurement.dart';
-import 'package:intl/intl.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/services/time_format_service.dart';
 import 'package:myapp/widgets/body_measurement_form.dart';
 import 'package:myapp/widgets/weight_progress_card.dart';
 import 'package:provider/provider.dart';
@@ -142,7 +142,7 @@ class BodyMeasurementTodayView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Medición a las ${DateFormat.jm().format(lastMeasurement.timestamp)}',
+                  'Medición a las ${Provider.of<TimeFormatService>(context).formatTime(lastMeasurement.timestamp)}',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),

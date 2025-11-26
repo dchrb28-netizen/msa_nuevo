@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/fasting_log.dart';
@@ -44,19 +45,32 @@ class FastingProvider with ChangeNotifier {
   void _initializeTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (isFasting) {
+        // Calcular la fase actual
         final newPhase = currentPhase;
-        if (_previousPhase?.name != newPhase?.name) {
-          if (newPhase != null) {
+        
+        // Verificar si cambió de fase
+        if (_previousPhase == null || _previousPhase!.name != newPhase?.name) {
+          if (newPhase != null && _previousPhase != null) {
+            // Solo notificar si realmente cambió (no es la primera vez)
+            developer.log(
+              '🔄 Cambio de fase: ${_previousPhase?.name} -> ${newPhase.name}',
+              name: 'FastingProvider._initializeTimer',
+            );
             _notificationService.showNotification(
               1,
               '¡Nueva Fase Alcanzada!',
               'Has entrado en la fase: ${newPhase.name}',
             );
-            _previousPhase = newPhase;
           }
+          _previousPhase = newPhase;
         }
 
+        // Verificar si se alcanzó la meta
         if (_currentFast!.durationInSeconds >= goalInSeconds) {
+          developer.log(
+            '🎯 Meta alcanzada: ${_selectedPlan.fastingHours} horas',
+            name: 'FastingProvider._initializeTimer',
+          );
           _notificationService.showNotification(
             0,
             '¡Objetivo Cumplido!',
@@ -64,21 +78,32 @@ class FastingProvider with ChangeNotifier {
           );
           stopFasting();
         }
+        
+        // Siempre notificar para actualizar la UI
+        notifyListeners();
       } else {
         _updateFeedingWindow();
+        notifyListeners();
       }
-      notifyListeners();
     });
   }
 
   FastingPhase? get currentPhase {
-    if (!isFasting) return null;
+    if (!isFasting || _currentFast == null) return null;
+    
     final hours = _currentFast!.durationInSeconds / 3600;
+    
     for (var i = FastingPhase.phases.length - 1; i >= 0; i--) {
       if (hours >= FastingPhase.phases[i].startHour) {
-        return FastingPhase.phases[i];
+        final phase = FastingPhase.phases[i];
+        developer.log(
+          '⏱️ Ayuno: ${hours.toStringAsFixed(2)}h -> Fase: ${phase.name}',
+          name: 'FastingProvider.currentPhase',
+        );
+        return phase;
       }
     }
+    
     return null;
   }
 

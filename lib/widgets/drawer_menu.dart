@@ -12,6 +12,7 @@ import 'package:myapp/screens/rewards_goals/rewards_and_streaks_screen.dart';
 import 'package:myapp/screens/settings/about_screen.dart';
 import 'package:myapp/screens/settings_screen.dart';
 import 'package:myapp/screens/training/training_screen.dart';
+import 'package:myapp/screens/backup_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -339,20 +340,10 @@ class DrawerMenu extends StatelessWidget {
             ),
             title: Text('Respaldo', style: GoogleFonts.lato()),
             onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Próximamente'),
-                  content: const Text(
-                    'La función de respaldo y sincronización en la nube estará disponible pronto.',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Entendido'),
-                    ),
-                  ],
-                ),
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const BackupScreen()),
               );
             },
           ),

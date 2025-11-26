@@ -36,4 +36,17 @@ class MeditationProvider with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> deleteMeditationLog(String logId) async {
+    // Buscar el índice del log por su ID
+    final logs = meditationLogs;
+    final index = logs.indexWhere((log) => log.id == logId);
+    
+    if (index != -1) {
+      // Eliminar usando la clave del box (el índice)
+      final keys = _meditationLogBox.keys.toList();
+      await _meditationLogBox.delete(keys[index]);
+      notifyListeners();
+    }
+  }
 }
