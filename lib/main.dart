@@ -20,7 +20,6 @@ import 'package:myapp/models/routine.dart';
 import 'package:myapp/models/routine_exercise.dart';
 import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/models/set_log.dart';
-import 'package:myapp/models/sleep_log.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/user_recipe.dart';
 import 'package:myapp/models/water_log.dart';
@@ -116,7 +115,6 @@ void _registerHiveAdapters() {
   _tryRegisterAdapter(ExerciseAdapter());
   _tryRegisterAdapter(RoutineExerciseAdapter());
   _tryRegisterAdapter(MealEntryAdapter());
-  _tryRegisterAdapter(SleepLogAdapter());
 }
 
 void _tryRegisterAdapter<T>(TypeAdapter<T> adapter) {
@@ -144,7 +142,6 @@ Future<void> _openHiveBoxes() async {
   await Hive.openBox<RoutineExercise>('routine_exercises');
   await Hive.openBox<MealEntry>('meal_entries');
   await Hive.openBox<String>('meditation_logs_json'); // Open the new box for JSON strings
-  await Hive.openBox<SleepLog>('sleep_logs');
 }
 
 Future<void> _populateInitialFoodData() async {

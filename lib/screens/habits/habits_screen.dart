@@ -21,7 +21,7 @@ class HabitsScreen extends StatelessWidget {
 
     return DefaultTabController(
       initialIndex: initialTabIndex,
-      length: 2,
+      length: 2, // Reverted to 2
       child: Scaffold(
         appBar: AppBar(
           // El título se ha eliminado para un look más limpio, la pestaña activa ya da contexto.
