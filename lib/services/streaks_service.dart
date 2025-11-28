@@ -1,5 +1,7 @@
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:myapp/models/meditation_log.dart';
 
 
 // Modelo de datos oficial para una racha
@@ -32,7 +34,39 @@ class StreaksService {
   Future<void> updateWorkoutStreak() => _updateStreak(_workoutKey);
   Future<void> updateCalorieStreak() => _updateStreak(_calorieKey);
   Future<void> updateFastingStreak() => _updateStreak(_fastingKey);
-  Future<void> updateMeditationStreak() => _updateStreak(_meditationKey);
+
+  Future<void> updateMeditationStreak(MeditationLog log) async {
+    final prefs = await SharedPreferences.getInstance();
+    const key = _meditationKey;
+    final eventDate = log.endTime; // Use the log's date
+    final eventDay = DateUtils.dateOnly(eventDate);
+
+    final data = await _getStreakData(key);
+    final lastUpdateDate = DateUtils.dateOnly(data.lastUpdate);
+
+    if (lastUpdateDate.isAtSameMomentAs(eventDay)) {
+      return; // Ya se actualizó para este día
+    }
+
+    int newCurrentStreak;
+    final yesterday = eventDay.subtract(const Duration(days: 1));
+
+    if (lastUpdateDate.isAtSameMomentAs(yesterday)) {
+      // La racha continúa
+      newCurrentStreak = data.currentStreak + 1;
+    } else {
+      // La racha se rompió o es nueva
+      newCurrentStreak = 1;
+    }
+
+    final newRecordStreak = newCurrentStreak > data.recordStreak ? newCurrentStreak : data.recordStreak;
+
+    // Guardar los nuevos valores
+    await prefs.setInt('streak_${key}_current', newCurrentStreak);
+    await prefs.setInt('streak_${key}_record', newRecordStreak);
+    await prefs.setInt('streak_${key}_lastUpdate', eventDate.millisecondsSinceEpoch);
+  }
+
 
   // --- MÉTODOS PÚBLICOS PARA OBTENER RACHAS ---
 
