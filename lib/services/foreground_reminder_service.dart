@@ -73,7 +73,7 @@ void startCallback() {
 /// Handler que verifica los recordatorios
 class ReminderTaskHandler extends TaskHandler {
   int _lastCheckedMinute = -1;
-  final Set<String> _triggeredToday = {};
+  final Map<String, DateTime> _triggeredToday = {}; // Cambiado a Map para guardar última hora disparada
   
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
@@ -140,31 +140,42 @@ class ReminderTaskHandler extends TaskHandler {
           continue;
         }
         
-        // Verificar si es la hora exacta
+        // Verificar si es la hora exacta O si debe repetirse
+        bool shouldTrigger = false;
+        final reminderKey = '${reminder.id}_${now.year}_${now.month}_${now.day}';
+        
         if (reminder.hour == now.hour && reminder.minute == now.minute) {
-          // Evitar disparar el mismo recordatorio dos veces en el mismo día
-          final reminderKey = '${reminder.id}_${now.year}_${now.month}_${now.day}';
+          // Es la hora exacta - siempre disparar
+          shouldTrigger = true;
+        } else if (reminder.repeatMinutes > 0 && _triggeredToday.containsKey(reminderKey)) {
+          // Verificar si debe repetirse
+          final lastTriggered = _triggeredToday[reminderKey]!;
+          final minutesSinceLastTrigger = now.difference(lastTriggered).inMinutes;
           
-          if (!_triggeredToday.contains(reminderKey)) {
-            _triggeredToday.add(reminderKey);
-            
-            developer.log(
-              '🔔 Triggering reminder: ${reminder.title} at ${reminder.hour}:${reminder.minute}',
-              name: 'ForegroundReminderService',
-            );
-            
-            // Disparar notificación
-            final notificationService = NotificationService();
-            await notificationService.init();
-            
-            await notificationService.showNotification(
-              reminder.id.hashCode + now.day,
-              reminder.title,
-              'Es hora de tu hábito diario',
-            );
-            
-            triggeredCount++;
+          if (minutesSinceLastTrigger >= reminder.repeatMinutes) {
+            shouldTrigger = true;
           }
+        }
+        
+        if (shouldTrigger) {
+          _triggeredToday[reminderKey] = now;
+          
+          developer.log(
+            '🔔 Triggering reminder: ${reminder.title} at ${now.hour}:${now.minute}',
+            name: 'ForegroundReminderService',
+          );
+          
+          // Disparar notificación
+          final notificationService = NotificationService();
+          await notificationService.init();
+          
+          await notificationService.showNotification(
+            reminder.id.hashCode + now.hour * 60 + now.minute,
+            reminder.title,
+            'Es hora de tu hábito diario',
+          );
+          
+          triggeredCount++;
         }
       }
       

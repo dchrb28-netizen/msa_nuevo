@@ -23,6 +23,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   late TextEditingController _titleController;
   late TimeOfDay _selectedTime;
   late List<bool> _selectedDays;
+  late int _repeatMinutes;
 
   bool get isEditing => widget.reminder != null;
 
@@ -36,10 +37,12 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         minute: widget.reminder!.minute,
       );
       _selectedDays = List.from(widget.reminder!.days);
+      _repeatMinutes = widget.reminder!.repeatMinutes;
     } else {
       _titleController = TextEditingController();
       _selectedTime = TimeOfDay.now();
       _selectedDays = List.filled(7, true);
+      _repeatMinutes = 0;
     }
   }
 
@@ -84,6 +87,8 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                 onTap: _pickTime,
               ),
               const SizedBox(height: 20),
+              _buildRepeatSelector(),
+              const SizedBox(height: 20),
               _buildDaySelector(),
               const SizedBox(height: 40),
               ElevatedButton(
@@ -92,6 +97,80 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRepeatSelector() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Repetir cada:',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ChoiceChip(
+                  label: const Text('No repetir'),
+                  selected: _repeatMinutes == 0,
+                  onSelected: (selected) {
+                    if (selected) setState(() => _repeatMinutes = 0);
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('5 min'),
+                  selected: _repeatMinutes == 5,
+                  onSelected: (selected) {
+                    if (selected) setState(() => _repeatMinutes = 5);
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('10 min'),
+                  selected: _repeatMinutes == 10,
+                  onSelected: (selected) {
+                    if (selected) setState(() => _repeatMinutes = 10);
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('15 min'),
+                  selected: _repeatMinutes == 15,
+                  onSelected: (selected) {
+                    if (selected) setState(() => _repeatMinutes = 15);
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('30 min'),
+                  selected: _repeatMinutes == 30,
+                  onSelected: (selected) {
+                    if (selected) setState(() => _repeatMinutes = 30);
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('60 min'),
+                  selected: _repeatMinutes == 60,
+                  onSelected: (selected) {
+                    if (selected) setState(() => _repeatMinutes = 60);
+                  },
+                ),
+              ],
+            ),
+            if (_repeatMinutes > 0)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'ℹ️ Se repetirá cada $_repeatMinutes minutos hasta el final del día',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+              ),
+          ],
         ),
       ),
     );
@@ -218,6 +297,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         minute: _selectedTime.minute,
         days: _selectedDays,
         isActive: isEditing ? widget.reminder!.isActive : true,
+        repeatMinutes: _repeatMinutes,
       );
 
       await remindersBox.put(reminder.id, reminder);

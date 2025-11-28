@@ -14,5 +14,6 @@ class Reminder with _$Reminder {
     @HiveField(3) required int minute,
     @HiveField(4) required List<bool> days,
     @HiveField(5) @Default(true) bool isActive,
+    @HiveField(6) @Default(0) int repeatMinutes, // 0 = no repetir, >0 = repetir cada X minutos
   }) = _Reminder;
 }
