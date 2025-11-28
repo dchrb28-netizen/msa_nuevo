@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/screens/dashboard_screen.dart';
 import 'package:myapp/screens/menus_screen.dart';
 import 'package:myapp/screens/progreso_screen.dart';
+import 'package:myapp/screens/sleep_screen.dart';
 import 'package:myapp/widgets/drawer_menu.dart';
 import 'package:myapp/widgets/achievement_snackbar_listener.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -19,6 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   static const List<Widget> _screens = <Widget>[
     DashboardScreen(),
     MenusScreen(),
+    SleepScreen(),
     ProgresoScreen(),
   ];
 
@@ -52,6 +54,11 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(PhosphorIcons.notebook(PhosphorIconsStyle.duotone)),
               activeIcon: Icon(PhosphorIcons.notebook(PhosphorIconsStyle.fill)),
               label: 'Menus',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(PhosphorIcons.bed(PhosphorIconsStyle.duotone)),
+              activeIcon: Icon(PhosphorIcons.bed(PhosphorIconsStyle.fill)),
+              label: 'Sueño',
             ),
             BottomNavigationBarItem(
               icon: Icon(PhosphorIcons.chartLineUp(PhosphorIconsStyle.duotone)),

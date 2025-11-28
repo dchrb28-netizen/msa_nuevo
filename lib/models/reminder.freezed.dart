@@ -28,6 +28,8 @@ mixin _$Reminder {
   List<bool> get days => throw _privateConstructorUsedError;
   @HiveField(5)
   bool get isActive => throw _privateConstructorUsedError;
+  @HiveField(6)
+  int get repeatMinutes => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ReminderCopyWith<Reminder> get copyWith =>
@@ -45,7 +47,8 @@ abstract class $ReminderCopyWith<$Res> {
       @HiveField(2) int hour,
       @HiveField(3) int minute,
       @HiveField(4) List<bool> days,
-      @HiveField(5) bool isActive});
+      @HiveField(5) bool isActive,
+      @HiveField(6) int repeatMinutes});
 }
 
 /// @nodoc
@@ -67,6 +70,7 @@ class _$ReminderCopyWithImpl<$Res, $Val extends Reminder>
     Object? minute = null,
     Object? days = null,
     Object? isActive = null,
+    Object? repeatMinutes = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -93,6 +97,10 @@ class _$ReminderCopyWithImpl<$Res, $Val extends Reminder>
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
+      repeatMinutes: null == repeatMinutes
+          ? _value.repeatMinutes
+          : repeatMinutes // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -111,7 +119,8 @@ abstract class _$$ReminderImplCopyWith<$Res>
       @HiveField(2) int hour,
       @HiveField(3) int minute,
       @HiveField(4) List<bool> days,
-      @HiveField(5) bool isActive});
+      @HiveField(5) bool isActive,
+      @HiveField(6) int repeatMinutes});
 }
 
 /// @nodoc
@@ -131,6 +140,7 @@ class __$$ReminderImplCopyWithImpl<$Res>
     Object? minute = null,
     Object? days = null,
     Object? isActive = null,
+    Object? repeatMinutes = null,
   }) {
     return _then(_$ReminderImpl(
       id: null == id
@@ -157,6 +167,10 @@ class __$$ReminderImplCopyWithImpl<$Res>
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
+      repeatMinutes: null == repeatMinutes
+          ? _value.repeatMinutes
+          : repeatMinutes // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -170,7 +184,8 @@ class _$ReminderImpl implements _Reminder {
       @HiveField(2) required this.hour,
       @HiveField(3) required this.minute,
       @HiveField(4) required final List<bool> days,
-      @HiveField(5) this.isActive = true})
+      @HiveField(5) this.isActive = true,
+      @HiveField(6) this.repeatMinutes = 0})
       : _days = days;
 
   @override
@@ -198,10 +213,14 @@ class _$ReminderImpl implements _Reminder {
   @JsonKey()
   @HiveField(5)
   final bool isActive;
+  @override
+  @JsonKey()
+  @HiveField(6)
+  final int repeatMinutes;
 
   @override
   String toString() {
-    return 'Reminder(id: $id, title: $title, hour: $hour, minute: $minute, days: $days, isActive: $isActive)';
+    return 'Reminder(id: $id, title: $title, hour: $hour, minute: $minute, days: $days, isActive: $isActive, repeatMinutes: $repeatMinutes)';
   }
 
   @override
@@ -215,12 +234,14 @@ class _$ReminderImpl implements _Reminder {
             (identical(other.minute, minute) || other.minute == minute) &&
             const DeepCollectionEquality().equals(other._days, _days) &&
             (identical(other.isActive, isActive) ||
-                other.isActive == isActive));
+                other.isActive == isActive) &&
+            (identical(other.repeatMinutes, repeatMinutes) ||
+                other.repeatMinutes == repeatMinutes));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, id, title, hour, minute,
-      const DeepCollectionEquality().hash(_days), isActive);
+      const DeepCollectionEquality().hash(_days), isActive, repeatMinutes);
 
   @JsonKey(ignore: true)
   @override
@@ -236,7 +257,8 @@ abstract class _Reminder implements Reminder {
       @HiveField(2) required final int hour,
       @HiveField(3) required final int minute,
       @HiveField(4) required final List<bool> days,
-      @HiveField(5) final bool isActive}) = _$ReminderImpl;
+      @HiveField(5) final bool isActive,
+      @HiveField(6) final int repeatMinutes}) = _$ReminderImpl;
 
   @override
   @HiveField(0)
@@ -256,6 +278,9 @@ abstract class _Reminder implements Reminder {
   @override
   @HiveField(5)
   bool get isActive;
+  @override
+  @HiveField(6)
+  int get repeatMinutes;
   @override
   @JsonKey(ignore: true)
   _$$ReminderImplCopyWith<_$ReminderImpl> get copyWith =>

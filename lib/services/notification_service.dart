@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -41,8 +42,9 @@ class NotificationService {
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
     await _requestPermissions();
-    // Create Android notification channels explicitly so sound/vibration
-    // settings are applied even on API levels that cache channel settings.
+
+    if (kIsWeb) return; // Channels are not applicable on web
+
     final androidPlugin = flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
@@ -85,7 +87,8 @@ class NotificationService {
   }
 
   Future<void> _requestPermissions() async {
-    // Solicitar permiso de notificaciones (Android 13+)
+    if (kIsWeb) return; // Permissions are not handled this way on web
+
     final notificationStatus = await Permission.notification.status;
     if (!notificationStatus.isGranted) {
       final result = await Permission.notification.request();
@@ -95,21 +98,25 @@ class NotificationService {
       );
     }
     
-    // Solicitar permiso de alarmas exactas (Android 12+)
     if (await Permission.scheduleExactAlarm.isDenied) {
       await Permission.scheduleExactAlarm.request();
     }
   }
 
-  /// Verifica y solicita todos los permisos necesarios para notificaciones
-  /// Retorna true si todos los permisos fueron concedidos
   Future<bool> checkAndRequestPermissions() async {
+    if (kIsWeb) {
+      developer.log(
+        'Skipping permission check on web',
+        name: 'NotificationService.checkAndRequestPermissions',
+      );
+      return true; // Assume granted on web as it's handled by browser
+    }
+
     developer.log(
       'Checking notification permissions...',
       name: 'NotificationService.checkAndRequestPermissions',
     );
 
-    // Verificar y solicitar permiso de notificaciones
     PermissionStatus notificationStatus = await Permission.notification.status;
     if (!notificationStatus.isGranted) {
       notificationStatus = await Permission.notification.request();
@@ -127,7 +134,6 @@ class NotificationService {
       return false;
     }
 
-    // Verificar y solicitar permiso de alarmas exactas (Android 12+)
     PermissionStatus alarmStatus = await Permission.scheduleExactAlarm.status;
     if (alarmStatus.isDenied) {
       alarmStatus = await Permission.scheduleExactAlarm.request();
@@ -146,22 +152,22 @@ class NotificationService {
     return allGranted;
   }
 
-  /// Diagnóstico completo del sistema de notificaciones
-  /// Retorna un mapa con información detallada sobre el estado
   Future<Map<String, dynamic>> diagnosticNotificationSystem() async {
     final result = <String, dynamic>{};
     
     try {
-      // 1. Permisos
-      final notificationPerm = await Permission.notification.status;
-      final alarmPerm = await Permission.scheduleExactAlarm.status;
-      result['permissions'] = {
-        'notification': notificationPerm.toString(),
-        'exactAlarm': alarmPerm.toString(),
-        'allGranted': notificationPerm.isGranted && !alarmPerm.isDenied,
-      };
+      if (!kIsWeb) {
+        final notificationPerm = await Permission.notification.status;
+        final alarmPerm = await Permission.scheduleExactAlarm.status;
+        result['permissions'] = {
+          'notification': notificationPerm.toString(),
+          'exactAlarm': alarmPerm.toString(),
+          'allGranted': notificationPerm.isGranted && !alarmPerm.isDenied,
+        };
+      } else {
+        result['permissions'] = 'Not applicable on web';
+      }
       
-      // 2. Notificaciones pendientes
       final pending = await flutterLocalNotificationsPlugin.pendingNotificationRequests();
       result['pendingCount'] = pending.length;
       result['pendingNotifications'] = pending.map((n) => {
@@ -170,19 +176,19 @@ class NotificationService {
         'body': n.body,
       }).toList();
       
-      // 3. Canales activos (Android)
-      final androidPlugin = flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >();
-      
-      if (androidPlugin != null) {
-        final channels = await androidPlugin.getNotificationChannels();
-        result['channels'] = channels?.map((c) => {
-          'id': c.id,
-          'name': c.name,
-          'importance': c.importance.toString(),
-        }).toList() ?? [];
+      if (!kIsWeb) {
+        final androidPlugin = flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
+        if (androidPlugin != null) {
+          final channels = await androidPlugin.getNotificationChannels();
+          result['channels'] = channels?.map((c) => {
+            'id': c.id,
+            'name': c.name,
+            'importance': c.importance.toString(),
+          }).toList() ?? [];
+        }
       }
       
       developer.log(
@@ -235,6 +241,7 @@ class NotificationService {
     String body,
     DateTime scheduledTime,
   ) async {
+    if (kIsWeb) return; // zonedSchedule is not supported on web
     developer.log(
       'scheduleNotification called id=$id scheduledTime=$scheduledTime',
       name: 'NotificationService.scheduleNotification',
@@ -272,23 +279,22 @@ class NotificationService {
     TimeOfDay time,
     List<bool> days,
   ) async {
+    if (kIsWeb) return; // zonedSchedule is not supported on web
     developer.log(
       '📅 scheduleWeeklyNotification called: baseId=$baseId time=${time.hour}:${time.minute} days=$days',
       name: 'NotificationService.scheduleWeeklyNotification',
     );
     
-    // SOLUCIÓN: Cancelar notificaciones anteriores primero para evitar conflictos
     await cancelWeeklyNotifications(baseId, days);
-    await Future.delayed(const Duration(milliseconds: 500)); // Dar tiempo a cancelar
+    await Future.delayed(const Duration(milliseconds: 500));
     
     final now = DateTime.now();
     
     for (int i = 0; i < days.length; i++) {
       if (days[i]) {
-        final dayIndex = i + 1; // 1=Lun, 7=Dom
+        final dayIndex = i + 1;
         final notificationId = baseId + dayIndex;
         
-        // Calcular la próxima fecha para este día (IGUAL QUE EL AYUNO)
         DateTime scheduledDate = DateTime(
           now.year,
           now.month,
@@ -297,12 +303,10 @@ class NotificationService {
           time.minute,
         );
         
-        // Avanzar hasta el día correcto
         while (scheduledDate.weekday != dayIndex) {
           scheduledDate = scheduledDate.add(const Duration(days: 1));
         }
         
-        // Si la hora ya pasó, programar para la próxima semana
         if (scheduledDate.isBefore(now)) {
           scheduledDate = scheduledDate.add(const Duration(days: 7));
         }
@@ -312,7 +316,6 @@ class NotificationService {
           name: 'NotificationService.scheduleWeeklyNotification',
         );
 
-        // SOLUCIÓN: Intentar con manejo de errores y fallback
         try {
           await flutterLocalNotificationsPlugin.zonedSchedule(
             notificationId,
@@ -333,7 +336,6 @@ class NotificationService {
                 ledColor: Color(0xFF4CAF50),
                 ledOnMs: 1000,
                 ledOffMs: 500,
-                // NUEVO: Configuraciones adicionales para Android
                 autoCancel: false,
                 ongoing: false,
                 showWhen: true,
@@ -360,42 +362,6 @@ class NotificationService {
         }
       }
     }
-    
-    // SOLUCIÓN: Verificar y mostrar las notificaciones pendientes
-    try {
-      final pendingNotifications = await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-      final reminderNotifications = pendingNotifications
-          .where((n) => n.id >= baseId && n.id <= baseId + 7)
-          .toList();
-      
-      developer.log(
-        '🎯 Total notifications scheduled: ${days.where((d) => d).length}',
-        name: 'NotificationService.scheduleWeeklyNotification',
-      );
-      developer.log(
-        '📌 Total pending (verified): ${reminderNotifications.length}',
-        name: 'NotificationService.scheduleWeeklyNotification',
-      );
-      
-      for (var notification in reminderNotifications) {
-        developer.log(
-          '  ✓ Pending: id=${notification.id} title="${notification.title}"',
-          name: 'NotificationService.scheduleWeeklyNotification',
-        );
-      }
-      
-      if (reminderNotifications.isEmpty && days.any((d) => d)) {
-        developer.log(
-          '⚠️ WARNING: No pending notifications found! This may indicate a scheduling problem.',
-          name: 'NotificationService.scheduleWeeklyNotification',
-        );
-      }
-    } catch (e) {
-      developer.log(
-        '⚠️ Could not verify pending notifications: $e',
-        name: 'NotificationService.scheduleWeeklyNotification',
-      );
-    }
   }
 
   String _getDayName(int dayIndex) {
@@ -403,59 +369,12 @@ class NotificationService {
     return days[dayIndex];
   }
 
-  tz.TZDateTime _nextInstanceOfDayAndTime(int day, TimeOfDay time) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduledDate = _nextInstanceOfTime(time);
-    
-    developer.log(
-      'Finding next instance: target_day=$day current_weekday=${scheduledDate.weekday} initial_date=$scheduledDate',
-      name: 'NotificationService._nextInstanceOfDayAndTime',
-    );
-    
-    while (scheduledDate.weekday != day) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
-    }
-    
-    developer.log(
-      'Found next instance: $scheduledDate (${scheduledDate.weekday}) - now=$now',
-      name: 'NotificationService._nextInstanceOfDayAndTime',
-    );
-    
-    return scheduledDate;
-  }
-
-  tz.TZDateTime _nextInstanceOfTime(TimeOfDay time) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduledDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      time.hour,
-      time.minute,
-    );
-    
-    developer.log(
-      'Calculating next time: requested=${time.hour}:${time.minute} now=$now scheduled=$scheduledDate',
-      name: 'NotificationService._nextInstanceOfTime',
-    );
-    
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
-      developer.log(
-        'Time already passed today, moved to tomorrow: $scheduledDate',
-        name: 'NotificationService._nextInstanceOfTime',
-      );
-    }
-    
-    return scheduledDate;
-  }
-
   Future<void> cancelNotification(int id) async {
     await flutterLocalNotificationsPlugin.cancel(id);
   }
 
   Future<void> cancelWeeklyNotifications(int baseId, List<bool> days) async {
+    if (kIsWeb) return;
     for (int i = 0; i < days.length; i++) {
       if (days[i]) {
         final dayIndex = i + 1;
@@ -465,16 +384,15 @@ class NotificationService {
     }
   }
 
-  /// Método de prueba: muestra una notificación inmediata y programa otra
   Future<void> scheduleTestNotification({int secondsFromNow = 60}) async {
+     if (kIsWeb) return;
     developer.log(
       '🧪 TEST: Showing immediate notification',
       name: 'NotificationService.scheduleTestNotification',
     );
 
-    // Primero muestra una notificación INMEDIATA para verificar que funciona
     await flutterLocalNotificationsPlugin.show(
-      999999, // ID único para prueba
+      999999,
       '🧪 Notificación de Prueba INMEDIATA',
       'Si ves esto, las notificaciones básicas funcionan! Ahora esperando notificación programada...',
       const NotificationDetails(
@@ -496,7 +414,6 @@ class NotificationService {
       ),
     );
 
-    // Luego programa una para dentro de X segundos
     final scheduledDate = tz.TZDateTime.now(tz.local).add(Duration(seconds: secondsFromNow));
     
     developer.log(
@@ -505,7 +422,7 @@ class NotificationService {
     );
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
-      999998, // ID diferente
+      999998,
       '🧪 Notificación PROGRAMADA',
       'Han pasado $secondsFromNow segundos! Las notificaciones programadas funcionan!',
       scheduledDate,

@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -283,12 +281,6 @@ class BackupService {
     } catch (e) {
       return value.toString();
     }
-  }
-
-  /// Deserializar un valor desde JSON
-  dynamic _deserializeValue(dynamic value) {
-    // JSON ya deserializa correctamente tipos básicos
-    return value;
   }
 
   /// Obtener tamaño estimado del respaldo
