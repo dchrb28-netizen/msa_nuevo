@@ -33,11 +33,21 @@
 /ios/Flutter/App.framework
 /ios/Flutter/engine
 /ios/Flutter/flutter_assets/
+/ios/Flutter/ephemeral/
 /android/app/build/
 /android/.gradle/
 /android/gradle/
 /android/gradlew
 /android/gradlew.bat
+
+# Windows ephemeral folder - temporal de compilación
+/windows/flutter/ephemeral/
+
+# Linux ephemeral folder
+/linux/flutter/ephemeral/
+
+# macOS ephemeral folder
+/macos/Flutter/ephemeral/
 
 # Generated code
 *.g.dart
