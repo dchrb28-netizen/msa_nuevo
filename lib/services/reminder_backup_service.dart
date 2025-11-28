@@ -1,6 +1,5 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/reminder.dart';
 import 'package:myapp/services/notification_service.dart';

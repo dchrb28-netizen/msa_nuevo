@@ -49,3 +49,5 @@
 # Ignore generating files in the native folders
 /android/key.properties
 /ios/Runner/GoogleService-Info.plist
+*.zip
+msa_nuevo_compilable_*.zip

@@ -27,7 +27,31 @@ class AchievementService extends ChangeNotifier {
 
     final experiencePoints = _profileBox.get('experiencePoints', defaultValue: 0) as int;
     final level = _profileBox.get('level', defaultValue: 1) as int;
-    final unlockedAchievements = (_profileBox.get('unlockedAchievements', defaultValue: <String, DateTime>{}) as Map).cast<String, DateTime>();
+    
+    // Convertir unlockedAchievements manejando tanto DateTime como String
+    final unlockedAchievementsRaw = (_profileBox.get('unlockedAchievements', defaultValue: <String, dynamic>{}) as Map);
+    final Map<String, DateTime> unlockedAchievements = {};
+    
+    for (var entry in unlockedAchievementsRaw.entries) {
+      try {
+        final key = entry.key as String;
+        final value = entry.value;
+        
+        if (value is DateTime) {
+          unlockedAchievements[key] = value;
+        } else if (value is String) {
+          // Convertir String a DateTime si es necesario (para datos restaurados de backup)
+          unlockedAchievements[key] = DateTime.parse(value);
+        } else {
+          // Si no es ninguno de los dos, usar fecha actual
+          unlockedAchievements[key] = DateTime.now();
+        }
+      } catch (e) {
+        // Si falla la conversión, usar fecha actual
+        unlockedAchievements[entry.key as String] = DateTime.now();
+      }
+    }
+    
     final selectedTitle = _profileBox.get('selectedTitle') as String?;
     final achievementProgress = (_profileBox.get('achievementProgress', defaultValue: <String, int>{}) as Map).cast<String, int>();
 

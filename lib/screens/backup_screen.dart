@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/backup_service.dart';
+import '../services/achievement_service.dart';
 
 class BackupScreen extends StatefulWidget {
   const BackupScreen({super.key});
@@ -41,22 +43,37 @@ class _BackupScreenState extends State<BackupScreen> {
   Future<void> _importBackup() async {
     setState(() => _isLoading = true);
     try {
-      await _backupService.importBackup();
+      final success = await _backupService.importBackup();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Respaldo importado exitosamente. Reinicie la app para ver los cambios.'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 4),
-          ),
-        );
+        if (success) {
+          // Reinicializar el AchievementService después de restaurar
+          final achievementService = Provider.of<AchievementService>(context, listen: false);
+          await achievementService.init();
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✅ Respaldo importado exitosamente. Por favor, reinicie la app para ver todos los cambios aplicados.'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 5),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('❌ Error al importar el respaldo. Verifica el archivo seleccionado.'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 4),
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al importar respaldo: $e'),
+            content: Text('❌ Error al importar respaldo: $e'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
           ),
         );
       }
