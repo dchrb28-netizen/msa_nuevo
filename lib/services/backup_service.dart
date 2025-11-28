@@ -16,6 +16,7 @@ import 'package:universal_html/html.dart' as html;
 import 'dart:io';
 
 enum ImportStatus { success, cancelled, invalidFile }
+enum ExportStatus { success, failure, webDownloadInitiated, cancelled }
 
 class BackupService {
   static final BackupService _instance = BackupService._internal();
@@ -69,7 +70,12 @@ class BackupService {
     if (value is Recipe) {
       return value.toJson();
     }
-    if (value is Map || value is List || value is String || value is num || value is bool || value == null) {
+    if (value is Map ||
+        value is List ||
+        value is String ||
+        value is num ||
+        value is bool ||
+        value == null) {
       return value;
     }
     return value.toString();
@@ -107,11 +113,11 @@ class BackupService {
     }
   }
 
-  Future<bool> exportBackup() async {
+  Future<ExportStatus> exportBackup() async {
     try {
       final Map<String, dynamic> backup = {
         'timestamp': DateTime.now().toIso8601String(),
-        'version': '1.5.4', // Corregido parámetro de file_saver
+        'version': '1.5.6', // Corregido el problema de temporización en la web
         'data': {},
         'preferences': {},
       };
@@ -149,29 +155,39 @@ class BackupService {
         html.AnchorElement(href: url)
           ..setAttribute("download", '$fileName.json')
           ..click();
-        html.Url.revokeObjectUrl(url);
-        return true;
+
+        // Damos tiempo al navegador para procesar la descarga antes de revocar la URL.
+        Future.delayed(const Duration(milliseconds: 100), () {
+          html.Url.revokeObjectUrl(url);
+        });
+
+        return ExportStatus.webDownloadInitiated;
       } else {
         String? path = await FileSaver.instance.saveAs(
           name: fileName,
           bytes: bytes,
-          fileExtension: 'json', // Parámetro corregido
+          fileExtension: 'json',
           mimeType: MimeType.json,
         );
-        return path != null && path.isNotEmpty;
+        if (path != null && path.isNotEmpty) {
+          return ExportStatus.success;
+        } else {
+          return ExportStatus.cancelled;
+        }
       }
     } catch (e) {
       if (kDebugMode) {
         print('Error creando respaldo: $e');
       }
-      return false;
+      return ExportStatus.failure;
     }
   }
 
   Future<ImportStatus> importBackup() async {
     FilePickerResult? result;
     try {
-      result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['json']);
+      result = await FilePicker.platform
+          .pickFiles(type: FileType.custom, allowedExtensions: ['json']);
     } catch (e) {
       if (kDebugMode) {
         print("Error al seleccionar archivo: $e");
@@ -263,13 +279,15 @@ class BackupService {
               }
             } catch (e) {
               if (kDebugMode) {
-                print('Error restaurando registro "${entry.key}" en "$boxName": $e');
+                print(
+                    'Error restaurando registro "${entry.key}" en "$boxName": $e');
               }
             }
           }
         } catch (e) {
           if (kDebugMode) {
-            print('Error crítico restaurando la caja "$boxName": $e. Se saltará esta caja.');
+            print(
+                'Error crítico restaurando la caja "$boxName": $e. Se saltará esta caja.');
           }
         }
       }

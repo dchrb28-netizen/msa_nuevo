@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -19,35 +20,68 @@ class _BackupScreenState extends State<BackupScreen> {
   Future<void> _exportBackup() async {
     setState(() => _isLoading = true);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
+    bool isPermissionGranted = false;
 
-    // Request storage permission
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      status = await Permission.storage.request();
+    if (kIsWeb) {
+      isPermissionGranted = true;
+    } else {
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        status = await Permission.storage.request();
+      }
+
+      if (status.isGranted) {
+        isPermissionGranted = true;
+      } else if (status.isPermanentlyDenied) {
+        _showSettingsDialog();
+      } else {
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(
+              content: Text(
+                  '❌ Permiso de almacenamiento denegado. No se puede exportar.'),
+              backgroundColor: Colors.red),
+        );
+      }
     }
 
-    if (status.isGranted) {
+    if (isPermissionGranted) {
       try {
-        final success = await _backupService.exportBackup();
-        if (success) {
-          scaffoldMessenger.showSnackBar(
-            const SnackBar(content: Text('✅ Respaldo guardado exitosamente en Descargas.'), backgroundColor: Colors.green),
-          );
-        } else {
-          scaffoldMessenger.showSnackBar(
-            const SnackBar(content: Text('❌ No se pudo guardar el respaldo.'), backgroundColor: Colors.red),
-          );
+        final exportStatus = await _backupService.exportBackup();
+        switch (exportStatus) {
+          case ExportStatus.success:
+            scaffoldMessenger.showSnackBar(
+              const SnackBar(
+                  content: Text('✅ Respaldo guardado exitosamente.'),
+                  backgroundColor: Colors.green),
+            );
+            break;
+          case ExportStatus.webDownloadInitiated:
+            scaffoldMessenger.showSnackBar(
+              const SnackBar(
+                  content: Text('Iniciando la descarga del respaldo...'),
+                  backgroundColor: Colors.blue),
+            );
+            break;
+          case ExportStatus.cancelled:
+            scaffoldMessenger.showSnackBar(
+              const SnackBar(
+                  content: Text('Operación cancelada por el usuario.'),
+                  backgroundColor: Colors.grey),
+            );
+            break;
+          case ExportStatus.failure:
+            scaffoldMessenger.showSnackBar(
+              const SnackBar(
+                  content: Text('❌ No se pudo guardar el respaldo.'),
+                  backgroundColor: Colors.red),
+            );
+            break;
         }
       } catch (e) {
-        scaffoldMessenger.showSnackBar(SnackBar(content: Text('❌ Error inesperado al exportar: $e'), backgroundColor: Colors.red));
+        scaffoldMessenger.showSnackBar(SnackBar(
+            content: Text('❌ Error inesperado al exportar: $e'),
+            backgroundColor: Colors.red));
       }
-    } else if (status.isPermanentlyDenied) {
-      // Show a dialog to open app settings
-      _showSettingsDialog();
-    } else {
-      scaffoldMessenger.showSnackBar(
-        const SnackBar(content: Text('❌ Permiso de almacenamiento denegado. No se puede exportar.'), backgroundColor: Colors.red),
-      );
     }
 
     if (mounted) setState(() => _isLoading = false);
@@ -58,7 +92,8 @@ class _BackupScreenState extends State<BackupScreen> {
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Permiso Requerido'),
-        content: const Text('El permiso de almacenamiento es necesario para guardar el respaldo. Por favor, actívalo en los ajustes de la aplicación.'),
+        content: const Text(
+            'El permiso de almacenamiento es necesario para guardar el respaldo. Por favor, actívalo en los ajustes de la aplicación.'),
         actions: <Widget>[
           TextButton(
             child: const Text('Cancelar'),
@@ -91,7 +126,9 @@ class _BackupScreenState extends State<BackupScreen> {
       switch (status) {
         case ImportStatus.success:
           scaffoldMessenger.showSnackBar(
-            const SnackBar(content: Text('Restauración completada. Reiniciando la app...'), backgroundColor: Colors.green),
+            const SnackBar(
+                content: Text('Restauración completada. Reiniciando la app...'),
+                backgroundColor: Colors.green),
           );
           await Future.delayed(const Duration(seconds: 2));
           await userProvider.loadUsers();
@@ -103,26 +140,33 @@ class _BackupScreenState extends State<BackupScreen> {
           }
           break;
         case ImportStatus.cancelled:
-           scaffoldMessenger.showSnackBar(
-            const SnackBar(content: Text('Operación cancelada.'), backgroundColor: Colors.grey),
+          scaffoldMessenger.showSnackBar(
+            const SnackBar(
+                content: Text('Operación cancelada.'),
+                backgroundColor: Colors.grey),
           );
           break;
         case ImportStatus.invalidFile:
           scaffoldMessenger.showSnackBar(
-            const SnackBar(content: Text('Error: El archivo no es un respaldo válido o está corrupto.'), backgroundColor: Colors.red),
+            const SnackBar(
+                content: Text(
+                    'Error: El archivo no es un respaldo válido o está corrupto.'),
+                backgroundColor: Colors.red),
           );
           break;
       }
     } catch (e) {
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('Error crítico durante la importación: $e'), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text('Error crítico durante la importación: $e'),
+            backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -133,12 +177,13 @@ class _BackupScreenState extends State<BackupScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.cloud_upload_outlined, size: 80, color: Colors.blue),
+                  Icon(Icons.cloud_upload_outlined,
+                      size: 80, color: Colors.blue),
                   SizedBox(height: 32),
                   CircularProgressIndicator(strokeWidth: 5),
                   SizedBox(height: 24),
                   Text(
-                    'Procesando respaldo...',
+                    'Procesando...',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   ),
                 ],
@@ -151,28 +196,43 @@ class _BackupScreenState extends State<BackupScreen> {
                 children: [
                   const Icon(Icons.backup_sharp, size: 100, color: Colors.blue),
                   const SizedBox(height: 32),
-                  const Text('Respaldo Local', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                  const Text('Respaldo Local',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center),
                   const SizedBox(height: 16),
-                  const Text('Exporta todos tus datos a un archivo JSON para guardar un respaldo local, o importa un respaldo previo para restaurar tus datos.', textAlign: TextAlign.center, style: TextStyle(fontSize: 16)),
+                  const Text(
+                      'Exporta todos tus datos a un archivo JSON para guardar un respaldo local, o importa un respaldo previo para restaurar tus datos.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16)),
                   const SizedBox(height: 48),
                   ElevatedButton.icon(
                     onPressed: _exportBackup,
                     icon: const Icon(Icons.upload_file),
                     label: const Text('Exportar Respaldo'),
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), backgroundColor: Colors.blue, foregroundColor: Colors.white),
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white),
                   ),
                   const SizedBox(height: 16),
                   OutlinedButton.icon(
                     onPressed: _importBackup,
                     icon: const Icon(Icons.download_for_offline_sharp),
                     label: const Text('Importar Respaldo'),
-                    style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), side: const BorderSide(color: Colors.blue, width: 2)),
+                    style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        side: const BorderSide(color: Colors.blue, width: 2)),
                   ),
                   const Spacer(),
                   Card(
                     elevation: 0,
-                    color: Theme.of(context).colorScheme.secondaryContainer.withAlpha(128),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .secondaryContainer
+                        .withAlpha(128),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     child: const Padding(
                       padding: EdgeInsets.all(16.0),
                       child: Row(
@@ -180,7 +240,9 @@ class _BackupScreenState extends State<BackupScreen> {
                           Icon(Icons.info_outline, color: Colors.blue, size: 30),
                           SizedBox(width: 16),
                           Expanded(
-                            child: Text('Al importar un respaldo, todos los datos actuales serán reemplazados. Se recomienda exportar uno primero.', textAlign: TextAlign.left),
+                            child: Text(
+                                'Al importar un respaldo, todos los datos actuales serán reemplazados. Se recomienda exportar uno primero.',
+                                textAlign: TextAlign.left),
                           ),
                         ],
                       ),
