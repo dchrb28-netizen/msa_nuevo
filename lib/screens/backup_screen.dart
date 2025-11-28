@@ -17,20 +17,30 @@ class _BackupScreenState extends State<BackupScreen> {
   Future<void> _exportBackup() async {
     setState(() => _isLoading = true);
     try {
-      await _backupService.exportBackup();
+      final path = await _backupService.exportBackup();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Respaldo exportado exitosamente'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        if (path != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('✅ Respaldo guardado exitosamente'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('⚠️ Operación cancelada'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al exportar respaldo: $e'),
+            content: Text('❌ Error al exportar respaldo: $e'),
             backgroundColor: Colors.red,
           ),
         );

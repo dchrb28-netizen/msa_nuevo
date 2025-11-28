@@ -90,20 +90,25 @@ class BackupService {
         // En web, retornar el JSON como string para descargar
         return jsonString;
       } else {
-        // En móvil, guardar en archivo temporal
-        final directory = await getApplicationDocumentsDirectory();
+        // En móvil, guardar en ubicación elegida por el usuario
         final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final file = File('${directory.path}/backup_$timestamp.json');
-        await file.writeAsString(jsonString);
+        final fileName = 'backup_myapp_$timestamp.json';
         
-        // Compartir el archivo
-        await Share.shareXFiles(
-          [XFile(file.path)],
-          subject: 'Respaldo MyApp',
-          text: 'Respaldo de datos de MyApp',
+        // Usar file_picker para que el usuario elija dónde guardar
+        final result = await FilePicker.platform.saveFile(
+          dialogTitle: 'Guardar respaldo',
+          fileName: fileName,
+          type: FileType.custom,
+          allowedExtensions: ['json'],
         );
         
-        return file.path;
+        if (result != null) {
+          final file = File(result);
+          await file.writeAsString(jsonString);
+          return file.path;
+        }
+        
+        return null;
       }
     } catch (e) {
       if (kDebugMode) {
