@@ -159,33 +159,36 @@ class BackupService {
           final boxName = entry.key;
           final boxData = entry.value as Map<String, dynamic>;
           
-          // Abrir la caja con el tipo correcto
+          // Abrir o obtener la caja existente
           Box box;
-          if (boxName == 'user_box') {
-            box = await Hive.openBox('user_box');
-          } else if (boxName == 'profile_data') {
-            box = await Hive.openBox('profile_data');
-          } else {
+          try {
+            // Intentar obtener la caja si ya está abierta
+            box = Hive.box(boxName);
+          } catch (e) {
+            // Si no está abierta, abrirla
             box = await Hive.openBox(boxName);
           }
           
-          // NO limpiar user_box ni profile_data si están vacíos en el backup
-          // Solo limpiar si hay datos para restaurar
+          // Solo limpiar y restaurar si hay datos
           if (boxData.isNotEmpty) {
             await box.clear();
             
             // Restaurar datos
             for (final dataEntry in boxData.entries) {
               try {
-                final key = dataEntry.key;
-                final value = dataEntry.value;
+                dynamic key = dataEntry.key;
+                var value = dataEntry.value;
                 
-                // Para user_box y profile_data, restaurar el mapa completo
-                // Hive lo reconstruirá automáticamente si los adaptadores están registrados
+                // Si la key es un número string, convertirla a int
+                if (key is String && int.tryParse(key) != null) {
+                  key = int.parse(key);
+                }
+                
+                // Guardar el valor - Hive reconstruirá los objetos usando los adapters
                 await box.put(key, value);
               } catch (e) {
                 if (kDebugMode) {
-                  print('Error al restaurar entrada $dataEntry.key en $boxName: $e');
+                  print('Error al restaurar entrada ${dataEntry.key} en $boxName: $e');
                 }
               }
             }
@@ -225,9 +228,10 @@ class BackupService {
           }
         }
       }
-            // Forzar escritura de todos los datos a disco
-      await Hive.close();
-      await Hive.initFlutter();
+      
+      // NO cerrar Hive aquí porque causaría que las cajas no estén disponibles
+      // Las cajas ya están abiertas y actualizadas con los nuevos datos
+      // Hive sincroniza automáticamente los cambios al disco
       
       if (kDebugMode) {
         print('✅ Respaldo restaurado exitosamente');
