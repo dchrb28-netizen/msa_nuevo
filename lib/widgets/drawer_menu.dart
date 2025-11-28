@@ -288,7 +288,7 @@ class DrawerMenu extends StatelessWidget {
                 icon: PhosphorIcons.fire(),
                 iconColor: Colors.deepOrange[400]!,
                 title: 'Rachas',
-                destination: const RewardsAndStreaksScreen(initialTabIndex: 1),
+                destination: const RewardsAndStreaksScreen(),
               ),
             ],
           ),

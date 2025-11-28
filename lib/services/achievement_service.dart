@@ -10,7 +10,7 @@ class AchievementService extends ChangeNotifier {
   static final AchievementService _instance = AchievementService._internal();
   factory AchievementService() => _instance;
 
-  late final Box _profileBox;
+  Box? _profileBox;
   late UserProfile _userProfile;
 
   final List<Achievement> _masterAchievements = [];
@@ -25,35 +25,11 @@ class AchievementService extends ChangeNotifier {
   Future<void> init() async {
     _profileBox = Hive.box('profile_data');
 
-    final experiencePoints = _profileBox.get('experiencePoints', defaultValue: 0) as int;
-    final level = _profileBox.get('level', defaultValue: 1) as int;
-    
-    // Convertir unlockedAchievements manejando tanto DateTime como String
-    final unlockedAchievementsRaw = (_profileBox.get('unlockedAchievements', defaultValue: <String, dynamic>{}) as Map);
-    final Map<String, DateTime> unlockedAchievements = {};
-    
-    for (var entry in unlockedAchievementsRaw.entries) {
-      try {
-        final key = entry.key as String;
-        final value = entry.value;
-        
-        if (value is DateTime) {
-          unlockedAchievements[key] = value;
-        } else if (value is String) {
-          // Convertir String a DateTime si es necesario (para datos restaurados de backup)
-          unlockedAchievements[key] = DateTime.parse(value);
-        } else {
-          // Si no es ninguno de los dos, usar fecha actual
-          unlockedAchievements[key] = DateTime.now();
-        }
-      } catch (e) {
-        // Si falla la conversión, usar fecha actual
-        unlockedAchievements[entry.key as String] = DateTime.now();
-      }
-    }
-    
-    final selectedTitle = _profileBox.get('selectedTitle') as String?;
-    final achievementProgress = (_profileBox.get('achievementProgress', defaultValue: <String, int>{}) as Map).cast<String, int>();
+    final experiencePoints = _profileBox!.get('experiencePoints', defaultValue: 0) as int;
+    final level = _profileBox!.get('level', defaultValue: 1) as int;
+    final unlockedAchievements = (_profileBox!.get('unlockedAchievements', defaultValue: <String, DateTime>{}) as Map).cast<String, DateTime>();
+    final selectedTitle = _profileBox!.get('selectedTitle') as String?;
+    final achievementProgress = (_profileBox!.get('achievementProgress', defaultValue: <String, int>{}) as Map).cast<String, int>();
 
     _userProfile = UserProfile(
       experiencePoints: experiencePoints,
@@ -181,11 +157,11 @@ class AchievementService extends ChangeNotifier {
   // ======== PRIVATE HELPERS (PERSISTENCE & NOTIFICATION) ========
   
   Future<void> _commitChanges() async {
-    await _profileBox.put('experiencePoints', _userProfile.experiencePoints);
-    await _profileBox.put('level', _userProfile.level);
-    await _profileBox.put('unlockedAchievements', _userProfile.unlockedAchievements);
-    await _profileBox.put('selectedTitle', _userProfile.selectedTitle);
-    await _profileBox.put('achievementProgress', _userProfile.achievementProgress);
+    await _profileBox!.put('experiencePoints', _userProfile.experiencePoints);
+    await _profileBox!.put('level', _userProfile.level);
+    await _profileBox!.put('unlockedAchievements', _userProfile.unlockedAchievements);
+    await _profileBox!.put('selectedTitle', _userProfile.selectedTitle);
+    await _profileBox!.put('achievementProgress', _userProfile.achievementProgress);
     notifyListeners();
   }
 

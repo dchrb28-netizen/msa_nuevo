@@ -148,15 +148,11 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildTrainingCard(BuildContext context) {
     final String dayOfWeek = DateFormat('EEEE', 'es_ES').format(DateTime.now());
-    // Capitalizar la primera letra para que coincida con los días guardados
-    final String capitalizedDay = dayOfWeek.isNotEmpty 
-        ? '${dayOfWeek[0].toUpperCase()}${dayOfWeek.substring(1)}' 
-        : dayOfWeek;
 
     return Consumer<RoutineProvider>(
       builder: (context, routineProvider, child) {
         final Routine? todayRoutine = routineProvider.getRoutineForDay(
-          capitalizedDay,
+          dayOfWeek,
         );
         final bool isRestDay = todayRoutine == null;
 

@@ -331,45 +331,28 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       }
 
       if (mounted) {
-        // Mostrar mensaje de éxito
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              reminder.isActive
-                  ? isEditing
-                      ? '✅ Recordatorio actualizado y servicio reiniciado'
-                      : '✅ Recordatorio guardado y servicio iniciado'
-                  : isEditing
-                      ? '✅ Recordatorio actualizado'
-                      : '✅ Recordatorio guardado',
+        // Show a confirmation dialog.
+        // It's safe to use the context here because it's before the await.
+        await showDialog<void>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(
+              isEditing ? 'Recordatorio actualizado' : 'Recordatorio guardado',
             ),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 3),
+            content: Text(
+              reminder.isActive 
+                ? 'Tu recordatorio se guardó correctamente.\n\n✅ El servicio de notificaciones exactas está activo.'
+                : 'Tu recordatorio se guardó correctamente.',
+            ),
+            actions: [
+              // Use the dialog's context to pop the dialog.
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('Aceptar'),
+              ),
+            ],
           ),
         );
-
-        // Mostrar diálogo informativo solo al crear el primer recordatorio
-        final isFirstReminder = remindersBox.length == 1;
-        if (!isEditing && isFirstReminder && reminder.isActive) {
-          await showDialog<void>(
-            context: context,
-            builder: (dialogContext) => AlertDialog(
-              title: const Text('🎉 ¡Recordatorio creado!'),
-              content: const Text(
-                'Tu recordatorio se guardó correctamente.\n\n'
-                '✅ El servicio de notificaciones está activo en segundo plano.\n\n'
-                '🔔 Recibirás notificaciones exactas a la hora programada.\n\n'
-                '💡 Consejo: Mantén el botón verde "Activar" presionado en la pantalla de recordatorios para garantizar notificaciones precisas.',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(),
-                  child: const Text('Entendido'),
-                ),
-              ],
-            ),
-          );
-        }
 
         // After the await, check if the widget is still mounted before using its context.
         if (mounted) {

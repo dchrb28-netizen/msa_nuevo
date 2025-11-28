@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:provider/provider.dart';
 import '../services/backup_service.dart';
-import '../services/achievement_service.dart';
 
 class BackupScreen extends StatefulWidget {
   const BackupScreen({super.key});
@@ -44,41 +44,49 @@ class _BackupScreenState extends State<BackupScreen> {
     setState(() => _isLoading = true);
     try {
       final success = await _backupService.importBackup();
-      if (mounted) {
-        if (success) {
-          // Reinicializar el AchievementService después de restaurar
-          final achievementService = Provider.of<AchievementService>(context, listen: false);
-          await achievementService.init();
-          
+      
+      if (success && mounted) {
+        // Reinicializar el servicio de logros después de la restauración
+        final achievementService = Provider.of<AchievementService>(context, listen: false);
+        await achievementService.init();
+        
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('✅ Respaldo importado exitosamente. Por favor, reinicie la app para ver todos los cambios aplicados.'),
+              content: Text('✅ Respaldo importado exitosamente'),
               backgroundColor: Colors.green,
-              duration: Duration(seconds: 5),
+              duration: Duration(seconds: 2),
             ),
           );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('❌ Error al importar el respaldo. Verifica el archivo seleccionado.'),
-              backgroundColor: Colors.red,
-              duration: Duration(seconds: 4),
-            ),
-          );
+          
+          // Ir directamente a la pantalla principal, limpiando todo el stack de navegación
+          Future.delayed(const Duration(milliseconds: 1500), () {
+            if (mounted) {
+              Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+            }
+          });
         }
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No se pudo importar el respaldo'),
+            backgroundColor: Colors.orange,
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('❌ Error al importar respaldo: $e'),
+            content: Text('Error al importar respaldo: $e'),
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
           ),
         );
       }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 

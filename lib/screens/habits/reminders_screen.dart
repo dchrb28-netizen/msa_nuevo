@@ -78,15 +78,15 @@ class _RemindersScreenState extends State<RemindersScreen> {
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  Icon(Icons.warning_amber_rounded, color: Colors.orange.shade900),
+                  Icon(Icons.info_outline, color: Colors.orange.shade900),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      '⚠️ IMPORTANTE: Activa el servicio con el botón verde ▶️ para recibir notificaciones exactas a la hora programada. Sin el servicio, las notificaciones pueden retrasarse o no llegar.',
+                      'Para que las notificaciones lleguen a la hora exacta, activa el servicio con el botón verde ▶️',
                       style: TextStyle(
                         color: Colors.orange.shade900,
                         fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),

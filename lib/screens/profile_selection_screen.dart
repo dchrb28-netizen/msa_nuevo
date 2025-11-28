@@ -5,7 +5,6 @@ import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/profile/create_profile_screen.dart';
 import 'package:myapp/services/backup_service.dart';
-import 'package:myapp/services/achievement_service.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -76,15 +75,11 @@ class ProfileSelectionScreen extends StatelessWidget {
           Navigator.of(context).pop();
           
           if (success) {
-            // Reinicializar el AchievementService después de restaurar
-            final achievementService = Provider.of<AchievementService>(context, listen: false);
-            await achievementService.init();
-            
             // Recargar perfiles después de restaurar
             userProvider.loadUsers();
             
             // Esperar un momento para que se carguen los datos
-            await Future.delayed(const Duration(milliseconds: 1000));
+            await Future.delayed(const Duration(milliseconds: 500));
             
             if (context.mounted) {
               // Si hay perfiles después de restaurar, entrar automáticamente
@@ -98,15 +93,13 @@ class ProfileSelectionScreen extends StatelessWidget {
                 );
                 
                 // Seleccionar el primer perfil y navegar
-                await userProvider.switchUser(userProvider.users.first.id);
+                userProvider.switchUser(userProvider.users.first.id);
                 
-                // Navegar a MainScreen con reemplazo total de la pila de navegación
+                // Navegar a MainScreen
                 await Future.delayed(const Duration(milliseconds: 500));
                 if (context.mounted) {
-                  // Forzar reconstrucción completa navegando con pushAndRemoveUntil
-                  Navigator.of(context).pushAndRemoveUntil(
+                  Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) => const MainScreen()),
-                    (route) => false,
                   );
                 }
               } else {

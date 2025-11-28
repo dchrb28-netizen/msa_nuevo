@@ -159,36 +159,33 @@ class BackupService {
           final boxName = entry.key;
           final boxData = entry.value as Map<String, dynamic>;
           
-          // Abrir o obtener la caja existente
+          // Abrir la caja con el tipo correcto
           Box box;
-          try {
-            // Intentar obtener la caja si ya está abierta
-            box = Hive.box(boxName);
-          } catch (e) {
-            // Si no está abierta, abrirla
+          if (boxName == 'user_box') {
+            box = await Hive.openBox('user_box');
+          } else if (boxName == 'profile_data') {
+            box = await Hive.openBox('profile_data');
+          } else {
             box = await Hive.openBox(boxName);
           }
           
-          // Solo limpiar y restaurar si hay datos
+          // NO limpiar user_box ni profile_data si están vacíos en el backup
+          // Solo limpiar si hay datos para restaurar
           if (boxData.isNotEmpty) {
             await box.clear();
             
             // Restaurar datos
             for (final dataEntry in boxData.entries) {
               try {
-                dynamic key = dataEntry.key;
-                var value = dataEntry.value;
+                final key = dataEntry.key;
+                final value = dataEntry.value;
                 
-                // Si la key es un número string, convertirla a int
-                if (key is String && int.tryParse(key) != null) {
-                  key = int.parse(key);
-                }
-                
-                // Guardar el valor - Hive reconstruirá los objetos usando los adapters
+                // Para user_box y profile_data, restaurar el mapa completo
+                // Hive lo reconstruirá automáticamente si los adaptadores están registrados
                 await box.put(key, value);
               } catch (e) {
                 if (kDebugMode) {
-                  print('Error al restaurar entrada ${dataEntry.key} en $boxName: $e');
+                  print('Error al restaurar entrada $dataEntry.key en $boxName: $e');
                 }
               }
             }
@@ -228,10 +225,29 @@ class BackupService {
           }
         }
       }
+      // Forzar escritura de todos los datos a disco y reinicializar
+      await Hive.close();
+      await Hive.initFlutter();
       
-      // NO cerrar Hive aquí porque causaría que las cajas no estén disponibles
-      // Las cajas ya están abiertas y actualizadas con los nuevos datos
-      // Hive sincroniza automáticamente los cambios al disco
+      // Reabrir las cajas necesarias
+      await Hive.openBox('user_box');
+      await Hive.openBox('profile_data');
+      await Hive.openBox('foods');
+      await Hive.openBox('water_logs');
+      await Hive.openBox('food_logs');
+      await Hive.openBox('body_measurements');
+      await Hive.openBox('daily_meal_plans');
+      await Hive.openBox('settings');
+      await Hive.openBox('favorite_recipes');
+      await Hive.openBox('user_recipes');
+      await Hive.openBox('reminders');
+      await Hive.openBox('fasting_logs');
+      await Hive.openBox('routines');
+      await Hive.openBox('routine_logs');
+      await Hive.openBox('exercises');
+      await Hive.openBox('routine_exercises');
+      await Hive.openBox('meal_entries');
+      await Hive.openBox('meditation_logs_json');
       
       if (kDebugMode) {
         print('✅ Respaldo restaurado exitosamente');

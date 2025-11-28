@@ -1,29 +1,11 @@
 # Instrucciones para Compilar en Windows
 
-## ⚠️ Prerequisitos OBLIGATORIOS
-
-Antes de poder compilar este proyecto, **DEBES tener instalado**:
-
-1. **Flutter SDK** ✅ (Ya lo tienes instalado)
-2. **Git para Windows** ❌ (FALTA - Es obligatorio)
-
-### Instalar Git para Windows
-
-1. Descarga Git desde: https://git-scm.com/download/win
-2. Ejecuta el instalador
-3. **IMPORTANTE:** Durante la instalación, marca la opción **"Git from the command line and also from 3rd-party software"**
-4. Finaliza la instalación
-5. **Reinicia PowerShell**
-6. Verifica: `git --version`
-
 ## Problema
 Los archivos `.g.dart` (generados por build_runner) no están en el repositorio porque son archivos generados automáticamente y no se suben a GitHub.
 
-**Flutter necesita Git para funcionar correctamente**, por eso obtienes el error: `El término 'git' no se reconoce`
-
 ## Solución: Generar los archivos .g.dart
 
-Una vez que Git esté instalado, ejecuta este comando en PowerShell:
+Ejecuta este comando en la terminal de PowerShell o CMD en la raíz del proyecto:
 
 ```powershell
 dart run build_runner build --delete-conflicting-outputs
