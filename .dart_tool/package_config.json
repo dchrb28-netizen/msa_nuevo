@@ -86,6 +86,12 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "charcode",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/charcode-1.4.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "checked_yaml",
       "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/checked_yaml-2.0.4",
       "packageUri": "lib/",
@@ -864,6 +870,18 @@
       "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/typed_data-1.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.5"
+    },
+    {
+      "name": "universal_html",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/universal_html-2.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "universal_io",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/universal_io-2.3.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
     },
     {
       "name": "url_launcher",

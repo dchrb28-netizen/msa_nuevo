@@ -11,7 +11,12 @@ import 'package:myapp/models/recipe.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/user_profile.dart';
 import 'package:myapp/models/water_log.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:universal_html/html.dart' as html;
+
+enum ImportStatus { success, cancelled, invalidFile }
 
 class BackupService {
   static final BackupService _instance = BackupService._internal();
@@ -37,9 +42,9 @@ class BackupService {
     'routine_exercises',
     'meal_entries',
     'meditation_logs_json',
+    'achievements',
   ];
 
-  /// Serializa un valor a un formato compatible con JSON.
   dynamic _toJson(dynamic value) {
     if (value is User) return value.toJson();
     if (value is UserProfile) return value.toJson();
@@ -49,61 +54,41 @@ class BackupService {
     if (value is BodyMeasurement) return value.toJson();
     if (value is DailyMealPlan) return value.toJson();
     if (value is Recipe) return value.toJson();
-
-    if (value is Map ||
-        value is List ||
-        value is String ||
-        value is num ||
-        value is bool ||
-        value == null) {
+    if (value is Map || value is List || value is String || value is num || value is bool || value == null) {
       return value;
-    }
-
-    if (kDebugMode) {
-      print(
-          'Backup warning: Unsupported type ${value.runtimeType} encountered. Value will be stored as a string.');
     }
     return value.toString();
   }
 
-  /// Deserializa un mapa JSON al objeto Dart correspondiente.
   dynamic _fromJson(String boxName, dynamic jsonValue) {
     if (jsonValue == null) return null;
-
-    switch (boxName) {
-      case 'user_box':
-        return User.fromJson(jsonValue);
-      case 'profile_data':
-        return UserProfile.fromJson(jsonValue);
-      case 'foods':
-        return Food.fromJson(jsonValue);
-      case 'water_logs':
-        return WaterLog.fromJson(jsonValue);
-      case 'food_logs':
-        return FoodLog.fromJson(jsonValue);
-      case 'body_measurements':
-        return BodyMeasurement.fromJson(jsonValue);
-      case 'daily_meal_plans':
-        return DailyMealPlan.fromJson(jsonValue);
-      case 'favorite_recipes':
-      case 'user_recipes':
-        return Recipe.fromJson(jsonValue);
-      default:
-        return jsonValue;
+    try {
+      switch (boxName) {
+        case 'user_box': return User.fromJson(jsonValue);
+        case 'profile_data': return UserProfile.fromJson(jsonValue);
+        case 'foods': return Food.fromJson(jsonValue);
+        case 'water_logs': return WaterLog.fromJson(jsonValue);
+        case 'food_logs': return FoodLog.fromJson(jsonValue);
+        case 'body_measurements': return BodyMeasurement.fromJson(jsonValue);
+        case 'daily_meal_plans': return DailyMealPlan.fromJson(jsonValue);
+        case 'favorite_recipes': case 'user_recipes': return Recipe.fromJson(jsonValue);
+        default: return jsonValue;
+      }
+    } catch (e) {
+      if (kDebugMode) print('Error en _fromJson para la caja $boxName: $e - Valor: $jsonValue');
+      return null;
     }
   }
 
-  /// Exportar todos los datos a un archivo JSON
-  Future<String?> exportBackup() async {
+  Future<bool> exportBackup() async {
     try {
       final Map<String, dynamic> backup = {
         'timestamp': DateTime.now().toIso8601String(),
-        'version': '1.1', // VersiÃ³n con serializaciÃ³n corregida
+        'version': '1.5', // Versión con exportación robusta
         'data': {},
         'preferences': {},
       };
 
-      // Exportar cada caja
       for (final boxName in _boxNames) {
         try {
           final box = await Hive.openBox(boxName);
@@ -113,167 +98,134 @@ class BackupService {
           }
           backup['data'][boxName] = boxData;
         } catch (e) {
-          if (kDebugMode) {
-            print('Error al exportar caja $boxName: $e');
-          }
+          if (kDebugMode) print('Error exportando caja $boxName: $e');
         }
       }
 
-      // Exportar SharedPreferences
-      try {
-        final prefs = await SharedPreferences.getInstance();
-        final prefsMap = <String, dynamic>{};
-        for (final key in prefs.getKeys()) {
-          prefsMap[key] = prefs.get(key);
-        }
-        backup['preferences'] = prefsMap;
-      } catch (e) {
-        if (kDebugMode) {
-          print('Error al exportar preferencias: $e');
-        }
+      final prefs = await SharedPreferences.getInstance();
+      final prefsMap = <String, dynamic>{};
+      for (final key in prefs.getKeys()) {
+        prefsMap[key] = prefs.get(key);
       }
+      backup['preferences'] = prefsMap;
 
       final jsonString = const JsonEncoder.withIndent('  ').convert(backup);
+      final bytes = utf8.encode(jsonString);
+      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
+      final fileName = 'fitflow_backup_$timestamp.json';
 
       if (kIsWeb) {
-        return jsonString;
+        final blob = html.Blob([bytes], 'application/json');
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        final anchor = html.AnchorElement(href: url)
+          ..setAttribute("download", fileName)
+          ..click();
+        html.Url.revokeObjectUrl(url);
+        return true;
       } else {
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final fileName = 'fitflow_backup_$timestamp.json';
-
-        final result = await FilePicker.platform.saveFile(
-          dialogTitle: 'Guardar respaldo',
-          fileName: fileName,
-          type: FileType.custom,
-          allowedExtensions: ['json'],
-        );
-
-        if (result != null) {
-          final file = File(result);
-          await file.writeAsString(jsonString);
-          return file.path;
+        if (await Permission.storage.request().isGranted) {
+            final directory = await getExternalStorageDirectory();
+            if (directory != null) {
+                 final downloadsDir = Directory('/storage/emulated/0/Download');
+                 final filePath = '${downloadsDir.path}/$fileName';
+                 final file = File(filePath);
+                 await file.writeAsBytes(bytes);
+                 return true;
+            }
         }
-        return null;
+        return false;
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error al crear respaldo: $e');
-      }
-      return null;
+      if (kDebugMode) print('Error creando respaldo: $e');
+      return false;
     }
   }
 
-  /// Importar datos desde un archivo JSON
-  Future<bool> importBackup() async {
+  Future<ImportStatus> importBackup() async {
     FilePickerResult? result;
     try {
-      result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['json'],
-      );
+      result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['json']);
     } catch (e) {
-      if (kDebugMode) {
-        print("Error al seleccionar archivo: $e");
-      }
-      return false;
+      if (kDebugMode) print("Error al seleccionar archivo: $e");
+      return ImportStatus.invalidFile;
     }
 
-    if (result == null || result.files.isEmpty) return false;
+    if (result == null || result.files.isEmpty) {
+      return ImportStatus.cancelled;
+    }
 
+    String? jsonString;
     try {
-      String? jsonString;
       if (kIsWeb) {
         final bytes = result.files.first.bytes;
-        if (bytes != null) {
-          jsonString = utf8.decode(bytes);
-        }
+        if (bytes != null) jsonString = utf8.decode(bytes);
       } else {
         final path = result.files.first.path;
-        if (path != null) {
-          jsonString = await File(path).readAsString();
-        }
+        if (path != null) jsonString = await File(path).readAsString();
       }
 
-      if (jsonString == null) return false;
+      if (jsonString == null || jsonString.isEmpty) {
+        return ImportStatus.invalidFile;
+      }
 
-      final Map<String, dynamic> backup = json.decode(jsonString);
-      final Map<String, dynamic> data = backup['data'] as Map<String, dynamic>;
+      final backup = json.decode(jsonString);
+      if (backup is! Map<String, dynamic> || !backup.containsKey('data')) {
+        return ImportStatus.invalidFile;
+      }
 
-      // Primero, cierra todas las cajas para evitar conflictos
-      await Hive.close();
+      final Map<String, dynamic> data = backup['data'];
 
-      // Limpia y restaura cada caja
-      for (final entry in data.entries) {
-        final boxName = entry.key;
-        final boxData = entry.value as Map<String, dynamic>;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
 
+      for (final boxName in _boxNames) {
         try {
           final box = await Hive.openBox(boxName);
-          await box.clear(); // Limpiar la caja antes de restaurar
-
-          for (final dataEntry in boxData.entries) {
-            final key = dataEntry.key;
-            final value = dataEntry.value;
-            final objectToStore = _fromJson(boxName, value);
-            if (objectToStore != null) {
-              await box.put(key, objectToStore);
-            }
-          }
+          await box.clear();
         } catch (e) {
-          if (kDebugMode) {
-            print('Error al restaurar caja $boxName: $e');
-          }
+          if (kDebugMode) print('Advertencia al limpiar la caja $boxName: $e');
         }
       }
 
-      // Restaurar SharedPreferences
-      if (backup.containsKey('preferences')) {
+      final prefsData = backup['preferences'] as Map<String, dynamic>? ?? {};
+      for (final entry in prefsData.entries) {
+        final key = entry.key;
+        final value = entry.value;
         try {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.clear(); // Limpiar preferencias existentes
-          final prefsData = backup['preferences'] as Map<String, dynamic>;
-
-          for (final entry in prefsData.entries) {
-            final key = entry.key;
-            final value = entry.value;
-            if (value is bool) await prefs.setBool(key, value);
-            if (value is int) await prefs.setInt(key, value);
-            if (value is double) await prefs.setDouble(key, value);
-            if (value is String) await prefs.setString(key, value);
-            if (value is List<dynamic>) {
-              await prefs.setStringList(key, value.cast<String>());
-            }
-          }
-        } catch (e) {
-          if (kDebugMode) {
-            print('Error al restaurar preferencias: $e');
-          }
+           if (value is bool) await prefs.setBool(key, value);
+           else if (value is int) await prefs.setInt(key, value);
+           else if (value is double) await prefs.setDouble(key, value);
+           else if (value is String) await prefs.setString(key, value);
+           else if (value is List) await prefs.setStringList(key, value.cast<String>());
+        } catch(e){
+           if (kDebugMode) print('Error restaurando preferencia "$key": $e');
         }
       }
 
-      if (kDebugMode) {
-        print('âœ… Respaldo restaurado exitosamente');
+      for (final boxName in data.keys) {
+        if (!_boxNames.contains(boxName)) continue;
+        try {
+          final boxData = data[boxName];
+          if (boxData is! Map<String, dynamic>) continue;
+          final box = await Hive.openBox(boxName);
+          for (final entry in boxData.entries) {
+            try {
+              final objectToStore = _fromJson(boxName, entry.value);
+              if (objectToStore != null) await box.put(entry.key, objectToStore);
+            } catch (e) {
+              if (kDebugMode) print('Error restaurando registro "${entry.key}" en "$boxName": $e');
+            }
+          }
+        } catch (e) {
+          if (kDebugMode) print('Error crítico restaurando la caja "$boxName": $e. Se saltará esta caja.');
+        }
       }
 
-      return true;
+      return ImportStatus.success;
+
     } catch (e) {
-      if (kDebugMode) {
-        print('Error al importar respaldo: $e');
-      }
-      return false;
+      if (kDebugMode) print('Error al decodificar o procesar el archivo JSON: $e');
+      return ImportStatus.invalidFile;
     }
-  }
-
-  Future<int> getEstimatedBackupSize() async {
-    int totalSize = 0;
-    for (final boxName in _boxNames) {
-      try {
-        final box = await Hive.openBox(boxName);
-        totalSize += box.length;
-      } catch (e) {
-        // Ignorar errores
-      }
-    }
-    return totalSize;
   }
 }

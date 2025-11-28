@@ -19,7 +19,7 @@ class UserProvider with ChangeNotifier {
     loadUsers();
   }
 
-  void loadUsers() {
+  Future<void> loadUsers() async {
     _users = _userBox.values.where((user) => !user.isGuest).toList();
     final activeUserId = _settingsBox.get(_activeUserKey);
 
