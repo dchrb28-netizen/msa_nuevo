@@ -16,4 +16,7 @@ class Reminder with _$Reminder {
     @HiveField(5) @Default(true) bool isActive,
     @HiveField(6) @Default(0) int repeatMinutes, // 0 = no repetir, >0 = repetir cada X minutos
   }) = _Reminder;
+
+  // Añadiendo esta fábrica para intentar desbloquear el generador
+  factory Reminder.fromJson(Map<String, dynamic> json) => _$ReminderFromJson(json);
 }
