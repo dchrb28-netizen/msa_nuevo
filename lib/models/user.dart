@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/recipe.dart';
@@ -134,4 +135,55 @@ class User extends HiveObject {
       showProfileFrame: showProfileFrame ?? this.showProfileFrame,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'gender': gender,
+        'age': age,
+        'height': height,
+        'weight': weight,
+        'profileImageBytes':
+            profileImageBytes != null ? base64Encode(profileImageBytes!) : null,
+        'isGuest': isGuest,
+        'activityLevel': activityLevel,
+        'calorieGoal': calorieGoal,
+        'proteinGoal': proteinGoal,
+        'carbGoal': carbGoal,
+        'fatGoal': fatGoal,
+        'weightGoal': weightGoal,
+        'dietPlan': dietPlan,
+        'waterGoal': waterGoal,
+        'favoriteRecipes': favoriteRecipes.map((e) => e.toJson()).toList(),
+        'initialWeight': initialWeight,
+        'level': level,
+        'showProfileFrame': showProfileFrame,
+      };
+
+  factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json['id'],
+        name: json['name'],
+        gender: json['gender'],
+        age: json['age'],
+        height: json['height'],
+        weight: json['weight'],
+        profileImageBytes: json['profileImageBytes'] != null
+            ? base64Decode(json['profileImageBytes'])
+            : null,
+        isGuest: json['isGuest'],
+        activityLevel: json['activityLevel'],
+        calorieGoal: json['calorieGoal']?.toDouble(),
+        proteinGoal: json['proteinGoal']?.toDouble(),
+        carbGoal: json['carbGoal']?.toDouble(),
+        fatGoal: json['fatGoal']?.toDouble(),
+        weightGoal: json['weightGoal']?.toDouble(),
+        dietPlan: json['dietPlan'],
+        waterGoal: json['waterGoal']?.toDouble(),
+        favoriteRecipes: json['favoriteRecipes'] != null
+            ? List<Recipe>.from(json['favoriteRecipes'].map((x) => Recipe.fromJson(x)))
+            : [],
+        initialWeight: json['initialWeight']?.toDouble(),
+        level: json['level'],
+        showProfileFrame: json['showProfileFrame'],
+      );
 }

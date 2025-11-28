@@ -22,4 +22,20 @@ class WaterLog extends HiveObject {
     required this.timestamp,
     required this.userId,
   });
+
+  // Method to convert the object to a JSON-compatible Map
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'amount': amount,
+        'timestamp': timestamp.toIso8601String(),
+        'userId': userId,
+      };
+
+  // Factory constructor to create an object from a Map
+  factory WaterLog.fromJson(Map<String, dynamic> json) => WaterLog(
+        id: json['id'],
+        amount: json['amount'].toDouble(),
+        timestamp: DateTime.parse(json['timestamp']),
+        userId: json['userId'],
+      );
 }

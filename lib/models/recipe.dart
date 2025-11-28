@@ -86,29 +86,36 @@ class Recipe extends HiveObject {
   }
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
-    String? imageUrl;
-    if (json.containsKey('pagemap') &&
-        json['pagemap'].containsKey('cse_thumbnail') &&
-        json['pagemap']['cse_thumbnail'] is List &&
-        (json['pagemap']['cse_thumbnail'] as List).isNotEmpty) {
-      imageUrl = json['pagemap']['cse_thumbnail'][0]['src'];
-    } else if (json.containsKey('pagemap') &&
-        json['pagemap'].containsKey('metatags') &&
-        json['pagemap']['metatags'] is List &&
-        (json['pagemap']['metatags'] as List).isNotEmpty &&
-        json['pagemap']['metatags'][0].containsKey('og:image')) {
-      imageUrl = json['pagemap']['metatags'][0]['og:image'];
-    }
-
     return Recipe(
-      title: json['title'] ?? 'Sin título',
+      title: json['title'] ?? 'Sin tÃtulo',
       link: json['link'] ?? '',
-      snippet: json['snippet'] ?? 'No hay descripción disponible.',
-      imageUrl: imageUrl,
-      // Los campos complejos como ingredientes, instrucciones, etc., 
-      // no se rellenan desde este JSON simple. Requerirían un scraping más avanzado.
+      snippet: json['snippet'] ?? 'No hay descripciÃ³n disponible.',
+      imageUrl: json['imageUrl'],
+      isFavorite: json['isFavorite'] ?? false,
+      ingredients: (json['ingredients'] as List<dynamic>? ?? []).map((e) => Ingredient.fromJson(e as Map<String, dynamic>)).toList(),
+      instructions: List<String>.from(json['instructions'] ?? []),
+      nutrients: (json['nutrients'] as List<dynamic>? ?? []).map((e) => Nutrient.fromJson(e as Map<String, dynamic>)).toList(),
+      prepTime: json['prepTime'],
+      cookTime: json['cookTime'],
+      totalTime: json['totalTime'],
+      servings: json['servings'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'link': link,
+    'snippet': snippet,
+    'imageUrl': imageUrl,
+    'isFavorite': isFavorite,
+    'ingredients': ingredients.map((e) => e.toJson()).toList(),
+    'instructions': instructions,
+    'nutrients': nutrients.map((e) => e.toJson()).toList(),
+    'prepTime': prepTime,
+    'cookTime': cookTime,
+    'totalTime': totalTime,
+    'servings': servings,
+  };
 }
 
 @HiveType(typeId: 11)
@@ -120,6 +127,16 @@ class Ingredient extends HiveObject {
   final String quantity;
 
   Ingredient({required this.name, required this.quantity});
+
+  factory Ingredient.fromJson(Map<String, dynamic> json) => Ingredient(
+    name: json['name'],
+    quantity: json['quantity'],
+  );
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'quantity': quantity,
+  };
 }
 
 @HiveType(typeId: 12)
@@ -134,4 +151,16 @@ class Nutrient extends HiveObject {
   final String unit;
 
   Nutrient({required this.name, required this.amount, required this.unit});
+
+  factory Nutrient.fromJson(Map<String, dynamic> json) => Nutrient(
+    name: json['name'],
+    amount: json['amount'],
+    unit: json['unit'],
+  );
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'amount': amount,
+    'unit': unit,
+  };
 }

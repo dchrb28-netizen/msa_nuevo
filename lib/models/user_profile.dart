@@ -35,4 +35,28 @@ class UserProfile {
 
     return (xpInCurrentLevel / xpForNextLevel).clamp(0.0, 1.0);
   }
+
+  // Method to convert the object to a JSON-compatible Map
+  Map<String, dynamic> toJson() => {
+        'experiencePoints': experiencePoints,
+        'level': level,
+        'unlockedAchievements': unlockedAchievements
+            .map((key, value) => MapEntry(key, value.toIso8601String())),
+        'selectedTitle': selectedTitle,
+        'achievementProgress': achievementProgress,
+      };
+
+  // Factory constructor to create an object from a Map
+  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
+        experiencePoints: json['experiencePoints'] ?? 0,
+        level: json['level'] ?? 1,
+        unlockedAchievements: json['unlockedAchievements'] != null
+            ? Map<String, DateTime>.from(json['unlockedAchievements']
+                .map((key, value) => MapEntry(key, DateTime.parse(value))))
+            : {},
+        selectedTitle: json['selectedTitle'],
+        achievementProgress: json['achievementProgress'] != null
+            ? Map<String, int>.from(json['achievementProgress'])
+            : {},
+      );
 }

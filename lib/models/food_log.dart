@@ -38,4 +38,28 @@ class FoodLog extends HiveObject {
     required this.date,
     required this.mealType,
   });
+
+  // Method to convert the object to a JSON-compatible Map
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'foodName': foodName,
+        'calories': calories,
+        'protein': protein,
+        'carbohydrates': carbohydrates,
+        'fat': fat,
+        'date': date.toIso8601String(),
+        'mealType': mealType,
+      };
+
+  // Factory constructor to create an object from a Map
+  factory FoodLog.fromJson(Map<String, dynamic> json) => FoodLog(
+        id: json['id'],
+        foodName: json['foodName'],
+        calories: json['calories'].toDouble(),
+        protein: json['protein'].toDouble(),
+        carbohydrates: json['carbohydrates'].toDouble(),
+        fat: json['fat'].toDouble(),
+        date: DateTime.parse(json['date']),
+        mealType: json['mealType'],
+      );
 }
