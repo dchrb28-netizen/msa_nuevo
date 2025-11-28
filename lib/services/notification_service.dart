@@ -50,14 +50,6 @@ class NotificationService {
           AndroidFlutterLocalNotificationsPlugin
         >();
 
-    const AndroidNotificationChannel weeklyChannel = AndroidNotificationChannel(
-      'weekly_notification_channel',
-      'Weekly Notifications',
-      description: 'Weekly reminder notifications',
-      importance: Importance.max,
-      playSound: true,
-    );
-
     const AndroidNotificationChannel scheduledChannel =
         AndroidNotificationChannel(
           'scheduled_notification_channel',
@@ -77,11 +69,10 @@ class NotificationService {
           enableVibration: true,
         );
 
-    await androidPlugin?.createNotificationChannel(weeklyChannel);
     await androidPlugin?.createNotificationChannel(scheduledChannel);
     await androidPlugin?.createNotificationChannel(fastingChannel);
     developer.log(
-      'Notification channels created (weekly/scheduled/fasting)',
+      'Notification channels created (scheduled/fasting)',
       name: 'NotificationService.init',
     );
   }
@@ -397,9 +388,9 @@ class NotificationService {
       'Si ves esto, las notificaciones básicas funcionan! Ahora esperando notificación programada...',
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'weekly_notification_channel',
-          'Weekly Notifications',
-          channelDescription: 'Weekly reminder notifications',
+          'scheduled_notification_channel',
+          'Scheduled Notifications',
+          channelDescription: 'Scheduled reminder notifications',
           importance: Importance.max,
           priority: Priority.high,
           icon: '@drawable/ic_notification',
@@ -428,9 +419,9 @@ class NotificationService {
       scheduledDate,
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'weekly_notification_channel',
-          'Weekly Notifications',
-          channelDescription: 'Weekly reminder notifications',
+          'scheduled_notification_channel',
+          'Scheduled Notifications',
+          channelDescription: 'Scheduled reminder notifications',
           importance: Importance.max,
           priority: Priority.high,
           icon: '@drawable/ic_notification',

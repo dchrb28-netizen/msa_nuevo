@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../services/backup_service.dart';
 import 'main_screen.dart';
 
@@ -18,22 +19,61 @@ class _BackupScreenState extends State<BackupScreen> {
   Future<void> _exportBackup() async {
     setState(() => _isLoading = true);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    try {
-      final success = await _backupService.exportBackup();
-      if (success) {
-        scaffoldMessenger.showSnackBar(
-          const SnackBar(content: Text('✅ Respaldo guardado exitosamente en Descargas.'), backgroundColor: Colors.green),
-        );
-      } else {
-        scaffoldMessenger.showSnackBar(
-          const SnackBar(content: Text('❌ No se pudo guardar. Revisa los permisos de almacenamiento.'), backgroundColor: Colors.red),
-        );
-      }
-    } catch (e) {
-      scaffoldMessenger.showSnackBar(SnackBar(content: Text('❌ Error inesperado al exportar: $e'), backgroundColor: Colors.red));
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+
+    // Request storage permission
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      status = await Permission.storage.request();
     }
+
+    if (status.isGranted) {
+      try {
+        final success = await _backupService.exportBackup();
+        if (success) {
+          scaffoldMessenger.showSnackBar(
+            const SnackBar(content: Text('✅ Respaldo guardado exitosamente en Descargas.'), backgroundColor: Colors.green),
+          );
+        } else {
+          scaffoldMessenger.showSnackBar(
+            const SnackBar(content: Text('❌ No se pudo guardar el respaldo.'), backgroundColor: Colors.red),
+          );
+        }
+      } catch (e) {
+        scaffoldMessenger.showSnackBar(SnackBar(content: Text('❌ Error inesperado al exportar: $e'), backgroundColor: Colors.red));
+      }
+    } else if (status.isPermanentlyDenied) {
+      // Show a dialog to open app settings
+      _showSettingsDialog();
+    } else {
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(content: Text('❌ Permiso de almacenamiento denegado. No se puede exportar.'), backgroundColor: Colors.red),
+      );
+    }
+
+    if (mounted) setState(() => _isLoading = false);
+  }
+
+  void _showSettingsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Permiso Requerido'),
+        content: const Text('El permiso de almacenamiento es necesario para guardar el respaldo. Por favor, actívalo en los ajustes de la aplicación.'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancelar'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          TextButton(
+            child: const Text('Abrir Ajustes'),
+            onPressed: () {
+              openAppSettings();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _importBackup() async {
@@ -93,9 +133,14 @@ class _BackupScreenState extends State<BackupScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 20),
-                  Text('Procesando respaldo...')
+                  Icon(Icons.cloud_upload_outlined, size: 80, color: Colors.blue),
+                  SizedBox(height: 32),
+                  CircularProgressIndicator(strokeWidth: 5),
+                  SizedBox(height: 24),
+                  Text(
+                    'Procesando respaldo...',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  ),
                 ],
               ),
             )
@@ -126,7 +171,7 @@ class _BackupScreenState extends State<BackupScreen> {
                   const Spacer(),
                   Card(
                     elevation: 0,
-                    color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
+                    color: Theme.of(context).colorScheme.secondaryContainer.withAlpha(128),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     child: const Padding(
                       padding: EdgeInsets.all(16.0),

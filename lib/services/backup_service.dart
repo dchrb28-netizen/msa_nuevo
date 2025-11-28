@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/body_measurement.dart';
@@ -11,10 +11,9 @@ import 'package:myapp/models/recipe.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/user_profile.dart';
 import 'package:myapp/models/water_log.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_html/html.dart' as html;
+import 'dart:io';
 
 enum ImportStatus { success, cancelled, invalidFile }
 
@@ -46,14 +45,30 @@ class BackupService {
   ];
 
   dynamic _toJson(dynamic value) {
-    if (value is User) return value.toJson();
-    if (value is UserProfile) return value.toJson();
-    if (value is Food) return value.toJson();
-    if (value is WaterLog) return value.toJson();
-    if (value is FoodLog) return value.toJson();
-    if (value is BodyMeasurement) return value.toJson();
-    if (value is DailyMealPlan) return value.toJson();
-    if (value is Recipe) return value.toJson();
+    if (value is User) {
+      return value.toJson();
+    }
+    if (value is UserProfile) {
+      return value.toJson();
+    }
+    if (value is Food) {
+      return value.toJson();
+    }
+    if (value is WaterLog) {
+      return value.toJson();
+    }
+    if (value is FoodLog) {
+      return value.toJson();
+    }
+    if (value is BodyMeasurement) {
+      return value.toJson();
+    }
+    if (value is DailyMealPlan) {
+      return value.toJson();
+    }
+    if (value is Recipe) {
+      return value.toJson();
+    }
     if (value is Map || value is List || value is String || value is num || value is bool || value == null) {
       return value;
     }
@@ -64,18 +79,30 @@ class BackupService {
     if (jsonValue == null) return null;
     try {
       switch (boxName) {
-        case 'user_box': return User.fromJson(jsonValue);
-        case 'profile_data': return UserProfile.fromJson(jsonValue);
-        case 'foods': return Food.fromJson(jsonValue);
-        case 'water_logs': return WaterLog.fromJson(jsonValue);
-        case 'food_logs': return FoodLog.fromJson(jsonValue);
-        case 'body_measurements': return BodyMeasurement.fromJson(jsonValue);
-        case 'daily_meal_plans': return DailyMealPlan.fromJson(jsonValue);
-        case 'favorite_recipes': case 'user_recipes': return Recipe.fromJson(jsonValue);
-        default: return jsonValue;
+        case 'user_box':
+          return User.fromJson(jsonValue);
+        case 'profile_data':
+          return UserProfile.fromJson(jsonValue);
+        case 'foods':
+          return Food.fromJson(jsonValue);
+        case 'water_logs':
+          return WaterLog.fromJson(jsonValue);
+        case 'food_logs':
+          return FoodLog.fromJson(jsonValue);
+        case 'body_measurements':
+          return BodyMeasurement.fromJson(jsonValue);
+        case 'daily_meal_plans':
+          return DailyMealPlan.fromJson(jsonValue);
+        case 'favorite_recipes':
+        case 'user_recipes':
+          return Recipe.fromJson(jsonValue);
+        default:
+          return jsonValue;
       }
     } catch (e) {
-      if (kDebugMode) print('Error en _fromJson para la caja $boxName: $e - Valor: $jsonValue');
+      if (kDebugMode) {
+        print('Error en _fromJson para la caja $boxName: $e - Valor: $jsonValue');
+      }
       return null;
     }
   }
@@ -84,7 +111,7 @@ class BackupService {
     try {
       final Map<String, dynamic> backup = {
         'timestamp': DateTime.now().toIso8601String(),
-        'version': '1.5', // Versión con exportación robusta
+        'version': '1.5.4', // Corregido parámetro de file_saver
         'data': {},
         'preferences': {},
       };
@@ -98,7 +125,9 @@ class BackupService {
           }
           backup['data'][boxName] = boxData;
         } catch (e) {
-          if (kDebugMode) print('Error exportando caja $boxName: $e');
+          if (kDebugMode) {
+            print('Error exportando caja $boxName: $e');
+          }
         }
       }
 
@@ -112,31 +141,29 @@ class BackupService {
       final jsonString = const JsonEncoder.withIndent('  ').convert(backup);
       final bytes = utf8.encode(jsonString);
       final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
-      final fileName = 'fitflow_backup_$timestamp.json';
+      final fileName = 'fitflow_backup_$timestamp';
 
       if (kIsWeb) {
         final blob = html.Blob([bytes], 'application/json');
         final url = html.Url.createObjectUrlFromBlob(blob);
-        final anchor = html.AnchorElement(href: url)
-          ..setAttribute("download", fileName)
+        html.AnchorElement(href: url)
+          ..setAttribute("download", '$fileName.json')
           ..click();
         html.Url.revokeObjectUrl(url);
         return true;
       } else {
-        if (await Permission.storage.request().isGranted) {
-            final directory = await getExternalStorageDirectory();
-            if (directory != null) {
-                 final downloadsDir = Directory('/storage/emulated/0/Download');
-                 final filePath = '${downloadsDir.path}/$fileName';
-                 final file = File(filePath);
-                 await file.writeAsBytes(bytes);
-                 return true;
-            }
-        }
-        return false;
+        String? path = await FileSaver.instance.saveAs(
+          name: fileName,
+          bytes: bytes,
+          fileExtension: 'json', // Parámetro corregido
+          mimeType: MimeType.json,
+        );
+        return path != null && path.isNotEmpty;
       }
     } catch (e) {
-      if (kDebugMode) print('Error creando respaldo: $e');
+      if (kDebugMode) {
+        print('Error creando respaldo: $e');
+      }
       return false;
     }
   }
@@ -146,7 +173,9 @@ class BackupService {
     try {
       result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['json']);
     } catch (e) {
-      if (kDebugMode) print("Error al seleccionar archivo: $e");
+      if (kDebugMode) {
+        print("Error al seleccionar archivo: $e");
+      }
       return ImportStatus.invalidFile;
     }
 
@@ -158,10 +187,14 @@ class BackupService {
     try {
       if (kIsWeb) {
         final bytes = result.files.first.bytes;
-        if (bytes != null) jsonString = utf8.decode(bytes);
+        if (bytes != null) {
+          jsonString = utf8.decode(bytes);
+        }
       } else {
         final path = result.files.first.path;
-        if (path != null) jsonString = await File(path).readAsString();
+        if (path != null) {
+          jsonString = await File(path).readAsString();
+        }
       }
 
       if (jsonString == null || jsonString.isEmpty) {
@@ -183,7 +216,9 @@ class BackupService {
           final box = await Hive.openBox(boxName);
           await box.clear();
         } catch (e) {
-          if (kDebugMode) print('Advertencia al limpiar la caja $boxName: $e');
+          if (kDebugMode) {
+            print('Advertencia al limpiar la caja $boxName: $e');
+          }
         }
       }
 
@@ -192,39 +227,58 @@ class BackupService {
         final key = entry.key;
         final value = entry.value;
         try {
-           if (value is bool) await prefs.setBool(key, value);
-           else if (value is int) await prefs.setInt(key, value);
-           else if (value is double) await prefs.setDouble(key, value);
-           else if (value is String) await prefs.setString(key, value);
-           else if (value is List) await prefs.setStringList(key, value.cast<String>());
-        } catch(e){
-           if (kDebugMode) print('Error restaurando preferencia "$key": $e');
+          if (value is bool) {
+            await prefs.setBool(key, value);
+          } else if (value is int) {
+            await prefs.setInt(key, value);
+          } else if (value is double) {
+            await prefs.setDouble(key, value);
+          } else if (value is String) {
+            await prefs.setString(key, value);
+          } else if (value is List) {
+            await prefs.setStringList(key, value.cast<String>());
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            print('Error restaurando preferencia "$key": $e');
+          }
         }
       }
 
       for (final boxName in data.keys) {
-        if (!_boxNames.contains(boxName)) continue;
+        if (!_boxNames.contains(boxName)) {
+          continue;
+        }
         try {
           final boxData = data[boxName];
-          if (boxData is! Map<String, dynamic>) continue;
+          if (boxData is! Map<String, dynamic>) {
+            continue;
+          }
           final box = await Hive.openBox(boxName);
           for (final entry in boxData.entries) {
             try {
               final objectToStore = _fromJson(boxName, entry.value);
-              if (objectToStore != null) await box.put(entry.key, objectToStore);
+              if (objectToStore != null) {
+                await box.put(entry.key, objectToStore);
+              }
             } catch (e) {
-              if (kDebugMode) print('Error restaurando registro "${entry.key}" en "$boxName": $e');
+              if (kDebugMode) {
+                print('Error restaurando registro "${entry.key}" en "$boxName": $e');
+              }
             }
           }
         } catch (e) {
-          if (kDebugMode) print('Error crítico restaurando la caja "$boxName": $e. Se saltará esta caja.');
+          if (kDebugMode) {
+            print('Error crítico restaurando la caja "$boxName": $e. Se saltará esta caja.');
+          }
         }
       }
 
       return ImportStatus.success;
-
     } catch (e) {
-      if (kDebugMode) print('Error al decodificar o procesar el archivo JSON: $e');
+      if (kDebugMode) {
+        print('Error al decodificar o procesar el archivo JSON: $e');
+      }
       return ImportStatus.invalidFile;
     }
   }

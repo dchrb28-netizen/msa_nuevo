@@ -47,5 +47,13 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+        <key>NSPhotoLibraryAddUsageDescription</key>
+        <string>Esta aplicación necesita acceso a tu galería para guardar los respaldos de datos.</string>
+        <key>NSFileProviderDomainUsageDescription</key>
+        <string>Esta aplicación necesita acceso a los archivos para poder crear y restaurar respaldos.</string>
+        <key>LSSupportsOpeningDocumentsInPlace</key>
+        <true/>
+        <key>UIFileSharingEnabled</key>
+        <true/>
 	</dict>
 </plist>

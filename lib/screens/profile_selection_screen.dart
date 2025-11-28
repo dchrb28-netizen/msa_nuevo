@@ -20,8 +20,8 @@ class ProfileSelectionScreen extends StatelessWidget {
 
     final backgroundColor = themeProvider.themeMode == ThemeMode.dark ? Colors.black : Colors.white;
     final welcomeImage = themeProvider.themeMode == ThemeMode.dark ? 'assets/luna_png/luna_splash_b.png' : 'assets/luna_png/luna_splash_w.png';
-    final bodyTextColor = themeProvider.themeMode == ThemeMode.dark ? Colors.grey[300] : Colors.black.withOpacity(0.7);
-    final outlinedButtonForegroundColor = themeProvider.themeMode == ThemeMode.dark ? Colors.grey[300] : Colors.black.withOpacity(0.7);
+    final bodyTextColor = themeProvider.themeMode == ThemeMode.dark ? Colors.grey[300] : Colors.black.withAlpha(179);
+    final outlinedButtonForegroundColor = themeProvider.themeMode == ThemeMode.dark ? Colors.grey[300] : Colors.black.withAlpha(179);
     final outlinedButtonBorderColor = themeProvider.themeMode == ThemeMode.dark ? Colors.grey[700] : Colors.grey[400];
 
     void continueAsGuest() {
