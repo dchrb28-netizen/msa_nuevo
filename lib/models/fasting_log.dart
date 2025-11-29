@@ -30,4 +30,22 @@ class FastingLog extends HiveObject {
     this.endTime,
     this.notes,
   });
+
+  // toJson method
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'startTime': startTime.toIso8601String(),
+        'endTime': endTime?.toIso8601String(),
+        'notes': notes,
+      };
+
+  // fromJson factory
+  factory FastingLog.fromJson(Map<String, dynamic> json) {
+    return FastingLog(
+      id: json['id'],
+      startTime: DateTime.parse(json['startTime']),
+      endTime: json['endTime'] != null ? DateTime.parse(json['endTime']) : null,
+      notes: json['notes'],
+    );
+  }
 }

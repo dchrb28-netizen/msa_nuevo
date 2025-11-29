@@ -170,14 +170,14 @@ class User extends HiveObject {
         profileImageBytes: json['profileImageBytes'] != null
             ? base64Decode(json['profileImageBytes'])
             : null,
-        isGuest: json['isGuest'],
-        activityLevel: json['activityLevel'],
+        isGuest: json['isGuest'] ?? false,
+        activityLevel: json['activityLevel'] ?? 'Sedentaria', // FIX
         calorieGoal: json['calorieGoal']?.toDouble(),
         proteinGoal: json['proteinGoal']?.toDouble(),
         carbGoal: json['carbGoal']?.toDouble(),
         fatGoal: json['fatGoal']?.toDouble(),
         weightGoal: json['weightGoal']?.toDouble(),
-        dietPlan: json['dietPlan'],
+        dietPlan: json['dietPlan'] ?? 'Mantener', // FIX
         waterGoal: json['waterGoal']?.toDouble(),
         favoriteRecipes: json['favoriteRecipes'] != null
             ? List<Recipe>.from(json['favoriteRecipes'].map((x) => Recipe.fromJson(x)))

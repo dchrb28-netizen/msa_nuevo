@@ -202,7 +202,7 @@ class ReminderTaskHandler extends TaskHandler {
   }
   
   @override
-  Future<void> onDestroy(DateTime timestamp) async {
+  Future<void> onDestroy(DateTime timestamp, bool? quick) async {
     developer.log(
       '⏹️ ReminderTaskHandler destroyed at $timestamp',
       name: 'ForegroundReminderService',

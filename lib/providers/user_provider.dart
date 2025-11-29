@@ -37,6 +37,11 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setUsers(List<User> users) async {
+    _users = users;
+    notifyListeners();
+  }
+
   Future<void> setUser(User user) async {
     var userToSave = user;
     if (user.id == 'guest' || user.id.isEmpty) {

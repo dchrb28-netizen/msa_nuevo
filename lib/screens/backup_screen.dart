@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -111,7 +112,7 @@ class _BackupScreenState extends State<BackupScreen> {
     );
   }
 
-  Future<void> _importBackup() async {
+Future<void> _importBackup() async {
     if (!mounted) return;
 
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -121,50 +122,51 @@ class _BackupScreenState extends State<BackupScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final status = await _backupService.importBackup();
+      final List<User>? importedUsers = await _backupService.importBackup();
 
-      switch (status) {
-        case ImportStatus.success:
-          scaffoldMessenger.showSnackBar(
-            const SnackBar(
-                content: Text('Restauración completada. Reiniciando la app...'),
-                backgroundColor: Colors.green),
+      if (importedUsers == null) {
+        // Caso: El usuario canceló la selección de archivo o el archivo era inválido.
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(
+              content: Text('Operación cancelada o archivo no válido.'),
+              backgroundColor: Colors.orange),
+        );
+      } else {
+        // Caso: La importación se procesó correctamente.
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(
+              content: Text('✅ Restauración completada. Reiniciando la app...'),
+              backgroundColor: Colors.green),
+        );
+
+        // Actualiza el UserProvider con los perfiles importados.
+        await userProvider.setUsers(importedUsers);
+
+        // Si se importaron perfiles, selecciona el primero. 
+        // Si no, la app mostrará la pantalla de creación de perfiles.
+        if (importedUsers.isNotEmpty) {
+          await userProvider.switchUser(importedUsers.first.id);
+        }
+
+        // Reinicia la navegación de la app para reflejar el nuevo estado.
+        if (navigator.mounted) {
+          navigator.pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const MainScreen()),
+            (route) => false,
           );
-          await Future.delayed(const Duration(seconds: 2));
-          await userProvider.loadUsers();
-          if (navigator.mounted) {
-            navigator.pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const MainScreen()),
-              (route) => false,
-            );
-          }
-          break;
-        case ImportStatus.cancelled:
-          scaffoldMessenger.showSnackBar(
-            const SnackBar(
-                content: Text('Operación cancelada.'),
-                backgroundColor: Colors.grey),
-          );
-          break;
-        case ImportStatus.invalidFile:
-          scaffoldMessenger.showSnackBar(
-            const SnackBar(
-                content: Text(
-                    'Error: El archivo no es un respaldo válido o está corrupto.'),
-                backgroundColor: Colors.red),
-          );
-          break;
+        }
       }
     } catch (e) {
       scaffoldMessenger.showSnackBar(
         SnackBar(
-            content: Text('Error crítico durante la importación: $e'),
+            content: Text('❌ Error crítico durante la importación: $e'),
             backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

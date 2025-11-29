@@ -27,4 +27,24 @@ class Routine extends HiveObject {
     this.exercises,
     this.dayOfWeek,
   });
+
+  // toJson method
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'description': description,
+        'dayOfWeek': dayOfWeek,
+        'exercises': exercises?.map((e) => e.toJson()).toList(),
+      };
+
+  // fromJson factory
+  factory Routine.fromJson(Map<String, dynamic> json) {
+    return Routine(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      dayOfWeek: json['dayOfWeek'],
+      // exercises will be handled separately due to HiveList
+    );
+  }
 }

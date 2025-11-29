@@ -58,4 +58,42 @@ class Achievement {
       progress: source.progress,
     );
   }
+
+  // Metodos de serializacion JSON
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'description': description,
+    'icon': {
+      'codePoint': icon.codePoint,
+      'fontFamily': icon.fontFamily,
+      'fontPackage': icon.fontPackage,
+      'matchTextDirection': icon.matchTextDirection,
+    },
+    'category': category.name, // Guardar el nombre del enum
+    'goal': goal,
+    'unit': unit,
+    'isUnlocked': isUnlocked,
+    'unlockedDate': unlockedDate?.toIso8601String(),
+    'progress': progress,
+  };
+
+  factory Achievement.fromJson(Map<String, dynamic> json) => Achievement(
+    id: json['id'],
+    name: json['name'],
+    description: json['description'],
+    icon: IconData(
+      json['icon']['codePoint'],
+      fontFamily: json['icon']['fontFamily'],
+      fontPackage: json['icon']['fontPackage'],
+      matchTextDirection: json['icon']['matchTextDirection'],
+    ),
+    category: AchievementCategory.values.firstWhere((e) => e.name == json['category']),
+    goal: json['goal'],
+    unit: json['unit'],
+    isUnlocked: json['isUnlocked'],
+    unlockedDate: json['unlockedDate'] != null ? DateTime.parse(json['unlockedDate']) : null,
+    progress: json['progress'],
+  );
 }

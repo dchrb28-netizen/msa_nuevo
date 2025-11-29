@@ -3,11 +3,20 @@ import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:myapp/models/achievement.dart';
 import 'package:myapp/models/body_measurement.dart';
 import 'package:myapp/models/daily_meal_plan.dart';
+import 'package:myapp/models/exercise.dart';
+import 'package:myapp/models/fasting_log.dart';
 import 'package:myapp/models/food.dart';
 import 'package:myapp/models/food_log.dart';
+import 'package:myapp/models/meal_entry.dart';
+import 'package:myapp/models/meditation_log.dart';
 import 'package:myapp/models/recipe.dart';
+import 'package:myapp/models/reminder.dart';
+import 'package:myapp/models/routine.dart';
+import 'package:myapp/models/routine_exercise.dart';
+import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/user_profile.dart';
 import 'package:myapp/models/water_log.dart';
@@ -15,7 +24,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_html/html.dart' as html;
 import 'dart:io';
 
-enum ImportStatus { success, cancelled, invalidFile }
 enum ExportStatus { success, failure, webDownloadInitiated, cancelled }
 
 class BackupService {
@@ -46,36 +54,24 @@ class BackupService {
   ];
 
   dynamic _toJson(dynamic value) {
-    if (value is User) {
-      return value.toJson();
-    }
-    if (value is UserProfile) {
-      return value.toJson();
-    }
-    if (value is Food) {
-      return value.toJson();
-    }
-    if (value is WaterLog) {
-      return value.toJson();
-    }
-    if (value is FoodLog) {
-      return value.toJson();
-    }
-    if (value is BodyMeasurement) {
-      return value.toJson();
-    }
-    if (value is DailyMealPlan) {
-      return value.toJson();
-    }
-    if (value is Recipe) {
-      return value.toJson();
-    }
-    if (value is Map ||
-        value is List ||
-        value is String ||
-        value is num ||
-        value is bool ||
-        value == null) {
+    if (value is User) return value.toJson();
+    if (value is UserProfile) return value.toJson();
+    if (value is Food) return value.toJson();
+    if (value is WaterLog) return value.toJson();
+    if (value is FoodLog) return value.toJson();
+    if (value is BodyMeasurement) return value.toJson();
+    if (value is DailyMealPlan) return value.toJson();
+    if (value is Recipe) return value.toJson();
+    if (value is Reminder) return value.toJson();
+    if (value is FastingLog) return value.toJson();
+    if (value is Routine) return value.toJson();
+    if (value is RoutineLog) return value.toJson();
+    if (value is Exercise) return value.toJson();
+    if (value is RoutineExercise) return value.toJson();
+    if (value is MealEntry) return value.toJson();
+    if (value is MeditationLog) return value.toJson();
+    if (value is Achievement) return value.toJson();
+    if (value is Map || value is List || value is String || value is num || value is bool || value == null) {
       return value;
     }
     return value.toString();
@@ -102,12 +98,30 @@ class BackupService {
         case 'favorite_recipes':
         case 'user_recipes':
           return Recipe.fromJson(jsonValue);
+        case 'reminders':
+          return Reminder.fromJson(jsonValue);
+        case 'fasting_logs':
+          return FastingLog.fromJson(jsonValue);
+        case 'routines':
+          return Routine.fromJson(jsonValue);
+        case 'routine_logs':
+          return RoutineLog.fromJson(jsonValue);
+        case 'exercises':
+          return Exercise.fromJson(jsonValue);
+        case 'routine_exercises':
+          return RoutineExercise.fromJson(jsonValue);
+        case 'meal_entries':
+          return MealEntry.fromJson(jsonValue);
+        case 'meditation_logs_json':
+          return MeditationLog.fromJson(jsonValue);
+        case 'achievements':
+          return Achievement.fromJson(jsonValue);
         default:
           return jsonValue;
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error en _fromJson para la caja $boxName: $e - Valor: $jsonValue');
+        print('Error in _fromJson for box $boxName: $e - Value: $jsonValue');
       }
       return null;
     }
@@ -156,7 +170,6 @@ class BackupService {
           ..setAttribute("download", '$fileName.json')
           ..click();
 
-        // Damos tiempo al navegador para procesar la descarga antes de revocar la URL.
         Future.delayed(const Duration(milliseconds: 100), () {
           html.Url.revokeObjectUrl(url);
         });
@@ -183,24 +196,23 @@ class BackupService {
     }
   }
 
-  Future<ImportStatus> importBackup() async {
+ Future<List<User>?> importBackup() async {
     FilePickerResult? result;
     try {
-      result = await FilePicker.platform
-          .pickFiles(type: FileType.custom, allowedExtensions: ['json']);
+      result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['json']);
     } catch (e) {
       if (kDebugMode) {
         print("Error al seleccionar archivo: $e");
       }
-      return ImportStatus.invalidFile;
+      return null; // Error
     }
 
     if (result == null || result.files.isEmpty) {
-      return ImportStatus.cancelled;
+      return null; // Cancelled
     }
 
-    String? jsonString;
     try {
+      String? jsonString;
       if (kIsWeb) {
         final bytes = result.files.first.bytes;
         if (bytes != null) {
@@ -214,16 +226,15 @@ class BackupService {
       }
 
       if (jsonString == null || jsonString.isEmpty) {
-        return ImportStatus.invalidFile;
+        return null; // Invalid file
       }
 
       final backup = json.decode(jsonString);
       if (backup is! Map<String, dynamic> || !backup.containsKey('data')) {
-        return ImportStatus.invalidFile;
+        return null; // Invalid file format
       }
 
-      final Map<String, dynamic> data = backup['data'];
-
+      // 1. Clear all data first
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
 
@@ -237,7 +248,8 @@ class BackupService {
           }
         }
       }
-
+      
+      // 2. Restore SharedPreferences
       final prefsData = backup['preferences'] as Map<String, dynamic>? ?? {};
       for (final entry in prefsData.entries) {
         final key = entry.key;
@@ -261,15 +273,13 @@ class BackupService {
         }
       }
 
+      // 3. Restore Hive boxes
+      final Map<String, dynamic> data = backup['data'];
       for (final boxName in data.keys) {
-        if (!_boxNames.contains(boxName)) {
-          continue;
-        }
+        if (!_boxNames.contains(boxName)) continue;
         try {
           final boxData = data[boxName];
-          if (boxData is! Map<String, dynamic>) {
-            continue;
-          }
+          if (boxData is! Map<String, dynamic>) continue;
           final box = await Hive.openBox(boxName);
           for (final entry in boxData.entries) {
             try {
@@ -279,25 +289,43 @@ class BackupService {
               }
             } catch (e) {
               if (kDebugMode) {
-                print(
-                    'Error restaurando registro "${entry.key}" en "$boxName": $e');
+                print('Error restaurando registro "${entry.key}" en "$boxName": $e');
               }
             }
           }
         } catch (e) {
           if (kDebugMode) {
-            print(
-                'Error crítico restaurando la caja "$boxName": $e. Se saltará esta caja.');
+            print('Error crítico restaurando la caja "$boxName": $e. Se saltará esta caja.');
           }
         }
       }
 
-      return ImportStatus.success;
+      // 4. Extract and return the imported users
+      final List<User> importedUsers = [];
+      final userBoxData = data['user_box'] as Map<String, dynamic>?;
+      if (userBoxData != null) {
+        for (final userJson in userBoxData.values) {
+          try {
+            final user = _fromJson('user_box', userJson);
+            // Asegurarse de que el objeto no sea nulo y sea del tipo correcto (no sea guest)
+            if (user is User && !user.isGuest) {
+              importedUsers.add(user);
+            }
+          } catch (e) {
+            if (kDebugMode) {
+              print('Error convirtiendo usuario desde JSON durante la importación: $e');
+            }
+          }
+        }
+      }
+
+      return importedUsers;
+
     } catch (e) {
       if (kDebugMode) {
         print('Error al decodificar o procesar el archivo JSON: $e');
       }
-      return ImportStatus.invalidFile;
+      return null; // Critical error during processing
     }
   }
 }

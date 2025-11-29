@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:myapp/data/default_routines.dart';
+import 'package:myapp/models/achievement.dart';
+import 'package:myapp/models/achievement_adapter.dart';
 import 'package:myapp/models/body_measurement.dart';
 import 'package:myapp/models/daily_meal_plan.dart';
 import 'package:myapp/models/exercise.dart';
@@ -115,6 +117,7 @@ void _registerHiveAdapters() {
   _tryRegisterAdapter(ExerciseAdapter());
   _tryRegisterAdapter(RoutineExerciseAdapter());
   _tryRegisterAdapter(MealEntryAdapter());
+  _tryRegisterAdapter(AchievementAdapter());
 }
 
 void _tryRegisterAdapter<T>(TypeAdapter<T> adapter) {
@@ -141,7 +144,8 @@ Future<void> _openHiveBoxes() async {
   await Hive.openBox<Exercise>('exercises');
   await Hive.openBox<RoutineExercise>('routine_exercises');
   await Hive.openBox<MealEntry>('meal_entries');
-  await Hive.openBox<String>('meditation_logs_json'); // Open the new box for JSON strings
+  await Hive.openBox<String>('meditation_logs_json');
+  await Hive.openBox<Achievement>('achievements');
 }
 
 Future<void> _populateInitialFoodData() async {

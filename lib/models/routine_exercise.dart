@@ -52,4 +52,24 @@ class RoutineExercise extends HiveObject {
 
   // No-argument constructor for Hive
   RoutineExercise.empty();
+
+  // toJson method
+  Map<String, dynamic> toJson() => {
+        'exerciseId': exerciseId,
+        'sets': sets,
+        'reps': reps,
+        'weight': weight,
+        'restTime': restTime,
+      };
+
+  // fromJson factory
+  factory RoutineExercise.fromJson(Map<String, dynamic> json) {
+    return RoutineExercise(
+      exerciseId: json['exerciseId'],
+      sets: json['sets'],
+      reps: json['reps'],
+      weight: json['weight'],
+      restTime: json['restTime'],
+    );
+  }
 }
