@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/achievement.dart';
@@ -21,7 +20,8 @@ import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/user_profile.dart';
 import 'package:myapp/models/water_log.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -54,29 +54,30 @@ class BackupService {
     'achievements',
   ];
 
-  dynamic _toJson(dynamic value) {
-    if (value is User) return value.toJson();
-    if (value is UserProfile) return value.toJson();
-    if (value is Food) return value.toJson();
-    if (value is WaterLog) return value.toJson();
-    if (value is FoodLog) return value.toJson();
-    if (value is BodyMeasurement) return value.toJson();
-    if (value is DailyMealPlan) return value.toJson();
-    if (value is Recipe) return value.toJson();
-    if (value is Reminder) return value.toJson();
-    if (value is FastingLog) return value.toJson();
-    if (value is Routine) return value.toJson();
-    if (value is RoutineLog) return value.toJson();
-    if (value is Exercise) return value.toJson();
-    if (value is RoutineExercise) return value.toJson();
-    if (value is MealEntry) return value.toJson();
-    if (value is MeditationLog) return value.toJson();
-    if (value is Achievement) return value.toJson();
-    if (value is Map || value is List || value is String || value is num || value is bool || value == null) {
-      return value;
-    }
-    return value.toString();
-  }
+  final Map<String, Function> _serializers = {
+    'user_box': (user) => (user as User).toJson(),
+    'profile_data': (profile) {
+      if (profile is UserProfile) return profile.toJson();
+      if (profile is Map) return profile;
+      return null;
+    },
+    'foods': (food) => (food as Food).toJson(),
+    'water_logs': (log) => (log as WaterLog).toJson(),
+    'food_logs': (log) => (log as FoodLog).toJson(),
+    'body_measurements': (measurement) => (measurement as BodyMeasurement).toJson(),
+    'daily_meal_plans': (plan) => (plan as DailyMealPlan).toJson(),
+    'favorite_recipes': (recipe) => (recipe as Recipe).toJson(),
+    'user_recipes': (recipe) => (recipe as Recipe).toJson(),
+    'reminders': (reminder) => (reminder as Reminder).toJson(),
+    'fasting_logs': (log) => (log as FastingLog).toJson(),
+    'routines': (routine) => (routine as Routine).toJson(),
+    'routine_logs': (log) => (log as RoutineLog).toJson(),
+    'exercises': (exercise) => (exercise as Exercise).toJson(),
+    'routine_exercises': (re) => (re as RoutineExercise).toJson(),
+    'meal_entries': (entry) => (entry as MealEntry).toJson(),
+    'meditation_logs_json': (log) => (log as MeditationLog).toJson(),
+    'achievements': (achievement) => (achievement as Achievement).toJson(),
+  };
 
   dynamic _fromJson(String boxName, dynamic jsonValue) {
     if (jsonValue == null) return null;
@@ -85,7 +86,13 @@ class BackupService {
         case 'user_box':
           return User.fromJson(jsonValue);
         case 'profile_data':
-          return UserProfile.fromJson(jsonValue);
+          // ** LA CORRECCIÓN DEFINITIVA **
+          // Hacemos un "viaje de ida y vuelta" para limpiar los datos antes de guardarlos.
+          // 1. Reconstruimos el objeto desde el JSON del respaldo.
+          final profileObject = UserProfile.fromJson(Map<String, dynamic>.from(jsonValue));
+          // 2. Lo convertimos de nuevo a un mapa JSON "limpio".
+          // Esto garantiza que los tipos de datos (ej. DateTime) sean compatibles con Hive.
+          return profileObject.toJson();
         case 'foods':
           return Food.fromJson(jsonValue);
         case 'water_logs':
@@ -141,8 +148,17 @@ class BackupService {
         try {
           final box = await Hive.openBox(boxName);
           final Map<String, dynamic> boxData = {};
+          
+          final serializer = _serializers[boxName];
+
           for (final key in box.keys) {
-            boxData[key.toString()] = _toJson(box.get(key));
+            final value = box.get(key);
+            if (value == null) continue;
+            if (serializer != null) {
+              boxData[key.toString()] = serializer(value);
+            } else {
+              boxData[key.toString()] = value;
+            }
           }
           backup['data'][boxName] = boxData;
         } catch (e) {
@@ -173,27 +189,20 @@ class BackupService {
         Future.delayed(const Duration(milliseconds: 100), () => html.Url.revokeObjectUrl(url));
         return ExportStatus.webDownloadInitiated;
       } else {
-        if (Platform.isAndroid) {
-          var status = await Permission.storage.status;
-          if (!status.isGranted) {
-            status = await Permission.storage.request();
-          }
-          if (!status.isGranted) {
-            return ExportStatus.permissionDenied;
-          }
-        }
+        final directory = await getTemporaryDirectory();
+        final filePath = '${directory.path}/$fileName.json';
+        final file = File(filePath);
+        await file.writeAsBytes(bytes);
 
-        String? path = await FileSaver.instance.saveFile(
-          name: '$fileName.json',
-          bytes: bytes,
-          mimeType: MimeType.json,
+        final xfile = XFile(filePath, mimeType: 'application/json');
+
+        await Share.shareXFiles(
+          [xfile],
+          subject: 'FitFlow Backup',
+          text: 'Here is your FitFlow data backup from ${DateTime.now().toLocal()}.',
         );
 
-        if (path != null && path.isNotEmpty) {
-          return ExportStatus.success;
-        } else {
-          return ExportStatus.cancelled;
-        }
+        return ExportStatus.success;
       }
     } catch (e) {
       if (kDebugMode) {
@@ -203,8 +212,7 @@ class BackupService {
     }
   }
 
-
- Future<List<User>?> importBackup() async {
+  Future<List<User>?> importBackup() async {
     FilePickerResult? result;
     try {
       result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['json']);
@@ -212,11 +220,11 @@ class BackupService {
       if (kDebugMode) {
         print("Error al seleccionar archivo: $e");
       }
-      return null; // Error
+      return null;
     }
 
     if (result == null || result.files.isEmpty) {
-      return null; // Cancelled
+      return null;
     }
 
     try {
@@ -233,62 +241,45 @@ class BackupService {
         }
       }
 
-      if (jsonString == null || jsonString.isEmpty) {
-        return null; // Invalid file
-      }
+      if (jsonString == null || jsonString.isEmpty) return null;
 
       final backup = json.decode(jsonString);
-      if (backup is! Map<String, dynamic> || !backup.containsKey('data')) {
-        return null; // Invalid file format
-      }
+      if (backup is! Map<String, dynamic> || !backup.containsKey('data')) return null;
 
-      // 1. Clear all data first
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
 
       for (final boxName in _boxNames) {
         try {
-          final box = await Hive.openBox(boxName);
-          await box.clear();
+          if (Hive.isBoxOpen(boxName)) await Hive.box(boxName).close();
+          await Hive.deleteBoxFromDisk(boxName);
         } catch (e) {
-          if (kDebugMode) {
-            print('Advertencia al limpiar la caja $boxName: $e');
-          }
+          if (kDebugMode) print('Advertencia al limpiar la caja $boxName: $e');
         }
       }
       
-      // 2. Restore SharedPreferences
       final prefsData = backup['preferences'] as Map<String, dynamic>? ?? {};
       for (final entry in prefsData.entries) {
         final key = entry.key;
         final value = entry.value;
         try {
-          if (value is bool) {
-            await prefs.setBool(key, value);
-          } else if (value is int) {
-            await prefs.setInt(key, value);
-          } else if (value is double) {
-            await prefs.setDouble(key, value);
-          } else if (value is String) {
-            await prefs.setString(key, value);
-          } else if (value is List) {
-            await prefs.setStringList(key, value.cast<String>());
-          }
+          if (value is bool) await prefs.setBool(key, value);
+          else if (value is int) await prefs.setInt(key, value);
+          else if (value is double) await prefs.setDouble(key, value);
+          else if (value is String) await prefs.setString(key, value);
+          else if (value is List) await prefs.setStringList(key, value.cast<String>());
         } catch (e) {
-          if (kDebugMode) {
-            print('Error restaurando preferencia "$key": $e');
-          }
+          if (kDebugMode) print('Error restaurando preferencia "$key": $e');
         }
       }
 
-      // 3. Restore Hive boxes
       final Map<String, dynamic> data = backup['data'];
-      for (final boxName in data.keys) {
+      for (final boxName in _boxNames) {
         if (!_boxNames.contains(boxName)) continue;
         try {
+          final box = await Hive.openBox(boxName);
           final boxData = data[boxName];
           if (boxData is! Map<String, dynamic>) continue;
-          final box = await Hive.openBox(boxName);
           for (final entry in boxData.entries) {
             try {
               final objectToStore = _fromJson(boxName, entry.value);
@@ -296,44 +287,31 @@ class BackupService {
                 await box.put(entry.key, objectToStore);
               }
             } catch (e) {
-              if (kDebugMode) {
-                print('Error restaurando registro "${entry.key}" en "$boxName": $e');
-              }
+              if (kDebugMode) print('Error restaurando registro "${entry.key}" en "$boxName": $e');
             }
           }
         } catch (e) {
-          if (kDebugMode) {
-            print('Error crítico restaurando la caja "$boxName": $e. Se saltará esta caja.');
-          }
+          if (kDebugMode) print('Error crítico restaurando la caja "$boxName": $e.');
         }
       }
 
-      // 4. Extract and return the imported users
       final List<User> importedUsers = [];
       final userBoxData = data['user_box'] as Map<String, dynamic>?;
       if (userBoxData != null) {
         for (final userJson in userBoxData.values) {
           try {
             final user = _fromJson('user_box', userJson);
-            // Ensure the object is not null and is the correct type (not a guest)
-            if (user is User && !user.isGuest) {
-              importedUsers.add(user);
-            }
+            if (user is User && !user.isGuest) importedUsers.add(user);
           } catch (e) {
-            if (kDebugMode) {
-              print('Error converting user from JSON during import: $e');
-            }
+            if (kDebugMode) print('Error converting user from JSON during import: $e');
           }
         }
       }
-
       return importedUsers;
 
     } catch (e) {
-      if (kDebugMode) {
-        print('Error decoding or processing the JSON file: $e');
-      }
-      return null; // Critical error during processing
+      if (kDebugMode) print('Error decoding or processing the JSON file: $e');
+      return null;
     }
   }
 }

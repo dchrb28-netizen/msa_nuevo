@@ -24,13 +24,28 @@ class AchievementService extends ChangeNotifier {
 
   Future<void> init() async {
     _profileBox = Hive.box('profile_data');
+    
+    // Intentar cargar el perfil desde el nuevo formato (un solo objeto JSON)
+    final userProfileJson = _profileBox!.get('userProfile');
 
+    if (userProfileJson != null) {
+      // Si existe, cárgalo usando el constructor fromJson
+      _userProfile = UserProfile.fromJson(Map<String, dynamic>.from(userProfileJson));
+    } else {
+      // Si no existe, es un usuario antiguo o uno nuevo. Intenta migrar los datos.
+      await _migrateOldData();
+    }
+  }
+
+  Future<void> _migrateOldData() async {
+    // Lee los datos antiguos y fragmentados usando las claves anteriores.
     final experiencePoints = _profileBox!.get('experiencePoints', defaultValue: 0) as int;
     final level = _profileBox!.get('level', defaultValue: 1) as int;
     final unlockedAchievements = (_profileBox!.get('unlockedAchievements', defaultValue: <String, DateTime>{}) as Map).cast<String, DateTime>();
     final selectedTitle = _profileBox!.get('selectedTitle') as String?;
     final achievementProgress = (_profileBox!.get('achievementProgress', defaultValue: <String, int>{}) as Map).cast<String, int>();
 
+    // Crea una instancia de UserProfile con los datos antiguos.
     _userProfile = UserProfile(
       experiencePoints: experiencePoints,
       level: level,
@@ -38,6 +53,20 @@ class AchievementService extends ChangeNotifier {
       selectedTitle: selectedTitle,
       achievementProgress: achievementProgress,
     );
+
+    // Guarda el nuevo perfil unificado en la base de datos.
+    await _commitChanges();
+
+    // Elimina las claves antiguas para completar la migración.
+    await _profileBox!.delete('experiencePoints');
+    await _profileBox!.delete('level');
+    await _profileBox!.delete('unlockedAchievements');
+    await _profileBox!.delete('selectedTitle');
+    await _profileBox!.delete('achievementProgress');
+
+    if (kDebugMode) {
+      print('✅ Perfil de usuario migrado al nuevo formato unificado.');
+    }
   }
   
   // ======== PUBLIC GETTERS ========
@@ -157,11 +186,8 @@ class AchievementService extends ChangeNotifier {
   // ======== PRIVATE HELPERS (PERSISTENCE & NOTIFICATION) ========
   
   Future<void> _commitChanges() async {
-    await _profileBox!.put('experiencePoints', _userProfile.experiencePoints);
-    await _profileBox!.put('level', _userProfile.level);
-    await _profileBox!.put('unlockedAchievements', _userProfile.unlockedAchievements);
-    await _profileBox!.put('selectedTitle', _userProfile.selectedTitle);
-    await _profileBox!.put('achievementProgress', _userProfile.achievementProgress);
+    // Guarda el objeto UserProfile completo como un único JSON.
+    await _profileBox!.put('userProfile', _userProfile.toJson());
     notifyListeners();
   }
 

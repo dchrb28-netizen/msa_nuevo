@@ -37,19 +37,25 @@ import 'package:myapp/providers/workout_history_provider.dart';
 import 'package:myapp/screens/splash_screen.dart';
 import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/services/notification_service.dart';
-import 'package:myapp/services/reminder_backup_service.dart';
+import 'package:myapp/services/reminder_checker_service.dart';
 import 'package:myapp/services/time_format_service.dart';
 import 'package:myapp/services/foreground_reminder_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:io';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationService().init();
   
   if (!kIsWeb) {
-    await ReminderBackupService.init();
-    await ReminderBackupService.registerPeriodicCheck();
+    await _requestStoragePermission();
+  }
+  
+  await NotificationService().init();
+
+  if (!kIsWeb) {
+    await ReminderCheckerService.initialize();
     await _autoStartReminderService();
   }
 
@@ -63,7 +69,7 @@ void main() async {
   // --- SINGLETON SERVICES SETUP ---
   final achievementService = AchievementService();
   await achievementService.init();
-  
+
   final timeFormatService = TimeFormatService();
   await timeFormatService.loadPreference();
 
@@ -96,6 +102,15 @@ void main() async {
       child: const MyApp(),
     ),
   );
+}
+
+Future<void> _requestStoragePermission() async {
+  if (Platform.isAndroid) {
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+  }
 }
 
 void _registerHiveAdapters() {
