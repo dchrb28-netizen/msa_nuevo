@@ -307,13 +307,13 @@ class BackupService {
         for (final userJson in userBoxData.values) {
           try {
             final user = _fromJson('user_box', userJson);
-            // Asegurarse de que el objeto no sea nulo y sea del tipo correcto (no sea guest)
+            // Ensure the object is not null and is the correct type (not a guest)
             if (user is User && !user.isGuest) {
               importedUsers.add(user);
             }
           } catch (e) {
             if (kDebugMode) {
-              print('Error convirtiendo usuario desde JSON durante la importación: $e');
+              print('Error converting user from JSON during import: $e');
             }
           }
         }
@@ -323,7 +323,7 @@ class BackupService {
 
     } catch (e) {
       if (kDebugMode) {
-        print('Error al decodificar o procesar el archivo JSON: $e');
+        print('Error decoding or processing the JSON file: $e');
       }
       return null; // Critical error during processing
     }
