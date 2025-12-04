@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
@@ -21,8 +20,6 @@ class _BackupScreenState extends State<BackupScreen> {
     setState(() => _isLoading = true);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-    // The old permission check is removed. The `file_saver` package
-    // used by the service will correctly open a system file picker.
     try {
       final exportStatus = await _backupService.exportBackup();
       if (!mounted) return;
@@ -47,6 +44,13 @@ class _BackupScreenState extends State<BackupScreen> {
             const SnackBar(
                 content: Text('Operación cancelada por el usuario.'),
                 backgroundColor: Colors.grey),
+          );
+          break;
+        case ExportStatus.permissionDenied:
+          scaffoldMessenger.showSnackBar(
+            const SnackBar(
+                content: Text('Permiso de almacenamiento denegado.'),
+                backgroundColor: Colors.orange),
           );
           break;
         case ExportStatus.failure:

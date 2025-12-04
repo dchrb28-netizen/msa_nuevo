@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
@@ -20,11 +21,11 @@ import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/models/user_profile.dart';
 import 'package:myapp/models/water_log.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_html/html.dart' as html;
-import 'dart:io';
 
-enum ExportStatus { success, failure, webDownloadInitiated, cancelled }
+enum ExportStatus { success, failure, webDownloadInitiated, cancelled, permissionDenied }
 
 class BackupService {
   static final BackupService _instance = BackupService._internal();
@@ -131,7 +132,7 @@ class BackupService {
     try {
       final Map<String, dynamic> backup = {
         'timestamp': DateTime.now().toIso8601String(),
-        'version': '1.5.6', // Corregido el problema de temporización en la web
+        'version': '1.5.6',
         'data': {},
         'preferences': {},
       };
@@ -146,7 +147,7 @@ class BackupService {
           backup['data'][boxName] = boxData;
         } catch (e) {
           if (kDebugMode) {
-            print('Error exportando caja $boxName: $e');
+            print('Error exporting box $boxName: $e');
           }
         }
       }
@@ -169,19 +170,25 @@ class BackupService {
         html.AnchorElement(href: url)
           ..setAttribute("download", '$fileName.json')
           ..click();
-
-        Future.delayed(const Duration(milliseconds: 100), () {
-          html.Url.revokeObjectUrl(url);
-        });
-
+        Future.delayed(const Duration(milliseconds: 100), () => html.Url.revokeObjectUrl(url));
         return ExportStatus.webDownloadInitiated;
       } else {
-        String? path = await FileSaver.instance.saveAs(
-          name: fileName,
+        if (Platform.isAndroid) {
+          var status = await Permission.storage.status;
+          if (!status.isGranted) {
+            status = await Permission.storage.request();
+          }
+          if (!status.isGranted) {
+            return ExportStatus.permissionDenied;
+          }
+        }
+
+        String? path = await FileSaver.instance.saveFile(
+          name: '$fileName.json',
           bytes: bytes,
-          fileExtension: 'json',
           mimeType: MimeType.json,
         );
+
         if (path != null && path.isNotEmpty) {
           return ExportStatus.success;
         } else {
@@ -190,11 +197,12 @@ class BackupService {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error creando respaldo: $e');
+        print('Error creating backup: $e');
       }
       return ExportStatus.failure;
     }
   }
+
 
  Future<List<User>?> importBackup() async {
     FilePickerResult? result;
