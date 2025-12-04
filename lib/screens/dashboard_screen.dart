@@ -74,9 +74,6 @@ class DashboardScreen extends StatelessWidget {
 
         final selectedTitle = achievementService.userProfile.selectedTitle;
         final frameAsset = getFrameForTitle(selectedTitle);
-        final imageProvider = (user?.profileImageBytes != null)
-            ? MemoryImage(user!.profileImageBytes!)
-            : null;
 
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -101,8 +98,10 @@ class DashboardScreen extends StatelessWidget {
                         backgroundColor: Theme.of(context)
                             .colorScheme
                             .secondaryContainer,
-                        backgroundImage: imageProvider as ImageProvider?,
-                        child: imageProvider == null
+                        backgroundImage: user?.profileImageBytes != null
+                            ? MemoryImage(user!.profileImageBytes!)
+                            : null,
+                        child: user?.profileImageBytes == null
                             ? Icon(PhosphorIcons.user(PhosphorIconsStyle.duotone),
                                 size: 40,
                                 color: Theme.of(context)
