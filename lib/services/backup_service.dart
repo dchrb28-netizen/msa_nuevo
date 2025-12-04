@@ -137,6 +137,8 @@ class BackupService {
 
   Future<ExportStatus> exportBackup() async {
     try {
+      if (kDebugMode) print('🔵 Iniciando exportación de respaldo...');
+      
       final Map<String, dynamic> backup = {
         'timestamp': DateTime.now().toIso8601String(),
         'version': '1.5.6',
@@ -146,7 +148,10 @@ class BackupService {
 
       for (final boxName in _boxNames) {
         try {
-          final box = await Hive.openBox(boxName);
+          // Abrir la caja con el tipo correcto para user_box
+          final box = boxName == 'user_box' 
+              ? await Hive.openBox<User>(boxName)
+              : await Hive.openBox(boxName);
           final Map<String, dynamic> boxData = {};
           
           final serializer = _serializers[boxName];
@@ -160,6 +165,12 @@ class BackupService {
               boxData[key.toString()] = value;
             }
           }
+          
+          if (boxName == 'user_box' && kDebugMode) {
+            print('📦 Exportando user_box: ${boxData.length} usuarios');
+            print('👥 IDs de usuarios: ${boxData.keys.join(", ")}');
+          }
+          
           backup['data'][boxName] = boxData;
         } catch (e) {
           if (kDebugMode) {
@@ -213,17 +224,20 @@ class BackupService {
   }
 
   Future<List<User>?> importBackup() async {
+    if (kDebugMode) print('🔵 Iniciando importación de respaldo...');
+    
     FilePickerResult? result;
     try {
       result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['json']);
     } catch (e) {
       if (kDebugMode) {
-        print("Error al seleccionar archivo: $e");
+        print("❌ Error al seleccionar archivo: $e");
       }
       return null;
     }
 
     if (result == null || result.files.isEmpty) {
+      if (kDebugMode) print('⚠️ No se seleccionó ningún archivo');
       return null;
     }
 
@@ -241,22 +255,34 @@ class BackupService {
         }
       }
 
-      if (jsonString == null || jsonString.isEmpty) return null;
+      if (jsonString == null || jsonString.isEmpty) {
+        if (kDebugMode) print('⚠️ Archivo JSON vacío o inválido');
+        return null;
+      }
 
       final backup = json.decode(jsonString);
-      if (backup is! Map<String, dynamic> || !backup.containsKey('data')) return null;
+      if (backup is! Map<String, dynamic> || !backup.containsKey('data')) {
+        if (kDebugMode) print('⚠️ Formato de backup inválido');
+        return null;
+      }
+
+      if (kDebugMode) print('✅ Archivo JSON decodificado correctamente');
+      if (kDebugMode) print('📋 Versión del backup: ${backup['version']}');
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
+      if (kDebugMode) print('🧹 Preferencias limpiadas');
 
+      if (kDebugMode) print('🧹 Cerrando y eliminando cajas existentes...');
       for (final boxName in _boxNames) {
         try {
           if (Hive.isBoxOpen(boxName)) await Hive.box(boxName).close();
           await Hive.deleteBoxFromDisk(boxName);
         } catch (e) {
-          if (kDebugMode) print('Advertencia al limpiar la caja $boxName: $e');
+          if (kDebugMode) print('⚠️ Advertencia al limpiar la caja $boxName: $e');
         }
       }
+      if (kDebugMode) print('✅ Cajas eliminadas');
       
       final prefsData = backup['preferences'] as Map<String, dynamic>? ?? {};
       for (final entry in prefsData.entries) {
@@ -273,40 +299,64 @@ class BackupService {
         }
       }
 
+      if (kDebugMode) print('📦 Restaurando cajas...');
       final Map<String, dynamic> data = backup['data'];
+      
       for (final boxName in _boxNames) {
         if (!_boxNames.contains(boxName)) continue;
         try {
-          final box = await Hive.openBox(boxName);
+          // Abrir la caja con el tipo correcto para user_box
+          final box = boxName == 'user_box' 
+              ? await Hive.openBox<User>(boxName)
+              : await Hive.openBox(boxName);
+          
           final boxData = data[boxName];
-          if (boxData is! Map<String, dynamic>) continue;
+          if (boxData is! Map<String, dynamic>) {
+            if (kDebugMode) print('⚠️ $boxName: no hay datos o formato inválido');
+            continue;
+          }
+          
+          if (kDebugMode) print('📦 Restaurando $boxName: ${boxData.length} registros');
+          
           for (final entry in boxData.entries) {
             try {
               final objectToStore = _fromJson(boxName, entry.value);
               if (objectToStore != null) {
                 await box.put(entry.key, objectToStore);
+                if (boxName == 'user_box' && kDebugMode) {
+                  print('  ✓ Usuario guardado con clave: ${entry.key}');
+                }
               }
             } catch (e) {
-              if (kDebugMode) print('Error restaurando registro "${entry.key}" en "$boxName": $e');
+              if (kDebugMode) print('❌ Error restaurando registro "${entry.key}" en "$boxName": $e');
             }
           }
+          
+          if (boxName == 'user_box' && kDebugMode) {
+            print('✅ user_box restaurada: ${box.length} usuarios totales en Hive');
+          }
         } catch (e) {
-          if (kDebugMode) print('Error crítico restaurando la caja "$boxName": $e.');
+          if (kDebugMode) print('❌ Error crítico restaurando la caja "$boxName": $e');
         }
       }
 
       final List<User> importedUsers = [];
       final userBoxData = data['user_box'] as Map<String, dynamic>?;
+      if (kDebugMode) print('📦 userBoxData keys: ${userBoxData?.keys}');
+      
       if (userBoxData != null) {
         for (final userJson in userBoxData.values) {
           try {
             final user = _fromJson('user_box', userJson);
+            if (kDebugMode) print('👤 Usuario procesado: ${user is User ? user.name : "null"}');
             if (user is User && !user.isGuest) importedUsers.add(user);
           } catch (e) {
             if (kDebugMode) print('Error converting user from JSON during import: $e');
           }
         }
       }
+      
+      if (kDebugMode) print('✅ Total usuarios importados: ${importedUsers.length}');
       return importedUsers;
 
     } catch (e) {
