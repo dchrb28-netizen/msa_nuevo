@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/main.dart' show restartApp;
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
@@ -55,18 +56,15 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
 
     // Si la importación fue exitosa y se encontraron usuarios.
     
-    // 1. Actualiza el UserProvider con los nuevos usuarios.
-    await userProvider.setUsers(importedUsers);
+    // Mostrar mensaje de éxito
+    _showSnackbar('✅ Restauración completada. Reiniciando...', backgroundColor: Colors.green);
     
-    // 2. Selecciona el primer usuario de la lista.
-    await userProvider.switchUser(importedUsers.first.id);
-
-    // 3. Navega a la pantalla principal, eliminando el historial de navegación.
+    // Esperar un momento para que el usuario vea el mensaje
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    // Reiniciar la app completamente
     if (!mounted) return;
-    navigator.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const MainScreen()),
-      (route) => false,
-    );
+    restartApp();
   }
 
   Future<void> _confirmDelete(UserProvider userProvider, User user) async {

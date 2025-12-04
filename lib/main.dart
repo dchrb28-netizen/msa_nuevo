@@ -45,6 +45,19 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:io';
 
+// Clave global para reiniciar la app
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+Key _appKey = UniqueKey();
+
+// Función pública para reiniciar la app
+void restartApp() {
+  _appKey = UniqueKey();
+  navigatorKey.currentState?.pushAndRemoveUntil(
+    MaterialPageRoute(builder: (context) => const SplashScreen()),
+    (route) => false,
+  );
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -260,8 +273,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
+    return KeyedSubtree(
+      key: _appKey,
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
         final textTheme = GoogleFonts.montserratTextTheme(Theme.of(context).textTheme).copyWith(
           displayLarge: const TextStyle(fontSize: 57, fontWeight: FontWeight.bold),
           displayMedium: const TextStyle(fontSize: 45, fontWeight: FontWeight.bold),
@@ -394,6 +409,7 @@ class MyApp extends StatelessWidget {
         );
 
         return MaterialApp(
+          navigatorKey: navigatorKey,
           title: 'Salud Activa',
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
@@ -408,6 +424,7 @@ class MyApp extends StatelessWidget {
           home: const SplashScreen(),
         );
       },
+      ),
     );
   }
 }

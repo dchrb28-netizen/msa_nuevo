@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/main.dart' show restartApp;
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -77,9 +78,7 @@ class _BackupScreenState extends State<BackupScreen> {
   Future<void> _importBackup() async {
     if (!mounted) return;
 
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context, rootNavigator: true);
 
     setState(() => _isLoading = true);
 
@@ -95,22 +94,15 @@ class _BackupScreenState extends State<BackupScreen> {
       } else {
         scaffoldMessenger.showSnackBar(
           const SnackBar(
-              content: Text('✅ Restauración completada. Reiniciando la app...'),
+              content: Text('✅ Restauración completada. Reiniciando...'),
               backgroundColor: Colors.green),
         );
 
-        await userProvider.setUsers(importedUsers);
+        // Esperar un momento para que el usuario vea el mensaje
+        await Future.delayed(const Duration(milliseconds: 500));
 
-        if (importedUsers.isNotEmpty) {
-          await userProvider.switchUser(importedUsers.first.id);
-        }
-
-        if (navigator.mounted) {
-          navigator.pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const MainScreen()),
-            (route) => false,
-          );
-        }
+        // Reiniciar la app completamente
+        restartApp();
       }
     } catch (e) {
       scaffoldMessenger.showSnackBar(
