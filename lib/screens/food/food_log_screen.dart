@@ -179,8 +179,6 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                             ),
                           ],
                         ),
-                          ],
-                        ),
                       ],
                     ),
                   ),

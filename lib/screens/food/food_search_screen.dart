@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:myapp/services/edamam_service.dart';
 import 'package:myapp/models/food_log.dart';
 
@@ -118,21 +117,6 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
         },
       ),
     );
-  }
-
-  String _getMealTypeName() {
-    switch (widget.mealType.toLowerCase()) {
-      case 'breakfast':
-        return 'Desayuno';
-      case 'lunch':
-        return 'Almuerzo';
-      case 'dinner':
-        return 'Cena';
-      case 'snack':
-        return 'Merienda';
-      default:
-        return widget.mealType;
-    }
   }
 
   @override
