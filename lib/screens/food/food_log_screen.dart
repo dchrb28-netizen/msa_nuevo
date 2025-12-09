@@ -94,16 +94,23 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
               'Buscar',
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
-            onPressed: () {
-              Navigator.of(context).push(
+            onPressed: () async {
+              final result = await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => FoodSearchScreen(
-                    onFoodSelected: widget.onAddFoodLog,
+                    onFoodSelected: (foodLog) {
+                      widget.onAddFoodLog(foodLog);
+                    },
                     mealType: _selectedMealType,
                     date: _selectedDate,
                   ),
                 ),
               );
+              
+              // Si se agregó un alimento, cerrar la pantalla de registro
+              if (result == true && mounted) {
+                Navigator.of(context).pop(true);
+              }
             },
           ),
           const SizedBox(width: 8),

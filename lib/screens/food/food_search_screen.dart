@@ -87,20 +87,9 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
           // Llamar callback para guardar
           widget.onFoodSelected(foodLog);
           
-          // Mostrar confirmación
+          // Cerrar búsqueda inmediatamente con resultado
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('✅ ${food['label']} agregado'),
-                duration: const Duration(seconds: 2),
-              ),
-            );
-          }
-          
-          // Cerrar búsqueda después de un breve delay
-          await Future.delayed(const Duration(milliseconds: 300));
-          if (mounted) {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(true); // true = alimento agregado exitosamente
           }
         },
       ),

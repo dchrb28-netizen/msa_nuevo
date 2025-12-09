@@ -130,20 +130,9 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     // Llamar callback para guardar
     widget.onRecipeCreated(foodLog);
     
-    // Mostrar confirmación
+    // Cerrar inmediatamente con resultado
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('✅ $recipeName guardado'),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
-    
-    // Cerrar después de un breve delay
-    await Future.delayed(const Duration(milliseconds: 300));
-    if (mounted) {
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(true); // true = receta agregada exitosamente
     }
   }
 

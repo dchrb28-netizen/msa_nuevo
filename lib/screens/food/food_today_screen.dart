@@ -73,8 +73,8 @@ class _FoodTodayScreenState extends State<FoodTodayScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => FoodLogScreen(
@@ -83,11 +83,17 @@ class _FoodTodayScreenState extends State<FoodTodayScreen> {
                   Hive.box<FoodLog>('food_logs').add(foodLog).then((_) {
                     // Después de guardar, comprobar la racha
                     _checkCalorieStreak();
+                    // Forzar actualización de la UI
+                    setState(() {});
                   });
                 },
               ),
             ),
           );
+          // Actualizar la UI después de cerrar la pantalla de registro
+          if (result != null || mounted) {
+            setState(() {});
+          }
         },
         label: const Text('Registrar'),
         icon: const Icon(Icons.add_circle_outline),
