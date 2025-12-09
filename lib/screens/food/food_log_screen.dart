@@ -105,7 +105,11 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                   ),
                 ),
               );
-              // El alimento se guarda pero NO cerramos food_log_screen
+              // Cerrar food_log_screen para volver a la pantalla principal
+              // donde se verá el alimento agregado
+              if (mounted) {
+                Navigator.of(context).pop();
+              }
             },
           ),
           const SizedBox(width: 8),
