@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:myapp/config/api_keys.dart';
+import 'package:myapp/data/common_foods_database.dart';
 
 /// Servicio para interactuar con la API de Edamam
 class EdamamService {
@@ -8,8 +9,15 @@ class EdamamService {
   factory EdamamService() => _instance;
   EdamamService._internal();
 
-  /// Buscar alimentos en la base de datos de Edamam
+  bool _useOfflineMode = false;
+
+  /// Buscar alimentos (intenta API, fallback a base de datos local)
   Future<List<Map<String, dynamic>>> searchFood(String query) async {
+    // Si ya estamos en modo offline, usar base de datos local directamente
+    if (_useOfflineMode) {
+      return CommonFoodsDatabase.search(query);
+    }
+
     try {
       final url = Uri.parse(
         '${ApiKeys.edamamFoodDatabaseUrl}/parser'
@@ -19,7 +27,12 @@ class EdamamService {
         '&nutrition-type=logging',
       );
 
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          throw Exception('timeout');
+        },
+      );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -44,11 +57,23 @@ class EdamamService {
             },
           };
         }).toList();
+      } else if (response.statusCode == 401 || response.statusCode == 403) {
+        // API no autorizada, cambiar a modo offline
+        _useOfflineMode = true;
+        return CommonFoodsDatabase.search(query);
       } else {
-        throw Exception('Error al buscar alimentos: ${response.statusCode}');
+        throw Exception('api_error');
       }
     } catch (e) {
-      throw Exception('Error de conexión con Edamam: $e');
+      // En cualquier error, usar base de datos local
+      _useOfflineMode = true;
+      return CommonFoodsDatabase.search(query);
+    }
+  }
+
+  /// Verificar si estamos en modo offline
+  bool get isOfflineMode => _useOfflineMode;
+      throw Exception('Error de conexión: Verifica tu internet o las credenciales de Edamam');
     }
   }
 

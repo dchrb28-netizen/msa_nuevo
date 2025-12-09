@@ -2,8 +2,8 @@
 class ApiKeys {
   // Edamam Food Database API
   // https://www.edamam.com/
-  static const String edamamAppId = 'fbdcb21b';
-  static const String edamamAppKey = 'fc2b9a0cfd4e8e6a535f8c87b89760ad';
+  static const String edamamAppId = '763de283';
+  static const String edamamAppKey = '99be5465b5f5eea4cffaf727f0e36334';
   
   // URLs base
   static const String edamamNutritionApiUrl = 'https://api.edamam.com/api/nutrition-data';

@@ -41,9 +41,12 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
       appBar: AppBar(
         title: const Text('Registrar Comida'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            tooltip: 'Buscar con API',
+          TextButton.icon(
+            icon: const Icon(Icons.search, color: Colors.white),
+            label: const Text(
+              'Buscar',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -58,6 +61,7 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
               );
             },
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Padding(
