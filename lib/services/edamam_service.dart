@@ -73,9 +73,6 @@ class EdamamService {
 
   /// Verificar si estamos en modo offline
   bool get isOfflineMode => _useOfflineMode;
-      throw Exception('Error de conexión: Verifica tu internet o las credenciales de Edamam');
-    }
-  }
 
   /// Obtener información nutricional detallada de un alimento
   Future<Map<String, dynamic>?> getNutritionInfo(String ingredient) async {
