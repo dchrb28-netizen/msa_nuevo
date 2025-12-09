@@ -67,7 +67,7 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
       context: context,
       builder: (context) => _FoodQuantityDialog(
         food: food,
-        onConfirm: (servings) {
+        onConfirm: (servings) async {
           final nutrients = food['nutrients'] as Map<String, dynamic>;
           
           final foodLog = FoodLog(
@@ -81,9 +81,27 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
             mealType: widget.mealType,
           );
 
+          // Cerrar diálogo primero
+          Navigator.of(context).pop();
+          
+          // Llamar callback para guardar
           widget.onFoodSelected(foodLog);
-          Navigator.of(context).pop(); // Cerrar diálogo
-          Navigator.of(context).pop(); // Cerrar búsqueda
+          
+          // Mostrar confirmación
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('✅ ${food['label']} agregado'),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          }
+          
+          // Cerrar búsqueda después de un breve delay
+          await Future.delayed(const Duration(milliseconds: 300));
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
         },
       ),
     );
@@ -296,7 +314,7 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
 
 class _FoodQuantityDialog extends StatefulWidget {
   final Map<String, dynamic> food;
-  final Function(double servings) onConfirm;
+  final Future<void> Function(double servings) onConfirm;
 
   const _FoodQuantityDialog({
     required this.food,
@@ -372,7 +390,9 @@ class _FoodQuantityDialogState extends State<_FoodQuantityDialog> {
           child: const Text('Cancelar'),
         ),
         ElevatedButton(
-          onPressed: () => widget.onConfirm(_servings),
+          onPressed: () async {
+            await widget.onConfirm(_servings);
+          },
           child: const Text('Agregar'),
         ),
       ],

@@ -102,7 +102,7 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     });
   }
 
-  void _saveRecipe() {
+  void _saveRecipe() async {
     if (_selectedIngredients.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Agrega al menos un ingrediente')),
@@ -127,8 +127,24 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
       mealType: widget.mealType,
     );
 
+    // Llamar callback para guardar
     widget.onRecipeCreated(foodLog);
-    Navigator.of(context).pop();
+    
+    // Mostrar confirmación
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✅ $recipeName guardado'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+    
+    // Cerrar después de un breve delay
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   String _getMealTypeName() {
