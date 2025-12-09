@@ -338,19 +338,19 @@ class _FoodQuantityDialog extends StatefulWidget {
 }
 
 class _FoodQuantityDialogState extends State<_FoodQuantityDialog> {
-  final TextEditingController _servingsController = TextEditingController(text: '1');
-  double _servings = 1.0;
+  final TextEditingController _gramsController = TextEditingController(text: '100');
+  double _grams = 100.0;
 
   @override
   void dispose() {
-    _servingsController.dispose();
+    _gramsController.dispose();
     super.dispose();
   }
 
-  void _updateServings(String value) {
+  void _updateGrams(String value) {
     setState(() {
-      _servings = double.tryParse(value) ?? 1.0;
-      if (_servings <= 0) _servings = 1.0;
+      _grams = double.tryParse(value) ?? 100.0;
+      if (_grams <= 0) _grams = 100.0;
     });
   }
 
@@ -367,19 +367,20 @@ class _FoodQuantityDialogState extends State<_FoodQuantityDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '¿Cuántas porciones consumiste?',
+              '¿Cuántos gramos consumiste?',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             TextField(
-              controller: _servingsController,
+              controller: _gramsController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: const InputDecoration(
-                labelText: 'Porciones',
+                labelText: 'Cantidad',
                 border: OutlineInputBorder(),
-                suffixText: 'porción(es)',
+                suffixText: 'gramos',
+                helperText: 'Los valores nutricionales son por 100g',
               ),
-              onChanged: _updateServings,
+              onChanged: _updateGrams,
             ),
             const SizedBox(height: 24),
             const Text(
@@ -387,12 +388,12 @@ class _FoodQuantityDialogState extends State<_FoodQuantityDialog> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            _buildNutrientRow('Calorías', (nutrients['calories'] * _servings).toStringAsFixed(0), 'kcal', theme),
-            _buildNutrientRow('Proteínas', (nutrients['protein'] * _servings).toStringAsFixed(1), 'g', theme),
-            _buildNutrientRow('Carbohidratos', (nutrients['carbs'] * _servings).toStringAsFixed(1), 'g', theme),
-            _buildNutrientRow('Grasas', (nutrients['fat'] * _servings).toStringAsFixed(1), 'g', theme),
+            _buildNutrientRow('Calorías', (nutrients['calories'] * _grams / 100).toStringAsFixed(0), 'kcal', theme),
+            _buildNutrientRow('Proteínas', (nutrients['protein'] * _grams / 100).toStringAsFixed(1), 'g', theme),
+            _buildNutrientRow('Carbohidratos', (nutrients['carbs'] * _grams / 100).toStringAsFixed(1), 'g', theme),
+            _buildNutrientRow('Grasas', (nutrients['fat'] * _grams / 100).toStringAsFixed(1), 'g', theme),
             if (nutrients['fiber'] > 0)
-              _buildNutrientRow('Fibra', (nutrients['fiber'] * _servings).toStringAsFixed(1), 'g', theme),
+              _buildNutrientRow('Fibra', (nutrients['fiber'] * _grams / 100).toStringAsFixed(1), 'g', theme),
           ],
         ),
       ),
@@ -403,7 +404,7 @@ class _FoodQuantityDialogState extends State<_FoodQuantityDialog> {
         ),
         ElevatedButton(
           onPressed: () async {
-            await widget.onConfirm(_servings);
+            await widget.onConfirm(_grams / 100);
           },
           child: const Text('Agregar'),
         ),
