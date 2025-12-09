@@ -127,11 +127,19 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     // Llamar callback para guardar
     widget.onRecipeCreated(foodLog);
     
-    // Programar el cierre para el próximo frame
-    // Esto evita el error "_debugLocked is not true" del Navigator
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    // Mostrar confirmación y cerrar después de 1 segundo
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('✓ $recipeName guardado'),
+        duration: const Duration(seconds: 1),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+    
+    // Cerrar después de mostrar confirmación
+    Future.delayed(const Duration(milliseconds: 1500), () {
       if (mounted) {
-        Navigator.of(context).pop(); // Cerrar solo recipe_builder_screen
+        Navigator.of(context).pop();
       }
     });
   }

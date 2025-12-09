@@ -88,13 +88,15 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
           // Llamar callback para guardar
           widget.onFoodSelected(foodLog);
           
-          // Programar el cierre de la pantalla de búsqueda para el próximo frame
-          // Esto evita el error "_debugLocked is not true" del Navigator
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              Navigator.of(context).pop(); // Cerrar solo food_search_screen
-            }
-          });
+          // Mostrar confirmación pero NO cerrar la pantalla
+          // El usuario puede seguir agregando más alimentos
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('✓ ${food['label']} agregado'),
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         },
       ),
     );
