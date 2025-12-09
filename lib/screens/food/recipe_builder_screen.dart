@@ -327,7 +327,7 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Text(
-              '${ingredient['servings'].toStringAsFixed(1)} porción(es) • '
+              '${ingredient['servings'].toStringAsFixed(0)}g • '
               '${ingredient['calories'].toStringAsFixed(0)} kcal',
             ),
             trailing: IconButton(
