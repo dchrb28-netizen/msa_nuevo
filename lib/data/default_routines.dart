@@ -33,7 +33,7 @@ class DefaultRoutines {
 
   /// 1. Rutina Full Body Principiante (3 días/semana)
   static Future<Routine> _createFullBodyBeginner(Box<RoutineExercise> exercisesBox) async {
-    final exercises = HiveList(exercisesBox);
+    final exercises = HiveList<RoutineExercise>(exercisesBox);
     
     final exercisesList = [
       RoutineExercise(exerciseId: 'chest_001', sets: 3, reps: '10', restTime: 60),
@@ -59,7 +59,7 @@ class DefaultRoutines {
 
   /// 2. Rutina Upper/Lower Split (4 días/semana)
   static Future<Routine> _createUpperLowerSplit(Box<RoutineExercise> exercisesBox) async {
-    final exercises = HiveList(exercisesBox);
+    final exercises = HiveList<RoutineExercise>(exercisesBox);
     
     final exercisesList = [
       // DÍA SUPERIOR
@@ -91,7 +91,7 @@ class DefaultRoutines {
 
   /// 3. Rutina Push/Pull/Legs (6 días/semana)
   static Future<Routine> _createPushPullLegs(Box<RoutineExercise> exercisesBox) async {
-    final exercises = HiveList(exercisesBox);
+    final exercises = HiveList<RoutineExercise>(exercisesBox);
     
     final exercisesList = [
       // PUSH (Empuje)
@@ -128,7 +128,7 @@ class DefaultRoutines {
 
   /// 4. Rutina Core & Abs
   static Future<Routine> _createCoreStrength(Box<RoutineExercise> exercisesBox) async {
-    final exercises = HiveList(exercisesBox);
+    final exercises = HiveList<RoutineExercise>(exercisesBox);
     
     final exercisesList = [
       RoutineExercise(exerciseId: 'abs_001', sets: 4, reps: '20', restTime: 30),
@@ -155,7 +155,7 @@ class DefaultRoutines {
 
   /// 5. Rutina Cardio HIIT
   static Future<Routine> _createCardioHIIT(Box<RoutineExercise> exercisesBox) async {
-    final exercises = HiveList(exercisesBox);
+    final exercises = HiveList<RoutineExercise>(exercisesBox);
     
     final exercisesList = [
       RoutineExercise(exerciseId: 'cardio_015', sets: 4, reps: '45s', restTime: 15),
@@ -181,7 +181,7 @@ class DefaultRoutines {
 
   /// 6. Rutina Flexibilidad & Yoga
   static Future<Routine> _createFlexibilityYoga(Box<RoutineExercise> exercisesBox) async {
-    final exercises = HiveList(exercisesBox);
+    final exercises = HiveList<RoutineExercise>(exercisesBox);
     
     final exercisesList = [
       RoutineExercise(exerciseId: 'yoga_001', sets: 3, reps: '30s', restTime: 15),
@@ -208,7 +208,7 @@ class DefaultRoutines {
 
   /// 7. Rutina Casa Sin Equipo
   static Future<Routine> _createHomeWorkout(Box<RoutineExercise> exercisesBox) async {
-    final exercises = HiveList(exercisesBox);
+    final exercises = HiveList<RoutineExercise>(exercisesBox);
     
     final exercisesList = [
       RoutineExercise(exerciseId: 'cardio_015', sets: 3, reps: '30', restTime: 30),
@@ -235,7 +235,7 @@ class DefaultRoutines {
 
   /// 8. Rutina Calistenia Avanzada
   static Future<Routine> _createAdvancedCalisthenics(Box<RoutineExercise> exercisesBox) async {
-    final exercises = HiveList(exercisesBox);
+    final exercises = HiveList<RoutineExercise>(exercisesBox);
     
     final exercisesList = [
       RoutineExercise(exerciseId: 'chest_012', sets: 4, reps: '8', restTime: 90),
