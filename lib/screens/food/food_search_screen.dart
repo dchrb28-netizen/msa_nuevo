@@ -92,7 +92,7 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
           // Esto evita el error "_debugLocked is not true" del Navigator
           SchedulerBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
-              Navigator.of(context).pop(true); // true = alimento agregado exitosamente
+              Navigator.of(context).pop(); // Cerrar solo food_search_screen
             }
           });
         },

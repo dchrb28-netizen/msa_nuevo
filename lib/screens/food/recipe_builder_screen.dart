@@ -131,7 +131,7 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     // Esto evita el error "_debugLocked is not true" del Navigator
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        Navigator.of(context).pop(true); // true = receta agregada exitosamente
+        Navigator.of(context).pop(); // Cerrar solo recipe_builder_screen
       }
     });
   }

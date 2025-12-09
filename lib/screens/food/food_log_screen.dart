@@ -74,10 +74,9 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
           // Botón para crear receta (múltiples ingredientes)
           IconButton(
             icon: const Icon(Icons.restaurant_menu),
-            tooltip: 'Crear Receta',
+            tooltip: 'Crear Receta (varios ingredientes)',
             onPressed: () async {
-              final navigator = Navigator.of(context);
-              final result = await navigator.push(
+              await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => RecipeBuilderScreen(
                     onRecipeCreated: widget.onAddFoodLog,
@@ -86,11 +85,7 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                   ),
                 ),
               );
-              
-              // Si se agregó una receta, cerrar la pantalla de registro
-              if (result == true && mounted) {
-                navigator.pop(true);
-              }
+              // La receta se guarda pero NO cerramos food_log_screen
             },
           ),
           // Botón para buscar alimento individual
@@ -101,23 +96,16 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              final navigator = Navigator.of(context);
-              final result = await navigator.push(
+              await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => FoodSearchScreen(
-                    onFoodSelected: (foodLog) {
-                      widget.onAddFoodLog(foodLog);
-                    },
+                    onFoodSelected: widget.onAddFoodLog,
                     mealType: _selectedMealType,
                     date: _selectedDate,
                   ),
                 ),
               );
-              
-              // Si se agregó un alimento, cerrar la pantalla de registro
-              if (result == true && mounted) {
-                navigator.pop(true);
-              }
+              // El alimento se guarda pero NO cerramos food_log_screen
             },
           ),
           const SizedBox(width: 8),
@@ -131,23 +119,57 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Banner informativo sobre búsqueda API
+                // Banner informativo sobre los botones de búsqueda
                 Card(
                   color: Colors.blue.shade50,
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.info_outline, color: Colors.blue.shade700),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            '¿Sabías? Puedes buscar alimentos con el botón 🔍 arriba',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.blue.shade900,
+                        Row(
+                          children: [
+                            Icon(Icons.info_outline, color: Colors.blue.shade700),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Opciones para agregar:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: Colors.blue.shade900,
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.search, size: 18, color: Colors.blue.shade700),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Buscar: 1 alimento a la vez',
+                                style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.restaurant_menu, size: 18, color: Colors.blue.shade700),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Menú: combina varios ingredientes',
+                                style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
