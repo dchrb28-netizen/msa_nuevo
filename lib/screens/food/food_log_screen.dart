@@ -76,7 +76,8 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
             icon: const Icon(Icons.restaurant_menu),
             tooltip: 'Crear Receta',
             onPressed: () async {
-              final result = await Navigator.of(context).push(
+              final navigator = Navigator.of(context);
+              final result = await navigator.push(
                 MaterialPageRoute(
                   builder: (context) => RecipeBuilderScreen(
                     onRecipeCreated: widget.onAddFoodLog,
@@ -88,7 +89,7 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
               
               // Si se agregó una receta, cerrar la pantalla de registro
               if (result == true && mounted) {
-                Navigator.of(context).pop(true);
+                navigator.pop(true);
               }
             },
           ),
@@ -100,7 +101,8 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              final result = await Navigator.of(context).push(
+              final navigator = Navigator.of(context);
+              final result = await navigator.push(
                 MaterialPageRoute(
                   builder: (context) => FoodSearchScreen(
                     onFoodSelected: (foodLog) {
@@ -114,7 +116,7 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
               
               // Si se agregó un alimento, cerrar la pantalla de registro
               if (result == true && mounted) {
-                Navigator.of(context).pop(true);
+                navigator.pop(true);
               }
             },
           ),

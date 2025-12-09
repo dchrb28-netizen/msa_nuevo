@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/main.dart' show restartApp;
 import 'package:myapp/models/user.dart';
-import 'package:myapp/providers/user_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:myapp/services/backup_service.dart';
-import 'package:myapp/screens/main_screen.dart';
 
 class BackupScreen extends StatefulWidget {
   const BackupScreen({super.key});

@@ -3,7 +3,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/data/routine_templates.dart';
 import 'package:myapp/data/default_routines.dart';
-import 'package:myapp/models/routine.dart';
 import 'package:myapp/models/routine_exercise.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/routine_provider.dart';
@@ -221,7 +220,7 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -313,7 +312,7 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -349,7 +348,7 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
             color: colorScheme.surface,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -439,7 +438,7 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: levelColor.withOpacity(0.3),
+          color: levelColor.withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -456,7 +455,7 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: levelColor.withOpacity(0.1),
+                      color: levelColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(levelIcon, color: levelColor, size: 32),
@@ -471,7 +470,7 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             margin: const EdgeInsets.only(bottom: 4),
                             decoration: BoxDecoration(
-                              color: Colors.purple.withOpacity(0.2),
+                              color: Colors.purple.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Text(

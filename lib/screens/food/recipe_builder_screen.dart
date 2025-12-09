@@ -28,7 +28,6 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
   List<Map<String, dynamic>> _searchResults = [];
   final List<Map<String, dynamic>> _selectedIngredients = [];
   bool _isLoading = false;
-  String? _errorMessage;
 
   double get _totalCalories => _selectedIngredients.fold(0, (sum, ing) => sum + (ing['calories'] as double));
   double get _totalProtein => _selectedIngredients.fold(0, (sum, ing) => sum + (ing['protein'] as double));
@@ -46,14 +45,12 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     if (query.trim().isEmpty) {
       setState(() {
         _searchResults = [];
-        _errorMessage = null;
       });
       return;
     }
 
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
     });
 
     try {
@@ -64,7 +61,6 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error al buscar: ${e.toString()}';
         _isLoading = false;
         _searchResults = [];
       });
