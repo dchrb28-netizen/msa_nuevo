@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/screens/training/edit_routine_screen.dart';
-import 'package:myapp/screens/training/preset_routines_screen.dart';
 import 'package:myapp/screens/training/workout_history_screen.dart';
 import 'package:myapp/screens/training/workout_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -14,12 +13,6 @@ class RoutinesScreen extends StatelessWidget {
     Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (context) => const EditRoutineScreen()));
-  }
-
-  void _navigateToPresetRoutines(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => const PresetRoutinesScreen()));
   }
 
   @override
@@ -45,11 +38,6 @@ class RoutinesScreen extends StatelessWidget {
                   avatar: Icon(PhosphorIcons.plusCircle(PhosphorIconsStyle.fill), color: colorScheme.primary, size: 20),
                   label: const Text('Crear Rutina'),
                   onPressed: () => _navigateAndAddRoutine(context),
-                ),
-                ActionChip(
-                  avatar: Icon(PhosphorIcons.books(PhosphorIconsStyle.fill), color: Colors.deepPurple, size: 20),
-                  label: const Text('Rutinas Predefinidas'),
-                  onPressed: () => _navigateToPresetRoutines(context),
                 ),
                 ActionChip(
                   avatar: Icon(PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill), color: colorScheme.secondary, size: 20),
