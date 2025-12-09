@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/food_log.dart';
-import 'package:myapp/screens/food/food_search_screen.dart';
 import 'package:myapp/screens/food/recipe_builder_screen.dart';
 import 'package:uuid/uuid.dart';
 
@@ -64,27 +63,6 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
               });
             },
           ),
-          // Botón para buscar alimento individual
-          TextButton.icon(
-            icon: const Icon(Icons.search, color: Colors.white),
-            label: const Text(
-              'Buscar',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => FoodSearchScreen(
-                    onFoodSelected: (foodLog) {
-                      Navigator.pop(context, foodLog);
-                    },
-                    mealType: _mealType,
-                    date: DateTime.now(),
-                  ),
-                ),
-              );
-            },
-          ),
           const SizedBox(width: 8),
         ],
       ),
@@ -94,68 +72,23 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              // Banner informativo sobre búsqueda API
+              // Banner informativo sobre opciones
               Card(
                 color: Colors.blue.shade50,
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      Row(
-                        children: [
-                          Icon(Icons.info_outline, color: Colors.blue.shade700),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Formas de agregar comida:',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue.shade900,
-                              ),
-                            ),
+                      Icon(Icons.restaurant_menu, color: Colors.blue.shade700),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Usa el ícono de menú arriba para crear recetas con varios ingredientes',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.blue.shade900,
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(Icons.search, size: 18, color: Colors.blue.shade700),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Buscar: encuentra un alimento y se guarda automáticamente',
-                              style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.restaurant_menu, size: 18, color: Colors.blue.shade700),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Menú: combina varios ingredientes en una receta',
-                              style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.edit, size: 18, color: Colors.blue.shade700),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Manual: ingresa los valores nutritivos aquí abajo',
-                              style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
