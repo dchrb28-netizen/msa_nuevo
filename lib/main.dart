@@ -4,7 +4,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:myapp/data/default_routines.dart';
 import 'package:myapp/models/achievement.dart';
 import 'package:myapp/models/achievement_adapter.dart';
 import 'package:myapp/models/body_measurement.dart';
@@ -86,7 +85,8 @@ void main() async {
   final timeFormatService = TimeFormatService();
   await timeFormatService.loadPreference();
 
-  await DefaultRoutines.createAll();
+  // NO crear rutinas predeterminadas automáticamente
+  // await DefaultRoutines.createAll();
 
   await _populateInitialFoodData();
   await _populateInitialExerciseData();

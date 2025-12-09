@@ -5,10 +5,30 @@ import 'package:myapp/screens/training/edit_routine_screen.dart';
 import 'package:myapp/screens/training/preset_routines_screen.dart';
 import 'package:myapp/screens/training/workout_history_screen.dart';
 import 'package:myapp/screens/training/workout_screen.dart';
+import 'package:myapp/utils/clear_routines.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class RoutinesScreen extends StatelessWidget {
+class RoutinesScreen extends StatefulWidget {
   const RoutinesScreen({super.key});
+
+  @override
+  State<RoutinesScreen> createState() => _RoutinesScreenState();
+}
+
+class _RoutinesScreenState extends State<RoutinesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Limpiar rutinas predeterminadas al iniciar
+    _clearDefaultRoutines();
+  }
+
+  Future<void> _clearDefaultRoutines() async {
+    await ClearRoutines.clearDefaultRoutines();
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   void _navigateAndAddRoutine(BuildContext context) {
     Navigator.of(context).push(
