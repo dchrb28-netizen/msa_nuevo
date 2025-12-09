@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/data/routine_templates.dart';
-import 'package:myapp/data/default_routines.dart';
 import 'package:myapp/models/routine_exercise.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/routine_provider.dart';
@@ -45,9 +44,6 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
         );
       });
     }
-    
-    // Crear rutinas predeterminadas si no existen
-    await DefaultRoutines.createAll();
   }
 
   List<RoutineTemplate> _getFilteredTemplates() {

@@ -99,18 +99,63 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
                 color: Colors.blue.shade50,
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.info_outline, color: Colors.blue.shade700),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          '¿Sabías? Puedes buscar alimentos con el botón 🔍 arriba',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.blue.shade900,
+                      Row(
+                        children: [
+                          Icon(Icons.info_outline, color: Colors.blue.shade700),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Formas de agregar comida:',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue.shade900,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(Icons.search, size: 18, color: Colors.blue.shade700),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Buscar: encuentra un alimento y se guarda automáticamente',
+                              style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.restaurant_menu, size: 18, color: Colors.blue.shade700),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Menú: combina varios ingredientes en una receta',
+                              style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.edit, size: 18, color: Colors.blue.shade700),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Manual: ingresa los valores nutritivos aquí abajo',
+                              style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
