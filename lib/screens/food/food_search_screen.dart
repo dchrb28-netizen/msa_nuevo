@@ -88,17 +88,40 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
           // Llamar callback para guardar
           widget.onFoodSelected(foodLog);
           
-          // Mostrar confirmación rápida y cerrar
+          // Mostrar confirmación con indicación de dónde ver el alimento
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('✓ ${food['label']} agregado'),
-              duration: const Duration(milliseconds: 800),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '${food['label']} agregado',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Ve a: Nutrición → pestaña "${_getMealTypeName()}"',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+              duration: const Duration(milliseconds: 2500),
               behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.green[700],
             ),
           );
           
           // Cerrar la pantalla de búsqueda después de agregar
-          Future.delayed(const Duration(milliseconds: 900), () {
+          Future.delayed(const Duration(milliseconds: 1000), () {
             if (mounted) {
               Navigator.of(context).pop();
             }
@@ -106,6 +129,21 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
         },
       ),
     );
+  }
+
+  String _getMealTypeName() {
+    switch (widget.mealType.toLowerCase()) {
+      case 'breakfast':
+        return 'Desayuno';
+      case 'lunch':
+        return 'Almuerzo';
+      case 'dinner':
+        return 'Cena';
+      case 'snack':
+        return 'Merienda';
+      default:
+        return widget.mealType;
+    }
   }
 
   @override
