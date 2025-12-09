@@ -318,22 +318,29 @@ class BackupService {
           
           if (kDebugMode) print('📦 Restaurando $boxName: ${boxData.length} registros');
           
+          int successCount = 0;
           for (final entry in boxData.entries) {
             try {
               final objectToStore = _fromJson(boxName, entry.value);
               if (objectToStore != null) {
                 await box.put(entry.key, objectToStore);
+                successCount++;
                 if (boxName == 'user_box' && kDebugMode) {
                   print('  ✓ Usuario guardado con clave: ${entry.key}');
                 }
+              } else {
+                if (kDebugMode) print('⚠️ Objeto nulo en $boxName para clave "${entry.key}"');
               }
             } catch (e) {
               if (kDebugMode) print('❌ Error restaurando registro "${entry.key}" en "$boxName": $e');
             }
           }
           
-          if (boxName == 'user_box' && kDebugMode) {
-            print('✅ user_box restaurada: ${box.length} usuarios totales en Hive');
+          if (kDebugMode) {
+            print('✅ $boxName restaurada: $successCount/${boxData.length} registros');
+            if (boxName == 'user_box') {
+              print('   Total usuarios en Hive: ${box.length}');
+            }
           }
         } catch (e) {
           if (kDebugMode) print('❌ Error crítico restaurando la caja "$boxName": $e');
