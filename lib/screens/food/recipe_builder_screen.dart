@@ -127,17 +127,29 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     // Llamar callback para guardar
     widget.onRecipeCreated(foodLog);
     
-    // Mostrar confirmación y cerrar después de 1 segundo
+    // Mostrar confirmación simple
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('✓ $recipeName guardado'),
-        duration: const Duration(seconds: 1),
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                '✓ $recipeName guardado',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              ),
+            ),
+          ],
+        ),
+        duration: const Duration(milliseconds: 1200),
         behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.green[700],
       ),
     );
     
     // Cerrar después de mostrar confirmación
-    Future.delayed(const Duration(milliseconds: 1500), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) {
         Navigator.of(context).pop();
       }

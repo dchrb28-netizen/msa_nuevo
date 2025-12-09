@@ -48,6 +48,12 @@ class RoutinesScreen extends StatelessWidget {
                   onPressed: () => _navigateAndAddRoutine(context),
                 ),
                 ActionChip(
+                  avatar: Icon(PhosphorIcons.star(PhosphorIconsStyle.fill), 
+                               color: Colors.amber, size: 20),
+                  label: const Text('Rutinas Predeterminadas'),
+                  onPressed: () => _navigateToPresetRoutines(context),
+                ),
+                ActionChip(
                   avatar: Icon(PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill), 
                                color: colorScheme.secondary, size: 20),
                   label: const Text('Historial'),
@@ -68,192 +74,142 @@ class RoutinesScreen extends StatelessWidget {
               builder: (context, provider, child) {
                 final userRoutines = provider.routines;
                 
-                return ListView(
-                  children: [
-                    // Sección: Rutinas Predeterminadas
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                      child: Row(
+                if (userRoutines.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(PhosphorIcons.star(PhosphorIconsStyle.fill), 
-                               color: Colors.amber, size: 20),
-                          const SizedBox(width: 8),
+                          Icon(PhosphorIcons.folderOpen(), size: 80, color: Colors.grey),
+                          const SizedBox(height: 24),
                           Text(
-                            'Rutinas Predeterminadas',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.primary,
-                            ),
+                            'No tienes rutinas personalizadas',
+                            style: theme.textTheme.titleLarge?.copyWith(color: Colors.grey),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            '¡Crea tu primera rutina o elige una predeterminada!',
+                            style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
                     ),
-                    Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      child: ListTile(
-                        leading: Icon(PhosphorIcons.books(PhosphorIconsStyle.fill), 
-                                     color: Colors.deepPurple),
-                        title: const Text('Ver Rutinas Predefinidas'),
-                        subtitle: const Text('8 rutinas profesionales listas para usar'),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () => _navigateToPresetRoutines(context),
+                  );
+                }
+                
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                  itemCount: userRoutines.length,
+                  itemBuilder: (context, index) {
+                    final routine = userRoutines[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 6.0),
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    const Divider(),
-                    
-                    // Sección: Mis Rutinas
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                      child: Row(
-                        children: [
-                          Icon(PhosphorIcons.user(PhosphorIconsStyle.fill), 
-                               color: colorScheme.primary, size: 20),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Mis Rutinas',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.primary,
-                            ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: ListTile(
+                          title: Text(
+                            routine.name,
+                            style: theme.textTheme.titleLarge,
                           ),
-                        ],
-                      ),
-                    ),
-                    
-                    if (userRoutines.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(32.0),
-                        child: Center(
-                          child: Column(
+                          subtitle: Text(routine.description),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(PhosphorIcons.folderOpen(), size: 64, color: Colors.grey),
-                              const SizedBox(height: 16),
-                              Text(
-                                'No tienes rutinas personalizadas',
-                                style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                              IconButton(
+                                icon: Icon(
+                                  PhosphorIcons.play(PhosphorIconsStyle.fill),
+                                  color: colorScheme.primary,
+                                  size: 30,
+                                ),
+                                tooltip: 'Iniciar Entrenamiento',
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => WorkoutScreen(routine: routine),
+                                    ),
+                                  );
+                                },
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                '¡Crea tu primera rutina!',
-                                style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                              IconButton(
+                                icon: Icon(
+                                  PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular),
+                                  color: colorScheme.secondary,
+                                ),
+                                tooltip: 'Editar Rutina',
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => EditRoutineScreen(
+                                        routineId: routine.id,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              PopupMenuButton<String>(
+                                onSelected: (value) {
+                                  if (value == 'delete') {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext ctx) {
+                                        return AlertDialog(
+                                          title: const Text('Confirmar Borrado'),
+                                          content: Text(
+                                            '¿Estás seguro de que quieres eliminar la rutina "${routine.name}"?',
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: const Text('Cancelar'),
+                                              onPressed: () {
+                                                Navigator.of(ctx).pop();
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: Text(
+                                                'Eliminar',
+                                                style: TextStyle(color: colorScheme.error),
+                                              ),
+                                              onPressed: () {
+                                                provider.deleteRoutine(routine.id);
+                                                Navigator.of(ctx).pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<String>>[
+                                      PopupMenuItem<String>(
+                                        value: 'delete',
+                                        child: ListTile(
+                                          leading: Icon(
+                                            PhosphorIcons.trash(PhosphorIconsStyle.regular),
+                                            color: colorScheme.error,
+                                          ),
+                                          title: Text(
+                                            'Eliminar',
+                                            style: TextStyle(color: colorScheme.error),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                               ),
                             ],
                           ),
                         ),
-                      )
-                    else
-                      ...userRoutines.map((routine) {
-                        return Card(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 8.0,
-                            vertical: 6.0,
-                          ),
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: ListTile(
-                              title: Text(
-                                routine.name,
-                                style: theme.textTheme.titleLarge,
-                              ),
-                              subtitle: Text(routine.description),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      PhosphorIcons.play(PhosphorIconsStyle.fill),
-                                      color: colorScheme.primary,
-                                      size: 30,
-                                    ),
-                                    tooltip: 'Iniciar Entrenamiento',
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => WorkoutScreen(routine: routine),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: Icon(
-                                      PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular),
-                                      color: colorScheme.secondary,
-                                    ),
-                                    tooltip: 'Editar Rutina',
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => EditRoutineScreen(
-                                            routineId: routine.id,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  PopupMenuButton<String>(
-                                    onSelected: (value) {
-                                      if (value == 'delete') {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext ctx) {
-                                            return AlertDialog(
-                                              title: const Text('Confirmar Borrado'),
-                                              content: Text(
-                                                '¿Estás seguro de que quieres eliminar la rutina "\${routine.name}"?',
-                                              ),
-                                              actions: <Widget>[
-                                                TextButton(
-                                                  child: const Text('Cancelar'),
-                                                  onPressed: () {
-                                                    Navigator.of(ctx).pop();
-                                                  },
-                                                ),
-                                                TextButton(
-                                                  child: Text(
-                                                    'Eliminar',
-                                                    style: TextStyle(color: colorScheme.error),
-                                                  ),
-                                                  onPressed: () {
-                                                    provider.deleteRoutine(routine.id);
-                                                    Navigator.of(ctx).pop();
-                                                  },
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      }
-                                    },
-                                    itemBuilder: (BuildContext context) =>
-                                        <PopupMenuEntry<String>>[
-                                          PopupMenuItem<String>(
-                                            value: 'delete',
-                                            child: ListTile(
-                                              leading: Icon(
-                                                PhosphorIcons.trash(PhosphorIconsStyle.regular),
-                                                color: colorScheme.error,
-                                              ),
-                                              title: Text(
-                                                'Eliminar',
-                                                style: TextStyle(color: colorScheme.error),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                  ],
+                      ),
+                    );
+                  },
                 );
               },
             ),

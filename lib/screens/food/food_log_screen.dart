@@ -85,7 +85,11 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                   ),
                 ),
               );
-              // La receta se guarda pero NO cerramos food_log_screen
+              // Cerrar food_log_screen para volver a la pantalla principal
+              // donde se verá la receta agregada
+              if (mounted) {
+                Navigator.of(context).pop();
+              }
             },
           ),
           // Botón para buscar alimento individual
@@ -155,7 +159,7 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Buscar: 1 alimento a la vez',
+                                'Buscar: encuentra 1 alimento',
                                 style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
                               ),
                             ),
@@ -169,10 +173,12 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Menú: combina varios ingredientes',
+                                'Menú: crea receta con varios ingredientes',
                                 style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
                               ),
                             ),
+                          ],
+                        ),
                           ],
                         ),
                       ],

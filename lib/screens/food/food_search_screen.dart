@@ -88,40 +88,29 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
           // Llamar callback para guardar
           widget.onFoodSelected(foodLog);
           
-          // Mostrar confirmación con indicación de dónde ver el alimento
+          // Mostrar confirmación simple
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              content: Row(
                 children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.check_circle, color: Colors.white, size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          '${food['label']} agregado',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Ve a: Nutrición → pestaña "${_getMealTypeName()}"',
-                    style: const TextStyle(fontSize: 12),
+                  const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      '✓ ${food['label']} guardado',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
                   ),
                 ],
               ),
-              duration: const Duration(milliseconds: 2500),
+              duration: const Duration(milliseconds: 1200),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.green[700],
             ),
           );
           
-          // Cerrar la pantalla de búsqueda después de agregar
-          Future.delayed(const Duration(milliseconds: 1000), () {
+          // Cerrar la pantalla de búsqueda inmediatamente
+          Future.delayed(const Duration(milliseconds: 500), () {
             if (mounted) {
               Navigator.of(context).pop();
             }
