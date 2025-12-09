@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/food_log.dart';
+import 'package:myapp/screens/food/food_search_screen.dart';
 import 'package:uuid/uuid.dart';
 
 class RegisterFoodScreen extends StatefulWidget {
@@ -37,13 +38,57 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Registrar Comida')),
+      appBar: AppBar(
+        title: const Text('Registrar Comida'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: 'Buscar con API',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => FoodSearchScreen(
+                    onFoodSelected: (foodLog) {
+                      Navigator.pop(context, foodLog);
+                    },
+                    mealType: _mealType,
+                    date: DateTime.now(),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
+              // Banner informativo sobre búsqueda API
+              Card(
+                color: Colors.blue.shade50,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.blue.shade700),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          '¿Sabías? Puedes buscar alimentos con el botón 🔍 arriba',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.blue.shade900,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
               DropdownButtonFormField<String>(
                 initialValue: _mealType,
                 decoration: const InputDecoration(
