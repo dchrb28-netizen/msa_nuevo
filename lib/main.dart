@@ -86,7 +86,7 @@ void main() async {
   final timeFormatService = TimeFormatService();
   await timeFormatService.loadPreference();
 
-  createDefaultRoutines();
+  await DefaultRoutines.createAll();
 
   await _populateInitialFoodData();
   await _populateInitialExerciseData();
