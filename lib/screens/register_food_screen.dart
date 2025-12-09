@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/screens/food/food_search_screen.dart';
+import 'package:myapp/screens/food/recipe_builder_screen.dart';
 import 'package:uuid/uuid.dart';
 
 class RegisterFoodScreen extends StatefulWidget {
@@ -41,6 +42,29 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
       appBar: AppBar(
         title: const Text('Registrar Comida'),
         actions: [
+          // Botón para crear receta (múltiples ingredientes)
+          IconButton(
+            icon: const Icon(Icons.restaurant_menu),
+            tooltip: 'Crear Receta',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => RecipeBuilderScreen(
+                    onRecipeCreated: (foodLog) {
+                      Navigator.pop(context, foodLog);
+                    },
+                    mealType: _mealType,
+                    date: DateTime.now(),
+                  ),
+                ),
+              ).then((value) {
+                if (value != null) {
+                  Navigator.pop(context, value);
+                }
+              });
+            },
+          ),
+          // Botón para buscar alimento individual
           TextButton.icon(
             icon: const Icon(Icons.search, color: Colors.white),
             label: const Text(

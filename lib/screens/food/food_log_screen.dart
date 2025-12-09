@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/food/food_search_screen.dart';
+import 'package:myapp/screens/food/recipe_builder_screen.dart';
 import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -70,6 +71,23 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
       appBar: AppBar(
         title: const Text('Registrar Comida'),
         actions: [
+          // Botón para crear receta (múltiples ingredientes)
+          IconButton(
+            icon: const Icon(Icons.restaurant_menu),
+            tooltip: 'Crear Receta',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => RecipeBuilderScreen(
+                    onRecipeCreated: widget.onAddFoodLog,
+                    mealType: _selectedMealType,
+                    date: _selectedDate,
+                  ),
+                ),
+              );
+            },
+          ),
+          // Botón para buscar alimento individual
           TextButton.icon(
             icon: const Icon(Icons.search, color: Colors.white),
             label: const Text(
