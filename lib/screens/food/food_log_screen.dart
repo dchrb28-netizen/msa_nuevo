@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/food_log.dart';
 import 'package:myapp/providers/user_provider.dart';
-import 'package:myapp/screens/food/food_search_screen.dart';
 import 'package:myapp/screens/food/recipe_builder_screen.dart';
 import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:provider/provider.dart';
@@ -92,30 +91,6 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
               }
             },
           ),
-          // Botón para buscar alimento individual
-          TextButton.icon(
-            icon: const Icon(Icons.search, color: Colors.white),
-            label: const Text(
-              'Buscar',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            onPressed: () async {
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => FoodSearchScreen(
-                    onFoodSelected: widget.onAddFoodLog,
-                    mealType: _selectedMealType,
-                    date: _selectedDate,
-                  ),
-                ),
-              );
-              // Cerrar food_log_screen para volver a la pantalla principal
-              // donde se verá el alimento agregado
-              if (mounted) {
-                Navigator.of(context).pop();
-              }
-            },
-          ),
           const SizedBox(width: 8),
         ],
       ),
@@ -127,57 +102,23 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Banner informativo sobre los botones de búsqueda
+                // Banner informativo sobre el botón de receta
                 Card(
                   color: Colors.blue.shade50,
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        Row(
-                          children: [
-                            Icon(Icons.info_outline, color: Colors.blue.shade700),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Opciones para agregar:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                  color: Colors.blue.shade900,
-                                ),
-                              ),
+                        Icon(Icons.restaurant_menu, color: Colors.blue.shade700),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Usa el ícono de menú arriba para crear una receta con varios ingredientes',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.blue.shade900,
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(Icons.search, size: 18, color: Colors.blue.shade700),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Buscar: encuentra 1 alimento',
-                                style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(Icons.restaurant_menu, size: 18, color: Colors.blue.shade700),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Menú: crea receta con varios ingredientes',
-                                style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
