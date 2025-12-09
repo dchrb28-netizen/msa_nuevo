@@ -75,8 +75,8 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
           IconButton(
             icon: const Icon(Icons.restaurant_menu),
             tooltip: 'Crear Receta',
-            onPressed: () {
-              Navigator.of(context).push(
+            onPressed: () async {
+              final result = await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => RecipeBuilderScreen(
                     onRecipeCreated: widget.onAddFoodLog,
@@ -85,6 +85,11 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                   ),
                 ),
               );
+              
+              // Si se agregó una receta, cerrar la pantalla de registro
+              if (result == true && mounted) {
+                Navigator.of(context).pop(true);
+              }
             },
           ),
           // Botón para buscar alimento individual

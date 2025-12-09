@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:myapp/services/edamam_service.dart';
 import 'package:myapp/models/food_log.dart';
 
@@ -130,10 +131,13 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     // Llamar callback para guardar
     widget.onRecipeCreated(foodLog);
     
-    // Cerrar inmediatamente con resultado
-    if (mounted) {
-      Navigator.of(context).pop(true); // true = receta agregada exitosamente
-    }
+    // Programar el cierre para el próximo frame
+    // Esto evita el error "_debugLocked is not true" del Navigator
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Navigator.of(context).pop(true); // true = receta agregada exitosamente
+      }
+    });
   }
 
   String _getMealTypeName() {

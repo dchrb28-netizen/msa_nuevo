@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:myapp/services/edamam_service.dart';
 import 'package:myapp/models/food_log.dart';
 
@@ -87,10 +88,13 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
           // Llamar callback para guardar
           widget.onFoodSelected(foodLog);
           
-          // Cerrar búsqueda inmediatamente con resultado
-          if (mounted) {
-            Navigator.of(context).pop(true); // true = alimento agregado exitosamente
-          }
+          // Programar el cierre de la pantalla de búsqueda para el próximo frame
+          // Esto evita el error "_debugLocked is not true" del Navigator
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              Navigator.of(context).pop(true); // true = alimento agregado exitosamente
+            }
+          });
         },
       ),
     );
