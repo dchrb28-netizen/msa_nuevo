@@ -240,7 +240,6 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
         if (exerciseProvider.isLoading || !exerciseProvider.isInitialized) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Rutinas Predefinidas'),
               centerTitle: true,
             ),
             body: Center(
@@ -263,7 +262,6 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Rutinas Predefinidas'),
             centerTitle: true,
             bottom: TabBar(
               controller: _tabController,

@@ -32,7 +32,7 @@ class _SelectExerciseScreenState extends State<SelectExerciseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Seleccionar Ejercicio')),
+      appBar: AppBar(),
       body: Column(
         children: [
           Padding(

@@ -6,7 +6,7 @@ class CreatedRecipesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Mis Recetas Creadas')),
+      appBar: AppBar(),
       body: const Center(
         child: Text('Aquí se mostrarán las recetas creadas por el usuario.'),
       ),

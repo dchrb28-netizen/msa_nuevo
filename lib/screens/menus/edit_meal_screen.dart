@@ -70,7 +70,7 @@ class _EditMealScreenState extends State<EditMealScreen> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Planificar ${widget.mealType}')),
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),

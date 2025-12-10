@@ -133,7 +133,7 @@ class CreateProfileScreenState extends State<CreateProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Crea tu Perfil')),
+      appBar: AppBar(),
       body: Column(
         children: [
           LinearProgressIndicator(value: (_currentPage + 1) / 3),

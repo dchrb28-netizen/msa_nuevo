@@ -16,7 +16,7 @@ class ExerciseDetailScreen extends StatelessWidget {
         exercise.recommendations!.trim().isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(title: Text(exercise.name), centerTitle: true),
+      appBar: AppBar(centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

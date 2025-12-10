@@ -10,7 +10,7 @@ class StartWorkoutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Empezar Entrenamiento')),
+      appBar: AppBar(),
       body: Consumer<RoutineProvider>(
         builder: (context, provider, child) {
           if (provider.routines.isEmpty) {

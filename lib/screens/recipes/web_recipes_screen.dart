@@ -49,7 +49,7 @@ class _WebRecipesScreenState extends State<WebRecipesScreen> {
     final userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Buscar Recetas Online')),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

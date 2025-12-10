@@ -103,7 +103,7 @@ class ObjectivesScreenState extends State<ObjectivesScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Objetivos de Peso')),
+      appBar: AppBar(),
       body: body,
     );
   }
