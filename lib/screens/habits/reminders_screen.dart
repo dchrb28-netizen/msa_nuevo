@@ -5,6 +5,7 @@ import 'package:myapp/screens/habits/add_reminder_screen.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:myapp/services/foreground_reminder_service.dart';
 import 'package:myapp/services/time_format_service.dart';
+import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -99,19 +100,37 @@ class _RemindersScreenState extends State<RemindersScreen> {
               builder: (context, Box<Reminder> box, _) {
                 final reminders = box.values.toList();
                 if (reminders.isEmpty) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(24.0),
-                      child: Text(
-                        'Aún no has creado ningún recordatorio. ¡Toca el botón (+) para empezar!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                  return Stack(
+                    children: [
+                      const LunaWatermark(
+                        type: LunaType.recordatorios,
+                        opacity: 0.15,
+                        size: 280,
+                        alignment: Alignment.center,
                       ),
-                    ),
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(24.0),
+                          child: Text(
+                            'Aún no has creado ningún recordatorio. ¡Toca el botón (+) para empezar!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 18, color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                    ],
                   );
                 }
-                return ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(
+                return Stack(
+                  children: [
+                    const LunaWatermark(
+                      type: LunaType.recordatorios,
+                      opacity: 0.07,
+                      size: 200,
+                      alignment: Alignment(0.8, 0.4),
+                    ),
+                    ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(
                     16,
                     16,
                     16,

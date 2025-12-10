@@ -9,6 +9,7 @@ import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/widgets/profile/profile_edit_view.dart';
 import 'package:myapp/widgets/profile/profile_read_view.dart';
 import 'package:myapp/widgets/ui/watermark_image.dart';
+import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:myapp/screens/recipes/favorite_recipes_screen.dart';
 import 'package:myapp/screens/recipes/web_recipes_screen.dart';
 
@@ -36,11 +37,21 @@ class NutritionScreenState extends State<NutritionScreen> with SingleTickerProvi
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          FavoriteRecipesScreen(),
-          WebRecipesScreen(),
+      body: Stack(
+        children: [
+          const LunaWatermark(
+            type: LunaType.comida,
+            opacity: 0.08,
+            size: 240,
+            alignment: Alignment(0.75, 0.4),
+          ),
+          TabBarView(
+            controller: _tabController,
+            children: const [
+              FavoriteRecipesScreen(),
+              WebRecipesScreen(),
+            ],
+          ),
         ],
       ),
     );

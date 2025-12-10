@@ -81,9 +81,19 @@ class _TrainingScreenState extends State<TrainingScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [RoutinesScreen(), ExerciseLibraryScreen()],
+      body: Stack(
+        children: [
+          const LunaWatermark(
+            type: LunaType.entrenamiento,
+            opacity: 0.07,
+            size: 240,
+            alignment: Alignment(0.75, 0.4),
+          ),
+          TabBarView(
+            controller: _tabController,
+            children: const [RoutinesScreen(), ExerciseLibraryScreen()],
+          ),
+        ],
       ),
       floatingActionButton: _getFloatingActionButton(),
     );

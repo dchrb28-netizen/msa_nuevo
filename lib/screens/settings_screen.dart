@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:myapp/screens/settings/theme_settings_screen.dart';
 import 'package:myapp/screens/settings/weight_goals_screen.dart';
+import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -38,13 +39,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
         ),
-        body: TabBarView(
+        body: Stack(
           children: [
-            CaloricGoalsScreen(key: _caloricGoalsKey), // Use the key here
+            const LunaWatermark(
+              type: LunaType.configuracion,
+              opacity: 0.08,
+              size: 220,
+              alignment: Alignment(0.7, 0.5),
+            ),
+            TabBarView(
+              children: [
+                CaloricGoalsScreen(key: _caloricGoalsKey), // Use the key here
             WeightGoalsScreen(
               onProfileUpdated: _reloadCaloricGoals,
             ), // Pass the callback
-            const ThemeSettingsScreen(),
+                const ThemeSettingsScreen(),
+              ],
+            ),
           ],
         ),
       ),

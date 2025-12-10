@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/widgets/luna_watermark.dart';
 import 'dart:math';
 
 class ObjectivesScreen extends StatefulWidget {
@@ -45,23 +46,41 @@ class ObjectivesScreenState extends State<ObjectivesScreen> {
 
     Widget body;
     if (user == null || user.isGuest || user.height <= 0 || user.weight <= 0) {
-      body = const Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Text(
-            'Por favor, complete su perfil para ver sus objetivos de peso.',
-            textAlign: TextAlign.center,
+      body = Stack(
+        children: [
+          const LunaWatermark(
+            type: LunaType.objetivos,
+            opacity: 0.15,
+            size: 280,
+            alignment: Alignment.center,
           ),
-        ),
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Por favor, complete su perfil para ver sus objetivos de peso.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ],
       );
     } else {
       final double bmi = _calculateBmi(user.weight, user.height);
       final String bmiCategory = _getBmiCategory(bmi);
       final String idealWeightRange = _getIdealWeightRange(user.height);
 
-      body = SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+      body = Stack(
+        children: [
+          const LunaWatermark(
+            type: LunaType.objetivos,
+            opacity: 0.08,
+            size: 240,
+            alignment: Alignment(0.75, 0.5),
+          ),
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -97,8 +116,10 @@ class ObjectivesScreenState extends State<ObjectivesScreen> {
               },
               child: const Text('Guardar Meta'),
             ),
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       );
     }
 

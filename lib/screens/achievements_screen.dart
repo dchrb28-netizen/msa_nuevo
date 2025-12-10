@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/achievement.dart';
 import 'package:myapp/services/achievement_service.dart';
+import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class AchievementsScreen extends StatefulWidget {
@@ -39,18 +40,26 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              theme.colorScheme.surface,
-              theme.colorScheme.surface.withAlpha(150),
-            ],
+      body: Stack(
+        children: [
+          const LunaWatermark(
+            type: LunaType.recompensa,
+            opacity: 0.09,
+            size: 260,
+            alignment: Alignment(0.0, 0.3),
           ),
-        ),
-        child: FutureBuilder<Map<String, List<Achievement>>>(
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  theme.colorScheme.surface,
+                  theme.colorScheme.surface.withAlpha(150),
+                ],
+              ),
+            ),
+            child: FutureBuilder<Map<String, List<Achievement>>>(
           future: _groupedAchievementsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -95,6 +104,8 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
             );
           },
         ),
+          ),
+        ],
       ),
     );
   }

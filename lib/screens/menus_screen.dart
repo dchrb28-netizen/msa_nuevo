@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:myapp/screens/menus/today_menu_screen.dart';
 import 'package:myapp/screens/menus/weekly_planner_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -62,11 +63,21 @@ class MenusScreenState extends State<MenusScreen> with TickerProviderStateMixin 
           ],
         ),
         Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            children: const [
-              TodayMenuScreen(),
-              WeeklyPlannerScreen(),
+          child: Stack(
+            children: [
+              const LunaWatermark(
+                type: LunaType.menus,
+                opacity: 0.08,
+                size: 230,
+                alignment: Alignment(0.8, 0.3),
+              ),
+              TabBarView(
+                controller: _tabController,
+                children: const [
+                  TodayMenuScreen(),
+                  WeeklyPlannerScreen(),
+                ],
+              ),
             ],
           ),
         ),
