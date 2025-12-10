@@ -311,8 +311,8 @@ class MyApp extends StatelessWidget {
 
         darkColorScheme = darkColorScheme.copyWith(
           primary: themeProvider.seedColor,
-          surface: const Color(0xFF121212), // Fondo gris oscuro neutro
-          surfaceContainerHighest: const Color(0xFF1E1E1E), // Para cards
+          surface: const Color(0xFF000000), // Fondo negro puro
+          surfaceContainerHighest: const Color(0xFF0A0A0A), // Para cards
         );
 
         final lightTheme = ThemeData(
@@ -368,7 +368,7 @@ class MyApp extends StatelessWidget {
           textTheme: textTheme,
           scaffoldBackgroundColor: darkColorScheme.surface,
           drawerTheme: DrawerThemeData(
-            backgroundColor: const Color(0xFF121212), // Gris oscuro neutro
+            backgroundColor: const Color(0xFF000000), // Negro puro
           ),
           appBarTheme: AppBarTheme(
             backgroundColor: darkColorScheme.primary,
