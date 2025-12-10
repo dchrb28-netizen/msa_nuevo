@@ -93,7 +93,7 @@ class RoutineRecommendationService {
           ExerciseTemplate(exerciseId: 'back_013', sets: baseSets, reps: '10', restTime: baseRest), // Remo invertido
           ExerciseTemplate(exerciseId: 'legs_001', sets: baseSets, reps: '12-15', restTime: baseRest + 15),
           ExerciseTemplate(exerciseId: 'legs_013', sets: baseSets, reps: '15', restTime: baseRest), // Hip thrust
-          ExerciseTemplate(exerciseId: 'shoulders_001', sets: baseSets - 1, reps: baseReps, restTime: baseRest),
+          ExerciseTemplate(exerciseId: 'shld_001', sets: baseSets - 1, reps: baseReps, restTime: baseRest),
           ExerciseTemplate(exerciseId: 'arms_012', sets: baseSets - 1, reps: '12', restTime: baseRest - 15), // Curl toalla
           ExerciseTemplate(exerciseId: 'abs_001', sets: 3, reps: '15', restTime: 45),
         ];
@@ -106,7 +106,7 @@ class RoutineRecommendationService {
           ExerciseTemplate(exerciseId: 'back_012', sets: 3, reps: '15', restTime: baseRest - 15), // Face pulls
           ExerciseTemplate(exerciseId: 'legs_001', sets: baseSets, reps: '15', restTime: baseRest + 15),
           ExerciseTemplate(exerciseId: 'legs_012', sets: 3, reps: '12', restTime: baseRest), // Búlgaras
-          ExerciseTemplate(exerciseId: 'shoulders_012', sets: 3, reps: '10', restTime: baseRest), // Pike
+          ExerciseTemplate(exerciseId: 'shld_012', sets: 3, reps: '10', restTime: baseRest), // Pike
           ExerciseTemplate(exerciseId: 'arms_013', sets: 3, reps: '8', restTime: baseRest), // Chin-ups
           ExerciseTemplate(exerciseId: 'abs_013', sets: 3, reps: '30s', restTime: 45), // Hollow hold
           ExerciseTemplate(exerciseId: 'abs_006', sets: 3, reps: '15', restTime: 30),
@@ -117,7 +117,7 @@ class RoutineRecommendationService {
           ExerciseTemplate(exerciseId: 'chest_012', sets: 4, reps: '8', restTime: 90), // Archer
           ExerciseTemplate(exerciseId: 'chest_013', sets: 3, reps: '6', restTime: 90), // Pseudo planche
           ExerciseTemplate(exerciseId: 'back_001', sets: 4, reps: '10', restTime: 90), // Dominadas
-          ExerciseTemplate(exerciseId: 'shoulders_013', sets: 3, reps: '5', restTime: 120), // Handstand
+          ExerciseTemplate(exerciseId: 'shld_013', sets: 3, reps: '5', restTime: 120), // Handstand
           ExerciseTemplate(exerciseId: 'legs_014', sets: 3, reps: '8', restTime: 90), // Pistol squat
           ExerciseTemplate(exerciseId: 'legs_012', sets: 4, reps: '12', restTime: baseRest), // Búlgaras
           ExerciseTemplate(exerciseId: 'abs_012', sets: 3, reps: '5', restTime: 90), // Dragon flag
@@ -147,7 +147,7 @@ class RoutineRecommendationService {
           ExerciseTemplate(exerciseId: 'legs_004', sets: baseSets, reps: '15', restTime: baseRest), // Zancadas
           ExerciseTemplate(exerciseId: 'chest_001', sets: 3, reps: '12', restTime: baseRest),
           ExerciseTemplate(exerciseId: 'back_013', sets: 3, reps: '12', restTime: baseRest), // Remo invertido
-          ExerciseTemplate(exerciseId: 'shoulders_001', sets: 3, reps: '12', restTime: baseRest),
+          ExerciseTemplate(exerciseId: 'shld_001', sets: 3, reps: '12', restTime: baseRest),
           ExerciseTemplate(exerciseId: 'abs_013', sets: 3, reps: '30s', restTime: 45), // Hollow hold
           ExerciseTemplate(exerciseId: 'abs_006', sets: 3, reps: '15', restTime: 30), // Bicicleta
           ExerciseTemplate(exerciseId: 'abs_002', sets: 2, reps: '60s', restTime: 30), // Plancha
@@ -160,7 +160,7 @@ class RoutineRecommendationService {
           ExerciseTemplate(exerciseId: 'legs_013', sets: 4, reps: '20', restTime: baseRest), // Hip thrust
           ExerciseTemplate(exerciseId: 'chest_012', sets: 3, reps: '8', restTime: baseRest), // Archer
           ExerciseTemplate(exerciseId: 'back_001', sets: 4, reps: '8', restTime: 90), // Dominadas
-          ExerciseTemplate(exerciseId: 'shoulders_012', sets: 3, reps: '12', restTime: baseRest), // Pike
+          ExerciseTemplate(exerciseId: 'shld_012', sets: 3, reps: '12', restTime: baseRest), // Pike
           ExerciseTemplate(exerciseId: 'abs_012', sets: 3, reps: '5', restTime: 90), // Dragon flag
           ExerciseTemplate(exerciseId: 'abs_013', sets: 3, reps: '60s', restTime: 60), // Hollow hold
           ExerciseTemplate(exerciseId: 'fullbody_001', sets: 3, reps: '6', restTime: 90), // Turkish get-up

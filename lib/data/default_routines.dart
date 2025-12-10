@@ -39,7 +39,7 @@ class DefaultRoutines {
       RoutineExercise(exerciseId: 'chest_001', sets: 3, reps: '10', restTime: 60),
       RoutineExercise(exerciseId: 'back_001', sets: 3, reps: '8', restTime: 60),
       RoutineExercise(exerciseId: 'legs_001', sets: 3, reps: '12', restTime: 90),
-      RoutineExercise(exerciseId: 'shoulders_001', sets: 3, reps: '10', restTime: 60),
+      RoutineExercise(exerciseId: 'shld_001', sets: 3, reps: '10', restTime: 60),
       RoutineExercise(exerciseId: 'abs_001', sets: 3, reps: '15', restTime: 45),
       RoutineExercise(exerciseId: 'arms_005', sets: 3, reps: '12', restTime: 45),
     ];
@@ -65,7 +65,7 @@ class DefaultRoutines {
       // DÍA SUPERIOR
       RoutineExercise(exerciseId: 'chest_001', sets: 4, reps: '12', restTime: 60),
       RoutineExercise(exerciseId: 'back_013', sets: 4, reps: '10', restTime: 60),
-      RoutineExercise(exerciseId: 'shoulders_012', sets: 3, reps: '10', restTime: 60),
+      RoutineExercise(exerciseId: 'shld_012', sets: 3, reps: '10', restTime: 60),
       RoutineExercise(exerciseId: 'arms_013', sets: 3, reps: '8', restTime: 45),
       RoutineExercise(exerciseId: 'arms_005', sets: 3, reps: '12', restTime: 45),
       // DÍA INFERIOR
@@ -97,8 +97,8 @@ class DefaultRoutines {
       // PUSH (Empuje)
       RoutineExercise(exerciseId: 'chest_001', sets: 4, reps: '12', restTime: 60),
       RoutineExercise(exerciseId: 'chest_004', sets: 3, reps: '10', restTime: 60),
-      RoutineExercise(exerciseId: 'shoulders_001', sets: 4, reps: '12', restTime: 60),
-      RoutineExercise(exerciseId: 'shoulders_012', sets: 3, reps: '10', restTime: 60),
+      RoutineExercise(exerciseId: 'shld_001', sets: 4, reps: '12', restTime: 60),
+      RoutineExercise(exerciseId: 'shld_012', sets: 3, reps: '10', restTime: 60),
       RoutineExercise(exerciseId: 'arms_005', sets: 4, reps: '12', restTime: 45),
       // PULL (Tracción)
       RoutineExercise(exerciseId: 'back_001', sets: 4, reps: '8', restTime: 90),
@@ -214,7 +214,7 @@ class DefaultRoutines {
       RoutineExercise(exerciseId: 'crd_015', sets: 3, reps: '30', restTime: 30),
       RoutineExercise(exerciseId: 'chest_001', sets: 4, reps: '15', restTime: 60),
       RoutineExercise(exerciseId: 'legs_001', sets: 4, reps: '20', restTime: 60),
-      RoutineExercise(exerciseId: 'shoulders_012', sets: 3, reps: '10', restTime: 60),
+      RoutineExercise(exerciseId: 'shld_012', sets: 3, reps: '10', restTime: 60),
       RoutineExercise(exerciseId: 'abs_001', sets: 3, reps: '15', restTime: 45),
       RoutineExercise(exerciseId: 'crd_014', sets: 3, reps: '30s', restTime: 30),
       RoutineExercise(exerciseId: 'abs_002', sets: 3, reps: '45s', restTime: 30),
@@ -241,7 +241,7 @@ class DefaultRoutines {
       RoutineExercise(exerciseId: 'chest_012', sets: 4, reps: '8', restTime: 90),
       RoutineExercise(exerciseId: 'chest_013', sets: 3, reps: '6', restTime: 90),
       RoutineExercise(exerciseId: 'back_001', sets: 4, reps: '10', restTime: 90),
-      RoutineExercise(exerciseId: 'shoulders_013', sets: 3, reps: '5', restTime: 120),
+      RoutineExercise(exerciseId: 'shld_013', sets: 3, reps: '5', restTime: 120),
       RoutineExercise(exerciseId: 'legs_014', sets: 3, reps: '8', restTime: 90),
       RoutineExercise(exerciseId: 'abs_012', sets: 3, reps: '5', restTime: 90),
       RoutineExercise(exerciseId: 'abs_013', sets: 3, reps: '45s', restTime: 60),

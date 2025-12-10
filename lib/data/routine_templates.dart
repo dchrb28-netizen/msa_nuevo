@@ -53,7 +53,7 @@ class RoutineTemplates {
             restTime: 90,
           ),
           ExerciseTemplate(
-            exerciseId: 'shoulders_001', // Pike push-ups
+            exerciseId: 'shld_001', // Pike push-ups
             sets: 3,
             reps: '6-10',
             restTime: 75,
@@ -98,7 +98,7 @@ class RoutineTemplates {
             restTime: 60,
           ),
           ExerciseTemplate(
-            exerciseId: 'shoulders_001', // Pike push-ups
+            exerciseId: 'shld_001', // Pike push-ups
             sets: 4,
             reps: '10-12',
             restTime: 75,
@@ -194,13 +194,13 @@ class RoutineTemplates {
             restTime: 75,
           ),
           ExerciseTemplate(
-            exerciseId: 'shoulders_001', // Pike push-ups
+            exerciseId: 'shld_001', // Pike push-ups
             sets: 4,
             reps: '12-15',
             restTime: 75,
           ),
           ExerciseTemplate(
-            exerciseId: 'shoulders_004', // Flexiones en pino
+            exerciseId: 'shld_004', // Flexiones en pino
             sets: 3,
             reps: '6-8',
             restTime: 120,
