@@ -88,7 +88,7 @@ class RoutineRecommendationService {
       // Hombres: Mayor énfasis en tren superior y fuerza
       if (level == 'principiante') {
         exercises = [
-          ExerciseTemplate(exerciseId: 'cardio_015', sets: 2, reps: '30', restTime: 30), // Jumping jacks
+          ExerciseTemplate(exerciseId: 'crd_015', sets: 2, reps: '30', restTime: 30), // Jumping jacks
           ExerciseTemplate(exerciseId: 'chest_001', sets: baseSets, reps: baseReps, restTime: baseRest),
           ExerciseTemplate(exerciseId: 'back_013', sets: baseSets, reps: '10', restTime: baseRest), // Remo invertido
           ExerciseTemplate(exerciseId: 'legs_001', sets: baseSets, reps: '12-15', restTime: baseRest + 15),
@@ -99,7 +99,7 @@ class RoutineRecommendationService {
         ];
       } else if (level == 'intermedio') {
         exercises = [
-          ExerciseTemplate(exerciseId: 'cardio_014', sets: 2, reps: '30s', restTime: 30), // Mountain climbers
+          ExerciseTemplate(exerciseId: 'crd_014', sets: 2, reps: '30s', restTime: 30), // Mountain climbers
           ExerciseTemplate(exerciseId: 'chest_001', sets: baseSets + 1, reps: '12', restTime: baseRest),
           ExerciseTemplate(exerciseId: 'chest_004', sets: 3, reps: '10', restTime: baseRest), // Diamante
           ExerciseTemplate(exerciseId: 'back_013', sets: baseSets, reps: '12', restTime: baseRest), // Remo invertido
@@ -113,7 +113,7 @@ class RoutineRecommendationService {
         ];
       } else { // Avanzado
         exercises = [
-          ExerciseTemplate(exerciseId: 'cardio_013', sets: 1, reps: '3min', restTime: 60), // Shadow boxing
+          ExerciseTemplate(exerciseId: 'crd_013', sets: 1, reps: '3min', restTime: 60), // Shadow boxing
           ExerciseTemplate(exerciseId: 'chest_012', sets: 4, reps: '8', restTime: 90), // Archer
           ExerciseTemplate(exerciseId: 'chest_013', sets: 3, reps: '6', restTime: 90), // Pseudo planche
           ExerciseTemplate(exerciseId: 'back_001', sets: 4, reps: '10', restTime: 90), // Dominadas
@@ -129,7 +129,7 @@ class RoutineRecommendationService {
       // Mujeres: Mayor énfasis en tren inferior, glúteos y core
       if (level == 'principiante') {
         exercises = [
-          ExerciseTemplate(exerciseId: 'cardio_015', sets: 2, reps: '30', restTime: 30), // Jumping jacks
+          ExerciseTemplate(exerciseId: 'crd_015', sets: 2, reps: '30', restTime: 30), // Jumping jacks
           ExerciseTemplate(exerciseId: 'legs_001', sets: baseSets + 1, reps: '12-15', restTime: baseRest + 15),
           ExerciseTemplate(exerciseId: 'legs_013', sets: baseSets, reps: '15', restTime: baseRest), // Hip thrust
           ExerciseTemplate(exerciseId: 'legs_004', sets: baseSets, reps: '12', restTime: baseRest), // Zancadas
@@ -140,7 +140,7 @@ class RoutineRecommendationService {
         ];
       } else if (level == 'intermedio') {
         exercises = [
-          ExerciseTemplate(exerciseId: 'cardio_014', sets: 2, reps: '30s', restTime: 30), // Mountain climbers
+          ExerciseTemplate(exerciseId: 'crd_014', sets: 2, reps: '30s', restTime: 30), // Mountain climbers
           ExerciseTemplate(exerciseId: 'legs_001', sets: baseSets + 1, reps: '15', restTime: baseRest + 15),
           ExerciseTemplate(exerciseId: 'legs_012', sets: baseSets, reps: '12', restTime: baseRest), // Búlgaras
           ExerciseTemplate(exerciseId: 'legs_013', sets: baseSets, reps: '15', restTime: baseRest), // Hip thrust
@@ -154,7 +154,7 @@ class RoutineRecommendationService {
         ];
       } else { // Avanzado
         exercises = [
-          ExerciseTemplate(exerciseId: 'cardio_013', sets: 1, reps: '3min', restTime: 60), // Shadow boxing
+          ExerciseTemplate(exerciseId: 'crd_013', sets: 1, reps: '3min', restTime: 60), // Shadow boxing
           ExerciseTemplate(exerciseId: 'legs_014', sets: 4, reps: '8', restTime: 90), // Pistol squat
           ExerciseTemplate(exerciseId: 'legs_012', sets: 4, reps: '15', restTime: baseRest), // Búlgaras
           ExerciseTemplate(exerciseId: 'legs_013', sets: 4, reps: '20', restTime: baseRest), // Hip thrust
@@ -171,7 +171,7 @@ class RoutineRecommendationService {
     // Agregar cardio extra si hay sobrepeso/obesidad
     if (bmi > 27) {
       exercises.insert(0, ExerciseTemplate(
-        exerciseId: 'cardio_001',
+        exerciseId: 'crd_001',
         sets: 1,
         reps: age >= 50 ? '10min' : '15min',
         restTime: 0,

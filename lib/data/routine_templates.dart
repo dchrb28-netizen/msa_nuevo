@@ -317,31 +317,31 @@ class RoutineTemplates {
         level: 'todos',
         exercises: [
           ExerciseTemplate(
-            exerciseId: 'cardio_001', // Jumping jacks
+            exerciseId: 'crd_001', // Jumping jacks
             sets: 3,
             reps: '20-30',
             restTime: 30,
           ),
           ExerciseTemplate(
-            exerciseId: 'cardio_002', // Burpees
+            exerciseId: 'crd_002', // Burpees
             sets: 3,
             reps: '8-15',
             restTime: 60,
           ),
           ExerciseTemplate(
-            exerciseId: 'cardio_003', // Mountain climbers
+            exerciseId: 'crd_003', // Mountain climbers
             sets: 3,
             reps: '20-30',
             restTime: 45,
           ),
           ExerciseTemplate(
-            exerciseId: 'cardio_004', // High knees
+            exerciseId: 'crd_004', // High knees
             sets: 3,
             reps: '20-30',
             restTime: 45,
           ),
           ExerciseTemplate(
-            exerciseId: 'cardio_006', // Skaters
+            exerciseId: 'crd_006', // Skaters
             sets: 3,
             reps: '15-20',
             restTime: 45,

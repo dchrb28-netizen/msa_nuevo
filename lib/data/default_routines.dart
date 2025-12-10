@@ -158,12 +158,12 @@ class DefaultRoutines {
     final exercises = HiveList<RoutineExercise>(exercisesBox);
     
     final exercisesList = [
-      RoutineExercise(exerciseId: 'cardio_015', sets: 4, reps: '45s', restTime: 15),
-      RoutineExercise(exerciseId: 'cardio_014', sets: 4, reps: '30s', restTime: 15),
-      RoutineExercise(exerciseId: 'cardio_002', sets: 4, reps: '20', restTime: 15),
-      RoutineExercise(exerciseId: 'cardio_013', sets: 3, reps: '2min', restTime: 30),
-      RoutineExercise(exerciseId: 'cardio_003', sets: 4, reps: '30s', restTime: 15),
-      RoutineExercise(exerciseId: 'cardio_001', sets: 1, reps: '5min', restTime: 0),
+      RoutineExercise(exerciseId: 'crd_015', sets: 4, reps: '45s', restTime: 15),
+      RoutineExercise(exerciseId: 'crd_014', sets: 4, reps: '30s', restTime: 15),
+      RoutineExercise(exerciseId: 'crd_002', sets: 4, reps: '20', restTime: 15),
+      RoutineExercise(exerciseId: 'crd_013', sets: 3, reps: '2min', restTime: 30),
+      RoutineExercise(exerciseId: 'crd_003', sets: 4, reps: '30s', restTime: 15),
+      RoutineExercise(exerciseId: 'crd_001', sets: 1, reps: '5min', restTime: 0),
     ];
     
     for (var ex in exercisesList) {
@@ -211,12 +211,12 @@ class DefaultRoutines {
     final exercises = HiveList<RoutineExercise>(exercisesBox);
     
     final exercisesList = [
-      RoutineExercise(exerciseId: 'cardio_015', sets: 3, reps: '30', restTime: 30),
+      RoutineExercise(exerciseId: 'crd_015', sets: 3, reps: '30', restTime: 30),
       RoutineExercise(exerciseId: 'chest_001', sets: 4, reps: '15', restTime: 60),
       RoutineExercise(exerciseId: 'legs_001', sets: 4, reps: '20', restTime: 60),
       RoutineExercise(exerciseId: 'shoulders_012', sets: 3, reps: '10', restTime: 60),
       RoutineExercise(exerciseId: 'abs_001', sets: 3, reps: '15', restTime: 45),
-      RoutineExercise(exerciseId: 'cardio_014', sets: 3, reps: '30s', restTime: 30),
+      RoutineExercise(exerciseId: 'crd_014', sets: 3, reps: '30s', restTime: 30),
       RoutineExercise(exerciseId: 'abs_002', sets: 3, reps: '45s', restTime: 30),
     ];
     
