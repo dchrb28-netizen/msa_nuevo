@@ -485,19 +485,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   );
                 }),
               ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (isCompleted) ...[
-                          const Icon(Icons.check, size: 18),
-                          const SizedBox(width: 6),
-                        ],
-                        Text('Set ${setIndex + 1}'),
-                      ],
-                    ),
-                  );
-                }),
-              ),
             if (loggedSets.any((log) => log != null)) ...[
               const SizedBox(height: 16),
               const Divider(),

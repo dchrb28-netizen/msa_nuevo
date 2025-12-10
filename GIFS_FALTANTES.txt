@@ -1,0 +1,185 @@
+================================================================================
+                    LISTA DE GIFS FALTANTES (74 ejercicios)
+================================================================================
+
+🔥 ALTA PRIORIDAD - CARDIO (15 ejercicios - 0% cobertura)
+================================================================================
+crd_001.gif    → Jumping jacks
+crd_002.gif    → High knees (rodillas altas)
+crd_003.gif    → Butt kicks (talones a glúteos)
+crd_004.gif    → Burpees
+crd_005.gif    → Mountain climbers (escaladores)
+crd_006.gif    → Skater hops (saltos de patinador)
+crd_007.gif    → Saltar la cuerda / Jump rope
+crd_008.gif    → Box jumps (saltos al cajón)
+crd_009.gif    → Inchworm (gusano)
+crd_010.gif    → Tuck jumps (saltos con rodillas al pecho)
+crd_011.gif    → Escaleras corriendo / Stair running
+crd_012.gif    → Shadow boxing (boxeo sombra)
+cardio_013.gif → Burpees (duplicado)
+cardio_014.gif → Jumping jacks (duplicado)
+cardio_015.gif → Mountain climbers (duplicado)
+
+Buscar en inglés: "jumping jacks gif", "burpee gif", "high knees gif"
+
+
+🔥 ALTA PRIORIDAD - ABDOMEN (9 ejercicios - 31% cobertura)
+================================================================================
+abs_001.gif    → Plancha frontal / Plank
+abs_002.gif    → Plancha lateral / Side plank
+abs_003.gif    → Elevación de piernas / Leg raises
+abs_004.gif    → Crunches / Abdominales
+abs_006.gif    → V-ups
+abs_008.gif    → Mountain climbers (escaladores)
+abs_010.gif    → Hollow body hold
+abs_012.gif    → Plancha frontal (duplicado)
+abs_013.gif    → Crunches (duplicado)
+
+Buscar en inglés: "plank gif", "crunches gif", "leg raises gif"
+
+
+💪 PECHO (8 ejercicios - 38% cobertura)
+================================================================================
+chest_005.gif  → Fondos entre sillas / Chair dips
+chest_006.gif  → Press con mochila / Dumbbell bench press
+chest_008.gif  → Flexión con rotación lateral / Push-up to side plank
+chest_009.gif  → Flexiones explosivas / Plyometric push-up
+chest_010.gif  → Flexiones a una mano / One-arm push-up
+chest_011.gif  → Flexiones lentas / Slow push-up
+chest_012.gif  → Flexiones abiertas / Wide push-up
+chest_013.gif  → Flexiones declinadas avanzadas / Decline push-up
+
+Buscar en inglés: "dips gif", "plyometric push-up gif", "wide push-up gif"
+
+
+🦾 ESPALDA (8 ejercicios - 38% cobertura)
+================================================================================
+back_001.gif   → Dominadas / Pull-ups
+back_003.gif   → Superman exercise
+back_004.gif   → Bird dog exercise
+back_008.gif   → Remo a una mano / One-arm dumbbell row
+back_009.gif   → Face pull con banda / Band face pull
+back_010.gif   → Chin-ups
+back_011.gif   → Remo con banda / Resistance band row
+back_012.gif   → Superman (duplicado)
+
+Buscar en inglés: "pull-ups gif", "superman exercise gif", "bird dog gif"
+
+
+👐 HOMBROS (10 ejercicios - 23% cobertura)
+================================================================================
+shld_001.gif      → Pike push-ups
+shld_002.gif      → Handstand hold (parada de manos)
+shld_005.gif      → Elevaciones frontales / Front raises
+shld_006.gif      → Remo al mentón / Upright row
+shld_007.gif      → Elevaciones Y prone / Prone Y raise
+shld_008.gif      → Shoulder taps (toques de hombro)
+shld_009.gif      → Arnold press
+shld_010.gif      → Handstand push-ups
+shld_011.gif      → Band pull-apart
+shoulders_012.gif → Pike push-ups (duplicado)
+
+Buscar en inglés: "pike push-up gif", "shoulder press gif", "front raises gif"
+
+
+🦵 PIERNAS (7 ejercicios - 50% cobertura)
+================================================================================
+legs_001.gif   → Sentadillas / Squats
+legs_002.gif   → Sentadilla sumo / Sumo squat
+legs_004.gif   → Sentadilla búlgara / Bulgarian split squat
+legs_005.gif   → Peso muerto a una pierna / Single-leg deadlift
+legs_006.gif   → Step-ups
+legs_011.gif   → Wall sit (sentadilla en pared)
+legs_012.gif   → Sentadillas (duplicado)
+
+Buscar en inglés: "squat gif", "bulgarian split squat gif", "step-up gif"
+
+
+💪 BRAZOS (6 ejercicios - 54% cobertura)
+================================================================================
+arms_004.gif   → Extensión de tríceps / Tricep extension
+arms_005.gif   → Curl isométrico / Isometric bicep curl
+arms_007.gif   → Chin-ups cerrados / Close-grip chin-ups
+arms_008.gif   → Curl inverso / Reverse curl
+arms_010.gif   → Curl de muñeca / Wrist curl
+arms_011.gif   → Curl inverso de muñeca / Reverse wrist curl
+
+Buscar en inglés: "tricep extension gif", "bicep curl gif", "wrist curl gif"
+
+
+🧘 YOGA (9 ejercicios - 10% cobertura)
+================================================================================
+yoga_001.gif   → Perro boca abajo / Downward dog
+yoga_002.gif   → Perro boca arriba / Upward dog
+yoga_003.gif   → Guerrero 1 / Warrior 1
+yoga_004.gif   → Guerrero 2 / Warrior 2
+yoga_005.gif   → Triángulo / Triangle pose
+yoga_006.gif   → Árbol / Tree pose
+yoga_008.gif   → Flexión sentado / Seated forward fold
+yoga_009.gif   → Giro supino / Supine twist
+yoga_010.gif   → Bebé feliz / Happy baby pose
+
+Buscar en inglés: "downward dog gif", "warrior pose gif", "yoga pose gif"
+
+
+🤸 CUERPO COMPLETO (2 ejercicios - 0% cobertura)
+================================================================================
+fullbody_001.gif → Burpees completos
+fullbody_002.gif → Mountain climbers intensos
+
+Buscar en inglés: "burpee gif", "mountain climber gif"
+
+
+================================================================================
+                            🔍 MEJORES SITIOS PARA BUSCAR
+================================================================================
+
+1. GIPHY (más fácil y rápido)
+   https://giphy.com/search/[ejercicio]-exercise
+   Ejemplo: https://giphy.com/search/burpee-exercise
+
+2. TENOR
+   https://tenor.com/search/[ejercicio]-workout
+   Ejemplo: https://tenor.com/search/plank-workout
+
+3. FITNESSPROGRAMER (buena calidad)
+   https://fitnessprogramer.com/exercise-library/
+   
+4. INSPIRE USA FOUNDATION
+   https://www.inspireusafoundation.org/exercises/
+
+5. GOOGLE IMAGES (filtrar por GIF)
+   Buscar: "[ejercicio] exercise gif"
+
+
+================================================================================
+                            📥 INSTRUCCIONES DE USO
+================================================================================
+
+1. Busca el ejercicio por su nombre en inglés en los sitios sugeridos
+2. Descarga el GIF (botón derecho → "Guardar imagen como...")
+3. Renombra el archivo con el ID exacto (ejemplo: chest_005.gif)
+4. Guarda el archivo en: assets/exercise_gifs/
+5. Verifica que el nombre sea exactamente como aparece en la lista
+
+IMPORTANTE: 
+- El nombre del archivo DEBE ser exacto (incluye el .gif)
+- Usa minúsculas
+- No uses espacios ni caracteres especiales
+- Ejemplo correcto: abs_001.gif
+- Ejemplo incorrecto: Abs_001.GIF o abs 001.gif
+
+
+================================================================================
+                                ESTADO ACTUAL
+================================================================================
+
+✅ Con GIF:     32 ejercicios (30%)
+❌ Sin GIF:     74 ejercicios (70%)
+📊 Total:      106 ejercicios
+
+Prioridad sugerida:
+1. Cardio (15 ejercicios) - Categoría vacía
+2. Abdomen (9 ejercicios) - Solo 4 de 13
+3. Pecho (8 ejercicios) - Faltan varios importantes
+4. Espalda (8 ejercicios) - Faltan ejercicios clave
