@@ -101,11 +101,17 @@ class _RemindersScreenState extends State<RemindersScreen> {
                 if (reminders.isEmpty) {
                   return Stack(
                     children: [
-                      const LunaWatermark(
-                        type: LunaType.recordatorios,
-                        opacity: 0.15,
-                        size: 280,
-                        alignment: Alignment.center,
+                      Center(
+                        child: Opacity(
+                          opacity: 0.2,
+                          child: Image.asset(
+                            Theme.of(context).brightness == Brightness.dark
+                                ? 'assets/luna_png/luna_recordatorios_b.png'
+                                : 'assets/luna_png/luna_recordatorios_w.png',
+                            height: 250,
+                            errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                          ),
+                        ),
                       ),
                       const Center(
                         child: Padding(
