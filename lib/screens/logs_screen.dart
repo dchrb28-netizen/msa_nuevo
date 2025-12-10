@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/screens/food/food_screen.dart';
 import 'package:myapp/screens/logs/body_measurement_screen.dart';
 import 'package:myapp/screens/water_screen.dart';

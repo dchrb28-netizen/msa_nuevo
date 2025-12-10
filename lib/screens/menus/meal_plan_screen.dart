@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:myapp/models/daily_meal_plan.dart';
 import 'package:myapp/models/food.dart';
 import 'package:myapp/models/meal_type.dart';

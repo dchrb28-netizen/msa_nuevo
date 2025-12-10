@@ -7,7 +7,6 @@ import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/providers/water_intake_provider.dart';
 import 'package:myapp/services/time_format_service.dart';
 import 'package:myapp/widgets/dashboard/aquarium_widget.dart';
-import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:provider/provider.dart';
 
 class WaterTodayView extends StatelessWidget {

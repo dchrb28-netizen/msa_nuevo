@@ -39,7 +39,7 @@ class NutritionScreenState extends State<NutritionScreen> with SingleTickerProvi
       ),
       body: Stack(
         children: [
-          const TabBarView(
+          TabBarView(
             controller: _tabController,
             children: const [
               FavoriteRecipesScreen(),
