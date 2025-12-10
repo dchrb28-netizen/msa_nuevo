@@ -328,7 +328,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildDailyProgressRings(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context);
     final user = userProvider.user;
     final dietPlan = user?.dietPlan ?? 'Mantener';
 
