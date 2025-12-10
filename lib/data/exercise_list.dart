@@ -10,7 +10,7 @@ final List<Exercise> exercises = [
     muscleGroup: 'Pecho',
     equipment: 'Ninguno',
     measurement: 'reps',
-    imageUrl: 'https://media.giphy.com/media/ZeNmLY6FISq4M/giphy.gif',
+    imageUrl: 'https://homeworkouts.org/wp-content/uploads/anim-push-ups.gif',
     difficulty: 'Principiante',
     beginnerSets: '3',
     beginnerReps: '8-12',
