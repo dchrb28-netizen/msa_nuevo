@@ -140,23 +140,21 @@ class _RemindersScreenState extends State<RemindersScreen> {
                     );
                   },
                 ),
-                    // Marca de agua SOBRE el contenido con IgnorePointer
-                    IgnorePointer(
-                      child: Align(
-                        alignment: Alignment.bottomRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 16, bottom: 100),
-                          child: Opacity(
-                            opacity: 0.15,
-                            child: Image.asset(
-                              Theme.of(context).brightness == Brightness.dark
-                                  ? 'assets/luna_png/luna_recordatorios_b.png'
-                                  : 'assets/luna_png/luna_recordatorios_w.png',
-                              width: 160,
-                              height: 160,
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
-                            ),
+                    // Marca de agua SOBRE el contenido con Positioned absoluto
+                    Positioned(
+                      right: 8,
+                      bottom: 90,
+                      child: IgnorePointer(
+                        child: Opacity(
+                          opacity: 0.3,
+                          child: Image.asset(
+                            Theme.of(context).brightness == Brightness.dark
+                                ? 'assets/luna_png/luna_recordatorios_b.png'
+                                : 'assets/luna_png/luna_recordatorios_w.png',
+                            width: 200,
+                            height: 200,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
                           ),
                         ),
                       ),
