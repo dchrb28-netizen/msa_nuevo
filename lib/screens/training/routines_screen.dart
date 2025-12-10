@@ -221,33 +221,33 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                                   onSelected: (value) {
                                     if (value == 'delete') {
                                       showDialog(
-                                      context: context,
-                                      builder: (BuildContext ctx) {
-                                        return AlertDialog(
-                                          title: const Text('Confirmar Borrado'),
-                                          content: Text(
-                                            '¿Estás seguro de que quieres eliminar la rutina "${routine.name}"?',
-                                          ),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              child: const Text('Cancelar'),
-                                              onPressed: () {
-                                                Navigator.of(ctx).pop();
-                                              },
+                                        context: context,
+                                        builder: (BuildContext ctx) {
+                                          return AlertDialog(
+                                            title: const Text('Confirmar Borrado'),
+                                            content: Text(
+                                              '¿Estás seguro de que quieres eliminar la rutina "${routine.name}"?',
                                             ),
-                                            TextButton(
-                                              child: Text(
-                                                'Eliminar',
-                                                style: TextStyle(color: colorScheme.error),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                child: const Text('Cancelar'),
+                                                onPressed: () {
+                                                  Navigator.of(ctx).pop();
+                                                },
                                               ),
-                                              onPressed: () {
-                                                provider.deleteRoutine(routine.id);
-                                                Navigator.of(ctx).pop();
-                                              },
-                                            ),
-                                          ],
-                                        );
-                                      },
+                                              TextButton(
+                                                child: Text(
+                                                  'Eliminar',
+                                                  style: TextStyle(color: colorScheme.error),
+                                                ),
+                                                onPressed: () {
+                                                  provider.deleteRoutine(routine.id);
+                                                  Navigator.of(ctx).pop();
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
                                       );
                                     }
                                   },
