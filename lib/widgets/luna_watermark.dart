@@ -49,7 +49,7 @@ class LunaWatermark extends StatelessWidget {
   }
 
   String _getImagePath(LunaType type, bool isDark) {
-    final suffix = isDark ? '_w.png' : '_b.png';
+    final suffix = isDark ? '_b.png' : '_w.png';
     final prefix = 'assets/luna_png/luna_';
     
     switch (type) {

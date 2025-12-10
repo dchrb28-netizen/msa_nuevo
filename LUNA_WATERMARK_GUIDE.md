@@ -12,8 +12,8 @@ El widget `LunaWatermark` permite agregar la mascota Luna como marca de agua en 
 ## 🖼️ Tipos de Imágenes Disponibles
 
 Cada tipo tiene dos versiones:
-- `_b.png` → Tema claro (black/negro)
-- `_w.png` → Tema oscuro (white/blanco)
+- `_b.png` → Tema oscuro (black background/fondo negro)
+- `_w.png` → Tema claro (white background/fondo blanco)
 
 ### Tipos Disponibles:
 
@@ -269,4 +269,4 @@ Widget build(BuildContext context) {
 Para más información sobre las imágenes disponibles, revisar:
 - Carpeta: `assets/luna_png/`
 - Nomenclatura: `luna_{tipo}_{tema}.png`
-- Temas: `_b` (claro) y `_w` (oscuro)
+- Temas: `_b` (oscuro/black) y `_w` (claro/white)
