@@ -4,7 +4,6 @@ import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/screens/training/routines_screen.dart';
 import 'package:myapp/screens/training/exercise_library_screen.dart';
 import 'package:myapp/screens/training/edit_exercise_screen.dart';
-import 'package:myapp/widgets/luna_appbar_decoration.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -73,13 +72,6 @@ class _TrainingScreenState extends State<TrainingScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: const [
-          LunaAppBarDecoration(
-            type: LunaType.entrenamiento,
-            size: 40,
-            opacity: 0.7,
-          ),
-        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: [

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/widgets/luna_appbar_decoration.dart';
 import 'package:myapp/screens/recipes/favorite_recipes_screen.dart';
 import 'package:myapp/screens/recipes/web_recipes_screen.dart';
 
@@ -29,13 +28,6 @@ class NutritionScreenState extends State<NutritionScreen> with SingleTickerProvi
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: const [
-          LunaAppBarDecoration(
-            type: LunaType.comida,
-            size: 40,
-            opacity: 0.7,
-          ),
-        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: const [

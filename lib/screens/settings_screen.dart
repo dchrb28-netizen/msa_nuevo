@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:myapp/screens/settings/theme_settings_screen.dart';
 import 'package:myapp/screens/settings/weight_goals_screen.dart';
-import 'package:myapp/widgets/luna_appbar_decoration.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -31,13 +30,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          actions: const [
-            LunaAppBarDecoration(
-              type: LunaType.configuracion,
-              size: 40,
-              opacity: 0.7,
-            ),
-          ],
           bottom: TabBar(
             tabs: [
               Tab(icon: Icon(PhosphorIcons.flag(PhosphorIconsStyle.duotone)), text: 'Metas'),
