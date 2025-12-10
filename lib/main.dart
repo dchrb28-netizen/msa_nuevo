@@ -367,6 +367,9 @@ class MyApp extends StatelessWidget {
           colorScheme: darkColorScheme,
           textTheme: textTheme,
           scaffoldBackgroundColor: darkColorScheme.surface,
+          drawerTheme: DrawerThemeData(
+            backgroundColor: const Color(0xFF121212), // Gris oscuro neutro
+          ),
           appBarTheme: AppBarTheme(
             backgroundColor: darkColorScheme.primary,
             foregroundColor: darkColorScheme.onPrimary,
