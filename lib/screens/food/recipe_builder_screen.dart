@@ -435,7 +435,7 @@ class _IngredientQuantityDialog extends StatefulWidget {
 }
 
 class _IngredientQuantityDialogState extends State<_IngredientQuantityDialog> {
-  double _servings = 1.0;
+  double _grams = 100.0;
 
   @override
   Widget build(BuildContext context) {
@@ -448,26 +448,26 @@ class _IngredientQuantityDialogState extends State<_IngredientQuantityDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Porciones: ${_servings.toStringAsFixed(1)}',
+            'Gramos: ${_grams.toStringAsFixed(0)}g',
             style: theme.textTheme.titleMedium,
           ),
           Slider(
-            value: _servings,
-            min: 0.1,
-            max: 10.0,
-            divisions: 99,
-            label: _servings.toStringAsFixed(1),
+            value: _grams,
+            min: 10,
+            max: 500,
+            divisions: 49,
+            label: '${_grams.toStringAsFixed(0)}g',
             onChanged: (value) {
               setState(() {
-                _servings = value;
+                _grams = value;
               });
             },
           ),
           const Divider(),
-          _buildNutrientRow('Calorías', (nutrients['calories'] ?? 0.0) * _servings, 'kcal'),
-          _buildNutrientRow('Proteína', (nutrients['protein'] ?? 0.0) * _servings, 'g'),
-          _buildNutrientRow('Carbohidratos', (nutrients['carbs'] ?? 0.0) * _servings, 'g'),
-          _buildNutrientRow('Grasa', (nutrients['fat'] ?? 0.0) * _servings, 'g'),
+          _buildNutrientRow('Calorías', (nutrients['calories'] ?? 0.0) * _grams / 100, 'kcal'),
+          _buildNutrientRow('Proteína', (nutrients['protein'] ?? 0.0) * _grams / 100, 'g'),
+          _buildNutrientRow('Carbohidratos', (nutrients['carbs'] ?? 0.0) * _grams / 100, 'g'),
+          _buildNutrientRow('Grasa', (nutrients['fat'] ?? 0.0) * _grams / 100, 'g'),
         ],
       ),
       actions: [
@@ -477,7 +477,7 @@ class _IngredientQuantityDialogState extends State<_IngredientQuantityDialog> {
         ),
         ElevatedButton.icon(
           onPressed: () {
-            widget.onConfirm(_servings);
+            widget.onConfirm(_grams / 100);
             Navigator.pop(context);
           },
           icon: const Icon(Icons.add),
