@@ -115,7 +115,7 @@ class _ThemeSettingsScreenState extends State<ThemeSettingsScreen> {
                           pickerAreaHeightPercent: 0.7,
                           enableAlpha: false,
                           displayThumbColor: true,
-                          paletteType: PaletteType.hueWheel,
+                          paletteType: PaletteType.hslWithHue,
                           labelTypes: const [],
                           colorPickerWidth: 280,
                           portraitOnly: true,
