@@ -311,6 +311,8 @@ class MyApp extends StatelessWidget {
 
         darkColorScheme = darkColorScheme.copyWith(
           primary: themeProvider.seedColor,
+          surface: const Color(0xFF121212), // Fondo gris oscuro neutro
+          surfaceContainerHighest: const Color(0xFF1E1E1E), // Para cards
         );
 
         final lightTheme = ThemeData(
