@@ -187,36 +187,36 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                icon: Icon(
-                                  PhosphorIcons.play(PhosphorIconsStyle.fill),
-                                  color: colorScheme.primary,
-                                  size: 30,
-                                ),
-                                tooltip: 'Iniciar Entrenamiento',
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => WorkoutScreen(routine: routine),
-                                    ),
-                                  );
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(
-                                  PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular),
-                                  color: colorScheme.secondary,
-                                ),
-                                tooltip: 'Editar Rutina',
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => EditRoutineScreen(
-                                        routineId: routine.id,
+                                  icon: Icon(
+                                    PhosphorIcons.play(PhosphorIconsStyle.fill),
+                                    color: colorScheme.primary,
+                                    size: 30,
+                                  ),
+                                  tooltip: 'Iniciar Entrenamiento',
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => WorkoutScreen(routine: routine),
                                       ),
-                                    ),
-                                  );
-                                },
-                              ),
+                                    );
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(
+                                    PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular),
+                                    color: colorScheme.secondary,
+                                  ),
+                                  tooltip: 'Editar Rutina',
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => EditRoutineScreen(
+                                          routineId: routine.id,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                               PopupMenuButton<String>(
                                 onSelected: (value) {
                                   if (value == 'delete') {
