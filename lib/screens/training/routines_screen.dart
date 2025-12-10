@@ -219,8 +219,8 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                                 ),
                                 PopupMenuButton<String>(
                                   onSelected: (value) {
-                                  if (value == 'delete') {
-                                    showDialog(
+                                    if (value == 'delete') {
+                                      showDialog(
                                       context: context,
                                       builder: (BuildContext ctx) {
                                         return AlertDialog(
@@ -248,10 +248,10 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                                           ],
                                         );
                                       },
-                                    );
-                                  }
-                                },
-                                itemBuilder: (BuildContext context) =>
+                                      );
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) =>
                                     <PopupMenuEntry<String>>[
                                       PopupMenuItem<String>(
                                         value: 'delete',
