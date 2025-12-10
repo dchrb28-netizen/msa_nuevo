@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'dart:math';
 import 'package:myapp/data/motivational_quotes.dart';
 import 'package:myapp/widgets/dashboard/pending_reminders_widget.dart';
+import 'package:myapp/widgets/luna_watermark.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -46,22 +47,33 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Column(
-          children: [
-            _buildWelcomeHeader(context),
-            const SizedBox(height: 16),
-            const PendingRemindersWidget(),
-            _buildTrainingCard(context),
-            const SizedBox(height: 16),
-            _buildDailyProgressRings(context),
-            const SizedBox(height: 16),
-            _buildMeditationCard(context),
-            const SizedBox(height: 16),
-            _buildMotivationalCard(),
-          ],
-        ),
+      body: Stack(
+        children: [
+          // Marca de agua de Luna en el dashboard
+          const LunaWatermark(
+            type: LunaType.inicio,
+            opacity: 0.06,
+            size: 300,
+            alignment: Alignment(0.0, 0.4),
+          ),
+          SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              children: [
+                _buildWelcomeHeader(context),
+                const SizedBox(height: 16),
+                const PendingRemindersWidget(),
+                _buildTrainingCard(context),
+                const SizedBox(height: 16),
+                _buildDailyProgressRings(context),
+                const SizedBox(height: 16),
+                _buildMeditationCard(context),
+                const SizedBox(height: 16),
+                _buildMotivationalCard(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

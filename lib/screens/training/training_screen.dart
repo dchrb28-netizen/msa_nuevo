@@ -4,6 +4,7 @@ import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/screens/training/routines_screen.dart';
 import 'package:myapp/screens/training/exercise_library_screen.dart';
 import 'package:myapp/screens/training/edit_exercise_screen.dart';
+import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 

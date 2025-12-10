@@ -7,6 +7,7 @@ import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/providers/water_intake_provider.dart';
 import 'package:myapp/services/time_format_service.dart';
 import 'package:myapp/widgets/dashboard/aquarium_widget.dart';
+import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:provider/provider.dart';
 
 class WaterTodayView extends StatelessWidget {
@@ -232,6 +233,22 @@ class WaterTodayView extends StatelessWidget {
                 const Divider(),
                 Stack(
                   children: [
+                    // Marca de agua de Luna - más visible cuando no hay registros
+                    if (logsForSelectedDate.isEmpty)
+                      const LunaWatermark(
+                        type: LunaType.agua,
+                        opacity: 0.15,
+                        size: 280,
+                        alignment: Alignment.center,
+                      ),
+                    // Marca de agua sutil cuando hay registros
+                    if (logsForSelectedDate.isNotEmpty)
+                      const LunaWatermark(
+                        type: LunaType.agua,
+                        opacity: 0.08,
+                        size: 200,
+                        alignment: Alignment(0.7, 0.3),
+                      ),
                     if (logsForSelectedDate.isEmpty)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 60.0),

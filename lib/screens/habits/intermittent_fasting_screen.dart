@@ -6,6 +6,7 @@ import 'package:myapp/models/fasting_phase.dart';
 import 'package:myapp/models/fasting_plan.dart';
 import 'package:myapp/providers/fasting_provider.dart';
 import 'package:myapp/services/time_format_service.dart';
+import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:myapp/widgets/sun_moon_timer.dart';
 import 'package:provider/provider.dart';
 import 'package:timeline_tile/timeline_tile.dart';
@@ -449,11 +450,20 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
       decoration: BoxDecoration(
         gradient: isFasting ? fastingGradient : feedingGradient,
       ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildPlanSelector(theme, provider),
+      child: Stack(
+        children: [
+          // Marca de agua de Luna
+          const LunaWatermark(
+            type: LunaType.ayuno,
+            opacity: 0.08,
+            size: 220,
+            alignment: Alignment(0.8, 0.5),
+          ),
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildPlanSelector(theme, provider),
             const SizedBox(height: 24),
             SunMoonTimer(
               progress: progress,
@@ -477,8 +487,10 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             const Divider(),
             const SizedBox(height: 16),
             _buildFastingTimeline(provider, theme),
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
