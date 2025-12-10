@@ -140,19 +140,20 @@ class _RemindersScreenState extends State<RemindersScreen> {
                     );
                   },
                 ),
-                    // Marca de agua SOBRE el contenido con Positioned absoluto
+                    // Marca de agua en footer inferior
                     Positioned(
-                      right: 16,
-                      bottom: 120,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
                       child: IgnorePointer(
                         child: Opacity(
-                          opacity: 0.35,
+                          opacity: 0.5,
                           child: Image.asset(
                             Theme.of(context).brightness == Brightness.dark
                                 ? 'assets/luna_png/luna_recordatorios_b.png'
                                 : 'assets/luna_png/luna_recordatorios_w.png',
-                            width: 220,
-                            height: 220,
+                            width: 180,
+                            height: 180,
                             fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
                           ),

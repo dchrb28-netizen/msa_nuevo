@@ -83,15 +83,18 @@ class _TrainingScreenState extends State<TrainingScreen>
       ),
       body: Stack(
         children: [
-          const LunaWatermark(
-            type: LunaType.entrenamiento,
-            opacity: 0.2,
-            size: 280,
-            alignment: Alignment(0.85, 0.5),
-          ),
           TabBarView(
             controller: _tabController,
             children: const [RoutinesScreen(), ExerciseLibraryScreen()],
+          ),
+          // Luna en footer inferior
+          const IgnorePointer(
+            child: LunaWatermark(
+              type: LunaType.entrenamiento,
+              opacity: 0.5,
+              size: 180,
+              alignment: Alignment.bottomCenter,
+            ),
           ),
         ],
       ),

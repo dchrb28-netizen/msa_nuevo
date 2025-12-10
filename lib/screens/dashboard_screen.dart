@@ -49,13 +49,6 @@ class DashboardScreen extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Stack(
         children: [
-          // Marca de agua de Luna en el dashboard
-          const LunaWatermark(
-            type: LunaType.inicio,
-            opacity: 0.15,
-            size: 350,
-            alignment: Alignment(0.8, -0.3),
-          ),
           SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Column(
@@ -71,6 +64,15 @@ class DashboardScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildMotivationalCard(),
               ],
+            ),
+          ),
+          // Luna ADELANTE del contenido
+          const IgnorePointer(
+            child: LunaWatermark(
+              type: LunaType.inicio,
+              opacity: 0.5,
+              size: 180,
+              alignment: Alignment.bottomCenter,
             ),
           ),
         ],

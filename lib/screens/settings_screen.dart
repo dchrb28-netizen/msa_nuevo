@@ -41,12 +41,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         body: Stack(
           children: [
-            const LunaWatermark(
-              type: LunaType.configuracion,
-              opacity: 0.2,
-              size: 260,
-              alignment: Alignment(0.8, 0.5),
-            ),
             TabBarView(
               children: [
                 CaloricGoalsScreen(key: _caloricGoalsKey), // Use the key here
@@ -55,6 +49,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ), // Pass the callback
                 const ThemeSettingsScreen(),
               ],
+            ),
+            // Luna en footer
+            const IgnorePointer(
+              child: LunaWatermark(
+                type: LunaType.configuracion,
+                opacity: 0.5,
+                size: 180,
+                alignment: Alignment.bottomCenter,
+              ),
             ),
           ],
         ),
