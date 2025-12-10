@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/screens/profile_screen.dart';
+import 'package:myapp/screens/training/routine_adjustment_confirmation_screen.dart';
+import 'package:myapp/services/routine_adjustment_service.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
@@ -109,22 +111,24 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
     return Colors.red.shade400;
   }
 
-  void _saveGoals() {
+  void _saveGoals() async {
     if (_formKey.currentState!.validate()) {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final currentUser = userProvider.user!;
 
+      final oldWeight = currentUser.weight;
+      final newWeight = double.parse(_weightController.text.replaceAll(',', '.'));
+
       final updatedUser = currentUser.copyWith(
-        weight: double.parse(_weightController.text.replaceAll(',', '.')),
+        weight: newWeight,
         height: double.parse(_heightController.text.replaceAll(',', '.')),
         weightGoal: double.tryParse(
           _weightGoalController.text.replaceAll(',', '.'),
         ),
       );
 
-      userProvider.updateUser(updatedUser).then((_) {
-        widget.onProfileUpdated?.call();
-      });
+      await userProvider.updateUser(updatedUser);
+      widget.onProfileUpdated?.call();
 
       _calculateIMC();
 
@@ -134,9 +138,70 @@ class _WeightGoalsScreenState extends State<WeightGoalsScreen> {
         });
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('¡Tus datos han sido actualizados!')),
+      // Verificar si hay cambio significativo de peso y ofrecer ajustar rutinas
+      if (oldWeight > 0 && RoutineAdjustmentService.hasSignificantWeightChange(oldWeight, newWeight)) {
+        _checkAndOfferRoutineAdjustment(oldWeight, newWeight);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('¡Tus datos han sido actualizados!')),
+        );
+      }
+    }
+  }
+
+  Future<void> _checkAndOfferRoutineAdjustment(double oldWeight, double newWeight) async {
+    // Obtener rutinas del usuario
+    final routines = await RoutineAdjustmentService.getUserRoutines();
+    
+    if (routines.isEmpty) {
+      // No hay rutinas personalizadas, solo mostrar confirmación normal
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('¡Tus datos han sido actualizados!')),
+        );
+      }
+      return;
+    }
+
+    // Calcular ajustes sugeridos
+    final weightChangePercentage = RoutineAdjustmentService.calculateWeightChangePercentage(
+      oldWeight,
+      newWeight,
+    );
+    final adjustments = RoutineAdjustmentService.calculateRoutineAdjustments(
+      routines,
+      weightChangePercentage,
+    );
+
+    if (adjustments.isEmpty) {
+      // No hay ajustes significativos que hacer
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('¡Tus datos han sido actualizados!')),
+        );
+      }
+      return;
+    }
+
+    // Mostrar diálogo de confirmación para ajustar rutinas
+    if (mounted) {
+      final result = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RoutineAdjustmentConfirmationScreen(
+            oldWeight: oldWeight,
+            newWeight: newWeight,
+            adjustments: adjustments,
+          ),
+        ),
       );
+
+      if (mounted && result != true) {
+        // Usuario decidió no ajustar
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('¡Tus datos han sido actualizados!')),
+        );
+      }
     }
   }
 
