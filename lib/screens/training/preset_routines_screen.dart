@@ -81,6 +81,68 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
     }
   }
 
+  Color _getMuscleGroupColor(String muscleGroup) {
+    switch (muscleGroup.toLowerCase()) {
+      case 'pecho':
+        return Colors.red;
+      case 'espalda':
+        return Colors.blue;
+      case 'piernas':
+        return Colors.green;
+      case 'hombros':
+        return Colors.orange;
+      case 'brazos':
+        return Colors.purple;
+      case 'abdomen':
+      case 'core':
+        return Colors.amber;
+      case 'cardio':
+        return Colors.pink;
+      case 'glúteos':
+        return Colors.teal;
+      case 'pantorrillas':
+        return Colors.brown;
+      case 'movilidad':
+      case 'flexibilidad':
+        return Colors.cyan;
+      case 'cuerpo completo':
+        return Colors.indigo;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getMuscleGroupIcon(String muscleGroup) {
+    switch (muscleGroup.toLowerCase()) {
+      case 'pecho':
+        return PhosphorIcons.heartbeat(PhosphorIconsStyle.fill);
+      case 'espalda':
+        return PhosphorIcons.path(PhosphorIconsStyle.fill);
+      case 'piernas':
+        return PhosphorIcons.footprints(PhosphorIconsStyle.fill);
+      case 'hombros':
+        return PhosphorIcons.arrowsOutCardinal(PhosphorIconsStyle.fill);
+      case 'brazos':
+        return PhosphorIcons.barbell(PhosphorIconsStyle.fill);
+      case 'abdomen':
+      case 'core':
+        return PhosphorIcons.dot(PhosphorIconsStyle.fill);
+      case 'cardio':
+        return PhosphorIcons.lightning(PhosphorIconsStyle.fill);
+      case 'glúteos':
+        return PhosphorIcons.circle(PhosphorIconsStyle.fill);
+      case 'pantorrillas':
+        return PhosphorIcons.arrowDown(PhosphorIconsStyle.fill);
+      case 'movilidad':
+      case 'flexibilidad':
+        return PhosphorIcons.treeEvergreen(PhosphorIconsStyle.fill);
+      case 'cuerpo completo':
+        return PhosphorIcons.user(PhosphorIconsStyle.fill);
+      default:
+        return PhosphorIcons.question(PhosphorIconsStyle.fill);
+    }
+  }
+
   Future<void> _addRoutineFromTemplate(BuildContext context, RoutineTemplate template) async {
     if (_isLoading) return;
     
@@ -553,6 +615,19 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
                                 color: Colors.grey,
                               ),
                             ),
+                            const SizedBox(width: 12),
+                            Icon(
+                              PhosphorIcons.clock(PhosphorIconsStyle.fill),
+                              size: 16,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              template.duration ?? template.estimatedDurationRange,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: Colors.grey,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -565,6 +640,46 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
                 template.description,
                 style: theme.textTheme.bodyMedium,
               ),
+              if (template.muscleGroups.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: template.muscleGroups.map((muscle) {
+                    final muscleColor = _getMuscleGroupColor(muscle);
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: muscleColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: muscleColor.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getMuscleGroupIcon(muscle),
+                            size: 14,
+                            color: muscleColor,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            muscle,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: muscleColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
