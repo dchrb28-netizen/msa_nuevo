@@ -187,11 +187,11 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: Icon(
-                                    PhosphorIcons.play(PhosphorIconsStyle.fill),
-                                    color: colorScheme.primary,
-                                    size: 30,
-                                  ),
+                                icon: Icon(
+                                  PhosphorIcons.play(PhosphorIconsStyle.fill),
+                                  color: colorScheme.primary,
+                                  size: 30,
+                                ),
                                 tooltip: 'Iniciar Entrenamiento',
                                 onPressed: () {
                                   Navigator.of(context).push(
