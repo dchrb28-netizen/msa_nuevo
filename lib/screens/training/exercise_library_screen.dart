@@ -235,22 +235,87 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                       children: exercisesInGroup.map((exercise) {
                         return ListTile(
                           isThreeLine: true,
-                          leading:
-                              exercise.imageUrl != null &&
+                          leading: exercise.imageUrl != null &&
                                   exercise.imageUrl!.isNotEmpty
                               ? ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
-                                  child: Image.network(
-                                    exercise.imageUrl!,
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const Icon(Icons.image, size: 30),
-                                  ),
+                                  child: exercise.imageUrl!.startsWith('http')
+                                      ? Image.network(
+                                          exercise.imageUrl!,
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                          loadingBuilder: (context, child,
+                                              loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            }
+                                            return SizedBox(
+                                              width: 50,
+                                              height: 50,
+                                              child: Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  value: loadingProgress
+                                                              .expectedTotalBytes !=
+                                                          null
+                                                      ? loadingProgress
+                                                              .cumulativeBytesLoaded /
+                                                          loadingProgress
+                                                              .expectedTotalBytes!
+                                                      : null,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Container(
+                                            width: 50,
+                                            height: 50,
+                                            color: theme
+                                                .colorScheme.surfaceContainer,
+                                            child: Icon(
+                                              Icons.fitness_center,
+                                              size: 30,
+                                              color: theme.colorScheme.primary,
+                                            ),
+                                          ),
+                                        )
+                                      : Image.asset(
+                                          exercise.imageUrl!,
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Container(
+                                            width: 50,
+                                            height: 50,
+                                            color: theme
+                                                .colorScheme.surfaceContainer,
+                                            child: Icon(
+                                              Icons.fitness_center,
+                                              size: 30,
+                                              color: theme.colorScheme.primary,
+                                            ),
+                                          ),
+                                        ),
                                 )
-                              : const Icon(Icons.image, size: 30),
+                              : Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.surfaceContainer,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Icon(
+                                    Icons.fitness_center,
+                                    size: 30,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
                           title: Text(
                             exercise.name,
                             style: theme.textTheme.titleMedium,

@@ -7,7 +7,7 @@ import 'package:myapp/models/exercise.dart';
 /// Límite: 500 requests/día en tier gratuito
 class ExerciseApiService {
   static const String _baseUrl = 'https://exercisedb.p.rapidapi.com';
-  static const String _apiKey = '0ac953731bmshod20d6a71805c71p1a5fa6jsn1f9e05f0eeca';
+  static const String _apiKey = '0ac953731bmshed20d6a71805c71p1a5fa6jsnf19e05f0eeca';
   
   static const Map<String, String> _headers = {
     'X-RapidAPI-Key': _apiKey,

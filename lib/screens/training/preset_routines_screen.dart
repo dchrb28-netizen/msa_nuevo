@@ -3,8 +3,10 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/data/routine_templates.dart';
 import 'package:myapp/models/routine_exercise.dart';
+import 'package:myapp/models/exercise.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/routine_provider.dart';
+import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/services/routine_recommendation_service.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -82,6 +84,19 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
   Future<void> _addRoutineFromTemplate(BuildContext context, RoutineTemplate template) async {
     if (_isLoading) return;
     
+    // Verificar que los ejercicios estén cargados
+    final exerciseBox = Hive.box<Exercise>('exercises');
+    if (exerciseBox.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⏳ Los ejercicios aún se están cargando. Intenta de nuevo en un momento.'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+    
     setState(() => _isLoading = true);
 
     try {
@@ -97,12 +112,22 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
 
       // 2. Crear los ejercicios y agregarlos a la rutina
       for (final exerciseTemplate in template.exercises) {
+        // Verificar que el ejercicio existe antes de agregarlo
+        final exerciseData = exerciseBox.get(exerciseTemplate.exerciseId);
+        if (exerciseData == null) {
+          debugPrint('⚠️ Ejercicio no encontrado: ${exerciseTemplate.exerciseId}');
+          continue; // Saltar este ejercicio si no existe
+        }
+        
         final routineExercise = RoutineExercise(
           exerciseId: exerciseTemplate.exerciseId,
           sets: exerciseTemplate.sets,
           reps: exerciseTemplate.reps,
           restTime: exerciseTemplate.restTime,
         );
+        
+        // Cargar los datos del ejercicio en el RoutineExercise
+        routineExercise.setExercise(exerciseData);
         
         // Guardar en Hive
         await routineExerciseBox.add(routineExercise);
@@ -147,27 +172,56 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rutinas Predefinidas'),
-        centerTitle: true,
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Para Ti', icon: Icon(Icons.person)),
-            Tab(text: 'Generales', icon: Icon(Icons.fitness_center)),
-          ],
-        ),
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : TabBarView(
+    return Consumer<ExerciseProvider>(
+      builder: (context, exerciseProvider, child) {
+        // Mostrar indicador de carga si los ejercicios aún no están cargados
+        if (exerciseProvider.isLoading || !exerciseProvider.isInitialized) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Rutinas Predefinidas'),
+              centerTitle: true,
+            ),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Cargando ejercicios...',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Rutinas Predefinidas'),
+            centerTitle: true,
+            bottom: TabBar(
               controller: _tabController,
-              children: [
-                _buildPersonalizedTab(theme, colorScheme),
-                _buildGeneralTab(theme, colorScheme),
+              tabs: const [
+                Tab(text: 'Para Ti', icon: Icon(Icons.person)),
+                Tab(text: 'Generales', icon: Icon(Icons.fitness_center)),
               ],
             ),
+          ),
+          body: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildPersonalizedTab(theme, colorScheme),
+                    _buildGeneralTab(theme, colorScheme),
+                  ],
+                ),
+        );
+      },
     );
   }
 
@@ -540,6 +594,26 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
   }
 
   void _showTemplateDetails(BuildContext context, RoutineTemplate template, ThemeData theme) {
+    // Obtener la caja de ejercicios
+    final exerciseBox = Hive.box<Exercise>('exercises');
+    
+    // Verificar si hay ejercicios cargados
+    if (exerciseBox.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⏳ Cargando ejercicios, por favor espera un momento...'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      // Esperar un momento y volver a intentar
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (exerciseBox.isNotEmpty) {
+          _showTemplateDetails(context, template, theme);
+        }
+      });
+      return;
+    }
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -593,6 +667,11 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
                 itemCount: template.exercises.length,
                 itemBuilder: (context, index) {
                   final exercise = template.exercises[index];
+                  // Obtener el nombre del ejercicio desde la base de datos
+                  final exerciseData = exerciseBox.get(exercise.exerciseId);
+                  final exerciseName = exerciseData?.name ?? exercise.exerciseId;
+                  final muscleGroup = exerciseData?.muscleGroup ?? '';
+                  
                   return Card(
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
@@ -607,12 +686,20 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
                         ),
                       ),
                       title: Text(
-                        'ID: ${exercise.exerciseId}',
+                        exerciseName,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          if (muscleGroup.isNotEmpty)
+                            Text(
+                              muscleGroup,
+                              style: TextStyle(
+                                color: theme.colorScheme.secondary,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
                           const SizedBox(height: 4),
                           Text('${exercise.sets} series × ${exercise.reps} reps'),
                           Text('Descanso: ${exercise.restTime}s'),

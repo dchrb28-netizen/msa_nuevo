@@ -80,6 +80,103 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     }
   }
 
+  Widget _buildRestTimerBanner() {
+    final minutes = _countdownTime ~/ 60;
+    final seconds = _countdownTime % 60;
+    final progress = _restingExerciseIndex != null
+        ? 1 - (_countdownTime / (widget.routine.exercises![_restingExerciseIndex!].restTime ?? 60))
+        : 0.0;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blue.shade700, Colors.blue.shade500],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.timer, color: Colors.white, size: 24),
+                  SizedBox(width: 8),
+                  Text(
+                    'Tiempo de Descanso',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              TextButton.icon(
+                onPressed: _cancelRestTimer,
+                icon: const Icon(Icons.close, color: Colors.white, size: 18),
+                label: const Text(
+                  'Saltar',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.white.withValues(alpha: 0.2),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 48,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 2,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.white.withValues(alpha: 0.3),
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+              minHeight: 8,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  int _calculateCompletedExercises() {
+    int completed = 0;
+    for (var i = 0; i < (widget.routine.exercises?.length ?? 0); i++) {
+      final logs = _setsData[i]!;
+      if (logs.any((log) => log != null)) {
+        completed++;
+      }
+    }
+    return completed;
+  }
+
+  String _getSetProgress(List<SetLog?> logs) {
+    final completed = logs.where((log) => log != null).length;
+    return '$completed/${logs.length} series completadas';
+  }
+
   @override
   Widget build(BuildContext context) {
     final exerciseProvider = Provider.of<ExerciseProvider>(
@@ -87,39 +184,70 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       listen: false,
     );
     final routineExercises = widget.routine.exercises;
+    final totalExercises = routineExercises?.length ?? 0;
+    final completedExercises = _calculateCompletedExercises();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Entrenamiento: ${widget.routine.name}'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.routine.name,
+              style: const TextStyle(fontSize: 18),
+            ),
+            Text(
+              'Progreso: $completedExercises/$totalExercises ejercicios',
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => _showExitConfirmationDialog(),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4.0),
+          child: LinearProgressIndicator(
+            value: totalExercises > 0 ? completedExercises / totalExercises : 0,
+            backgroundColor: Colors.grey[300],
+          ),
         ),
       ),
       body: (routineExercises == null || routineExercises.isEmpty)
           ? const Center(
               child: Text('Esta rutina no tiene ejercicios todavía.'),
             )
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              itemCount: routineExercises.length,
-              itemBuilder: (context, index) {
-                final routineExercise = routineExercises[index];
-                final Exercise? exercise = exerciseProvider.getExerciseById(
-                  routineExercise.exerciseId,
-                );
+          : Column(
+              children: [
+                // Temporizador de descanso prominente
+                if (_isResting)
+                  _buildRestTimerBanner(),
+                // Lista de ejercicios
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    itemCount: routineExercises.length,
+                    itemBuilder: (context, index) {
+                      final routineExercise = routineExercises[index];
+                      final Exercise? exercise = exerciseProvider.getExerciseById(
+                        routineExercise.exerciseId,
+                      );
 
-                if (exercise == null) {
-                  return ListTile(
-                    title: Text(
-                      'Ejercicio no encontrado (ID: ${routineExercise.exerciseId})',
-                    ),
-                    leading: const Icon(Icons.error_outline, color: Colors.red),
-                  );
-                }
+                      if (exercise == null) {
+                        return ListTile(
+                          title: Text(
+                            'Ejercicio no encontrado (ID: ${routineExercise.exerciseId})',
+                          ),
+                          leading: const Icon(Icons.error_outline, color: Colors.red),
+                        );
+                      }
 
-                return _buildExerciseCard(exercise, routineExercise, index);
-              },
+                      return _buildExerciseCard(exercise, routineExercise, index);
+                    },
+                  ),
+                ),
+              ],
             ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
@@ -133,7 +261,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          onPressed: _isResting ? null : _finishWorkout,
+          onPressed: _finishWorkout,
         ),
       ),
     );
@@ -222,6 +350,36 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                if (exercise.muscleGroup != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      exercise.muscleGroup!,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colorScheme.onSecondaryContainer,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                const SizedBox(width: 8),
+                Text(
+                  _getSetProgress(loggedSets),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
             Text(
               '${routineExercise.sets} series x ${routineExercise.reps} reps',
@@ -258,31 +416,75 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 runSpacing: 8.0,
                 children: List.generate(routineExercise.sets, (setIndex) {
                   final bool isCompleted = loggedSets[setIndex] != null;
+                  final setLog = loggedSets[setIndex];
 
-                  return OutlinedButton(
-                    onPressed: () => _showLogSetDialog(
-                      exerciseIndex,
-                      setIndex,
-                      routineExercise,
+                  return SizedBox(
+                    width: 100,
+                    child: ElevatedButton(
+                      onPressed: () => _showLogSetDialog(
+                        exerciseIndex,
+                        setIndex,
+                        routineExercise,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: isCompleted
+                            ? colorScheme.onPrimary
+                            : colorScheme.primary,
+                        backgroundColor: isCompleted
+                            ? colorScheme.primary
+                            : colorScheme.surface,
+                        elevation: isCompleted ? 3 : 1,
+                        side: BorderSide(
+                          color: isCompleted 
+                              ? colorScheme.primary 
+                              : colorScheme.outline.withValues(alpha: 0.5),
+                          width: 1.5,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (isCompleted)
+                                const Icon(Icons.check_circle, size: 16)
+                              else
+                                Icon(
+                                  Icons.circle_outlined,
+                                  size: 16,
+                                  color: colorScheme.primary,
+                                ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Serie ${setIndex + 1}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (setLog != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              '${setLog.reps} reps',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: isCompleted
-                          ? colorScheme.onPrimary
-                          : colorScheme.primary,
-                      backgroundColor: isCompleted
-                          ? colorScheme.primary
-                          : Colors.transparent,
-                      side: BorderSide(
-                        color: colorScheme.primary.withAlpha(128),
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                    ),
+                  );
+                }),
+              ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

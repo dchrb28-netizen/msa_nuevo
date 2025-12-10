@@ -6,6 +6,7 @@ import 'package:myapp/screens/training/preset_routines_screen.dart';
 import 'package:myapp/screens/training/workout_history_screen.dart';
 import 'package:myapp/screens/training/workout_screen.dart';
 import 'package:myapp/utils/clear_routines.dart';
+import 'package:myapp/widgets/routine_preview_dialog.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class RoutinesScreen extends StatefulWidget {
@@ -125,29 +126,72 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                   itemCount: userRoutines.length,
                   itemBuilder: (context, index) {
                     final routine = userRoutines[index];
+                    final exerciseCount = routine.exercises?.length ?? 0;
+                    
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 6.0),
                       elevation: 4,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: ListTile(
-                          title: Text(
-                            routine.name,
-                            style: theme.textTheme.titleLarge,
-                          ),
-                          subtitle: Text(routine.description),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  PhosphorIcons.play(PhosphorIconsStyle.fill),
-                                  color: colorScheme.primary,
-                                  size: 30,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () async {
+                          // Mostrar previsualización
+                          final result = await showDialog<String>(
+                            context: context,
+                            builder: (context) => RoutinePreviewDialog(routine: routine),
+                          );
+                          
+                          if (result == 'start' && mounted) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => WorkoutScreen(routine: routine),
+                              ),
+                            );
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: ListTile(
+                            title: Text(
+                              routine.name,
+                              style: theme.textTheme.titleLarge,
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(routine.description),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      PhosphorIcons.barbell(PhosphorIconsStyle.fill),
+                                      size: 14,
+                                      color: colorScheme.secondary,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '$exerciseCount ejercicio${exerciseCount != 1 ? 's' : ''}',
+                                      style: TextStyle(
+                                        color: colorScheme.secondary,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    PhosphorIcons.play(PhosphorIconsStyle.fill),
+                                    color: colorScheme.primary,
+                                    size: 30,
+                                  ),
                                 tooltip: 'Iniciar Entrenamiento',
                                 onPressed: () {
                                   Navigator.of(context).push(

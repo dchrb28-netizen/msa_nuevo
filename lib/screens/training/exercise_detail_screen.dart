@@ -39,42 +39,63 @@ class ExerciseDetailScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20.0),
                   child: Stack(
                     children: [
-                      Image.network(
-                        exercise.imageUrl!,
-                        height: 280,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            height: 280,
-                            width: double.infinity,
-                            color: Colors.grey[200],
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes != null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                    : null,
+                      exercise.imageUrl!.startsWith('http')
+                          ? Image.network(
+                              exercise.imageUrl!,
+                              height: 280,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  height: 280,
+                                  width: double.infinity,
+                                  color: Colors.grey[200],
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes!
+                                          : null,
+                                    ),
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) => Container(
+                                height: 280,
+                                color: Colors.grey[200],
+                                child: const Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.image_not_supported, size: 60, color: Colors.grey),
+                                      SizedBox(height: 8),
+                                      Text('Demostración no disponible', style: TextStyle(color: Colors.grey)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Image.asset(
+                              exercise.imageUrl!,
+                              height: 280,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => Container(
+                                height: 280,
+                                color: Colors.grey[200],
+                                child: const Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.image_not_supported, size: 60, color: Colors.grey),
+                                      SizedBox(height: 8),
+                                      Text('Demostración no disponible', style: TextStyle(color: Colors.grey)),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          height: 280,
-                          color: Colors.grey[200],
-                          child: const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.image_not_supported, size: 60, color: Colors.grey),
-                                SizedBox(height: 8),
-                                Text('Demostración no disponible', style: TextStyle(color: Colors.grey)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
                       // Badge indicando que es una demostración
                       Positioned(
                         top: 12,
