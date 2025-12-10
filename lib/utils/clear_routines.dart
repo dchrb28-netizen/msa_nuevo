@@ -50,7 +50,7 @@ class ClearRoutines {
     print('📋 Rutinas actuales (${routineBox.length}):');
     for (var i = 0; i < routineBox.length; i++) {
       final routine = routineBox.getAt(i);
-      print('  $i. ${routine?.name} (${routine?.exercises.length} ejercicios)');
+      print('  $i. ${routine?.name} (${routine?.exercises?.length ?? 0} ejercicios)');
     }
   }
 }
