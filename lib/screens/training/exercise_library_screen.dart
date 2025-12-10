@@ -3,6 +3,7 @@ import 'package:myapp/models/exercise.dart';
 import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/screens/training/edit_exercise_screen.dart';
 import 'package:myapp/screens/training/exercise_detail_screen.dart';
+import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:provider/provider.dart';
 
 class ExerciseLibraryScreen extends StatefulWidget {
@@ -163,8 +164,18 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
           child: Consumer<ExerciseProvider>(
             builder: (context, provider, child) {
               if (provider.exercises.isEmpty) {
-                return const Center(
-                  child: Text("No hay ejercicios. ¡Añade uno nuevo!"),
+                return Stack(
+                  children: [
+                    const LunaWatermark(
+                      type: LunaType.lista,
+                      opacity: 0.15,
+                      size: 280,
+                      alignment: Alignment.center,
+                    ),
+                    const Center(
+                      child: Text("No hay ejercicios. ¡Añade uno nuevo!"),
+                    ),
+                  ],
                 );
               }
 
@@ -184,8 +195,18 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                     }).toList();
 
               if (filteredExercises.isEmpty) {
-                return const Center(
-                  child: Text('No se encontraron ejercicios.'),
+                return Stack(
+                  children: [
+                    const LunaWatermark(
+                      type: LunaType.lista,
+                      opacity: 0.15,
+                      size: 280,
+                      alignment: Alignment.center,
+                    ),
+                    const Center(
+                      child: Text('No se encontraron ejercicios.'),
+                    ),
+                  ],
                 );
               }
 
@@ -201,7 +222,15 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
 
               final muscleGroups = groupedExercises.keys.toList()..sort();
 
-              return ListView.builder(
+              return Stack(
+                children: [
+                  const LunaWatermark(
+                    type: LunaType.lista,
+                    opacity: 0.06,
+                    size: 250,
+                    alignment: Alignment(0.8, 0.4),
+                  ),
+                  ListView.builder(
                 padding: const EdgeInsets.only(
                   bottom: 80.0,
                 ), // Padding for the main FAB
@@ -376,6 +405,8 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                     ),
                   );
                 },
+              ),
+                ],
               );
             },
           ),
