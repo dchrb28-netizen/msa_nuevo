@@ -297,26 +297,6 @@ class WaterTodayView extends StatelessWidget {
                         errorBuilder: (c, o, s) => const SizedBox(),
                       ),
                     ),
-                    // Marca de agua en footer inferior
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: IgnorePointer(
-                        child: Opacity(
-                          opacity: 0.5,
-                          child: Image.asset(
-                            Theme.of(context).brightness == Brightness.dark
-                                ? 'assets/luna_png/luna_agua_b.png'
-                                : 'assets/luna_png/luna_agua_w.png',
-                            width: 180,
-                            height: 180,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ],

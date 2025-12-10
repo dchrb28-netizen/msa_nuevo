@@ -5,7 +5,6 @@ import 'package:myapp/screens/habits/add_reminder_screen.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:myapp/services/foreground_reminder_service.dart';
 import 'package:myapp/services/time_format_service.dart';
-import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -140,26 +139,6 @@ class _RemindersScreenState extends State<RemindersScreen> {
                     );
                   },
                 ),
-                    // Marca de agua en footer inferior
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: IgnorePointer(
-                        child: Opacity(
-                          opacity: 0.5,
-                          child: Image.asset(
-                            Theme.of(context).brightness == Brightness.dark
-                                ? 'assets/luna_png/luna_recordatorios_b.png'
-                                : 'assets/luna_png/luna_recordatorios_w.png',
-                            width: 180,
-                            height: 180,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 );
               },
