@@ -52,9 +52,9 @@ class DashboardScreen extends StatelessWidget {
           // Marca de agua de Luna en el dashboard
           const LunaWatermark(
             type: LunaType.inicio,
-            opacity: 0.06,
-            size: 300,
-            alignment: Alignment(0.0, 0.4),
+            opacity: 0.15,
+            size: 350,
+            alignment: Alignment(0.8, -0.3),
           ),
           SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

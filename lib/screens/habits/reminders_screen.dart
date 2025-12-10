@@ -142,17 +142,17 @@ class _RemindersScreenState extends State<RemindersScreen> {
                 ),
                     // Marca de agua SOBRE el contenido con Positioned absoluto
                     Positioned(
-                      right: 8,
-                      bottom: 90,
+                      right: 16,
+                      bottom: 120,
                       child: IgnorePointer(
                         child: Opacity(
-                          opacity: 0.3,
+                          opacity: 0.35,
                           child: Image.asset(
                             Theme.of(context).brightness == Brightness.dark
                                 ? 'assets/luna_png/luna_recordatorios_b.png'
                                 : 'assets/luna_png/luna_recordatorios_w.png',
-                            width: 200,
-                            height: 200,
+                            width: 220,
+                            height: 220,
                             fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
                           ),

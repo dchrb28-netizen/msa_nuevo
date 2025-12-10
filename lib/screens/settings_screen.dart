@@ -43,9 +43,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             const LunaWatermark(
               type: LunaType.configuracion,
-              opacity: 0.08,
-              size: 220,
-              alignment: Alignment(0.7, 0.5),
+              opacity: 0.2,
+              size: 260,
+              alignment: Alignment(0.8, 0.5),
             ),
             TabBarView(
               children: [

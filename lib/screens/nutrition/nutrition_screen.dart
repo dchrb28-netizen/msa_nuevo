@@ -41,9 +41,9 @@ class NutritionScreenState extends State<NutritionScreen> with SingleTickerProvi
         children: [
           const LunaWatermark(
             type: LunaType.comida,
-            opacity: 0.08,
-            size: 240,
-            alignment: Alignment(0.75, 0.4),
+            opacity: 0.2,
+            size: 280,
+            alignment: Alignment(0.85, 0.5),
           ),
           TabBarView(
             controller: _tabController,
