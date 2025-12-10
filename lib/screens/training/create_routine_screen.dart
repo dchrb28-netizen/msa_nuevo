@@ -54,7 +54,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Crear Rutina'),
+        // title removed
         actions: [
           IconButton(
             icon: const Icon(Icons.save),

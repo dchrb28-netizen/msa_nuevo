@@ -75,9 +75,7 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.exercise == null ? 'Crear Ejercicio' : 'Editar Ejercicio',
-        ),
+        // title removed
         centerTitle: true,
         elevation: 0,
       ),

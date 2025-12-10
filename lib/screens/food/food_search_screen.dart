@@ -125,7 +125,6 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buscar Alimento'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(

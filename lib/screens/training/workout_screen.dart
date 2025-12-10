@@ -189,19 +189,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.routine.name,
-              style: const TextStyle(fontSize: 18),
-            ),
-            Text(
-              'Progreso: $completedExercises/$totalExercises ejercicios',
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-            ),
-          ],
-        ),
+        // title removed
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => _showExitConfirmationDialog(),

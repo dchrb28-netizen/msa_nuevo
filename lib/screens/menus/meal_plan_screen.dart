@@ -150,9 +150,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          '${_getMealTypeTitle(widget.mealType)} - ${DateFormat.yMMMMEEEEd().format(widget.date)}',
-        ),
+        // title removed
       ),
       body: ListView.builder(
         itemCount: _foods.length,

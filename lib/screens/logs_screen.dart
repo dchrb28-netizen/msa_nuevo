@@ -32,12 +32,6 @@ class _LogsScreenState extends State<LogsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Registros',
-          style: GoogleFonts.lato(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
         bottom: TabBar(
           controller: _tabController,
           tabs: [

@@ -133,7 +133,7 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isCreating ? 'Crear Rutina' : 'Editar Rutina'),
+        // title removed
         actions: [
           IconButton(icon: const Icon(Icons.save), onPressed: _saveRoutine),
         ],

@@ -43,7 +43,6 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Historial de Entrenamientos'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -289,10 +288,7 @@ class WorkoutSessionDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(
-          session.routineName,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        // title removed
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(25.0),

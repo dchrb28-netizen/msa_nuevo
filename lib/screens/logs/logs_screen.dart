@@ -27,7 +27,6 @@ class LogsScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Registros'),
           bottom: TabBar(
             indicatorColor: tabColor,
             labelColor: tabColor,

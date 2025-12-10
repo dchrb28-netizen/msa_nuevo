@@ -176,7 +176,6 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Crear Receta'),
         actions: [
           if (_selectedIngredients.isNotEmpty)
             IconButton(

@@ -28,7 +28,6 @@ class NutritionScreenState extends State<NutritionScreen> with SingleTickerProvi
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recetas y Nutrición'),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [

@@ -80,7 +80,6 @@ class _UserRecipeDetailScreenState extends State<UserRecipeDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_currentRecipe.title),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),

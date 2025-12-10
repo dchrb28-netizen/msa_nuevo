@@ -58,10 +58,6 @@ class _FoodTodayScreenState extends State<FoodTodayScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Registro de Comidas',
-          style: GoogleFonts.lato(fontWeight: FontWeight.bold),
-        ),
         centerTitle: true,
         elevation: 0,
       ),

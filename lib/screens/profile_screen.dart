@@ -170,7 +170,6 @@ Widget build(BuildContext context) {
 
       return Scaffold(
         appBar: AppBar(
-          title: Text(_isEditing ? 'Editar Perfil' : 'Mi Perfil'),
           centerTitle: true,
           elevation: 0,
           actions: [

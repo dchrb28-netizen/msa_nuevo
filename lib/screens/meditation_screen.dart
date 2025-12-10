@@ -54,9 +54,7 @@ class _MeditationScreenState extends State<MeditationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Meditación'),
-      ),
+      appBar: AppBar(),
       body: Column(
         children: [
           Card(

@@ -201,7 +201,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Editar Receta' : 'Añadir Nueva Receta'),
         actions: [
           IconButton(icon: const Icon(Icons.save), onPressed: _saveRecipe, tooltip: 'Guardar'),
         ],

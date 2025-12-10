@@ -115,9 +115,7 @@ class _BackupScreenState extends State<BackupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Respaldo y Restauración'),
-      ),
+      appBar: AppBar(),
       body: _isLoading
           ? const Center(
               child: Column(

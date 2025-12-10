@@ -33,7 +33,6 @@ class _MainScreenState extends State<MainScreen> {
     return AchievementSnackbarListener(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('MSA'),
           elevation: 0,
         ),
         drawer: const DrawerMenu(), // The profile can be accessed from the drawer

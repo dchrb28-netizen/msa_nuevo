@@ -39,7 +39,6 @@ class _RegisterFoodScreenState extends State<RegisterFoodScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registrar Comida'),
         actions: [
           // Botón para crear receta (múltiples ingredientes)
           IconButton(

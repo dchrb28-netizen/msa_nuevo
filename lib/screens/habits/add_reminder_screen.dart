@@ -56,7 +56,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Editar Recordatorio' : 'Nuevo Recordatorio'),
+        // title removed
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

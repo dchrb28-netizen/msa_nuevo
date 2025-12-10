@@ -24,7 +24,7 @@ class FramesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Marcos de Perfil'),
+        // title removed
       ),
       body: GridView.builder(
         padding: const EdgeInsets.all(16.0),
