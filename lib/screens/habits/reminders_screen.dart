@@ -145,6 +145,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
                       onServiceStateChanged: _checkServiceStatus,
                     );
                   },
+                ),
+                  ],
                 );
               },
             ),
