@@ -6,7 +6,7 @@ plugins {
 }
 
 // Cargar propiedades de firma
-val keystoreProperties = Properties()
+val keystoreProperties = java.util.Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(keystorePropertiesFile.inputStream())
