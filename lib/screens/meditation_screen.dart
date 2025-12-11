@@ -182,7 +182,7 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Meditación'),
+        title: null,
         actions: [
           if (_isMeditating)
             IconButton(
