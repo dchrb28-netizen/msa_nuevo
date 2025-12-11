@@ -145,7 +145,7 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
 
   Future<void> _addRoutineFromTemplate(BuildContext context, RoutineTemplate template) async {
     if (_isLoading) return;
-<<<<<<< HEAD
+
     // Capturar referencias a ScaffoldMessenger y Navigator antes de cualquier await
     if (!mounted) return;
     final scaffoldMessenger = ScaffoldMessenger.of(this.context);
@@ -155,13 +155,6 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
     final exerciseBox = Hive.box<Exercise>('exercises');
     if (exerciseBox.isEmpty) {
       scaffoldMessenger.showSnackBar(
-=======
-    
-    // Verificar que los ejercicios estén cargados
-    final exerciseBox = Hive.box<Exercise>('exercises');
-    if (exerciseBox.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
         const SnackBar(
           content: Text('⏳ Los ejercicios aún se están cargando. Intenta de nuevo en un momento.'),
           backgroundColor: Colors.orange,
@@ -170,18 +163,15 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
       );
       return;
     }
-    
+
     // Mostrar diálogo de selección de días ANTES de crear la rutina
     final selectedDays = await _showDaySelectionDialog(context, template.name);
-    
+
     // Si el usuario canceló, no hacer nada
     if (selectedDays == null || !mounted) return;
-    
-<<<<<<< HEAD
+
     debugPrint('[PresetRoutines] _addRoutineFromTemplate: starting for ${template.name}');
 
-=======
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
     setState(() => _isLoading = true);
     try {
       final provider = Provider.of<RoutineProvider>(context, listen: false);
@@ -210,31 +200,20 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
         daysOfWeek: selectedDays,
         exercises: routineExercises,
       );
-<<<<<<< HEAD
+
       debugPrint('[PresetRoutines] _addRoutineFromTemplate: createFullRoutine returned for ${template.name}');
       if (!mounted) return;
       scaffoldMessenger.showSnackBar(
-=======
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
         SnackBar(
           content: Text('✅ "${template.name}" agregada a tus rutinas'),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
         ),
       );
-<<<<<<< HEAD
       if (mounted) navigator.pop();
     } catch (e) {
       if (!mounted) return;
       scaffoldMessenger.showSnackBar(
-=======
-      Navigator.of(context).pop();
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
         SnackBar(
           content: Text('❌ Error al crear rutina: $e'),
           backgroundColor: Colors.red,
@@ -722,11 +701,7 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
     
     // Verificar si hay ejercicios cargados
     if (exerciseBox.isEmpty) {
-<<<<<<< HEAD
-      ScaffoldMessenger.of(this.context).showSnackBar(
-=======
       ScaffoldMessenger.of(context).showSnackBar(
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
         const SnackBar(
           content: Text('⏳ Cargando ejercicios, por favor espera un momento...'),
           duration: Duration(seconds: 2),
@@ -841,21 +816,16 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
               padding: const EdgeInsets.all(16),
               child: ElevatedButton.icon(
                 onPressed: _isLoading
-                    ? null
-                    : () {
-<<<<<<< HEAD
-                        // Cerrar el bottom sheet primero y luego invocar
-                        // la creación de la rutina usando el contexto del
-                        // State (`this.context`) para evitar usar el
-                        // contexto del bottom sheet que queda desactivado.
-                        Navigator.of(context).pop();
-                        final parentContext = this.context;
-                        Future.microtask(() => _addRoutineFromTemplate(parentContext, template));
-=======
-                        Navigator.of(context).pop();
-                        _addRoutineFromTemplate(context, template);
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
-                      },
+                  ? null
+                  : () {
+                    // Cerrar el bottom sheet primero y luego invocar
+                    // la creación de la rutina usando el contexto del
+                    // State (`this.context`) para evitar usar el
+                    // contexto del bottom sheet que queda desactivado.
+                    Navigator.of(context).pop();
+                    final parentContext = this.context;
+                    Future.microtask(() => _addRoutineFromTemplate(parentContext, template));
+                    },
                 icon: Icon(PhosphorIcons.plus(PhosphorIconsStyle.bold)),
                 label: const Text('Agregar a mis rutinas'),
                 style: ElevatedButton.styleFrom(

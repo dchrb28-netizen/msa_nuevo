@@ -273,7 +273,6 @@ class BackupService {
       await prefs.clear();
       if (kDebugMode) print('🧹 Preferencias limpiadas');
 
-<<<<<<< HEAD
       if (kDebugMode) print('🧹 Limpiando cajas existentes (sin cerrarlas) para evitar conflictos...');
       for (final boxName in _boxNames) {
         try {
@@ -292,18 +291,6 @@ class BackupService {
         }
       }
       if (kDebugMode) print('✅ Cajas limpiadas');
-=======
-      if (kDebugMode) print('🧹 Cerrando y eliminando cajas existentes...');
-      for (final boxName in _boxNames) {
-        try {
-          if (Hive.isBoxOpen(boxName)) await Hive.box(boxName).close();
-          await Hive.deleteBoxFromDisk(boxName);
-        } catch (e) {
-          if (kDebugMode) print('⚠️ Advertencia al limpiar la caja $boxName: $e');
-        }
-      }
-      if (kDebugMode) print('✅ Cajas eliminadas');
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
       
       final prefsData = backup['preferences'] as Map<String, dynamic>? ?? {};
       for (final entry in prefsData.entries) {

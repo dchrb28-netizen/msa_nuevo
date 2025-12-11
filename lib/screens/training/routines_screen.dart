@@ -93,10 +93,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
           Expanded(
             child: Consumer<RoutineProvider>(
               builder: (context, provider, child) {
-<<<<<<< HEAD
                 debugPrint('[RoutinesScreen] Consumer rebuild - routines count=${provider.routines.length}');
-=======
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
                 final userRoutines = provider.routines;
                 
                 if (userRoutines.isEmpty) {

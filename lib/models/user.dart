@@ -37,6 +37,12 @@ class User extends HiveObject {
   @HiveField(9)
   double? calorieGoal;
 
+  /// Alias para compatibilidad con dashboard (puedes usar solo uno si prefieres)
+  double? get caloricGoal => calorieGoal;
+
+  /// Calorías consumidas hoy
+  double caloriesToday;
+
   @HiveField(10)
   double? proteinGoal;
 
@@ -78,6 +84,7 @@ class User extends HiveObject {
     this.isGuest = false,
     this.activityLevel = 'Sedentaria',
     this.calorieGoal,
+    this.caloriesToday = 0,
     this.proteinGoal,
     this.carbGoal,
     this.fatGoal,
@@ -101,6 +108,7 @@ class User extends HiveObject {
     bool? isGuest,
     String? activityLevel,
     double? calorieGoal,
+    double? caloriesToday,
     double? proteinGoal,
     double? carbGoal,
     double? fatGoal,
@@ -123,6 +131,7 @@ class User extends HiveObject {
       isGuest: isGuest ?? this.isGuest,
       activityLevel: activityLevel ?? this.activityLevel,
       calorieGoal: calorieGoal ?? this.calorieGoal,
+      caloriesToday: caloriesToday ?? this.caloriesToday,
       proteinGoal: proteinGoal ?? this.proteinGoal,
       carbGoal: carbGoal ?? this.carbGoal,
       fatGoal: fatGoal ?? this.fatGoal,
@@ -148,6 +157,7 @@ class User extends HiveObject {
         'isGuest': isGuest,
         'activityLevel': activityLevel,
         'calorieGoal': calorieGoal,
+        'caloriesToday': caloriesToday,
         'proteinGoal': proteinGoal,
         'carbGoal': carbGoal,
         'fatGoal': fatGoal,
@@ -173,6 +183,7 @@ class User extends HiveObject {
         isGuest: json['isGuest'] ?? false,
         activityLevel: json['activityLevel'] ?? 'Sedentaria', // FIX
         calorieGoal: json['calorieGoal']?.toDouble(),
+        caloriesToday: (json['caloriesToday'] ?? 0).toDouble(),
         proteinGoal: json['proteinGoal']?.toDouble(),
         carbGoal: json['carbGoal']?.toDouble(),
         fatGoal: json['fatGoal']?.toDouble(),

@@ -18,10 +18,6 @@ import 'dart:math';
 import 'package:myapp/data/motivational_quotes.dart';
 import 'package:myapp/widgets/dashboard/pending_reminders_widget.dart';
 import 'package:myapp/widgets/routine_status_button.dart';
-<<<<<<< HEAD
-import 'package:myapp/screens/settings/caloric_goals_screen.dart';
-=======
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -72,10 +68,6 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildWelcomeHeader(BuildContext context) {
-<<<<<<< HEAD
-    debugPrint('[Dashboard] _buildWelcomeHeader');
-=======
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
     return Consumer<AchievementService>(
       builder: (context, achievementService, child) {
         final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -104,14 +96,14 @@ class DashboardScreen extends StatelessWidget {
                         ),
                       CircleAvatar(
                         radius: 25,
-                        backgroundColor: Theme.of(context)
-                            .colorScheme
-                            .secondaryContainer,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondaryContainer,
                         backgroundImage: user?.profileImageBytes != null
                             ? MemoryImage(user!.profileImageBytes!)
                             : null,
                         child: user?.profileImageBytes == null
-                            ? Icon(PhosphorIcons.user(PhosphorIconsStyle.duotone),
+                            ? Icon(
+                                PhosphorIcons.user(PhosphorIconsStyle.duotone),
                                 size: 40,
                                 color: Theme.of(context)
                                     .colorScheme
@@ -157,31 +149,35 @@ class DashboardScreen extends StatelessWidget {
   Widget _buildTrainingCard(BuildContext context) {
     final String dayOfWeek = DateFormat('EEEE', 'es_ES').format(DateTime.now());
 
-<<<<<<< HEAD
-    debugPrint('[Dashboard] _buildTrainingCard');
-=======
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
     return Consumer<RoutineProvider>(
       builder: (context, routineProvider, child) {
         final todayRoutines = routineProvider.routines
-            .where((r) => r.activeDays.any((d) => d.toLowerCase() == dayOfWeek.toLowerCase()))
+            .where((r) => r.activeDays
+                .any((d) => d.toLowerCase() == dayOfWeek.toLowerCase()))
             .toList();
         final isRestDay = todayRoutines.isEmpty;
 
         return Card(
           elevation: 4,
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          color: isRestDay ? Colors.grey[800] : Theme.of(context).colorScheme.primaryContainer,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          color: isRestDay
+              ? Colors.grey[800]
+              : Theme.of(context).colorScheme.primaryContainer,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
-                  isRestDay ? PhosphorIcons.bed(PhosphorIconsStyle.duotone) : PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
+                  isRestDay
+                      ? PhosphorIcons.bed(PhosphorIconsStyle.duotone)
+                      : PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
                   size: 32,
-                  color: isRestDay ? Colors.white : Theme.of(context).colorScheme.primary,
+                  color: isRestDay
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.primary,
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -189,21 +185,41 @@ class DashboardScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isRestDay ? '¡A recargar energías!' : (todayRoutines.length == 1 ? 'Tu Reto de Hoy' : 'Rutinas para Hoy'),
-                        style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.bold, color: isRestDay ? Colors.white70 : Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8)),
+                        isRestDay
+                            ? '¡A recargar energías!'
+                            : (todayRoutines.length == 1
+                                ? 'Tu Reto de Hoy'
+                                : 'Rutinas para Hoy'),
+                        style: GoogleFonts.montserrat(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: isRestDay
+                                ? Colors.white70
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer
+                                    .withOpacity(0.8)),
                       ),
                       const SizedBox(height: 4),
                       if (isRestDay)
                         Text(
                           'Día de Descanso',
-                          style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
+                          style: GoogleFonts.lato(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         )
                       else if (todayRoutines.length == 1)
                         Text(
                           todayRoutines.first.name,
-                          style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                          style: GoogleFonts.lato(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         )
@@ -220,7 +236,12 @@ class DashboardScreen extends StatelessWidget {
                                   Expanded(
                                     child: Text(
                                       routine.name,
-                                      style: GoogleFonts.lato(fontSize: 15, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                                      style: GoogleFonts.lato(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryContainer),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -238,18 +259,23 @@ class DashboardScreen extends StatelessWidget {
                 if (!isRestDay && todayRoutines.length == 1)
                   ElevatedButton.icon(
                     icon: const Icon(Icons.play_arrow, size: 16),
-                    label: const Text('Comenzar', style: TextStyle(fontSize: 13)),
+                    label:
+                        const Text('Comenzar', style: TextStyle(fontSize: 13)),
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => WorkoutScreen(routine: todayRoutines.first)),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                WorkoutScreen(routine: todayRoutines.first)),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
               ],
@@ -261,10 +287,6 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildMeditationCard(BuildContext context) {
-<<<<<<< HEAD
-    debugPrint('[Dashboard] _buildMeditationCard');
-=======
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -343,287 +365,184 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildDailyProgressRings(BuildContext context) {
-<<<<<<< HEAD
-    debugPrint('[Dashboard] _buildDailyProgressRings');
-    return Consumer2<RoutineProvider, WaterIntakeProvider>(
-      builder: (context, routineProvider, waterProvider, child) {
-        // routines for today (not required for this card)
-=======
-    final String dayOfWeek = DateFormat('EEEE', 'es_ES').format(DateTime.now());
-    return Consumer2<RoutineProvider, WaterIntakeProvider>(
-      builder: (context, routineProvider, waterProvider, child) {
+    return Consumer3<UserProvider, WaterIntakeProvider, RoutineProvider>(
+      builder: (context, userProvider, waterProvider, routineProvider, child) {
+        // Calorías
+        final caloricGoal = userProvider.user?.caloricGoal?.toInt() ?? 1520;
+        final caloriesToday = (userProvider.user != null && userProvider.user!.caloriesToday != null)
+            ? userProvider.user!.caloriesToday.toInt()
+            : 0;
+        final plan = userProvider.user?.dietPlan?.toLowerCase() ?? 'mantener';
+        IconData planIcon;
+        Color planColor;
+        String planText;
+        switch (plan) {
+          case 'perder':
+            planIcon = Icons.arrow_downward_rounded;
+            planColor = Colors.blueAccent;
+            planText = 'Perder';
+            break;
+          case 'mantener':
+            planIcon = Icons.remove_rounded;
+            planColor = Colors.amber;
+            planText = 'Mantener';
+            break;
+          case 'ganar':
+            planIcon = Icons.arrow_upward_rounded;
+            planColor = Colors.green;
+            planText = 'Ganar';
+            break;
+          default:
+            planIcon = Icons.remove_rounded;
+            planColor = Colors.amber;
+            planText = plan[0].toUpperCase() + plan.substring(1);
+        }
+        // Agua
+        final int waterGoal = waterProvider.dailyGoal > 0 ? waterProvider.dailyGoal.toInt() : 2000;
+        final int totalWater = waterProvider.getWaterIntakeForDate(DateTime.now()).toInt();
+        // Entrenamiento
+        final String dayOfWeek = DateFormat('EEEE', 'es_ES').format(DateTime.now());
         final List<Routine> todayRoutines = routineProvider.routines
             .where((r) => r.activeDays.any((d) => d.toLowerCase() == dayOfWeek.toLowerCase()))
             .toList();
-        final bool isRestDay = todayRoutines.isEmpty;
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
-        final double waterGoal = waterProvider.dailyGoal;
-        final double totalWater = waterProvider.getWaterIntakeForDate(DateTime.now());
+        final bool trainedToday = false; // Aquí deberías consultar tu base de datos de logs
         return Card(
-          elevation: 4,
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-<<<<<<< HEAD
-            color: Theme.of(context).colorScheme.primaryContainer,
+          elevation: 2,
+          margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7),
           child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        PhosphorIcons.fire(PhosphorIconsStyle.duotone),
-                        size: 32,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Progreso Diario',
-                          style: GoogleFonts.montserrat(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimaryContainer),
-                        ),
-                      ),
-                      Builder(builder: (ctx) {
-                        final user = Provider.of<UserProvider>(ctx, listen: false).user;
-                        final planLabel = (user?.dietPlan ?? 'Mantener');
-                        Color chipColor = Theme.of(context).colorScheme.secondaryContainer;
-                        Color textColor = Theme.of(context).colorScheme.onSecondaryContainer;
-                        IconData planIcon = PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill);
-                        final lower = planLabel.toLowerCase();
-                        if (lower.contains('mantener')) {
-                          chipColor = Colors.green.shade100;
-                          textColor = Colors.green.shade800;
-                          planIcon = PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill);
-                        } else if (lower.contains('déficit') || lower.contains('deficit') || lower.contains('perder')) {
-                          chipColor = Colors.orange.shade100;
-                          textColor = Colors.orange.shade800;
-                          planIcon = PhosphorIcons.arrowDown(PhosphorIconsStyle.fill);
-                        } else if (lower.contains('superávit') || lower.contains('superavit') || lower.contains('ganar') || lower.contains('aument')) {
-                          chipColor = Colors.red.shade100;
-                          textColor = Colors.red.shade800;
-                          planIcon = PhosphorIcons.arrowUp(PhosphorIconsStyle.fill);
-                        }
-                        return ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(ctx).push(MaterialPageRoute(builder: (_) => const CaloricGoalsScreen()));
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: chipColor,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 28,
-                                height: 28,
-                                decoration: BoxDecoration(
-                                  color: textColor.withOpacity(0.12),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(planIcon, size: 16, color: textColor),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(planLabel, style: GoogleFonts.lato(fontSize: 12, color: textColor)),
-                            ],
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Calorías',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Builder(builder: (ctx) {
-                              final user = Provider.of<UserProvider>(ctx, listen: false).user;
-                              final caloricGoal = user?.calorieGoal ?? 0.0;
-                              final foodBox = Hive.box<FoodLog>('food_logs');
-                              final today = DateTime.now();
-                              final totalCalories = foodBox.values
-                                  .where((log) => log.date.year == today.year && log.date.month == today.month && log.date.day == today.day)
-                                  .fold<double>(0, (sum, log) => sum + log.calories);
-                              final caloriePercent = caloricGoal > 0 ? (totalCalories / caloricGoal).clamp(0.0, 1.0) : 0.0;
-                              return Column(
-                                children: [
-                                  CircularPercentIndicator(
-                                    radius: 40.0,
-                                    lineWidth: 8.0,
-                                    percent: caloriePercent,
-                                    center: Icon(PhosphorIcons.fire(PhosphorIconsStyle.fill), color: Colors.orange, size: 28),
-                                    progressColor: Colors.orange,
-                                    backgroundColor: Colors.orange.shade100,
-                                    circularStrokeCap: CircularStrokeCap.round,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  if (caloricGoal > 0)
-                                    Text('${totalCalories.toInt()} / ${caloricGoal.toInt()}', style: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 12))
-                                  else
-                                    Text('Sin definir', style: GoogleFonts.lato(fontWeight: FontWeight.bold, color: Colors.grey, fontSize: 12)),
-                                  Text('kcal', style: GoogleFonts.lato(color: Colors.grey, fontSize: 12)),
-                                ],
-                              );
-                            }),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Progreso de Agua',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer
-                                    .withOpacity(0.8),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            CircularPercentIndicator(
-                              radius: 40.0,
-                              lineWidth: 8.0,
-                              percent: waterGoal > 0 ? (totalWater / waterGoal).clamp(0.0, 1.0) : 0.0,
-                              center: Icon(PhosphorIcons.drop(PhosphorIconsStyle.fill), color: Colors.blue, size: 28),
-                              progressColor: Colors.blue,
-                              backgroundColor: Colors.blue.shade100,
-                              circularStrokeCap: CircularStrokeCap.round,
-                            ),
-                            const SizedBox(height: 8),
-                            if (waterGoal > 0)
-                              Text('${totalWater.toInt()} / ${waterGoal.toInt()}', style: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 12))
-                            else
-                              Text('Sin definir', style: GoogleFonts.lato(fontWeight: FontWeight.bold, color: Colors.grey, fontSize: 12)),
-                            Text('ml', style: GoogleFonts.lato(color: Colors.grey, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Entrenamiento',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer
-                                    .withOpacity(0.8),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            _buildTrainingRing(),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-=======
-          color: isRestDay
-              ? Colors.grey[800]
-              : Theme.of(context).colorScheme.primaryContainer,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  isRestDay
-                      ? PhosphorIcons.bed(PhosphorIconsStyle.duotone)
-                      : PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
-                  size: 32,
-                  color: isRestDay
-                      ? Colors.white
-                      : Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Progreso de Agua',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onPrimaryContainer
-                              .withOpacity(0.8),
-                        ),
+                Row(
+                  children: [
+                    Icon(Icons.local_fire_department, color: Theme.of(context).colorScheme.secondary, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Progreso Diario',
+                      style: GoogleFonts.montserrat(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
-                      const SizedBox(height: 4),
-                      CircularPercentIndicator(
-                        radius: 40.0,
-                        lineWidth: 8.0,
-                        percent: waterGoal > 0 ? (totalWater / waterGoal).clamp(0.0, 1.0) : 0.0,
-                        center: Icon(PhosphorIcons.drop(PhosphorIconsStyle.fill),
-                            color: Colors.blue, size: 28),
-                        progressColor: Colors.blue,
-                        backgroundColor: Colors.blue.shade100,
-                        circularStrokeCap: CircularStrokeCap.round,
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: planColor.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      const SizedBox(height: 8),
-                      if (waterGoal > 0)
-                        Text(
-                          '${totalWater.toInt()} / ${waterGoal.toInt()}',
-                          style: GoogleFonts.lato(
-                              fontWeight: FontWeight.bold, fontSize: 12),
-                          textAlign: TextAlign.center,
-                        )
-                      else
-                        Text(
-                          'Sin definir',
-                          style: GoogleFonts.lato(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                            fontSize: 12,
+                      child: Row(
+                        children: [
+                          Icon(planIcon, color: planColor, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            planText,
+                            style: GoogleFonts.lato(
+                              fontSize: 13,
+                              color: planColor,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      Text(
-                        'ml',
-                        style: GoogleFonts.lato(color: Colors.grey, fontSize: 12),
-                        textAlign: TextAlign.center,
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // Calorías
+                    _buildRing(
+                      context,
+                      color: Colors.amber,
+                      icon: Icons.local_fire_department,
+                      label: 'Calorías',
+                      value: caloriesToday,
+                      goal: caloricGoal,
+                      unit: 'kcal',
+                    ),
+                    // Agua
+                    _buildRing(
+                      context,
+                      color: Colors.blue,
+                      icon: PhosphorIcons.drop(PhosphorIconsStyle.fill),
+                      label: 'Progreso de Agua',
+                      value: totalWater,
+                      goal: waterGoal,
+                      unit: 'ml',
+                    ),
+                    // Entrenamiento
+                    _buildRing(
+                      context,
+                      color: Colors.green,
+                      icon: PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
+                      label: 'Entrenamiento',
+                      value: trainedToday ? 1 : 0,
+                      goal: 1,
+                      unit: 'Hoy',
+                      isTraining: true,
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
->>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
         );
       },
+    );
+  }
+
+  Widget _buildRing(
+    BuildContext context, {
+    required Color color,
+    required IconData icon,
+    required String label,
+    required int value,
+    required int goal,
+    required String unit,
+    bool isTraining = false,
+  }) {
+    final percent = isTraining ? (value == 1 ? 1.0 : 0.0) : (goal > 0 ? (value / goal).clamp(0.0, 1.0) : 0.0);
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.montserrat(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: color.withOpacity(0.8),
+            ),
+          ),
+          const SizedBox(height: 4),
+          CircularPercentIndicator(
+            radius: 40.0,
+            lineWidth: 8.0,
+            percent: percent,
+            center: Icon(icon, color: color, size: 28),
+            progressColor: color,
+            backgroundColor: color.withOpacity(0.15),
+            circularStrokeCap: CircularStrokeCap.round,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isTraining ? (value == 1 ? 'Hecho' : 'Pendiente') : '$value / $goal',
+            style: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+          Text(
+            unit,
+            style: GoogleFonts.lato(color: Colors.grey, fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -633,13 +552,10 @@ class DashboardScreen extends StatelessWidget {
       builder: (context, Box<RoutineLog> box, _) {
         final now = DateTime.now();
         bool isSameDay(DateTime d1, DateTime d2) {
-          return d1.year == d2.year &&
-              d1.month == d2.month &&
-              d1.day == d2.day;
+          return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
         }
 
-        final trainedToday =
-            box.values.any((log) => isSameDay(log.date, now));
+        final trainedToday = box.values.any((log) => isSameDay(log.date, now));
         final percent = trainedToday ? 1.0 : 0.0;
 
         return Column(
@@ -657,8 +573,8 @@ class DashboardScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               trainedToday ? '¡Hecho!' : 'Pendiente',
-              style: GoogleFonts.lato(
-                  fontWeight: FontWeight.bold, fontSize: 12),
+              style:
+                  GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 12),
               textAlign: TextAlign.center,
             ),
             Text(
