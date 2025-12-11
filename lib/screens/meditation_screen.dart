@@ -102,17 +102,17 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
       HapticFeedback.mediumImpact();
       
       final provider = Provider.of<MeditationProvider>(context, listen: false);
-      provider.addMeditationLog(
-        durationMinutes: _secondsElapsed ~/ 60,
-        notes: _meditationType,
-      );
+      final endTime = DateTime.now();
+      final startTime = endTime.subtract(Duration(seconds: _secondsElapsed));
+      
+      provider.addMeditationLog(startTime, endTime);
 
       // Mostrar mensaje de finalización
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '¡Sesión completada! ${_formatDuration(_secondsElapsed)}',
+              '¡Sesión completada! ${_formatDuration(_secondsElapsed)} - $_meditationType',
               style: const TextStyle(fontSize: 16),
             ),
             backgroundColor: Colors.green,
