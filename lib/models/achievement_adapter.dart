@@ -2,6 +2,9 @@ import 'package:hive/hive.dart';
 import 'package:myapp/models/achievement.dart';
 import 'package:flutter/material.dart';
 
+// Nota: IconData no puede ser const aquí porque se lee dinámicamente de Hive
+// Requiere: flutter build appbundle --release --no-tree-shake-icons
+
 class AchievementAdapter extends TypeAdapter<Achievement> {
   @override
   final int typeId = 20;

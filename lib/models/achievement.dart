@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+// Nota: Esta clase usa IconData dinámico, lo que requiere:
+// flutter build appbundle --release --no-tree-shake-icons
+// Esto es necesario porque los iconos se cargan desde Hive
+
 enum AchievementCategory {
   firstSteps('Primeros Pasos'),
   streaks('Rachas Legendarias'),
