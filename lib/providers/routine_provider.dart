@@ -39,14 +39,13 @@ class RoutineProvider with ChangeNotifier {
 
   Routine? getRoutineForDay(String dayOfWeek) {
     try {
-      // Find the first routine that matches the day of the week, case-insensitive
+      // Buscar rutinas que tengan el día en activeDays (soporta dayOfWeek y daysOfWeek)
       final routine = routines.firstWhere(
-        (r) => r.dayOfWeek?.toLowerCase() == dayOfWeek.toLowerCase(),
+        (r) => r.activeDays.any((d) => d.toLowerCase() == dayOfWeek.toLowerCase()),
       );
-      _loadExercisesForRoutine(routine); // Ensure its exercises are loaded
+      _loadExercisesForRoutine(routine);
       return routine;
     } catch (e) {
-      // firstWhere throws an error if no element is found, so we return null.
       return null;
     }
   }
