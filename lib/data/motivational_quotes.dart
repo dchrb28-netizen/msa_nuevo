@@ -1,0 +1,17 @@
+const List<String> motivationalQuotes = [
+  "La única manera de hacer un gran trabajo es amar lo que haces.",
+  "El dolor que sientes hoy es la fuerza que sentirás mañana.",
+  "No te detengas cuando estés cansado. Detente cuando hayas terminado.",
+  "El cuerpo logra lo que la mente cree.",
+  "La disciplina es el puente entre las metas y los logros.",
+  "La diferencia entre lo imposible y lo posible reside en la determinación de una persona.",
+  "El éxito no es definitivo, el fracaso no es fatal: es el coraje de continuar lo que cuenta.",
+  "El sudor es la grasa llorando.",
+  "El camino hacia el éxito está siempre en construcción.",
+  "No cuentes los días, haz que los días cuenten.",
+  "Si quieres algo que nunca has tenido, tendrás que hacer algo que nunca has hecho.",
+  "La motivación es lo que te pone en marcha. El hábito es lo que hace que sigas.",
+  "Entrena como una bestia, luce como una belleza.",
+  "El único mal entrenamiento es el que no se hace.",
+  "No se trata de ser el mejor. Se trata de ser mejor de lo que eras ayer.",
+];

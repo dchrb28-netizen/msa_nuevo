@@ -1,0 +1,72 @@
+name: myapp
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  intl: 0.20.2
+  simple_animations: 5.2.0
+  hive: 2.2.3
+  hive_flutter: 1.1.0
+  path_provider: ^2.1.5
+  uuid: 4.5.2
+  percent_indicator: 4.2.5
+  image_picker: 1.2.1
+  provider: 6.1.5+1
+  google_fonts: 6.3.2
+  flex_color_picker: 3.7.2
+  flutter_colorpicker: 1.1.0
+  flutter_staggered_animations: 1.1.1
+  fl_chart: 1.1.1
+  rive: 0.13.20
+  shared_preferences: 2.5.3
+  url_launcher: 6.3.2
+  json_annotation: 4.9.0
+  syncfusion_flutter_gauges: 31.2.15
+  path: 1.9.1
+  smooth_page_indicator: 1.2.1
+  freezed_annotation: 2.4.4
+  table_calendar: 3.2.0
+  http: 1.6.0
+  flutter_html: 3.0.0
+  flutter_local_notifications: 19.5.0
+  timezone: 0.10.1
+  timeline_tile: 2.0.0
+  permission_handler: ^12.0.1
+  phosphor_flutter: 2.1.0
+  collection: 1.19.1
+  share_plus: 12.0.1
+  file_picker: 10.3.7
+  workmanager: 0.9.0+3
+  flutter_foreground_task: 9.1.0
+  universal_html: 2.3.0
+  file_saver: 0.3.1
+  firebase_core: 4.2.1
+  firebase_ai: 3.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: 6.0.0
+  build_runner: 2.4.13
+  json_serializable: 6.8.0
+  freezed: 2.5.2
+  hive_generator: 2.0.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/acuario/
+    - assets/icons/
+    - assets/luna_png/
+    - assets/marcos/

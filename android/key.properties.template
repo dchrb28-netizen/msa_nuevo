@@ -1,0 +1,22 @@
+# PLANTILLA DE CONFIGURACIÓN DE FIRMA
+# 
+# INSTRUCCIONES:
+# 1. Copia este archivo y renómbralo a "key.properties" (sin .template)
+# 2. Genera tu keystore con el comando:
+#    keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+# 3. Completa los valores a continuación con tu información real
+# 4. NUNCA subas el archivo key.properties ni el keystore a Git
+#
+# VALORES A COMPLETAR:
+
+# Ruta al archivo keystore (ej: /Users/tunombre/upload-keystore.jks)
+storeFile=/ruta/a/tu/upload-keystore.jks
+
+# Contraseña del keystore
+storePassword=TU_CONTRASEÑA_KEYSTORE
+
+# Alias de la clave (el que usaste al generar el keystore)
+keyAlias=upload
+
+# Contraseña de la clave
+keyPassword=TU_CONTRASEÑA_CLAVE

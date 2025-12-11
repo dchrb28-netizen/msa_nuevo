@@ -1,0 +1,22 @@
+import 'package:hive/hive.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:myapp/models/exercise.dart';
+import 'package:myapp/models/set_log.dart';
+
+part 'exercise_log.g.dart';
+
+@JsonSerializable(explicitToJson: true)
+@HiveType(typeId: 9)
+class ExerciseLog extends HiveObject {
+  @HiveField(0)
+  final Exercise exercise;
+
+  @HiveField(1)
+  List<SetLog> sets;
+
+  ExerciseLog({required this.exercise, required this.sets});
+
+  factory ExerciseLog.fromJson(Map<String, dynamic> json) =>
+      _$ExerciseLogFromJson(json);
+  Map<String, dynamic> toJson() => _$ExerciseLogToJson(this);
+}
