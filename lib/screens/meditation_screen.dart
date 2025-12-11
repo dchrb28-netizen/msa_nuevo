@@ -5,7 +5,6 @@ import 'package:myapp/providers/meditation_provider.dart';
 import 'package:myapp/services/time_format_service.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
-import 'dart:math' as math;
 
 class MeditationScreen extends StatefulWidget {
   const MeditationScreen({super.key});
@@ -528,10 +527,10 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
                       ),
                     );
                   },
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
         ],
       ),
     );
