@@ -467,38 +467,6 @@ class DashboardScreen extends StatelessWidget {
         );
       },
     );
-                  color: Colors.blue, size: 28),
-              progressColor: Colors.blue,
-              backgroundColor: Colors.blue.shade100,
-              circularStrokeCap: CircularStrokeCap.round,
-            ),
-            const SizedBox(height: 8),
-            if (waterGoal > 0)
-              Text(
-                '${totalWater.toInt()} / ${waterGoal.toInt()}',
-                style: GoogleFonts.lato(
-                    fontWeight: FontWeight.bold, fontSize: 12),
-                textAlign: TextAlign.center,
-              ),
-            if (waterGoal <= 0)
-              Text(
-                'Sin definir',
-                style: GoogleFonts.lato(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            Text(
-              'ml',
-              style: GoogleFonts.lato(color: Colors.grey, fontSize: 12),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Widget _buildTrainingRing() {
