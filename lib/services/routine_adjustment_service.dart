@@ -28,10 +28,10 @@ class RoutineAdjustmentService {
     return (newWeight * 2).round() / 2;
   }
 
-  /// Obtiene todas las rutinas del usuario (excluyendo predeterminadas)
+  /// Obtiene todas las rutinas del usuario
   static Future<List<Routine>> getUserRoutines() async {
     final routineBox = Hive.box<Routine>('routines');
-    return routineBox.values.where((r) => !r.isPredetermined).toList();
+    return routineBox.values.toList();
   }
 
   /// Calcula los ajustes sugeridos para todas las rutinas
@@ -44,19 +44,24 @@ class RoutineAdjustmentService {
     for (final routine in routines) {
       final exerciseAdjustments = <ExerciseAdjustment>[];
       
-      for (final exercise in routine.exercises) {
-        final newWeight = calculateAdjustedWeight(
-          exercise.defaultWeight,
-          weightChangePercentage,
-        );
-        
-        // Solo incluir si hay cambio significativo (>0.5kg)
-        if ((newWeight - exercise.defaultWeight).abs() >= 0.5) {
-          exerciseAdjustments.add(ExerciseAdjustment(
-            exerciseName: exercise.name,
-            oldWeight: exercise.defaultWeight,
-            newWeight: newWeight,
-          ));
+      if (routine.exercises != null) {
+        for (final exercise in routine.exercises!) {
+          // Si el ejercicio tiene peso definido
+          if (exercise.weight != null && exercise.weight! > 0) {
+            final newWeight = calculateAdjustedWeight(
+              exercise.weight!,
+              weightChangePercentage,
+            );
+            
+            // Solo incluir si hay cambio significativo (>0.5kg)
+            if ((newWeight - exercise.weight!).abs() >= 0.5) {
+              exerciseAdjustments.add(ExerciseAdjustment(
+                exerciseName: exercise.exercise.name,
+                oldWeight: exercise.weight!,
+                newWeight: newWeight,
+              ));
+            }
+          }
         }
       }
 
@@ -79,38 +84,27 @@ class RoutineAdjustmentService {
 
     for (final adjustment in adjustments.values) {
       final routine = routineBox.get(adjustment.routineId);
-      if (routine == null) continue;
+      if (routine == null || routine.exercises == null) continue;
 
-      // Crear nueva lista de ejercicios con pesos actualizados
-      final updatedExercises = routine.exercises.map((exercise) {
+      // Actualizar pesos en los ejercicios existentes
+      for (final exercise in routine.exercises!) {
         final exerciseAdjustment = adjustment.exercises.firstWhere(
-          (adj) => adj.exerciseName == exercise.name,
+          (adj) => adj.exerciseName == exercise.exercise.name,
           orElse: () => ExerciseAdjustment(
-            exerciseName: exercise.name,
-            oldWeight: exercise.defaultWeight,
-            newWeight: exercise.defaultWeight,
+            exerciseName: exercise.exercise.name,
+            oldWeight: exercise.weight ?? 0,
+            newWeight: exercise.weight ?? 0,
           ),
         );
 
-        return RoutineExercise(
-          name: exercise.name,
-          sets: exercise.sets,
-          reps: exercise.reps,
-          restSeconds: exercise.restSeconds,
-          defaultWeight: exerciseAdjustment.newWeight,
-          exerciseId: exercise.exerciseId,
-        );
-      }).toList();
+        // Solo actualizar si hubo cambio
+        if (exerciseAdjustment.oldWeight != exerciseAdjustment.newWeight) {
+          exercise.weight = exerciseAdjustment.newWeight;
+        }
+      }
 
-      // Actualizar rutina en la base de datos
-      final updatedRoutine = Routine(
-        id: routine.id,
-        name: routine.name,
-        exercises: updatedExercises,
-        isPredetermined: routine.isPredetermined,
-      );
-
-      await routineBox.put(routine.id, updatedRoutine);
+      // Guardar la rutina actualizada
+      await routine.save();
       updatedCount++;
     }
 
