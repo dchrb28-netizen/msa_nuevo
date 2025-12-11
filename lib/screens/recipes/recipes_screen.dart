@@ -8,7 +8,6 @@ import 'package:myapp/screens/recipes/add_recipe_screen.dart';
 import 'package:myapp/screens/recipes/user_recipe_detail_screen.dart';
 import 'package:myapp/services/recipe_service.dart';
 import 'package:myapp/models/recipe.dart';
-import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 

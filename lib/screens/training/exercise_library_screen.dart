@@ -3,7 +3,6 @@ import 'package:myapp/models/exercise.dart';
 import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/screens/training/edit_exercise_screen.dart';
 import 'package:myapp/screens/training/exercise_detail_screen.dart';
-import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:provider/provider.dart';
 
 class ExerciseLibraryScreen extends StatefulWidget {
@@ -377,8 +376,6 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                     ),
                   );
                 },
-              ),
-                ],
               );
             },
           ),

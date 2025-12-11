@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:myapp/screens/menus/today_menu_screen.dart';
 import 'package:myapp/screens/menus/weekly_planner_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';

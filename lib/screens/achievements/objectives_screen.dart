@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/user_provider.dart';
-import 'package:myapp/widgets/luna_watermark.dart';
 import 'dart:math';
 
 class ObjectivesScreen extends StatefulWidget {

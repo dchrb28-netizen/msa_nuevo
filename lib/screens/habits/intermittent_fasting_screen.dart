@@ -6,7 +6,6 @@ import 'package:myapp/models/fasting_phase.dart';
 import 'package:myapp/models/fasting_plan.dart';
 import 'package:myapp/providers/fasting_provider.dart';
 import 'package:myapp/services/time_format_service.dart';
-import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:myapp/widgets/sun_moon_timer.dart';
 import 'package:provider/provider.dart';
 import 'package:timeline_tile/timeline_tile.dart';

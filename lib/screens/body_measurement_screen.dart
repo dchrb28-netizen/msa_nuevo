@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/screens/logs/body_measurement_history_view.dart';
 import 'package:myapp/screens/logs/body_measurement_today_view.dart';
-import 'package:myapp/widgets/luna_watermark.dart';
+
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 

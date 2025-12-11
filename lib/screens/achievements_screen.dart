@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/achievement.dart';
 import 'package:myapp/services/achievement_service.dart';
-import 'package:myapp/widgets/luna_watermark.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class AchievementsScreen extends StatefulWidget {
@@ -96,8 +95,6 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
             );
           },
         ),
-          ),
-        ],
       ),
     );
   }
