@@ -6,15 +6,16 @@ class ThemeProvider with ChangeNotifier {
   final String keySeedColor = "seed_color";
 
   ThemeMode _themeMode = ThemeMode.system;
-  Color _seedColor = const Color(0xFF2E7D32); // Default to Zen
+  Color _seedColor = const Color(0xFF00BCD4); // Default celeste (Cyan)
 
   ThemeMode get themeMode => _themeMode;
   Color get seedColor => _seedColor;
 
   // Mapa de colores con nombres para la UI
   final Map<String, Color> _availableThemes = {
-    'Zen': const Color(0xFF2E7D32),
+    'Celeste': const Color(0xFF00BCD4),
     'Océano': Colors.blue,
+    'Zen': const Color(0xFF2E7D32),
     'Naturaleza': Colors.green,
     'Fuego': Colors.red,
     'Lavanda': Colors.purple,
