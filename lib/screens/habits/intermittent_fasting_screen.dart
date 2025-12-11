@@ -504,28 +504,14 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                     decoration: BoxDecoration(
-                      gradient: isSelected
-                          ? LinearGradient(
-                              colors: [
-                                theme.colorScheme.primary,
-                                theme.colorScheme.primary.withValues(alpha: 0.8),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            )
-                          : LinearGradient(
-                              colors: [
-                                theme.colorScheme.surfaceContainerHighest,
-                                theme.colorScheme.surfaceContainer,
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                      color: isSelected
+                          ? theme.colorScheme.primaryContainer
+                          : theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isSelected
                             ? theme.colorScheme.primary
-                            : Colors.grey.shade300,
+                            : theme.colorScheme.outline.withValues(alpha: 0.3),
                         width: isSelected ? 3 : 1,
                       ),
                       boxShadow: isSelected
@@ -567,7 +553,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                                     Icon(
                                       Icons.check_circle,
                                       size: 18,
-                                      color: Colors.white,
+                                      color: theme.colorScheme.primary,
                                     ),
                                     const SizedBox(width: 6),
                                   ],
@@ -583,8 +569,8 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                                     plan.name,
                                     style: TextStyle(
                                       color: isSelected
-                                          ? Colors.white
-                                          : Colors.grey.shade700,
+                                          ? theme.colorScheme.onPrimaryContainer
+                                          : theme.colorScheme.onSurface,
                                       fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
                                       fontSize: isSelected ? 17 : 15,
                                       letterSpacing: isSelected ? 1.0 : 0.5,
