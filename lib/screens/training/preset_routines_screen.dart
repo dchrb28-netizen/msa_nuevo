@@ -175,43 +175,35 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
       final routine = await provider.addRoutine(
         template.name,
         template.description,
-        selectedDays.isNotEmpty ? selectedDays.first : null, // dayOfWeek para compatibilidad
+        selectedDays.isNotEmpty ? selectedDays.first : null,
       );
-      
+
       // Establecer días seleccionados
       routine.daysOfWeek = selectedDays.isNotEmpty ? selectedDays : null;
 
       // 2. Crear los ejercicios y agregarlos a la rutina
+      final List<RoutineExercise> routineExercises = [];
       for (final exerciseTemplate in template.exercises) {
-        // Verificar que el ejercicio existe antes de agregarlo
         final exerciseData = exerciseBox.get(exerciseTemplate.exerciseId);
         if (exerciseData == null) {
           debugPrint('⚠️ Ejercicio no encontrado: ${exerciseTemplate.exerciseId}');
-          continue; // Saltar este ejercicio si no existe
+          continue;
         }
-        
         final routineExercise = RoutineExercise(
           exerciseId: exerciseTemplate.exerciseId,
           sets: exerciseTemplate.sets,
           reps: exerciseTemplate.reps,
           restTime: exerciseTemplate.restTime,
         );
-        
-        // Cargar los datos del ejercicio en el RoutineExercise
         routineExercise.setExercise(exerciseData);
-        
-        // Guardar en Hive
         await routineExerciseBox.add(routineExercise);
-        
-        // Agregar a la rutina
-        routine.exercises!.add(routineExercise);
+        routineExercises.add(routineExercise);
       }
 
-      // 3. Guardar la rutina con sus ejercicios
-      await routine.save();
+      // 3. Guardar la rutina con sus ejercicios y días
+      await provider.updateRoutine(routine, routineExercises);
 
       if (!mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('✅ "${template.name}" agregada a tus rutinas'),
@@ -219,11 +211,9 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
           behavior: SnackBarBehavior.floating,
         ),
       );
-
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
-      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('❌ Error al crear rutina: $e'),
@@ -877,38 +867,42 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
                     style: TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: List.generate(7, (index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedDays[index] = !selectedDays[index];
-                          });
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: selectedDays[index]
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.surfaceContainerHighest,
-                          ),
-                          child: Center(
-                            child: Text(
-                              daysShort[index],
-                              style: TextStyle(
-                                color: selectedDays[index]
-                                    ? Theme.of(context).colorScheme.onPrimary
-                                    : Theme.of(context).colorScheme.onSurface,
-                                fontWeight: selectedDays[index] ? FontWeight.bold : FontWeight.normal,
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(7, (index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedDays[index] = !selectedDays[index];
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: selectedDays[index]
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.surfaceContainerHighest,
+                            ),
+                            child: Center(
+                              child: Text(
+                                daysShort[index],
+                                style: TextStyle(
+                                  color: selectedDays[index]
+                                      ? Theme.of(context).colorScheme.onPrimary
+                                      : Theme.of(context).colorScheme.onSurface,
+                                  fontWeight: selectedDays[index] ? FontWeight.bold : FontWeight.normal,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    }),
+                        );
+                      }),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Text(
