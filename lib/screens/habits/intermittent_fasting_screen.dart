@@ -503,76 +503,74 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
-                    decoration: BoxDecoration(
-                      color: isSelected ? theme.colorScheme.onPrimary : Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isSelected ? theme.colorScheme.primary : Colors.grey.shade400,
-                        width: isSelected ? 3 : 1.5,
-                      ),
-                      boxShadow: isSelected
-                          ? [
+                    decoration: isSelected
+                        ? BoxDecoration(
+                            color: theme.colorScheme.primary,
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: [
                               BoxShadow(
-                                color: theme.colorScheme.primary.withOpacity(0.25),
-                                blurRadius: 12,
+                                color: theme.colorScheme.primary.withOpacity(0.3),
+                                blurRadius: 8,
                                 spreadRadius: 1,
                                 offset: const Offset(0, 3),
                               ),
-                            ]
-                          : [
+                            ],
+                          )
+                        : BoxDecoration(
+                            color: theme.colorScheme.surface,
+                            borderRadius: BorderRadius.circular(25),
+                            border: Border.all(
+                              color: theme.colorScheme.outline,
+                              width: 1.5,
+                            ),
+                            boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.05),
                                 blurRadius: 2,
                                 offset: const Offset(0, 1),
                               ),
                             ],
-                    ),
+                          ),
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(25),
                         onTap: provider.isFasting
                             ? null
                             : () => provider.setPlan(plan),
                         child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isSelected ? 28 : 24,
-                            vertical: isSelected ? 16 : 14,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
                           ),
-                          child: Column(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (isSelected) ...[
-                                    Icon(
-                                      Icons.check_circle,
-                                      size: 18,
-                                      color: theme.colorScheme.primary,
-                                    ),
-                                    const SizedBox(width: 6),
-                                  ],
-                                  if (plan.isCustom && !isSelected) ...[
-                                    Icon(
-                                      Icons.star,
-                                      size: 16,
-                                      color: Colors.amber.shade700,
-                                    ),
-                                    const SizedBox(width: 6),
-                                  ],
-                                  Text(
-                                    plan.name,
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? theme.colorScheme.primary
-                                          : Colors.black87,
-                                      fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-                                      fontSize: isSelected ? 17 : 15,
-                                      letterSpacing: isSelected ? 1.0 : 0.5,
-                                    ),
-                                  ),
-                                ],
+                              if (isSelected) ...[
+                                Icon(
+                                  Icons.check_circle,
+                                  size: 18,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 6),
+                              ],
+                              if (plan.isCustom && !isSelected) ...[
+                                Icon(
+                                  Icons.star,
+                                  size: 16,
+                                  color: Colors.amber.shade700,
+                                ),
+                                const SizedBox(width: 6),
+                              ],
+                              Text(
+                                plan.name,
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : theme.colorScheme.onSurface,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
                               ),
                             ],
                           ),
@@ -600,7 +598,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             borderRadius: BorderRadius.circular(25),
             boxShadow: [
               BoxShadow(
-                color: Colors.blue.withValues(alpha: 0.3),
+                color: Colors.blue.withOpacity(0.3),
                 blurRadius: 8,
                 spreadRadius: 1,
                 offset: const Offset(0, 3),
