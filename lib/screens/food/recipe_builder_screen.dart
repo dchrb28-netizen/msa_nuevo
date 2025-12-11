@@ -388,6 +388,7 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
             ),
           ),
           const SizedBox(height: 12),
+<<<<<<< HEAD
           LayoutBuilder(
             builder: (context, constraints) {
               final small = constraints.maxWidth < 360;
@@ -405,6 +406,16 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
                 ],
               );
             },
+=======
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNutrientChip('${_totalCalories.toStringAsFixed(0)} kcal', Icons.local_fire_department, Colors.orange),
+              _buildNutrientChip('${_totalProtein.toStringAsFixed(1)}g P', Icons.fitness_center, Colors.red),
+              _buildNutrientChip('${_totalCarbs.toStringAsFixed(1)}g C', Icons.grain, Colors.brown),
+              _buildNutrientChip('${_totalFat.toStringAsFixed(1)}g G', Icons.opacity, Colors.yellow[700]!),
+            ],
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
           ),
           const SizedBox(height: 12),
           ElevatedButton.icon(
@@ -420,10 +431,17 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     );
   }
 
+<<<<<<< HEAD
   Widget _buildNutrientChip(String label, IconData icon, Color color, {double fontSize = 12, double iconSize = 18}) {
     return Chip(
       avatar: Icon(icon, size: iconSize, color: color),
       label: Text(label, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
+=======
+  Widget _buildNutrientChip(String label, IconData icon, Color color) {
+    return Chip(
+      avatar: Icon(icon, size: 18, color: color),
+      label: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
     );
   }
 }

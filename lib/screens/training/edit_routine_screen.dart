@@ -87,7 +87,10 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
     final messenger = ScaffoldMessenger.of(context);
 
     try {
+<<<<<<< HEAD
       debugPrint('[EditRoutine] _saveRoutine: saving routine "$_routineName" isCreating=$_isCreating');
+=======
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
       if (_isCreating) {
         final newRoutine = await routineProvider.addRoutine(
           _routineName,
@@ -107,10 +110,14 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
         await routineProvider.updateRoutine(_existingRoutine!, _routineExercises);
       }
       // Check `mounted` before using the navigator
+<<<<<<< HEAD
         if (mounted) {
           debugPrint('[EditRoutine] _saveRoutine: pop after save');
           navigator.pop();
         }
+=======
+      if (mounted) navigator.pop();
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
 
     } catch (e) {
       // Check `mounted` before using the messenger

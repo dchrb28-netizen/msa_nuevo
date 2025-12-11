@@ -18,7 +18,10 @@ import 'dart:math';
 import 'package:myapp/data/motivational_quotes.dart';
 import 'package:myapp/widgets/dashboard/pending_reminders_widget.dart';
 import 'package:myapp/widgets/routine_status_button.dart';
+<<<<<<< HEAD
 import 'package:myapp/screens/settings/caloric_goals_screen.dart';
+=======
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -69,7 +72,10 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildWelcomeHeader(BuildContext context) {
+<<<<<<< HEAD
     debugPrint('[Dashboard] _buildWelcomeHeader');
+=======
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
     return Consumer<AchievementService>(
       builder: (context, achievementService, child) {
         final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -151,7 +157,10 @@ class DashboardScreen extends StatelessWidget {
   Widget _buildTrainingCard(BuildContext context) {
     final String dayOfWeek = DateFormat('EEEE', 'es_ES').format(DateTime.now());
 
+<<<<<<< HEAD
     debugPrint('[Dashboard] _buildTrainingCard');
+=======
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
     return Consumer<RoutineProvider>(
       builder: (context, routineProvider, child) {
         final todayRoutines = routineProvider.routines
@@ -252,7 +261,10 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildMeditationCard(BuildContext context) {
+<<<<<<< HEAD
     debugPrint('[Dashboard] _buildMeditationCard');
+=======
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -331,10 +343,20 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildDailyProgressRings(BuildContext context) {
+<<<<<<< HEAD
     debugPrint('[Dashboard] _buildDailyProgressRings');
     return Consumer2<RoutineProvider, WaterIntakeProvider>(
       builder: (context, routineProvider, waterProvider, child) {
         // routines for today (not required for this card)
+=======
+    final String dayOfWeek = DateFormat('EEEE', 'es_ES').format(DateTime.now());
+    return Consumer2<RoutineProvider, WaterIntakeProvider>(
+      builder: (context, routineProvider, waterProvider, child) {
+        final List<Routine> todayRoutines = routineProvider.routines
+            .where((r) => r.activeDays.any((d) => d.toLowerCase() == dayOfWeek.toLowerCase()))
+            .toList();
+        final bool isRestDay = todayRoutines.isEmpty;
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
         final double waterGoal = waterProvider.dailyGoal;
         final double totalWater = waterProvider.getWaterIntakeForDate(DateTime.now());
         return Card(
@@ -343,6 +365,7 @@ class DashboardScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
+<<<<<<< HEAD
             color: Theme.of(context).colorScheme.primaryContainer,
           child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -524,6 +547,81 @@ class DashboardScreen extends StatelessWidget {
                 ],
               ),
             ),
+=======
+          color: isRestDay
+              ? Colors.grey[800]
+              : Theme.of(context).colorScheme.primaryContainer,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  isRestDay
+                      ? PhosphorIcons.bed(PhosphorIconsStyle.duotone)
+                      : PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
+                  size: 32,
+                  color: isRestDay
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Progreso de Agua',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimaryContainer
+                              .withOpacity(0.8),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      CircularPercentIndicator(
+                        radius: 40.0,
+                        lineWidth: 8.0,
+                        percent: waterGoal > 0 ? (totalWater / waterGoal).clamp(0.0, 1.0) : 0.0,
+                        center: Icon(PhosphorIcons.drop(PhosphorIconsStyle.fill),
+                            color: Colors.blue, size: 28),
+                        progressColor: Colors.blue,
+                        backgroundColor: Colors.blue.shade100,
+                        circularStrokeCap: CircularStrokeCap.round,
+                      ),
+                      const SizedBox(height: 8),
+                      if (waterGoal > 0)
+                        Text(
+                          '${totalWater.toInt()} / ${waterGoal.toInt()}',
+                          style: GoogleFonts.lato(
+                              fontWeight: FontWeight.bold, fontSize: 12),
+                          textAlign: TextAlign.center,
+                        )
+                      else
+                        Text(
+                          'Sin definir',
+                          style: GoogleFonts.lato(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      Text(
+                        'ml',
+                        style: GoogleFonts.lato(color: Colors.grey, fontSize: 12),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
         );
       },
     );

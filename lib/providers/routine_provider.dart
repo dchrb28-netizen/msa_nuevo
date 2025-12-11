@@ -30,6 +30,7 @@ class RoutineProvider with ChangeNotifier {
         await ex.save();
       }
       routine.exercises = hiveList;
+<<<<<<< HEAD
       debugPrint('[RoutineProvider] createFullRoutine: saving routine ${routine.name} id=${routine.id} with ${hiveList.length} exercises');
       await _routineBox.put(routine.id, routine);
       await routine.save();
@@ -42,6 +43,12 @@ class RoutineProvider with ChangeNotifier {
       } catch (e) {
         debugPrint('[RoutineProvider] createFullRoutine: error reading routines count: $e');
       }
+=======
+      await _routineBox.put(routine.id, routine);
+      await routine.save();
+      _loadExercisesForRoutine(routine);
+      notifyListeners();
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
       return routine;
     }
   final Box<Routine> _routineBox = Hive.box<Routine>('routines');
@@ -105,11 +112,15 @@ class RoutineProvider with ChangeNotifier {
     );
     // Inicializar la HiveList vacía antes de guardar
     routine.exercises = HiveList(_routineExerciseBox);
+<<<<<<< HEAD
     debugPrint('[RoutineProvider] addRoutine: saving routine $name id=${routine.id}');
+=======
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
     await _routineBox.put(routine.id, routine);
     await routine.save();
 
     _loadExercisesForRoutine(routine);
+<<<<<<< HEAD
     debugPrint('[RoutineProvider] addRoutine: saved routine $name');
     notifyListeners();
     try {
@@ -117,6 +128,9 @@ class RoutineProvider with ChangeNotifier {
     } catch (e) {
       debugPrint('[RoutineProvider] addRoutine: error reading routines count: $e');
     }
+=======
+    notifyListeners();
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
     return routine;
   }
 

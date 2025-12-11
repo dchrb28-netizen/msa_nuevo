@@ -4,9 +4,15 @@ import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/screens/training/workout_screen.dart';
 import 'package:provider/provider.dart';
 
+<<<<<<< HEAD
 class RoutineStatusButton extends StatelessWidget {
   final Routine routine;
   const RoutineStatusButton({required this.routine, Key? key}) : super(key: key);
+=======
+class _RoutineStatusButton extends StatelessWidget {
+  final Routine routine;
+  const _RoutineStatusButton({required this.routine, Key? key}) : super(key: key);
+>>>>>>> 4d9cf3efab4eb6978821dbfcffc78b014f1b4d5d
 
   @override
   Widget build(BuildContext context) {
