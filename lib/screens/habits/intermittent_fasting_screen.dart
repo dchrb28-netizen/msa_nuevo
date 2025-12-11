@@ -504,10 +504,10 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.white : theme.colorScheme.surface,
+                      color: isSelected ? Colors.white : Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: isSelected ? Colors.blue.shade400 : theme.colorScheme.outline,
+                        color: isSelected ? Colors.blue.shade400 : Colors.grey.shade400,
                         width: isSelected ? 3 : 1.5,
                       ),
                       boxShadow: isSelected
@@ -566,7 +566,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                                     style: TextStyle(
                                       color: isSelected
                                           ? Colors.blue.shade700
-                                          : theme.colorScheme.onSurface,
+                                          : Colors.black87,
                                       fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
                                       fontSize: isSelected ? 17 : 15,
                                       letterSpacing: isSelected ? 1.0 : 0.5,
