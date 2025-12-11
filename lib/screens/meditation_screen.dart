@@ -331,19 +331,79 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
             ),
 
           // Temporizador y animación
-            SizedBox(
-              height: _isMeditating ? MediaQuery.of(context).size.height - 200 : 300,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (_isMeditating && _showBreathingGuide)
-                      _buildBreathingAnimation(),
-                    
-                    if (_isMeditating && _showBreathingGuide)
-                      const SizedBox(height: 40)
-                    else
-                      const SizedBox(height: 20),
+          SizedBox(
+            height: _isMeditating ? MediaQuery.of(context).size.height - 200 : 300,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (_isMeditating && _showBreathingGuide)
+                    _buildBreathingAnimation(),
+                  
+                  if (_isMeditating && _showBreathingGuide)
+                    const SizedBox(height: 40)
+                  else
+                    const SizedBox(height: 20),
+                  
+                  Text(
+                    _formatDuration(_secondsElapsed),
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  
+                  if (_selectedDuration != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'de ${_formatDuration(_selectedDuration!)}',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        ),
+                      ),
+                    ),
+                  
+                  const SizedBox(height: 40),
+                  
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (_isMeditating) ...[
+                        ElevatedButton.icon(
+                          onPressed: _togglePause,
+                          icon: Icon(_isPaused ? Icons.play_arrow : Icons.pause),
+                          label: Text(_isPaused ? 'Reanudar' : 'Pausar'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        ElevatedButton.icon(
+                          onPressed: () => _toggleMeditation(context),
+                          icon: const Icon(Icons.stop),
+                          label: const Text('Finalizar'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                            backgroundColor: theme.colorScheme.error,
+                            foregroundColor: theme.colorScheme.onError,
+                          ),
+                        ),
+                      ] else
+                        ElevatedButton.icon(
+                          onPressed: () => _toggleMeditation(context),
+                          icon: const Icon(Icons.play_arrow),
+                          label: Text(_selectedDuration == null 
+                            ? 'Iniciar Sesión'
+                            : 'Iniciar ${_selectedDuration! ~/ 60} min'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+                            textStyle: const TextStyle(fontSize: 18),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
 
