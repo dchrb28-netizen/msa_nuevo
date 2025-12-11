@@ -159,6 +159,12 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
       return;
     }
     
+    // Mostrar diálogo de selección de días ANTES de crear la rutina
+    final selectedDays = await _showDaySelectionDialog(context, template.name);
+    
+    // Si el usuario canceló, no hacer nada
+    if (selectedDays == null || !mounted) return;
+    
     setState(() => _isLoading = true);
 
     try {
@@ -169,8 +175,11 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
       final routine = await provider.addRoutine(
         template.name,
         template.description,
-        null, // dayOfWeek
+        selectedDays.isNotEmpty ? selectedDays.first : null, // dayOfWeek para compatibilidad
       );
+      
+      // Establecer días seleccionados
+      routine.daysOfWeek = selectedDays.isNotEmpty ? selectedDays : null;
 
       // 2. Crear los ejercicios y agregarlos a la rutina
       for (final exerciseTemplate in template.exercises) {
@@ -845,6 +854,95 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
           ],
         ),
       ),
+    );
+  }
+
+  Future<List<String>?> _showDaySelectionDialog(BuildContext context, String routineName) async {
+    final days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    final daysShort = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+    final selectedDays = List<bool>.generate(7, (_) => false);
+
+    return showDialog<List<String>>(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('¿Qué días harás "$routineName"?'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Selecciona los días de la semana:',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: List.generate(7, (index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedDays[index] = !selectedDays[index];
+                          });
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: selectedDays[index]
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.surfaceContainerHighest,
+                          ),
+                          child: Center(
+                            child: Text(
+                              daysShort[index],
+                              style: TextStyle(
+                                color: selectedDays[index]
+                                    ? Theme.of(context).colorScheme.onPrimary
+                                    : Theme.of(context).colorScheme.onSurface,
+                                fontWeight: selectedDays[index] ? FontWeight.bold : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Puedes cambiar esto después',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(null),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final selected = <String>[];
+                    for (int i = 0; i < selectedDays.length; i++) {
+                      if (selectedDays[i]) {
+                        selected.add(days[i]);
+                      }
+                    }
+                    Navigator.of(context).pop(selected);
+                  },
+                  child: const Text('Agregar'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }
