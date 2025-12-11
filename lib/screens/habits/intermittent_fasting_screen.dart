@@ -504,16 +504,16 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.white : Colors.grey.shade200,
+                      color: isSelected ? theme.colorScheme.onPrimary : Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: isSelected ? Colors.blue.shade400 : Colors.grey.shade400,
+                        color: isSelected ? theme.colorScheme.primary : Colors.grey.shade400,
                         width: isSelected ? 3 : 1.5,
                       ),
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: Colors.blue.withOpacity(0.25),
+                                color: theme.colorScheme.primary.withOpacity(0.25),
                                 blurRadius: 12,
                                 spreadRadius: 1,
                                 offset: const Offset(0, 3),
@@ -549,7 +549,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                                     Icon(
                                       Icons.check_circle,
                                       size: 18,
-                                      color: Colors.blue.shade400,
+                                      color: theme.colorScheme.primary,
                                     ),
                                     const SizedBox(width: 6),
                                   ],
@@ -565,7 +565,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                                     plan.name,
                                     style: TextStyle(
                                       color: isSelected
-                                          ? Colors.blue.shade700
+                                          ? theme.colorScheme.primary
                                           : Colors.black87,
                                       fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
                                       fontSize: isSelected ? 17 : 15,
