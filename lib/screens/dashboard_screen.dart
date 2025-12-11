@@ -151,162 +151,113 @@ class DashboardScreen extends StatelessWidget {
 
     return Consumer<RoutineProvider>(
       builder: (context, routineProvider, child) {
-        final List<Routine> todayRoutines = routineProvider.routines
+        final todayRoutines = routineProvider.routines
             .where((r) => r.activeDays.any((d) => d.toLowerCase() == dayOfWeek.toLowerCase()))
             .toList();
-        final bool isRestDay = todayRoutines.isEmpty;
+        final isRestDay = todayRoutines.isEmpty;
 
         return Card(
           elevation: 4,
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          color: isRestDay
-              ? Colors.grey[800]
-              : Theme.of(context).colorScheme.primaryContainer,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          color: isRestDay ? Colors.grey[800] : Theme.of(context).colorScheme.primaryContainer,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
-                  isRestDay
-                      ? PhosphorIcons.bed(PhosphorIconsStyle.duotone)
-                      : PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
+                  isRestDay ? PhosphorIcons.bed(PhosphorIconsStyle.duotone) : PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
                   size: 32,
-                  color: isRestDay
-                      ? Colors.white
-                      : Theme.of(context).colorScheme.primary,
+                  color: isRestDay ? Colors.white : Theme.of(context).colorScheme.primary,
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: isRestDay
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '¡A recargar energías!',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white70,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Día de Descanso',
-                              style: GoogleFonts.lato(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isRestDay ? '¡A recargar energías!' : (todayRoutines.length == 1 ? 'Tu Reto de Hoy' : 'Rutinas para Hoy'),
+                        style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.bold, color: isRestDay ? Colors.white70 : Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8)),
+                      ),
+                      const SizedBox(height: 4),
+                      if (isRestDay)
+                        Text(
+                          'Día de Descanso',
+                          style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         )
-                      : Column(
+                      else if (todayRoutines.length == 1)
+                        Text(
+                          todayRoutines.first.name,
+                          style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      else
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              todayRoutines.length == 1
-                                  ? 'Tu Reto de Hoy'
-                                  : 'Rutinas para Hoy',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer
-                                    .withOpacity(0.8),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            if (todayRoutines.length == 1)
-                              Text(
-                                todayRoutines.first.name,
-                                style: GoogleFonts.lato(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimaryContainer,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              )
-                            else
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                          children: todayRoutines.map((routine) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 4.0),
+                              child: Row(
                                 children: [
-                                  for (final routine in todayRoutines)
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 4.0),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.fitness_center,
-                                            size: 16,
-                                            color: Theme.of(context).colorScheme.primary,
-                                          ),
-                                          const SizedBox(width: 6),
-                                          Expanded(
-                                            child: Text(
-                                              routine.name,
-                                              style: GoogleFonts.lato(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimaryContainer,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 6),
-                                          RoutineStatusButton(routine: routine),
-                                        ],
-                                      ),
+                                  const Icon(Icons.fitness_center, size: 16),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      routine.name,
+                                      style: GoogleFonts.lato(fontSize: 15, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  RoutineStatusButton(routine: routine),
                                 ],
                               ),
-// Eliminado duplicado erróneo
+                            );
+                          }).toList(),
                         ),
+                    ],
+                  ),
                 ),
-                if (!isRestDay && todayRoutines.length == 1) ...[
-                  const SizedBox(width: 12),
+                if (!isRestDay && todayRoutines.length == 1)
                   ElevatedButton.icon(
-                    icon: Icon(
-                      PhosphorIcons.play(PhosphorIconsStyle.fill),
-                      size: 16,
-                    ),
-                    label: const Text(
-                      'Comenzar',
-                      style: TextStyle(fontSize: 13),
-                    ),
+                    icon: const Icon(Icons.play_arrow, size: 16),
+                    label: const Text('Comenzar', style: TextStyle(fontSize: 13)),
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              WorkoutScreen(routine: todayRoutines.first),
-                        ),
+                        MaterialPageRoute(builder: (context) => WorkoutScreen(routine: todayRoutines.first)),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-// Removed the _RoutineStatusButton class as it is no longer needed.
-
+  Widget _buildMeditationCard(BuildContext context) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const MeditationScreen()),
+          );
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
