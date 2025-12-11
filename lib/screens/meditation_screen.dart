@@ -39,6 +39,15 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
     'Visualización',
   ];
 
+  final Map<String, String> _meditationDescriptions = {
+    'Libre': 'Meditación sin estructura específica. Simplemente siéntate en silencio y observa tu experiencia presente.',
+    'Mindfulness': 'Atención plena al momento presente. Observa tus pensamientos y sensaciones sin juzgar.',
+    'Respiración': 'Enfoca toda tu atención en la respiración. Nota cada inhalación y exhalación.',
+    'Body Scan': 'Escaneo corporal. Lleva tu atención a cada parte del cuerpo, desde los pies hasta la cabeza.',
+    'Gratitud': 'Reflexiona sobre las cosas por las que estás agradecido. Cultiva sentimientos de aprecio.',
+    'Visualización': 'Usa tu imaginación para visualizar escenas, lugares o situaciones que te traigan paz.',
+  };
+
   @override
   void initState() {
     super.initState();
@@ -184,38 +193,67 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
             ),
         ],
       ),
-      body: Column(
-        children: [
-          // Selector de tipo de meditación
-          if (!_isMeditating)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Tipo de meditación',
-                    style: theme.textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    children: _meditationTypes.map((type) {
-                      final isSelected = _meditationType == type;
-                      return FilterChip(
-                        label: Text(type),
-                        selected: isSelected,
-                        onSelected: (selected) {
-                          setState(() {
-                            _meditationType = type;
-                          });
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Selector de tipo de meditación
+            if (!_isMeditating)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Tipo de meditación',
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.help_outline, size: 20),
+                          onPressed: () => _showMeditationTypesInfo(context),
+                          tooltip: 'Ver información sobre tipos de meditación',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      children: _meditationTypes.map((type) {
+                        final isSelected = _meditationType == type;
+                        return FilterChip(
+                          label: Text(
+                            type,
+                            style: TextStyle(
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
+                          selected: isSelected,
+                          backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                          selectedColor: theme.colorScheme.primaryContainer,
+                          checkmarkColor: theme.colorScheme.primary,
+                          onSelected: (selected) {
+                            setState(() {
+                              _meditationType = type;
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                    if (_meditationType.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          _meditationDescriptions[_meditationType] ?? '',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface.withOpacity(0.7),
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
 
           // Selector de duración
           if (!_isMeditating)
@@ -233,8 +271,16 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
                     spacing: 8,
                     children: [
                       FilterChip(
-                        label: const Text('Libre'),
+                        label: Text(
+                          'Libre',
+                          style: TextStyle(
+                            fontWeight: _selectedDuration == null ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
                         selected: _selectedDuration == null,
+                        backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                        selectedColor: theme.colorScheme.primaryContainer,
+                        checkmarkColor: theme.colorScheme.primary,
                         onSelected: (selected) {
                           setState(() {
                             _selectedDuration = null;
@@ -245,8 +291,16 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
                         final minutes = seconds ~/ 60;
                         final isSelected = _selectedDuration == seconds;
                         return FilterChip(
-                          label: Text('$minutes min'),
+                          label: Text(
+                            '$minutes min',
+                            style: TextStyle(
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
                           selected: isSelected,
+                          backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                          selectedColor: theme.colorScheme.primaryContainer,
+                          checkmarkColor: theme.colorScheme.primary,
                           onSelected: (selected) {
                             setState(() {
                               _selectedDuration = seconds;
@@ -277,75 +331,19 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
             ),
 
           // Temporizador y animación
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (_isMeditating && _showBreathingGuide)
-                    _buildBreathingAnimation(),
-                  
-                  const SizedBox(height: 40),
-                  
-                  Text(
-                    _formatDuration(_secondsElapsed),
-                    style: theme.textTheme.displayLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  
-                  if (_selectedDuration != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        'de ${_formatDuration(_selectedDuration!)}',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                      ),
-                    ),
-                  
-                  const SizedBox(height: 40),
-                  
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (_isMeditating) ...[
-                        ElevatedButton.icon(
-                          onPressed: _togglePause,
-                          icon: Icon(_isPaused ? Icons.play_arrow : Icons.pause),
-                          label: Text(_isPaused ? 'Reanudar' : 'Pausar'),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        ElevatedButton.icon(
-                          onPressed: () => _toggleMeditation(context),
-                          icon: const Icon(Icons.stop),
-                          label: const Text('Finalizar'),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                            backgroundColor: theme.colorScheme.error,
-                            foregroundColor: theme.colorScheme.onError,
-                          ),
-                        ),
-                      ] else
-                        ElevatedButton.icon(
-                          onPressed: () => _toggleMeditation(context),
-                          icon: const Icon(Icons.play_arrow),
-                          label: Text(_selectedDuration == null 
-                            ? 'Iniciar Sesión'
-                            : 'Iniciar ${_selectedDuration! ~/ 60} min'),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-                            textStyle: const TextStyle(fontSize: 18),
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
+            SizedBox(
+              height: _isMeditating ? MediaQuery.of(context).size.height - 200 : 300,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (_isMeditating && _showBreathingGuide)
+                      _buildBreathingAnimation(),
+                    
+                    if (_isMeditating && _showBreathingGuide)
+                      const SizedBox(height: 40)
+                    else
+                      const SizedBox(height: 20),
             ),
           ),
 
@@ -596,6 +594,51 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
           ],
         ),
       ),
+    );
+  }
+
+  void _showMeditationTypesInfo(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Tipos de Meditación'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: _meditationTypes.map((type) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        type,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _meditationDescriptions[type] ?? '',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cerrar'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
