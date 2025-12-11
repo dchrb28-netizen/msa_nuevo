@@ -18,7 +18,10 @@ class Routine extends HiveObject {
   HiveList<RoutineExercise>? exercises;
 
   @HiveField(4)
-  String? dayOfWeek; // Lunes, Martes, etc.
+  String? dayOfWeek; // Mantener para compatibilidad, deprecated
+
+  @HiveField(5)
+  List<String>? daysOfWeek; // Nuevo: múltiples días ['Lunes', 'Miércoles', 'Viernes']
 
   Routine({
     required this.id,
@@ -26,7 +29,18 @@ class Routine extends HiveObject {
     required this.description,
     this.exercises,
     this.dayOfWeek,
+    this.daysOfWeek,
   });
+
+  // Getter para obtener los días (prioriza daysOfWeek sobre dayOfWeek)
+  List<String> get activeDays {
+    if (daysOfWeek != null && daysOfWeek!.isNotEmpty) {
+      return daysOfWeek!;
+    } else if (dayOfWeek != null && dayOfWeek!.isNotEmpty) {
+      return [dayOfWeek!];
+    }
+    return [];
+  }
 
   // toJson method
   Map<String, dynamic> toJson() => {
@@ -34,6 +48,7 @@ class Routine extends HiveObject {
         'name': name,
         'description': description,
         'dayOfWeek': dayOfWeek,
+        'daysOfWeek': daysOfWeek,
         'exercises': exercises?.map((e) => e.toJson()).toList(),
       };
 
@@ -44,6 +59,9 @@ class Routine extends HiveObject {
       name: json['name'],
       description: json['description'],
       dayOfWeek: json['dayOfWeek'],
+      daysOfWeek: json['daysOfWeek'] != null 
+          ? List<String>.from(json['daysOfWeek'])
+          : null,
       // exercises will be handled separately due to HiveList
     );
   }

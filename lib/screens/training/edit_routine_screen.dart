@@ -21,7 +21,8 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
 
   late String _routineName;
   late String _routineDescription;
-  late String? _dayOfWeek;
+  late String? _dayOfWeek; // Mantener para compatibilidad
+  late List<bool> _selectedDays; // Nuevo: Lun, Mar, Mié, Jue, Vie, Sáb, Dom
   late List<RoutineExercise> _routineExercises;
   Routine? _existingRoutine;
   bool _isCreating = true;
@@ -47,12 +48,20 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
       _routineName = _existingRoutine!.name;
       _routineDescription = _existingRoutine!.description;
       _dayOfWeek = _existingRoutine!.dayOfWeek;
+      
+      // Inicializar días seleccionados desde activeDays
+      _selectedDays = List.generate(7, (index) {
+        final activeDays = _existingRoutine!.activeDays;
+        return activeDays.contains(_days[index]);
+      });
+      
       _routineExercises = List<RoutineExercise>.from(_existingRoutine!.exercises ?? []);
     } else {
       _isCreating = true;
       _routineName = '';
       _routineDescription = '';
       _dayOfWeek = null;
+      _selectedDays = List.generate(7, (_) => false); // Ningún día seleccionado por defecto
       _routineExercises = [];
     }
   }
@@ -62,6 +71,14 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
       return;
     }
     _formKey.currentState!.save();
+
+    // Obtener días seleccionados
+    final selectedDayNames = <String>[];
+    for (int i = 0; i < _selectedDays.length; i++) {
+      if (_selectedDays[i]) {
+        selectedDayNames.add(_days[i]);
+      }
+    }
 
     // Capture context-dependent services BEFORE the async gap.
     final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
@@ -74,14 +91,18 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
         final newRoutine = await routineProvider.addRoutine(
           _routineName,
           _routineDescription,
-          _dayOfWeek,
+          selectedDayNames.isNotEmpty ? selectedDayNames.first : null,
         );
+        // Actualizar con múltiples días
+        newRoutine.daysOfWeek = selectedDayNames.isNotEmpty ? selectedDayNames : null;
         await routineProvider.updateRoutine(newRoutine, _routineExercises);
         achievementService.updateProgress('create_routine', 1);
       } else {
         _existingRoutine!.name = _routineName;
         _existingRoutine!.description = _routineDescription;
-        _existingRoutine!.dayOfWeek = _dayOfWeek;
+        _existingRoutine!.daysOfWeek = selectedDayNames.isNotEmpty ? selectedDayNames : null;
+        // Mantener dayOfWeek para compatibilidad
+        _existingRoutine!.dayOfWeek = selectedDayNames.isNotEmpty ? selectedDayNames.first : null;
         await routineProvider.updateRoutine(_existingRoutine!, _routineExercises);
       }
       // Check `mounted` before using the navigator
@@ -169,22 +190,12 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
                 onSaved: (value) => _routineDescription = value ?? '',
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                // ignore: deprecated_member_use
-                value: _dayOfWeek,
-                decoration: const InputDecoration(
-                  labelText: 'Día de la semana (opcional)',
-                  border: OutlineInputBorder(),
-                ),
-                items: _days.map((String day) {
-                  return DropdownMenuItem<String>(value: day, child: Text(day));
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    _dayOfWeek = newValue;
-                  });
-                },
+              Text(
+                'Días de la semana (opcional)',
+                style: Theme.of(context).textTheme.titleMedium,
               ),
+              const SizedBox(height: 8),
+              _buildDaysSelector(),
               const SizedBox(height: 24),
               Text('Ejercicios', style: Theme.of(context).textTheme.titleLarge),
               Expanded(
@@ -247,6 +258,43 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
         label: const Text('Añadir Ejercicio'),
         icon: const Icon(Icons.add),
       ),
+    );
+  }
+
+  Widget _buildDaysSelector() {
+    final daysShort = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: List.generate(7, (index) {
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedDays[index] = !_selectedDays[index];
+            });
+          },
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: _selectedDays[index]
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.surfaceContainerHighest,
+            ),
+            child: Center(
+              child: Text(
+                daysShort[index],
+                style: TextStyle(
+                  color: _selectedDays[index]
+                      ? Theme.of(context).colorScheme.onPrimary
+                      : Theme.of(context).colorScheme.onSurface,
+                  fontWeight: _selectedDays[index] ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ),
+          ),
+        );
+      }),
     );
   }
 }
