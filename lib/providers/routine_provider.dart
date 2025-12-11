@@ -61,18 +61,17 @@ class RoutineProvider with ChangeNotifier {
     String? dayOfWeek,
   ) async {
     final routine = Routine(
-      id: DateTime.now().toString(), // Using a simpler unique ID
+      id: DateTime.now().toString(),
       name: name,
       description: description,
       dayOfWeek: dayOfWeek,
     );
-    await _routineBox.put(routine.id, routine);
+    // Inicializar la HiveList vacía antes de guardar
     routine.exercises = HiveList(_routineExerciseBox);
+    await _routineBox.put(routine.id, routine);
     await routine.save();
 
-    // Even though it's new, we call this for consistency.
     _loadExercisesForRoutine(routine);
-
     notifyListeners();
     return routine;
   }
@@ -96,20 +95,18 @@ class RoutineProvider with ChangeNotifier {
       await exercise.delete();
     }
 
+    // Limpiar la HiveList antes de volver a agregar
+    hiveList.clear();
     for (var updatedExercise in updatedExercises) {
       if (!updatedExercise.isInBox) {
         await _routineExerciseBox.add(updatedExercise);
-        hiveList.add(updatedExercise);
-      } else {
-        await updatedExercise.save();
       }
+      hiveList.add(updatedExercise);
+      await updatedExercise.save();
     }
 
     await routine.save();
-
-    // After saving, reload the exercise data to ensure the UI has full objects.
     _loadExercisesForRoutine(routine);
-
     notifyListeners();
   }
 
