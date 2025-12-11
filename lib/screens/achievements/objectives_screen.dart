@@ -46,24 +46,14 @@ class ObjectivesScreenState extends State<ObjectivesScreen> {
 
     Widget body;
     if (user == null || user.isGuest || user.height <= 0 || user.weight <= 0) {
-      body = Stack(
-        children: [
-          const LunaWatermark(
-            type: LunaType.objetivos,
-            opacity: 0.15,
-            size: 280,
-            alignment: Alignment.center,
+      body = const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            'Por favor, complete su perfil para ver sus objetivos de peso.',
+            textAlign: TextAlign.center,
           ),
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Por favor, complete su perfil para ver sus objetivos de peso.',
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-        ],
+        ),
       );
     } else {
       final double bmi = _calculateBmi(user.weight, user.height);
@@ -72,12 +62,6 @@ class ObjectivesScreenState extends State<ObjectivesScreen> {
 
       body = Stack(
         children: [
-          const LunaWatermark(
-            type: LunaType.objetivos,
-            opacity: 0.08,
-            size: 240,
-            alignment: Alignment(0.75, 0.5),
-          ),
           SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(

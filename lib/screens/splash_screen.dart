@@ -34,15 +34,22 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // The UserProvider constructor already calls loadUsers(), 
     // so the data should be available synchronously here.
-    userProvider.loadUsers(); // Recalled to ensure freshness
+    await userProvider.loadUsers(); // Recalled to ensure freshness
 
     if (userProvider.user != null) {
       // If there's an active user, go to the main screen
       navigator.pushReplacement(
         MaterialPageRoute(builder: (context) => const MainScreen()),
       );
+    } else if (userProvider.users.isNotEmpty) {
+      // If there are users but no active user selected,
+      // automatically select the first user and go to main screen
+      await userProvider.switchUser(userProvider.users.first.id);
+      navigator.pushReplacement(
+        MaterialPageRoute(builder: (context) => const MainScreen()),
+      );
     } else {
-      // If there's no user, go to the profile selection screen
+      // If there's no user at all, go to the profile selection screen
       navigator.pushReplacement(
         MaterialPageRoute(builder: (context) => const ProfileSelectionScreen()),
       );

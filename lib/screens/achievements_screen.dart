@@ -40,15 +40,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      body: Stack(
-        children: [
-          const LunaWatermark(
-            type: LunaType.recompensa,
-            opacity: 0.09,
-            size: 260,
-            alignment: Alignment(0.0, 0.3),
-          ),
-          Container(
+      body: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,

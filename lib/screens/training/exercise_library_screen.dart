@@ -164,18 +164,8 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
           child: Consumer<ExerciseProvider>(
             builder: (context, provider, child) {
               if (provider.exercises.isEmpty) {
-                return Stack(
-                  children: [
-                    const LunaWatermark(
-                      type: LunaType.lista,
-                      opacity: 0.15,
-                      size: 280,
-                      alignment: Alignment.center,
-                    ),
-                    const Center(
-                      child: Text("No hay ejercicios. ¡Añade uno nuevo!"),
-                    ),
-                  ],
+                return const Center(
+                  child: Text("No hay ejercicios. ¡Añade uno nuevo!"),
                 );
               }
 
@@ -195,18 +185,8 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                     }).toList();
 
               if (filteredExercises.isEmpty) {
-                return Stack(
-                  children: [
-                    const LunaWatermark(
-                      type: LunaType.lista,
-                      opacity: 0.15,
-                      size: 280,
-                      alignment: Alignment.center,
-                    ),
-                    const Center(
-                      child: Text('No se encontraron ejercicios.'),
-                    ),
-                  ],
+                return const Center(
+                  child: Text('No se encontraron ejercicios.'),
                 );
               }
 
@@ -222,15 +202,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
 
               final muscleGroups = groupedExercises.keys.toList()..sort();
 
-              return Stack(
-                children: [
-                  const LunaWatermark(
-                    type: LunaType.lista,
-                    opacity: 0.06,
-                    size: 250,
-                    alignment: Alignment(0.8, 0.4),
-                  ),
-                  ListView.builder(
+              return ListView.builder(
                 padding: const EdgeInsets.only(
                   bottom: 80.0,
                 ), // Padding for the main FAB

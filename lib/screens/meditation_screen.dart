@@ -408,7 +408,8 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
 
           // Historial de sesiones
           if (!_isMeditating)
-            Expanded(
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Consumer<MeditationProvider>(
                 builder: (context, provider, child) {
                   final logs = provider.meditationLogs;
@@ -427,6 +428,8 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
                   }
                 
                   return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: logs.length,
                   itemBuilder: (context, index) {
                     final log = logs[index];

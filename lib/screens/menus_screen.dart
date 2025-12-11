@@ -63,15 +63,7 @@ class MenusScreenState extends State<MenusScreen> with TickerProviderStateMixin 
           ],
         ),
         Expanded(
-          child: Stack(
-            children: [
-              const LunaWatermark(
-                type: LunaType.menus,
-                opacity: 0.08,
-                size: 230,
-                alignment: Alignment(0.8, 0.3),
-              ),
-              TabBarView(
+          child: TabBarView(
                 controller: _tabController,
                 children: const [
                   TodayMenuScreen(),

@@ -631,22 +631,12 @@ class WebFavoritesTab extends StatelessWidget {
         final favoriteRecipes = box.values.toList().cast<Recipe>();
 
         if (favoriteRecipes.isEmpty) {
-          return Stack(
-            children: const [
-              LunaWatermark(
-                type: LunaType.lista,
-                opacity: 0.15,
-                size: 280,
-                alignment: Alignment.center,
-              ),
-              Center(
-                child: Text(
-                  'Aún no tienes recetas favoritas de la web.\n¡Anímate a guardar una!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
-                ),
-              ),
-            ],
+          return const Center(
+            child: Text(
+              'Aún no tienes recetas favoritas de la web.\n¡Anímate a guardar una!',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
           );
         }
 
@@ -780,22 +770,12 @@ class CreatedRecipesTab extends StatelessWidget {
         final userRecipes = box.values.toList().cast<UserRecipe>();
 
         if (userRecipes.isEmpty) {
-          return Stack(
-            children: const [
-              LunaWatermark(
-                type: LunaType.lista,
-                opacity: 0.15,
-                size: 280,
-                alignment: Alignment.center,
-              ),
-              Center(
-                child: Text(
-                  'Aún no has creado ninguna receta.\n¡Usa el botón + para añadir una!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
-                ),
-              ),
-            ],
+          return const Center(
+            child: Text(
+              'Aún no has creado ninguna receta.\n¡Usa el botón + para añadir una!',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
           );
         }
 

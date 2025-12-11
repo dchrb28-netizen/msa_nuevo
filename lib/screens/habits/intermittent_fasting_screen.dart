@@ -450,18 +450,9 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
       decoration: BoxDecoration(
         gradient: isFasting ? fastingGradient : feedingGradient,
       ),
-      child: Stack(
-        children: [
-          // Marca de agua de Luna
-          const LunaWatermark(
-            type: LunaType.ayuno,
-            opacity: 0.08,
-            size: 220,
-            alignment: Alignment(0.8, 0.5),
-          ),
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
               children: [
                 _buildPlanSelector(theme, provider),
             const SizedBox(height: 24),
@@ -487,10 +478,8 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             const Divider(),
             const SizedBox(height: 16),
             _buildFastingTimeline(provider, theme),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -527,8 +516,8 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                             )
                           : LinearGradient(
                               colors: [
-                                Colors.grey.shade100,
-                                Colors.grey.shade200,
+                                theme.colorScheme.surfaceContainerHighest,
+                                theme.colorScheme.surfaceContainer,
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,

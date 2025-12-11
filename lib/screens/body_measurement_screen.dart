@@ -35,21 +35,11 @@ class BodyMeasurementScreen extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
-            child: Stack(
+          const Expanded(
+            child: TabBarView(
               children: [
-                const LunaWatermark(
-                  type: LunaType.medida,
-                  opacity: 0.10,
-                  size: 250,
-                  alignment: Alignment(0.0, 0.2),
-                ),
-                const TabBarView(
-                  children: [
-                    BodyMeasurementTodayView(),
-                    BodyMeasurementHistoryView(),
-                  ],
-                ),
+                BodyMeasurementTodayView(),
+                BodyMeasurementHistoryView(),
               ],
             ),
           ),
