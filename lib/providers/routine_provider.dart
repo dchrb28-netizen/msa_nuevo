@@ -6,6 +6,36 @@ import 'package:myapp/models/routine_exercise.dart';
 import 'package:myapp/models/routine_log.dart';
 
 class RoutineProvider with ChangeNotifier {
+    /// Guarda una rutina completa (nombre, descripción, días, ejercicios) en una sola operación atómica.
+    Future<Routine> createFullRoutine({
+      required String name,
+      required String description,
+      required List<String> daysOfWeek,
+      required List<RoutineExercise> exercises,
+    }) async {
+      final routine = Routine(
+        id: DateTime.now().toString(),
+        name: name,
+        description: description,
+        dayOfWeek: daysOfWeek.isNotEmpty ? daysOfWeek.first : null,
+      );
+      routine.daysOfWeek = daysOfWeek.isNotEmpty ? daysOfWeek : null;
+      // Guardar ejercicios en Hive y asociar a la rutina
+      final HiveList<RoutineExercise> hiveList = HiveList(_routineExerciseBox);
+      for (final ex in exercises) {
+        if (!ex.isInBox) {
+          await _routineExerciseBox.add(ex);
+        }
+        hiveList.add(ex);
+        await ex.save();
+      }
+      routine.exercises = hiveList;
+      await _routineBox.put(routine.id, routine);
+      await routine.save();
+      _loadExercisesForRoutine(routine);
+      notifyListeners();
+      return routine;
+    }
   final Box<Routine> _routineBox = Hive.box<Routine>('routines');
   final Box<RoutineLog> _routineLogBox = Hive.box<RoutineLog>('routine_logs');
   final Box<RoutineExercise> _routineExerciseBox = Hive.box<RoutineExercise>(

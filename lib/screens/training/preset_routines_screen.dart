@@ -166,22 +166,10 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
     if (selectedDays == null || !mounted) return;
     
     setState(() => _isLoading = true);
-
     try {
       final provider = Provider.of<RoutineProvider>(context, listen: false);
-      final routineExerciseBox = Hive.box<RoutineExercise>('routine_exercises');
-
-      // 1. Crear la rutina base
-      final routine = await provider.addRoutine(
-        template.name,
-        template.description,
-        selectedDays.isNotEmpty ? selectedDays.first : null,
-      );
-
-      // Establecer días seleccionados
-      routine.daysOfWeek = selectedDays.isNotEmpty ? selectedDays : null;
-
-      // 2. Crear los ejercicios y agregarlos a la rutina
+      final exerciseBox = Hive.box<Exercise>('exercises');
+      // Construir la lista de RoutineExercise a partir del template
       final List<RoutineExercise> routineExercises = [];
       for (final exerciseTemplate in template.exercises) {
         final exerciseData = exerciseBox.get(exerciseTemplate.exerciseId);
@@ -196,13 +184,15 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
           restTime: exerciseTemplate.restTime,
         );
         routineExercise.setExercise(exerciseData);
-        await routineExerciseBox.add(routineExercise);
         routineExercises.add(routineExercise);
       }
-
-      // 3. Guardar la rutina con sus ejercicios y días
-      await provider.updateRoutine(routine, routineExercises);
-
+      // Guardar todo en una sola operación atómica
+      await provider.createFullRoutine(
+        name: template.name,
+        description: template.description,
+        daysOfWeek: selectedDays,
+        exercises: routineExercises,
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -640,21 +630,11 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
               if (template.muscleGroups.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
+                  spacing: 8,
                   children: template.muscleGroups.map((muscle) {
                     final muscleColor = _getMuscleGroupColor(muscle);
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: muscleColor.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: muscleColor.withValues(alpha: 0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
+                    return Chip(
+                      label: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
@@ -673,6 +653,7 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
                           ),
                         ],
                       ),
+                      backgroundColor: muscleColor.withOpacity(0.1),
                     );
                   }).toList(),
                 ),
