@@ -418,16 +418,16 @@ class _MeditationScreenState extends State<MeditationScreen> with TickerProvider
                     return const Center(
                       child: Padding(
                         padding: EdgeInsets.all(24.0),
-                      child: Text(
-                        'No hay sesiones de meditación registradas.\n¡Comienza tu primera sesión!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                        child: Text(
+                          'No hay sesiones de meditación registradas.\n¡Comienza tu primera sesión!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
                       ),
-                    ),
-                  );
-                }
+                    );
+                  }
                 
-                return ListView.builder(
+                  return ListView.builder(
                   itemCount: logs.length,
                   itemBuilder: (context, index) {
                     final log = logs[index];
