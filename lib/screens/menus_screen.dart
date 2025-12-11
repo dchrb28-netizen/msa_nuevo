@@ -64,12 +64,10 @@ class MenusScreenState extends State<MenusScreen> with TickerProviderStateMixin 
         ),
         Expanded(
           child: TabBarView(
-                controller: _tabController,
-                children: const [
-                  TodayMenuScreen(),
-                  WeeklyPlannerScreen(),
-                ],
-              ),
+            controller: _tabController,
+            children: const [
+              TodayMenuScreen(),
+              WeeklyPlannerScreen(),
             ],
           ),
         ),
