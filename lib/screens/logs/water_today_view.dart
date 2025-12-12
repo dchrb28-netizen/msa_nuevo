@@ -111,6 +111,8 @@ class WaterTodayView extends StatelessWidget {
         final intakeForSelectedDate =
             waterProvider.getWaterIntakeForDate(waterProvider.selectedDate);
         final logsForSelectedDate = waterProvider.getLogsForSelectedDate();
+        final double dailyGoal = waterProvider.dailyGoal;
+        final double progress = dailyGoal > 0 ? (intakeForSelectedDate / dailyGoal).clamp(0.0, 1.0) : 0.0;
 
         return SingleChildScrollView(
           child: Padding(
@@ -128,33 +130,37 @@ class WaterTodayView extends StatelessWidget {
                     clipBehavior: Clip.antiAlias,
                     child: AquariumWidget(
                       totalWater: intakeForSelectedDate,
-                      dailyGoal: waterProvider.dailyGoal,
+                      dailyGoal: dailyGoal,
                     ),
                   ),
                 ),
                 const SizedBox(height: 12),
-                if (waterProvider.dailyGoal > 0)
+                if (dailyGoal > 0)
                   Column(
                     children: [
-                      Center(
-                        child: Text(
-                          'Meta Diaria: ${waterProvider.dailyGoal.toInt()} ml',
-                          style: GoogleFonts.lato(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
+                      LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 10,
+                        backgroundColor: Colors.grey.shade300,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                       const SizedBox(height: 8),
+                      Text(
+                        'Hoy: ${intakeForSelectedDate.toInt()} / ${dailyGoal.toInt()} ml',
+                        style: GoogleFonts.lato(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
                       TextButton.icon(
                         onPressed: () => waterProvider.showEditGoalDialog(context),
                         icon: const Icon(Icons.edit, size: 16),
                         label: const Text('Editar meta diaria'),
                       ),
                     ],
-                  )
-                else
+                  ),
+                if (dailyGoal <= 0)
                   Card(
                     elevation: 2,
                     color: Theme.of(context).colorScheme.surfaceContainerHighest,

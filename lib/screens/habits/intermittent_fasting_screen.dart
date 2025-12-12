@@ -188,14 +188,17 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                         if (date == null) return;
 
                         if (!context.mounted) return;
-                        final timeFormatService = Provider.of<TimeFormatService>(context, listen: false);
+                        final timeFormatService =
+                            Provider.of<TimeFormatService>(context,
+                                listen: false);
                         final time = await showTimePicker(
                           context: context,
                           initialTime: TimeOfDay.fromDateTime(editedStartTime),
                           builder: (BuildContext context, Widget? child) {
                             return MediaQuery(
                               data: MediaQuery.of(context).copyWith(
-                                alwaysUse24HourFormat: timeFormatService.use24HourFormat,
+                                alwaysUse24HourFormat:
+                                    timeFormatService.use24HourFormat,
                               ),
                               child: child!,
                             );
@@ -230,7 +233,9 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                         if (date == null) return;
 
                         if (!context.mounted) return;
-                        final timeFormatService = Provider.of<TimeFormatService>(context, listen: false);
+                        final timeFormatService =
+                            Provider.of<TimeFormatService>(context,
+                                listen: false);
                         final time = await showTimePicker(
                           context: context,
                           initialTime: TimeOfDay.fromDateTime(
@@ -239,7 +244,8 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                           builder: (BuildContext context, Widget? child) {
                             return MediaQuery(
                               data: MediaQuery.of(context).copyWith(
-                                alwaysUse24HourFormat: timeFormatService.use24HourFormat,
+                                alwaysUse24HourFormat:
+                                    timeFormatService.use24HourFormat,
                               ),
                               child: child!,
                             );
@@ -452,8 +458,8 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-              children: [
-                _buildPlanSelector(theme, provider),
+          children: [
+            _buildPlanSelector(theme, provider),
             const SizedBox(height: 24),
             SunMoonTimer(
               progress: progress,
@@ -465,6 +471,22 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                   ? (provider.currentPhase?.name ?? 'Comenzando...')
                   : 'Ventana de alimentación',
               goalText: 'Objetivo: ${provider.selectedPlan.fastingHours} horas',
+              endTimeText: (() {
+                final timeFormatService = Provider.of<TimeFormatService>(context, listen: false);
+                if (isFasting && provider.currentFast != null) {
+                  final start = provider.currentFast!.startTime;
+                  final end = start.add(Duration(hours: provider.selectedPlan.fastingHours));
+                  final startString = timeFormatService.formatTime(start);
+                  final endString = timeFormatService.formatTime(end);
+                  return 'Inicio: $startString\nTermina aprox.: $endString';
+                } else {
+                  final now = DateTime.now();
+                  final end = now.add(Duration(hours: provider.selectedPlan.fastingHours));
+                  final startString = timeFormatService.formatTime(now);
+                  final endString = timeFormatService.formatTime(end);
+                  return 'Inicia: $startString\nTermina aprox.: $endString';
+                }
+              })(),
               onButtonPressed: () {
                 if (isFasting) {
                   _showStopFastingDialog(context, provider);
@@ -484,104 +506,209 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
   }
 
   Widget _buildPlanSelector(ThemeData theme, FastingProvider provider) {
+    final planCount = provider.allPlans.length;
+    final double horizontalPadding = planCount > 6 ? 12 : planCount > 4 ? 18 : 26;
+    final double verticalPadding = planCount > 6 ? 8 : 14;
+    final double fontSize = planCount > 6 ? 14 : planCount > 4 ? 16 : 18;
+    final ScrollController _scrollController = ScrollController();
     return Column(
       children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: provider.allPlans.map((plan) {
-              final isSelected = provider.selectedPlan.id == plan.id;
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                child: GestureDetector(
-                  onLongPress: () {
-                    if (plan.isCustom) {
-                      _showManagePlanOptions(context, plan, provider);
-                    }
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    decoration: isSelected
-                        ? BoxDecoration(
-                            color: theme.colorScheme.primary,
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: theme.colorScheme.primary.withOpacity(0.3),
-                                blurRadius: 8,
-                                spreadRadius: 1,
-                                offset: const Offset(0, 3),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            // Las variables showLeft y showRight han sido eliminadas porque no se usan directamente
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                SingleChildScrollView(
+                  controller: _scrollController,
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: provider.allPlans.map((plan) {
+                      final isSelected = provider.selectedPlan.id == plan.id;
+                      final isDark = Theme.of(context).brightness == Brightness.dark;
+                      // Colores base para claro y oscuro
+                      final Color defaultColor = isDark
+                          ? const Color(0xFF23272F)
+                          : const Color(0xFFF2F4F8);
+                      final Color selectedGradientStart = isDark
+                          ? const Color(0xFF2196F3)
+                          : const Color(0xFF1976D2);
+                      final Color selectedGradientEnd = isDark
+                          ? const Color(0xFF0D47A1)
+                          : const Color(0xFF64B5F6);
+                      final Color textColor = isSelected
+                          ? Colors.white
+                          : (isDark ? Colors.white70 : Colors.black87);
+                      final Color borderColor = isSelected
+                          ? selectedGradientStart
+                          : (isDark ? Colors.white10 : Colors.black12);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+                        child: GestureDetector(
+                          onLongPress: () {
+                            if (plan.isCustom) {
+                              _showManagePlanOptions(context, plan, provider);
+                            }
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            decoration: BoxDecoration(
+                              gradient: isSelected
+                                  ? LinearGradient(
+                                      colors: [selectedGradientStart, selectedGradientEnd],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    )
+                                  : null,
+                              color: !isSelected ? defaultColor : null,
+                              borderRadius: BorderRadius.circular(22),
+                              border: Border.all(
+                                color: isSelected ? Colors.white : borderColor,
+                                width: isSelected ? 4 : 1.2,
                               ),
-                            ],
-                          )
-                        : BoxDecoration(
-                            color: theme.colorScheme.surface,
-                            borderRadius: BorderRadius.circular(25),
-                            border: Border.all(
-                              color: theme.colorScheme.outline,
-                              width: 1.5,
+                              boxShadow: [
+                                if (isSelected)
+                                  BoxShadow(
+                                    color: selectedGradientStart.withOpacity(0.45),
+                                    blurRadius: 18,
+                                    spreadRadius: 2,
+                                    offset: const Offset(0, 6),
+                                  )
+                                else
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.04),
+                                    blurRadius: 2,
+                                    offset: const Offset(0, 1),
+                                  ),
+                              ],
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 2,
-                                offset: const Offset(0, 1),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(22),
+                                onTap: provider.isFasting
+                                    ? null
+                                    : () => provider.setPlan(plan),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: horizontalPadding,
+                                    vertical: verticalPadding,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (isSelected) ...[
+                                        AnimatedScale(
+                                          scale: 1.15,
+                                          duration: const Duration(milliseconds: 200),
+                                          child: Icon(
+                                            Icons.check_circle_rounded,
+                                            size: fontSize + 4,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                      ],
+                                      Text(
+                                        plan.name,
+                                        style: TextStyle(
+                                          color: isSelected ? Colors.white : textColor,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: fontSize,
+                                          letterSpacing: 0.5,
+                                          shadows: isSelected
+                                              ? [
+                                                  Shadow(
+                                                    color: Colors.black.withOpacity(0.22),
+                                                    blurRadius: 6,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ]
+                                              : [],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ],
+                            ),
                           ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(25),
-                        onTap: provider.isFasting
-                            ? null
-                            : () => provider.setPlan(plan),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (isSelected) ...[
-                                Icon(
-                                  Icons.check_circle,
-                                  size: 18,
-                                  color: Colors.white,
-                                ),
-                                const SizedBox(width: 6),
-                              ],
-                              if (plan.isCustom && !isSelected) ...[
-                                Icon(
-                                  Icons.star,
-                                  size: 16,
-                                  color: Colors.amber.shade700,
-                                ),
-                                const SizedBox(width: 6),
-                              ],
-                              Text(
-                                plan.name,
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? Colors.white
-                                      : theme.colorScheme.onSurface,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ],
-                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                // Flecha izquierda
+                Positioned(
+                  left: 0,
+                  child: IgnorePointer(
+                    ignoring: !(_scrollController.hasClients && _scrollController.offset > 5),
+                    child: AnimatedOpacity(
+                      opacity: (_scrollController.hasClients && _scrollController.offset > 5) ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.85),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                          onPressed: () {
+                            _scrollController.animateTo(
+                              (_scrollController.offset - 100).clamp(0.0, _scrollController.position.maxScrollExtent),
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
                         ),
                       ),
                     ),
                   ),
                 ),
-              );
-            }).toList(),
-          ),
+                // Flecha derecha
+                Positioned(
+                  right: 0,
+                  child: IgnorePointer(
+                    ignoring: !(_scrollController.hasClients && _scrollController.position.maxScrollExtent - _scrollController.offset > 5),
+                    child: AnimatedOpacity(
+                      opacity: (_scrollController.hasClients && _scrollController.position.maxScrollExtent - _scrollController.offset > 5) ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.85),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_forward_ios_rounded, size: 18),
+                          onPressed: () {
+                            _scrollController.animateTo(
+                              (_scrollController.offset + 100).clamp(0.0, _scrollController.position.maxScrollExtent),
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 16),
         AnimatedContainer(
@@ -943,9 +1070,8 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
               provider.currentPhase != null && provider.currentPhase == phase;
           bool isFuture = currentDurationHours < phase.startHour;
 
-          Color lineColor = isCompleted
-              ? theme.colorScheme.primary
-              : Colors.grey.shade300;
+          Color lineColor =
+              isCompleted ? theme.colorScheme.primary : Colors.grey.shade300;
           Widget indicator;
 
           if (isCompleted) {
@@ -983,8 +1109,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             isLast: isLast,
             beforeLineStyle: LineStyle(color: lineColor, thickness: 3),
             afterLineStyle: LineStyle(
-              color:
-                  index < phases.length - 1 &&
+              color: index < phases.length - 1 &&
                       currentDurationHours >= phases[index + 1].startHour
                   ? theme.colorScheme.primary
                   : Colors.grey.shade300,
@@ -1011,14 +1136,13 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                       phase.name,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontWeight: isCurrent
-                            ? FontWeight.bold
-                            : FontWeight.normal,
+                        fontWeight:
+                            isCurrent ? FontWeight.bold : FontWeight.normal,
                         color: isFuture
                             ? Colors.grey.shade500
                             : (isCurrent
-                                  ? theme.colorScheme.primary
-                                  : theme.textTheme.bodyMedium?.color),
+                                ? theme.colorScheme.primary
+                                : theme.textTheme.bodyMedium?.color),
                         fontSize: 12,
                       ),
                     ),

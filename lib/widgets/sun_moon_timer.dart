@@ -7,6 +7,7 @@ class SunMoonTimer extends StatelessWidget {
   final String timeText;
   final String phaseText;
   final String goalText;
+  final String? endTimeText;
   final VoidCallback onButtonPressed;
 
   const SunMoonTimer({
@@ -16,6 +17,7 @@ class SunMoonTimer extends StatelessWidget {
     required this.timeText,
     required this.phaseText,
     required this.goalText,
+    this.endTimeText,
     required this.onButtonPressed,
   });
 
@@ -97,6 +99,16 @@ class SunMoonTimer extends StatelessWidget {
                     color: Colors.white70,
                   ),
                 ),
+                if (endTimeText != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    endTimeText!,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: onButtonPressed,

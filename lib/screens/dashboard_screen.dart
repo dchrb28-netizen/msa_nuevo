@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:myapp/models/food_log.dart';
-import 'package:myapp/models/routine.dart';
-import 'package:myapp/models/routine_log.dart';
 import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/providers/water_intake_provider.dart';
 import 'package:myapp/screens/meditation_screen.dart';
@@ -369,9 +365,7 @@ class DashboardScreen extends StatelessWidget {
       builder: (context, userProvider, waterProvider, routineProvider, child) {
         // Calorías
         final caloricGoal = userProvider.user?.caloricGoal?.toInt() ?? 1520;
-        final caloriesToday = (userProvider.user != null && userProvider.user!.caloriesToday != null)
-            ? userProvider.user!.caloriesToday.toInt()
-            : 0;
+        final caloriesToday = userProvider.user?.caloriesToday.toInt() ?? 0;
         final plan = userProvider.user?.dietPlan?.toLowerCase() ?? 'mantener';
         IconData planIcon;
         Color planColor;
@@ -398,19 +392,22 @@ class DashboardScreen extends StatelessWidget {
             planText = plan[0].toUpperCase() + plan.substring(1);
         }
         // Agua
-        final int waterGoal = waterProvider.dailyGoal > 0 ? waterProvider.dailyGoal.toInt() : 2000;
-        final int totalWater = waterProvider.getWaterIntakeForDate(DateTime.now()).toInt();
+        final int waterGoal = waterProvider.dailyGoal > 0
+            ? waterProvider.dailyGoal.toInt()
+            : 2000;
+        final int totalWater =
+            waterProvider.getWaterIntakeForDate(DateTime.now()).toInt();
         // Entrenamiento
-        final String dayOfWeek = DateFormat('EEEE', 'es_ES').format(DateTime.now());
-        final List<Routine> todayRoutines = routineProvider.routines
-            .where((r) => r.activeDays.any((d) => d.toLowerCase() == dayOfWeek.toLowerCase()))
-            .toList();
-        final bool trainedToday = false; // Aquí deberías consultar tu base de datos de logs
+        // dayOfWeek eliminado por no usarse
+        // final List<Routine> todayRoutines = ... (eliminado por no usarse)
+        // trainedToday eliminado por no usarse
         return Card(
           elevation: 2,
           margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          color:
+              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
             child: Column(
@@ -418,7 +415,9 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.local_fire_department, color: Theme.of(context).colorScheme.secondary, size: 20),
+                    Icon(Icons.local_fire_department,
+                        color: Theme.of(context).colorScheme.secondary,
+                        size: 20),
                     const SizedBox(width: 8),
                     Text(
                       'Progreso Diario',
@@ -430,7 +429,8 @@ class DashboardScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: planColor.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(16),
@@ -482,7 +482,7 @@ class DashboardScreen extends StatelessWidget {
                       color: Colors.green,
                       icon: PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
                       label: 'Entrenamiento',
-                      value: trainedToday ? 1 : 0,
+                      value: 0,
                       goal: 1,
                       unit: 'Hoy',
                       isTraining: true,
@@ -507,7 +507,9 @@ class DashboardScreen extends StatelessWidget {
     required String unit,
     bool isTraining = false,
   }) {
-    final percent = isTraining ? (value == 1 ? 1.0 : 0.0) : (goal > 0 ? (value / goal).clamp(0.0, 1.0) : 0.0);
+    final percent = isTraining
+        ? (value == 1 ? 1.0 : 0.0)
+        : (goal > 0 ? (value / goal).clamp(0.0, 1.0) : 0.0);
     return Expanded(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -532,7 +534,9 @@ class DashboardScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            isTraining ? (value == 1 ? 'Hecho' : 'Pendiente') : '$value / $goal',
+            isTraining
+                ? (value == 1 ? 'Hecho' : 'Pendiente')
+                : '$value / $goal',
             style: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 12),
             textAlign: TextAlign.center,
           ),
@@ -546,45 +550,5 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTrainingRing() {
-    return ValueListenableBuilder(
-      valueListenable: Hive.box<RoutineLog>('routine_logs').listenable(),
-      builder: (context, Box<RoutineLog> box, _) {
-        final now = DateTime.now();
-        bool isSameDay(DateTime d1, DateTime d2) {
-          return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
-        }
-
-        final trainedToday = box.values.any((log) => isSameDay(log.date, now));
-        final percent = trainedToday ? 1.0 : 0.0;
-
-        return Column(
-          children: [
-            CircularPercentIndicator(
-              radius: 40.0,
-              lineWidth: 8.0,
-              percent: percent,
-              center: Icon(PhosphorIcons.barbell(PhosphorIconsStyle.duotone),
-                  color: Colors.green, size: 28),
-              progressColor: Colors.green,
-              backgroundColor: Colors.green.shade100,
-              circularStrokeCap: CircularStrokeCap.round,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              trainedToday ? '¡Hecho!' : 'Pendiente',
-              style:
-                  GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 12),
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              'Hoy',
-              style: GoogleFonts.lato(color: Colors.grey, fontSize: 12),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // _buildTrainingRing eliminado por no usarse
 }

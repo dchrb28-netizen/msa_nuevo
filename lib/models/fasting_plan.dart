@@ -64,9 +64,9 @@ class FastingPlan {
   }
 
   static List<FastingPlan> get defaultPlans => [
-    FastingPlan(name: '16:8', fastingHours: 16),
-    FastingPlan(name: '18:6', fastingHours: 18),
-    FastingPlan(name: '20:4', fastingHours: 20),
-    FastingPlan(name: '12:12', fastingHours: 12),
+    FastingPlan(id: 'default-16-8', name: '16:8', fastingHours: 16, isCustom: false),
+    FastingPlan(id: 'default-18-6', name: '18:6', fastingHours: 18, isCustom: false),
+    FastingPlan(id: 'default-20-4', name: '20:4', fastingHours: 20, isCustom: false),
+    FastingPlan(id: 'default-12-12', name: '12:12', fastingHours: 12, isCustom: false),
   ];
 }

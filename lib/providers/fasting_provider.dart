@@ -302,10 +302,23 @@ class FastingProvider with ChangeNotifier {
 
     final planId = prefs.getString('selectedPlanId');
     if (planId != null) {
-      try {
-        _selectedPlan = allPlans.firstWhere((p) => p.id == planId);
-      } catch (e) {
-        _selectedPlan = FastingPlan.defaultPlans.first;
+      // Buscar por id
+      final byId = allPlans.where((p) => p.id == planId);
+      if (byId.isNotEmpty) {
+        _selectedPlan = byId.first;
+      } else {
+        // Si no existe, intentar buscar por nombre y horas (para evitar duplicados)
+        final planName = prefs.getString('selectedPlanName');
+        final planHours = prefs.getInt('selectedPlanHours');
+        final byData = allPlans.where((p) =>
+          (planName != null && p.name == planName) &&
+          (planHours != null && p.fastingHours == planHours)
+        );
+        if (byData.isNotEmpty) {
+          _selectedPlan = byData.first;
+        } else {
+          _selectedPlan = FastingPlan.defaultPlans.first;
+        }
       }
     }
     notifyListeners();
