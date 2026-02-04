@@ -318,6 +318,21 @@ class BackupService {
           if (boxName == 'daily_tasks' && kDebugMode && boxData.isEmpty) {
             print('⚠️ daily_tasks VACÍA (sin tareas para respaldar)');
           }
+          
+          if (boxName == 'settings' && kDebugMode) {
+            print('📦 Exportando settings: ${boxData.length} configuraciones');
+            // Contar metas mensuales
+            int monthlyGoalCount = 0;
+            for (final key in boxData.keys) {
+              if (key.toString().startsWith('monthly_tasks_goal_')) {
+                monthlyGoalCount++;
+                print('  → Meta mensual: $key = ${boxData[key]}');
+              }
+            }
+            if (monthlyGoalCount > 0) {
+              print('  → Total metas mensuales: $monthlyGoalCount');
+            }
+          }
 
           if (boxName == 'daily_plans' && kDebugMode) {
             print('📦 Exportando daily_plans: ${boxData.length} registros');
@@ -582,6 +597,19 @@ class BackupService {
             }
             if (boxName == 'daily_meal_plans') {
               print('   Total planes de comida en Hive: ${box.length}');
+            }
+            if (boxName == 'settings') {
+              // Contar metas mensuales restauradas
+              int monthlyGoalCount = 0;
+              for (final key in box.keys) {
+                if (key.toString().startsWith('monthly_tasks_goal_')) {
+                  monthlyGoalCount++;
+                  print('   ✓ Meta mensual restaurada: $key = ${box.get(key)}');
+                }
+              }
+              if (monthlyGoalCount > 0) {
+                print('   🎯 Total metas mensuales restauradas: $monthlyGoalCount');
+              }
             }
             if (failedEntries.isNotEmpty) {
               try {

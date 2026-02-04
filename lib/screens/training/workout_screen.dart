@@ -26,6 +26,7 @@ class WorkoutScreen extends StatefulWidget {
 class _WorkoutScreenState extends State<WorkoutScreen> {
   late Map<int, List<SetLog?>> _setsData;
   late DateTime _startTime; // Para registrar el inicio del entreno
+  late ScrollController _scrollController;
 
   Timer? _timer;
   int _countdownTime = 0;
@@ -36,6 +37,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   void initState() {
     super.initState();
     _startTime = DateTime.now(); // Se guarda la hora de inicio
+    _scrollController = ScrollController();
     _setsData = {
       for (var i = 0; i < (widget.routine.exercises?.length ?? 0); i++)
         i: List.generate(widget.routine.exercises![i].sets, (_) => null),
@@ -45,6 +47,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   @override
   void dispose() {
     _timer?.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -65,9 +68,31 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           _countdownTime--;
         });
       } else {
-        _cancelRestTimer();
+        // El descanso terminó, avanzar automáticamente al siguiente ejercicio
+        _advanceToNextExercise(exerciseIndex);
       }
     });
+  }
+
+  void _advanceToNextExercise(int currentExerciseIndex) {
+    _cancelRestTimer();
+    
+    if (mounted) {
+      // Desplazarse al siguiente ejercicio
+      final nextExerciseIndex = currentExerciseIndex + 1;
+      if (nextExerciseIndex < (widget.routine.exercises?.length ?? 0)) {
+        // Usar una pequeña demora para que el scroll sea suave
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted && _scrollController.hasClients) {
+            _scrollController.animateTo(
+              _scrollController.position.pixels + 250,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+            );
+          }
+        });
+      }
+    }
   }
 
   void _cancelRestTimer() {
@@ -215,6 +240,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 // Lista de ejercicios
                 Expanded(
                   child: ListView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     itemCount: routineExercises.length,
                     itemBuilder: (context, index) {

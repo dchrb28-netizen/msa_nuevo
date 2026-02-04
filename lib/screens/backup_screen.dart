@@ -342,6 +342,7 @@ class _BackupScreenState extends State<BackupScreen> {
                             _buildBackupItem('Mediciones corporales'),
                             _buildBackupItem('Ayunos y meditaciones'),
                             _buildBackupItem('Tareas diarias y recordatorios'),
+                            _buildBackupItem('Metas mensuales de tareas', highlight: true),
                             _buildBackupItem('Rachas de todas las actividades', highlight: true),
                             _buildBackupItem('Logros, XP y nivel', highlight: true),
                             _buildBackupItem('Recetas personalizadas'),
