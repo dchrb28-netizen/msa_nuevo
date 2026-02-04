@@ -22,8 +22,8 @@ class SunMoonTimer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    const double size = 280.0;
-    const double iconSize = 30.0;
+    const double size = 200.0;
+    const double iconSize = 22.0;
 
     // Angle for the icon on the arc
     final angle = (math.pi * progress) - (math.pi / 2);
@@ -78,36 +78,37 @@ class SunMoonTimer extends StatelessWidget {
               children: [
                 Text(
                   timeText,
-                  style: theme.textTheme.headlineLarge?.copyWith(
+                  style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
                   phaseText,
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     color: Colors.white70,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
                   goalText,
-                  style: theme.textTheme.titleSmall?.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     color: Colors.white70,
+                    fontSize: 11,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 ElevatedButton.icon(
                   onPressed: onButtonPressed,
                   icon: Icon(
                     isFasting ? Icons.stop_rounded : Icons.play_arrow_rounded,
-                    size: 24,
+                    size: 18,
                   ),
                   label: Text(
-                    isFasting ? 'Parar Ayuno' : 'Empezar Ayuno',
+                    isFasting ? 'Parar' : 'Iniciar',
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 13,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -115,12 +116,12 @@ class SunMoonTimer extends StatelessWidget {
                     backgroundColor: isFasting ? Colors.red : Colors.green,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
+                      horizontal: 16,
+                      vertical: 8,
                     ),
                     elevation: 4,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
                 ),

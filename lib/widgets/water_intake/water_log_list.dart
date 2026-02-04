@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/services/time_format_service.dart';
 import 'package:hive/hive.dart';
@@ -63,22 +64,11 @@ class WaterLogList extends StatelessWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final catImagePath = isDarkMode
-        ? 'assets/luna_png/luna_b.png'
-        : 'assets/luna_png/luna_w.png';
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(catImagePath, height: 150),
-          const SizedBox(height: 20),
-          Text(
-            'Aún no hay registros para esta fecha.',
-            style: GoogleFonts.lato(fontSize: 16, fontStyle: FontStyle.italic),
-          ),
-        ],
-      ),
+    return EmptyStateWidget(
+      icon: Icons.water_drop_outlined,
+      title: 'No hay registros de agua',
+      subtitle: '¡Empieza a registrar tu hidratación!',
+      iconColor: Colors.blue[400],
     );
   }
 

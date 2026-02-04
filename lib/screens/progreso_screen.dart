@@ -9,11 +9,10 @@ import 'package:myapp/models/body_measurement.dart';
 import 'package:myapp/models/daily_meal_plan.dart';
 import 'package:myapp/models/fasting_log.dart';
 import 'package:myapp/models/routine_log.dart';
+import 'package:myapp/models/user.dart';
 import 'package:myapp/models/water_log.dart';
-import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/widgets/ui/watermark_image.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:provider/provider.dart';
 
 class ProgresoScreen extends StatefulWidget {
   const ProgresoScreen({super.key});
@@ -546,161 +545,6 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
     );
   }
 
-  Widget _buildWeightTrackingCard() {
-    return Consumer<UserProvider>(
-      builder: (context, userProvider, _) {
-        final user = userProvider.user;
-        final hasGoal = user?.waterGoal != null && (user?.waterGoal ?? 0) > 0;
-
-        return Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () => _showEditWaterGoalDialog(context, user?.waterGoal),
-            borderRadius: BorderRadius.circular(14),
-            child: Ink(
-              decoration: BoxDecoration(
-                gradient: hasGoal
-                    ? LinearGradient(
-                        colors: [
-                          Theme.of(context).colorScheme.primaryContainer,
-                          Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.7),
-                        ],
-                      )
-                    : LinearGradient(
-                        colors: [
-                          Colors.orange.withValues(alpha: 0.15),
-                          Colors.deepOrange.withValues(alpha: 0.1),
-                        ],
-                      ),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: hasGoal
-                      ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
-                      : Colors.orange.withValues(alpha: 0.4),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: (hasGoal
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.orange).withValues(alpha: 0.15),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: hasGoal
-                            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.15)
-                            : Colors.orange.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        hasGoal
-                            ? PhosphorIcons.target(PhosphorIconsStyle.duotone)
-                            : PhosphorIcons.plus(PhosphorIconsStyle.duotone),
-                        size: 18,
-                        color: hasGoal
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.orange,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      hasGoal
-                          ? 'Meta: ${(user?.waterGoal ?? 0).toInt()} ml'
-                          : 'Establecer meta diaria',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: hasGoal
-                            ? Theme.of(context).colorScheme.onPrimaryContainer
-                            : Colors.orange.shade700,
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-                    if (hasGoal) ...[
-                      const SizedBox(width: 6),
-                      Icon(
-                        PhosphorIcons.pencilSimple(PhosphorIconsStyle.duotone),
-                        size: 16,
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _showEditWaterGoalDialog(BuildContext context, double? currentGoal) async {
-    final controller = TextEditingController(
-      text: currentGoal != null && currentGoal > 0 ? currentGoal.toInt().toString() : '2000',
-    );
-
-    await showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(
-          currentGoal != null && currentGoal > 0 ? 'Editar Meta Diaria' : 'Establecer Meta Diaria',
-          style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Ingresa tu meta de consumo de agua en mililitros:'),
-            const SizedBox(height: 16),
-            TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Meta (ml)',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                suffixText: 'ml',
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final value = double.tryParse(controller.text);
-              if (value != null && value > 0) {
-                final userProvider = Provider.of<UserProvider>(context, listen: false);
-                final user = userProvider.user;
-                if (user != null) {
-                  final updatedUser = user.copyWith(waterGoal: value);
-                  await userProvider.updateUser(updatedUser);
-                }
-                if (dialogContext.mounted) {
-                  Navigator.of(dialogContext).pop();
-                }
-              }
-            },
-            child: const Text('Guardar'),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildWeightProgressCard() {
     return Container(
       decoration: BoxDecoration(
@@ -773,38 +617,42 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
               SizedBox(
                 height: 200,
                 child: ValueListenableBuilder(
-                  valueListenable: Hive.box<BodyMeasurement>(
-                    'body_measurements',
-                  ).listenable(),
-                  builder: (context, Box<BodyMeasurement> box, _) {
-                    final now = DateTime.now();
-                    DateTime startDate;
-                    switch (_selectedPeriod) {
-                    case 'Último Mes':
-                      startDate = now.subtract(const Duration(days: 30));
-                      break;
-                    case 'Último Año':
-                      startDate = now.subtract(const Duration(days: 365));
-                      break;
-                    default:
-                      startDate = now.subtract(const Duration(days: 7));
-                    }
+                  valueListenable: Hive.box<User>('user_box').listenable(),
+                  builder: (context, Box<User> userBox, _) {
+                    final currentUser = userBox.isNotEmpty ? userBox.getAt(0) : null;
+                    return ValueListenableBuilder(
+                      valueListenable: Hive.box<BodyMeasurement>(
+                        'body_measurements',
+                      ).listenable(),
+                      builder: (context, Box<BodyMeasurement> box, _) {
+                        final now = DateTime.now();
+                        DateTime startDate;
+                        switch (_selectedPeriod) {
+                        case 'Último Mes':
+                          startDate = now.subtract(const Duration(days: 30));
+                          break;
+                        case 'Último Año':
+                          startDate = now.subtract(const Duration(days: 365));
+                          break;
+                        default:
+                          startDate = now.subtract(const Duration(days: 7));
+                        }
 
-                    final measurements = box.values
-                        .where(
-                          (m) =>
-                              m.timestamp.isAfter(startDate) && m.weight != null,
-                        )
-                        .toList()
-                      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+                        final measurements = box.values
+                            .where(
+                              (m) =>
+                                  m.timestamp.isAfter(startDate) && m.weight != null,
+                            )
+                            .toList()
+                          ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
-                    if (measurements.length < 2) {
-                      return const Center(
-                        child: Text(
-                          'No hay suficientes datos para mostrar el progreso.',
-                        ),
-                      );
-                    }
+                        if (measurements.length < 2) {
+                          return const Center(
+                            child: Text(
+                              'No hay suficientes datos para mostrar el progreso.',
+                            ),
+                          );
+                        }
 
                     double minY = double.infinity;
                     double maxY = double.negativeInfinity;
@@ -922,6 +770,21 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                                   .withAlpha(50),
                             ),
                           ),
+                          // Línea de meta
+                          if (currentUser?.weightGoal != null)
+                            LineChartBarData(
+                              spots: [
+                                FlSpot(0, currentUser!.weightGoal!),
+                                FlSpot((measurements.length - 1).toDouble(), currentUser.weightGoal!),
+                              ],
+                              isCurved: false,
+                              color: Colors.green.shade400,
+                              barWidth: 2,
+                              isStrokeCapRound: true,
+                              dashArray: [5, 5],
+                              dotData: const FlDotData(show: false),
+                              belowBarData: BarAreaData(show: false),
+                            ),
                         ],
                         lineTouchData: LineTouchData(
                           touchTooltipData: LineTouchTooltipData(
@@ -952,6 +815,8 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                           ),
                         ),
                       ),
+                    );
+                      },
                     );
                   },
                 ),
@@ -1078,19 +943,23 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                   ),
                   const SizedBox(height: 16),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildStatCard(
-                        icon: PhosphorIcons.calendarCheck(PhosphorIconsStyle.duotone),
-                        value: workoutsThisWeek.toString(),
-                        label: 'Entrenamientos',
-                        color: Colors.red,
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: PhosphorIcons.calendarCheck(PhosphorIconsStyle.duotone),
+                          value: workoutsThisWeek.toString(),
+                          label: 'Entrenamientos',
+                          color: Colors.red,
+                        ),
                       ),
-                      _buildStatCard(
-                        icon: PhosphorIcons.timer(PhosphorIconsStyle.duotone),
-                        value: timeSpent,
-                        label: 'Tiempo total',
-                        color: Colors.deepOrange,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: PhosphorIcons.timer(PhosphorIconsStyle.duotone),
+                          value: timeSpent,
+                          label: 'Tiempo total',
+                          color: Colors.deepOrange,
+                        ),
                       ),
                     ],
                   ),
@@ -1418,6 +1287,8 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
               fontWeight: FontWeight.w500,
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -1545,25 +1416,29 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                   return Column(
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildStatCard(
-                            icon: PhosphorIcons.listChecks(PhosphorIconsStyle.duotone),
-                            value: totalFasts.toString(),
-                            label: 'Ayunos completados',
-                            color: Colors.purple,
+                          Expanded(
+                            child: _buildStatCard(
+                              icon: PhosphorIcons.listChecks(PhosphorIconsStyle.duotone),
+                              value: totalFasts.toString(),
+                              label: 'Ayunos completados',
+                              color: Colors.purple,
+                            ),
                           ),
-                          _buildStatCard(
-                            icon: PhosphorIcons.chartBar(PhosphorIconsStyle.duotone),
-                            value: avgHours.toStringAsFixed(1),
-                            label: 'Promedio (horas)',
-                            color: Colors.deepPurple,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildStatCard(
+                              icon: PhosphorIcons.chartBar(PhosphorIconsStyle.duotone),
+                              value: avgHours.toStringAsFixed(1),
+                              label: 'Promedio (horas)',
+                              color: Colors.deepPurple,
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 16),
                       Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
@@ -1578,7 +1453,7 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                           ),
                         ),
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisSize: MainAxisSize.max,
                           children: [
                             Icon(
                               PhosphorIcons.trophy(PhosphorIconsStyle.duotone),
@@ -1586,13 +1461,17 @@ class _ProgresoScreenState extends State<ProgresoScreen> {
                               size: 24,
                             ),
                             const SizedBox(width: 10),
-                            Text(
-                              'Récord: ${formatDuration(longestSeconds)}',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.amber.shade800,
-                                letterSpacing: -0.3,
+                            Expanded(
+                              child: Text(
+                                'Récord: ${formatDuration(longestSeconds)}',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.amber.shade800,
+                                  letterSpacing: -0.3,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],

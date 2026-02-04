@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/services/achievement_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
@@ -28,139 +29,303 @@ class _AboutScreenState extends State<AboutScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        // title: const Text('Acerca de Mi Salud Activa'), // Removed title
+        elevation: 2,
+        backgroundColor: colors.primary,
+        foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.fromLTRB(16.0, 20.0, 16.0, 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Mi Salud Activa',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: colors.primary,
+            // Header Container
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [colors.primary, colors.primary.withValues(alpha: 0.7)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [BoxShadow(color: colors.primary.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4))],
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Tu compañero de bienestar personal.',
-              style: TextStyle(
-                fontSize: 18,
-                fontStyle: FontStyle.italic,
-                color: colors.onSurfaceVariant,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Mi Salud Activa',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tu compañero de bienestar personal.',
+                    style: GoogleFonts.lato(
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Esta aplicación fue creada para ayudarte a tomar el control de tu salud y bienestar. Creemos que el progreso constante, por pequeño que sea, es la clave para un estilo de vida más saludable y activo.',
-              style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.justify,
             ),
             const SizedBox(height: 24),
 
+            // Description Card
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: colors.surfaceContainer,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: colors.outlineVariant),
+              ),
+              child: Text(
+                'Esta aplicación fue creada para ayudarte a tomar el control de tu salud y bienestar. Creemos que el progreso constante, por pequeño que sea, es la clave para un estilo de vida más saludable y activo.',
+                style: GoogleFonts.lato(
+                  fontSize: 15,
+                  height: 1.6,
+                  color: colors.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.justify,
+              ),
+            ),
+            const SizedBox(height: 28),
+
+            // Features Section
             Text(
               'Funcionalidades',
-              style: TextStyle(
-                fontSize: 22,
+              style: GoogleFonts.montserrat(
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: colors.primary,
               ),
             ),
-            const SizedBox(height: 12),
-            _buildFeatureRow(
+            const SizedBox(height: 14),
+            _buildFeatureCard(
               context,
               Icons.fitness_center,
               'Seguimiento de Entrenamientos',
             ),
-            _buildFeatureRow(
+            _buildFeatureCard(
               context,
-              Icons.fastfood,
+              Icons.restaurant,
               'Control de Nutrición e Hidratación',
             ),
-            _buildFeatureRow(
+            _buildFeatureCard(
               context,
               Icons.show_chart,
               'Visualización de Progreso y Metas',
             ),
-            _buildFeatureRow(
+            _buildFeatureCard(
               context,
               Icons.emoji_events,
               'Recompensas para mantener la motivación',
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
+            // Contact Section
             Text(
               'Contacto y Comentarios',
-              style: TextStyle(
-                fontSize: 22,
+              style: GoogleFonts.montserrat(
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: colors.primary,
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               '¿Tienes alguna sugerencia, idea, o encontraste un error? ¡Me encantaría oírte!',
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            ListTile(
-              leading: const Icon(Icons.email, color: Colors.blueAccent),
-              title: const Text('misaludactiva373@gmail.com'),
-              onTap: () =>
-                  _launchUrl('mailto:misaludactiva373@gmail.com', context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.phone, color: Colors.green),
-              title: const Text('+56964022892'),
-              onTap: () => _launchUrl('tel:+56964022892', context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.link, color: Colors.purple),
-              title: const Text('Instagram'),
-              onTap: () =>
-                  _launchUrl('https://www.instagram.com/msa37_3', context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.facebook, color: Colors.indigo),
-              title: const Text('Facebook'),
-              onTap: () => _launchUrl(
-                'https://www.facebook.com/profile.php?id=61580423445819',
-                context,
+              style: GoogleFonts.lato(
+                fontSize: 15,
+                color: colors.onSurfaceVariant,
+                height: 1.5,
               ),
+            ),
+            const SizedBox(height: 16),
+            _buildContactCard(
+              context,
+              Icons.email,
+              'Email',
+              'misaludactiva373@gmail.com',
+              'mailto:misaludactiva373@gmail.com',
+              Colors.blueAccent,
+            ),
+            const SizedBox(height: 10),
+            _buildContactCard(
+              context,
+              Icons.phone,
+              'Teléfono',
+              '+56964022892',
+              'tel:+56964022892',
+              Colors.green,
+            ),
+            const SizedBox(height: 10),
+            _buildContactCard(
+              context,
+              Icons.camera_alt,
+              'Instagram',
+              '@msa37_3',
+              'https://www.instagram.com/msa37_3',
+              Colors.pink,
+            ),
+            const SizedBox(height: 10),
+            _buildContactCard(
+              context,
+              Icons.facebook,
+              'Facebook',
+              'Mi Salud Activa',
+              'https://www.facebook.com/profile.php?id=61580423445819',
+              Colors.indigo,
             ),
 
             const SizedBox(height: 32),
 
-            const Center(
+            // Footer
+            Center(
               child: Column(
                 children: [
-                  Text('Versión 1.0.0', style: TextStyle(color: Colors.grey)),
-                  SizedBox(height: 4),
+                  Text(
+                    'Versión 1.0.0',
+                    style: GoogleFonts.lato(
+                      fontSize: 12,
+                      color: colors.outlineVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
                   Text(
                     '© 2025 Mi Salud Activa',
-                    style: TextStyle(color: Colors.grey),
+                    style: GoogleFonts.lato(
+                      fontSize: 12,
+                      color: colors.outlineVariant,
+                    ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFeatureRow(BuildContext context, IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+  Widget _buildFeatureCard(BuildContext context, IconData icon, String text) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.outlineVariant),
+      ),
       child: Row(
         children: [
-          Icon(icon, color: Theme.of(context).colorScheme.secondary, size: 28),
-          const SizedBox(width: 16),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 16))),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: colors.primary.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              color: colors.primary,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              text,
+              style: GoogleFonts.lato(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: colors.onSurface,
+              ),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildContactCard(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String subtitle,
+    String url,
+    Color iconColor,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _launchUrl(url, context),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: iconColor,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: GoogleFonts.montserrat(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: colors.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.lato(
+                          fontSize: 13,
+                          color: colors.onSurfaceVariant,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.arrow_outward,
+                  color: iconColor,
+                  size: 18,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

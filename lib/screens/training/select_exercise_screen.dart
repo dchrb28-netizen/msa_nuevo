@@ -31,18 +31,26 @@ class _SelectExerciseScreenState extends State<SelectExerciseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Seleccionar ejercicio'),
+        centerTitle: true,
+      ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               controller: _searchController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Buscar por nombre o músculo',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: theme.colorScheme.surfaceContainerHighest,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ),
@@ -61,21 +69,55 @@ class _SelectExerciseScreenState extends State<SelectExerciseScreen> {
                 }).toList();
 
                 if (filteredExercises.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No se encontraron ejercicios. Puedes añadirlos en la biblioteca.',
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search_off,
+                            size: 48,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'No se encontraron ejercicios',
+                            style: theme.textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Puedes añadirlos en la biblioteca.',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }
 
-                return ListView.builder(
+                return ListView.separated(
                   itemCount: filteredExercises.length,
+                  separatorBuilder: (context, index) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final exercise = filteredExercises[index];
                     return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        child: Icon(
+                          Icons.fitness_center_outlined,
+                          color: theme.colorScheme.onPrimaryContainer,
+                        ),
+                      ),
                       title: Text(exercise.name),
                       subtitle: Text(
                         '${exercise.muscleGroup ?? 'N/A'} | ${exercise.equipment ?? 'N/A'}',
+                      ),
+                      trailing: Icon(
+                        Icons.add_circle_outline,
+                        color: theme.colorScheme.primary,
                       ),
                       onTap: () {
                         Navigator.of(context).pop(exercise);

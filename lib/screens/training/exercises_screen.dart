@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/exercise.dart';
 import 'package:myapp/screens/training/exercise_detail_screen.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
 
 class ExercisesScreen extends StatelessWidget {
   final List<Exercise> exercises;
@@ -49,28 +50,11 @@ class ExercisesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (exercises.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.style, size: 60, color: Colors.grey),
-              SizedBox(height: 16),
-              Text(
-                'Aún no has creado ningún ejercicio',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Ve a la pestaña de Biblioteca y pulsa el botón + para añadir tu primer ejercicio.',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
+      return EmptyStateWidget(
+        icon: Icons.style,
+        title: 'Aún no has creado ningún ejercicio',
+        subtitle: 'Ve a la pestaña de Biblioteca y pulsa el botón + para añadir tu primer ejercicio.',
+        iconColor: Colors.red[400],
       );
     }
 

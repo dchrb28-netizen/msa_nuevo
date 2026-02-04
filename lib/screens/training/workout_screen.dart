@@ -11,6 +11,7 @@ import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/providers/workout_history_provider.dart';
 import 'package:myapp/services/achievement_service.dart';
+import 'package:myapp/services/streaks_service.dart';
 import 'package:provider/provider.dart';
 
 class WorkoutScreen extends StatefulWidget {
@@ -311,20 +312,38 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                       );
                     },
                     errorBuilder: (context, error, stackTrace) => Container(
-                      height: 200,
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.grey[100],
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.fitness_center, size: 50, color: Colors.grey[400]),
-                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(Icons.info_outline, size: 20, color: Colors.grey[600]),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Cómo hacer este ejercicio',
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
                           Text(
-                            'Ver demostración en detalle',
-                            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                            _generateWorkoutInstructions(exercise),
+                            style: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: 12,
+                              height: 1.5,
+                            ),
                           ),
                         ],
                       ),
@@ -587,12 +606,21 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             ElevatedButton(
               child: const Text('Guardar'),
               onPressed: () {
-                final int? reps = int.tryParse(repsController.text);
+                final String repsText = repsController.text.trim();
                 final String weightText = weightController.text;
                 final double? weight =
                     weightText.isEmpty ? null : double.tryParse(weightText);
 
-                if (reps != null) {
+                // Intenta parsear como número entero
+                int? reps = int.tryParse(repsText);
+                
+                // Si no es número, podría ser formato como "15min" o "15m"
+                if (reps == null && (repsText.contains('min') || repsText.contains('m'))) {
+                  final numericPart = repsText.replaceAll(RegExp(r'[^0-9]'), '');
+                  reps = int.tryParse(numericPart);
+                }
+
+                  if (reps != null && reps > 0) {
                   if (weightText.isNotEmpty && weight == null) {
                     if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -749,11 +777,16 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     await routineProvider.addRoutineLog(newLog);
 
     final achievementService = AchievementService();
+    final streaksService = StreaksService();
+    
     achievementService.grantExperience(30);
     achievementService.updateProgress('first_workout', 1);
     achievementService.updateProgress('cum_train_25', 1, cumulative: true);
     achievementService.updateProgress('cum_train_100', 1, cumulative: true);
     achievementService.updateProgress('cum_lift_50k', totalWeightLifted, cumulative: true);
+    
+    // Update workout streak
+    await streaksService.updateWorkoutStreak();
 
     if (!mounted) return;
     scaffoldMessenger.showSnackBar(
@@ -762,5 +795,94 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
     if (!mounted) return;
     navigator.pop();
+  }
+
+  String _generateWorkoutInstructions(Exercise exercise) {
+    final name = exercise.name.toLowerCase();
+    
+    if (name.contains('flexion')) {
+      return '''1. Boca abajo, manos bajo los hombros
+2. Cuerpo recto de cabeza a pies
+3. Baja lentamente hasta casi tocar el suelo
+4. Empuja hacia arriba completamente''';
+    } else if (name.contains('sentadilla') || name.contains('squat')) {
+      return '''1. Pies al ancho de hombros
+2. Baja doblando rodillas y caderas
+3. Muslos paralelos al suelo
+4. Sube empujando con los talones''';
+    } else if (name.contains('plancha lateral') || name.contains('side plank')) {
+      return '''1. Apoya el codo bajo el hombro
+2. Eleva las caderas formando una línea recta
+3. Mantén abdomen y oblicuos contraídos
+4. Evita rotar el torso
+5. Cambia de lado al terminar''';
+    } else if (name.contains('plancha') || name.contains('plank')) {
+      return '''1. Apoyado en codos y punteras
+2. Cuerpo recto
+3. Aprieta el core constantemente
+4. Mantén la posición sin dejar caer las caderas''';
+    } else if (name.contains('abdomen') || name.contains('crunch')) {
+      return '''1. Acostado con rodillas dobladas
+2. Manos detrás de la cabeza
+3. Levanta hombros contrayendo abdominales
+4. Baja lentamente con control''';
+    } else if (name.contains('jumping jacks') || name.contains('tijera')) {
+      return '''1. De pie, pies juntos, brazos al lado
+2. Salta abriendo piernas al ancho de hombros
+3. Levanta brazos sobre la cabeza
+4. Salta volviendo a la posición inicial
+5. Mantén el ritmo constante''';
+    } else if (name.contains('remo') || name.contains('row')) {
+      return '''1. Inclínate hacia adelante
+2. Espalda recta
+3. Tira los codos hacia atrás
+4. Aprieta la espalda en la posición superior
+5. Baja lentamente con control''';
+    } else if (name.contains('press')) {
+      return '''1. Acostado o sentado según el tipo
+2. Sostén el peso a la altura del pecho
+3. Empuja hacia arriba completamente
+4. Baja lentamente con control''';
+    } else if (name.contains('tríceps')) {
+      return '''1. Flexiona solo los codos
+2. Mantén los brazos quietos
+3. Baja lentamente el peso
+4. Siente la tensión en los tríceps''';
+    } else if (name.contains('bíceps')) {
+      return '''1. De pie con pies al ancho de hombros
+2. Brazos extendidos
+3. Flexiona codos llevando peso hacia hombros
+4. Codos pegados al cuerpo todo el tiempo''';
+    }
+
+    final description = (exercise.description ?? '').trim();
+    final recommendations = (exercise.recommendations ?? '').trim();
+
+    if (description.isNotEmpty || recommendations.isNotEmpty) {
+      final lines = <String>[];
+      if (description.isNotEmpty) {
+        lines.add('1. ${_formatSentence(description)}');
+      }
+      if (recommendations.isNotEmpty) {
+        lines.add('${lines.length + 1}. ${_formatSentence(recommendations)}');
+      }
+      if (lines.length < 3) {
+        lines.add('${lines.length + 1}. Mantén el movimiento controlado');
+      }
+      return lines.join('\n');
+    }
+
+    return '''1. Adopta la posición inicial
+2. Movimiento lento y controlado
+3. Completa todas las repeticiones
+4. Regresa con control a la posición inicial''';
+  }
+
+  String _formatSentence(String text) {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return trimmed;
+    final first = trimmed[0].toUpperCase();
+    final rest = trimmed.substring(1);
+    return '$first$rest';
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/services/edamam_service.dart';
 import 'package:myapp/models/food_log.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
 
 /// Pantalla para crear una comida combinando múltiples ingredientes
 class RecipeBuilderScreen extends StatefulWidget {
@@ -173,24 +175,55 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          if (_selectedIngredients.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.check),
-              tooltip: 'Guardar',
-              onPressed: _saveRecipe,
-            ),
-        ],
+        elevation: 2,
+        backgroundColor: colors.primary,
+        foregroundColor: Colors.white,
       ),
       body: Column(
         children: [
-          // Buscador
+          // Header Container
           Container(
+            width: double.infinity,
             padding: const EdgeInsets.all(16),
-            color: theme.colorScheme.surface,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [colors.primary, colors.primary.withValues(alpha: 0.7)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [BoxShadow(color: colors.primary.withValues(alpha: 0.2), blurRadius: 8)],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Crear ${_getMealTypeName()}',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Busca y combina ingredientes',
+                  style: GoogleFonts.lato(
+                    fontSize: 14,
+                    color: Colors.white.withValues(alpha: 0.9),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Search and Name Input
+          Container(
+            padding: const EdgeInsets.all(14),
+            color: colors.surface,
             child: Column(
               children: [
                 TextField(
@@ -208,10 +241,12 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
                           )
                         : null,
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: colors.surfaceContainer,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: colors.outlineVariant),
                     ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   ),
                   onSubmitted: _searchFood,
                   onChanged: (value) {
@@ -219,17 +254,19 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
                   },
                 ),
                 if (_selectedIngredients.isNotEmpty) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   TextField(
                     controller: _recipeNameController,
                     decoration: InputDecoration(
                       hintText: 'Nombre de la comida (opcional)',
                       prefixIcon: const Icon(Icons.restaurant_menu),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: colors.surfaceContainer,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: colors.outlineVariant),
                       ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     ),
                   ),
                 ],
@@ -237,61 +274,112 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
             ),
           ),
 
-          // Resultados de búsqueda o ingredientes seleccionados
+          // Content Area
           Expanded(
             child: _searchResults.isNotEmpty
-                ? _buildSearchResults(theme)
+                ? _buildSearchResults(theme, colors)
                 : _selectedIngredients.isNotEmpty
-                    ? _buildSelectedIngredients(theme)
-                    : _buildEmptyState(theme),
+                    ? _buildSelectedIngredients(theme, colors)
+                    : _buildEmptyState(theme, colors),
           ),
 
-          // Resumen nutricional
+          // Nutrition Summary
           if (_selectedIngredients.isNotEmpty)
-            _buildNutritionSummary(theme),
+            _buildNutritionSummary(theme, colors),
         ],
       ),
     );
   }
 
-  Widget _buildSearchResults(ThemeData theme) {
+  Widget _buildSearchResults(ThemeData theme, ColorScheme colors) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     return ListView.builder(
       itemCount: _searchResults.length,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(10),
       itemBuilder: (context, index) {
         final food = _searchResults[index];
         final nutrients = food['nutrients'] as Map<String, dynamic>;
 
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 4),
-          child: ListTile(
-            leading: food['image'] != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      food['image'],
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.fastfood),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainer,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: colors.outlineVariant),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => _addIngredient(food),
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  children: [
+                    // Image
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: food['image'] != null
+                          ? Image.network(
+                              food['image'],
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                width: 56,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  color: colors.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(Icons.fastfood, color: colors.primary),
+                              ),
+                            )
+                          : Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                color: colors.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(Icons.fastfood, color: colors.primary),
+                            ),
                     ),
-                  )
-                : const Icon(Icons.fastfood, size: 50),
-            title: Text(
-              food['label'] ?? 'Desconocido',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              '${nutrients['calories']?.toStringAsFixed(0) ?? '0'} kcal • '
-              '${nutrients['protein']?.toStringAsFixed(1) ?? '0'}g proteína',
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.add_circle, color: Colors.green),
-              onPressed: () => _addIngredient(food),
+                    const SizedBox(width: 12),
+                    // Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            food['label'] ?? 'Desconocido',
+                            style: GoogleFonts.lato(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: colors.onSurface,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${nutrients['calories']?.toStringAsFixed(0) ?? '0'} kcal • '
+                            '${nutrients['protein']?.toStringAsFixed(1) ?? '0'}g P',
+                            style: GoogleFonts.lato(
+                              fontSize: 12,
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.add_circle, color: colors.primary, size: 28),
+                  ],
+                ),
+              ),
             ),
           ),
         );
@@ -299,39 +387,88 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     );
   }
 
-  Widget _buildSelectedIngredients(ThemeData theme) {
+  Widget _buildSelectedIngredients(ThemeData theme, ColorScheme colors) {
     return ListView.builder(
       itemCount: _selectedIngredients.length,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(10),
       itemBuilder: (context, index) {
         final ingredient = _selectedIngredients[index];
 
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 4),
-          child: ListTile(
-            leading: ingredient['image'] != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      ingredient['image'],
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.fastfood),
-                    ),
-                  )
-                : const Icon(Icons.fastfood, size: 50),
-            title: Text(
-              ingredient['name'],
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              '${ingredient['servings'].toStringAsFixed(0)}g • '
-              '${ingredient['calories'].toStringAsFixed(0)} kcal',
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.remove_circle, color: Colors.red),
-              onPressed: () => _removeIngredient(index),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainer,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: colors.outlineVariant),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                // Image
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: ingredient['image'] != null
+                      ? Image.network(
+                          ingredient['image'],
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            width: 56,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              color: colors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(Icons.fastfood, color: colors.primary),
+                          ),
+                        )
+                      : Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: colors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(Icons.fastfood, color: colors.primary),
+                        ),
+                ),
+                const SizedBox(width: 12),
+                // Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        ingredient['name'],
+                        style: GoogleFonts.lato(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: colors.onSurface,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${ingredient['servings'].toStringAsFixed(0)}g • '
+                        '${ingredient['calories'].toStringAsFixed(0)} kcal',
+                        style: GoogleFonts.lato(
+                          fontSize: 12,
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close, color: colors.error, size: 22),
+                  onPressed: () => _removeIngredient(index),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
             ),
           ),
         );
@@ -339,39 +476,24 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     );
   }
 
-  Widget _buildEmptyState(ThemeData theme) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.restaurant, size: 80, color: theme.colorScheme.primary.withOpacity(0.3)),
-          const SizedBox(height: 16),
-          Text(
-            'Busca ingredientes para crear tu comida',
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Los ingredientes se sumarán automáticamente',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.4),
-            ),
-          ),
-        ],
-      ),
+  Widget _buildEmptyState(ThemeData theme, ColorScheme colors) {
+    return EmptyStateWidget(
+      icon: Icons.restaurant,
+      title: 'Busca ingredientes',
+      subtitle: 'Los ingredientes se sumarán automáticamente',
+      iconColor: colors.primary,
+      iconSize: 64,
     );
   }
 
-  Widget _buildNutritionSummary(ThemeData theme) {
+  Widget _buildNutritionSummary(ThemeData theme, ColorScheme colors) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer,
+        color: colors.primaryContainer,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -382,37 +504,39 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
         children: [
           Text(
             'Total Nutricional',
-            style: theme.textTheme.titleMedium?.copyWith(
+            style: GoogleFonts.montserrat(
+              fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onPrimaryContainer,
+              color: colors.onPrimaryContainer,
             ),
           ),
           const SizedBox(height: 12),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final small = constraints.maxWidth < 360;
-              final double fontSize = small ? 10 : 12;
-              final double iconSize = small ? 14 : 18;
-              return Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 8,
-                runSpacing: 6,
-                children: [
-                  _buildNutrientChip('${_totalCalories.toStringAsFixed(0)} kcal', Icons.local_fire_department, Colors.orange, fontSize: fontSize, iconSize: iconSize),
-                  _buildNutrientChip('${_totalProtein.toStringAsFixed(1)}g P', Icons.fitness_center, Colors.red, fontSize: fontSize, iconSize: iconSize),
-                  _buildNutrientChip('${_totalCarbs.toStringAsFixed(1)}g C', Icons.grain, Colors.brown, fontSize: fontSize, iconSize: iconSize),
-                  _buildNutrientChip('${_totalFat.toStringAsFixed(1)}g G', Icons.opacity, Colors.yellow[700]!, fontSize: fontSize, iconSize: iconSize),
-                ],
-              );
-            },
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNutrientBadge('${_totalCalories.toStringAsFixed(0)}', 'kcal', Colors.orange, colors),
+              _buildNutrientBadge('${_totalProtein.toStringAsFixed(1)}', 'g P', Colors.red, colors),
+              _buildNutrientBadge('${_totalCarbs.toStringAsFixed(1)}', 'g C', Colors.amber, colors),
+              _buildNutrientBadge('${_totalFat.toStringAsFixed(1)}', 'g G', Colors.yellow, colors),
+            ],
           ),
           const SizedBox(height: 12),
-          ElevatedButton.icon(
-            onPressed: _saveRecipe,
-            icon: const Icon(Icons.check),
-            label: Text('Guardar ${_getMealTypeName()}'),
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 48),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _saveRecipe,
+              icon: const Icon(Icons.check, size: 20),
+              label: Text(
+                'Guardar ${_getMealTypeName()}',
+                style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colors.primary,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 46),
+                elevation: 2,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
             ),
           ),
         ],
@@ -420,10 +544,33 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     );
   }
 
-  Widget _buildNutrientChip(String label, IconData icon, Color color, {double fontSize = 12, double iconSize = 18}) {
-    return Chip(
-      avatar: Icon(icon, size: iconSize, color: color),
-      label: Text(label, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
+  Widget _buildNutrientBadge(String value, String label, Color color, ColorScheme colors) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            value,
+            style: GoogleFonts.montserrat(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: GoogleFonts.lato(
+            fontSize: 10,
+            color: colors.onPrimaryContainer.withValues(alpha: 0.8),
+          ),
+        ),
+      ],
     );
   }
 }

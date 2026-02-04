@@ -133,8 +133,9 @@ class UserProvider with ChangeNotifier {
       final updatedUser = _user!.copyWith(favoriteRecipes: updatedFavorites);
       await updateUser(updatedUser);
 
-      // Update achievement
-      AchievementService().updateProgress('exp_add_favorite', 1, cumulative: true);
+  // Update achievement with total count of favorites
+  final totalFavorites = updatedFavorites.length;
+  AchievementService().updateProgress('exp_add_favorite', totalFavorites);
       return true;
     } else {
       return false;
@@ -147,6 +148,10 @@ class UserProvider with ChangeNotifier {
         ..removeWhere((r) => r.title == recipe.title);
       final updatedUser = _user!.copyWith(favoriteRecipes: updatedFavorites);
       await updateUser(updatedUser);
+
+      // Update achievement with total count of favorites
+      final totalFavorites = updatedFavorites.length;
+      AchievementService().updateProgress('exp_add_favorite', totalFavorites);
     }
   }
 

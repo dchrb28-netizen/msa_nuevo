@@ -156,89 +156,208 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        // title removed
+        title: Text(_isCreating ? 'Nueva rutina' : 'Editar rutina'),
+        centerTitle: true,
         actions: [
           IconButton(icon: const Icon(Icons.save), onPressed: _saveRoutine),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
-                initialValue: _routineName,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre de la rutina',
-                  border: OutlineInputBorder(),
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce un nombre para la rutina';
-                  }
-                  return null;
-                },
-                onSaved: (value) => _routineName = value!,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        initialValue: _routineName,
+                        decoration: InputDecoration(
+                          labelText: 'Nombre de la rutina',
+                          filled: true,
+                          fillColor: colorScheme.surfaceContainerHighest,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor, introduce un nombre para la rutina';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) => _routineName = value!,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        initialValue: _routineDescription,
+                        decoration: InputDecoration(
+                          labelText: 'Descripción (opcional)',
+                          filled: true,
+                          fillColor: colorScheme.surfaceContainerHighest,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onSaved: (value) => _routineDescription = value ?? '',
+                      ),
+                    ],
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                initialValue: _routineDescription,
-                decoration: const InputDecoration(
-                  labelText: 'Descripción (opcional)',
-                  border: OutlineInputBorder(),
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                onSaved: (value) => _routineDescription = value ?? '',
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Días de la semana (opcional)',
+                        style: theme.textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildDaysSelector(),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Días de la semana (opcional)',
-                style: Theme.of(context).textTheme.titleMedium,
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Text('Ejercicios', style: theme.textTheme.titleLarge),
+                  const Spacer(),
+                  Text(
+                    'Arrastra para ordenar',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
-              _buildDaysSelector(),
-              const SizedBox(height: 24),
-              Text('Ejercicios', style: Theme.of(context).textTheme.titleLarge),
               Expanded(
                 child: _routineExercises.isEmpty
-                    ? const Center(child: Text('Añade ejercicios a tu rutina.'))
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.fitness_center_outlined,
+                                size: 48,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Añade ejercicios a tu rutina',
+                                style: theme.textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Usa el botón + para agregar',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
                     : ReorderableListView.builder(
+                        buildDefaultDragHandles: false,
                         padding: const EdgeInsets.only(bottom: 80.0),
                         itemCount: _routineExercises.length,
                         itemBuilder: (context, index) {
                           final routineExercise = _routineExercises[index];
-                          return ListTile(
+                          return Card(
                             key: ValueKey(routineExercise.hashCode),
-                            title: Text(routineExercise.exercise.name),
-                            subtitle: Text(
-                              '${routineExercise.sets} series x ${routineExercise.reps} reps',
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            elevation: 1.5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit_outlined),
-                                  onPressed: () => _showExerciseSettingsDialog(
-                                    exercise: routineExercise.exercise,
-                                    routineExercise: routineExercise,
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              leading: CircleAvatar(
+                                backgroundColor:
+                                    colorScheme.primaryContainer,
+                                child: Icon(
+                                  Icons.fitness_center,
+                                  color: colorScheme.onPrimaryContainer,
+                                ),
+                              ),
+                              title: Text(routineExercise.exercise.name),
+                              subtitle: Wrap(
+                                spacing: 8,
+                                runSpacing: -6,
+                                children: [
+                                  Chip(
+                                    label: Text(
+                                      '${routineExercise.sets} series',
+                                    ),
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                  Chip(
+                                    label: Text(
+                                      '${routineExercise.reps} reps',
+                                    ),
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                ],
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit_outlined),
+                                    onPressed: () => _showExerciseSettingsDialog(
+                                      exercise: routineExercise.exercise,
+                                      routineExercise: routineExercise,
+                                      index: index,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.redAccent,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _routineExercises.removeAt(index);
+                                      });
+                                    },
+                                  ),
+                                  ReorderableDragStartListener(
                                     index: index,
+                                    child: Icon(
+                                      Icons.drag_handle,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.delete_outline,
-                                    color: Colors.redAccent,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _routineExercises.removeAt(index);
-                                    });
-                                  },
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         },
@@ -267,36 +386,29 @@ class _EditRoutineScreenState extends State<EditRoutineScreen> {
 
   Widget _buildDaysSelector() {
     final daysShort = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+    final colorScheme = Theme.of(context).colorScheme;
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
       children: List.generate(7, (index) {
-        return GestureDetector(
-          onTap: () {
+        final selected = _selectedDays[index];
+        return FilterChip(
+          label: Text(daysShort[index]),
+          selected: selected,
+          showCheckmark: false,
+          selectedColor: colorScheme.primaryContainer,
+          backgroundColor: colorScheme.surfaceContainerHighest,
+          labelStyle: TextStyle(
+            color: selected
+                ? colorScheme.onPrimaryContainer
+                : colorScheme.onSurface,
+            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+          ),
+          onSelected: (_) {
             setState(() {
               _selectedDays[index] = !_selectedDays[index];
             });
           },
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: _selectedDays[index]
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.surfaceContainerHighest,
-            ),
-            child: Center(
-              child: Text(
-                daysShort[index],
-                style: TextStyle(
-                  color: _selectedDays[index]
-                      ? Theme.of(context).colorScheme.onPrimary
-                      : Theme.of(context).colorScheme.onSurface,
-                  fontWeight: _selectedDays[index] ? FontWeight.bold : FontWeight.normal,
-                ),
-              ),
-            ),
-          ),
         );
       }),
     );

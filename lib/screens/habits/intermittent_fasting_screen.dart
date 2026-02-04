@@ -7,6 +7,8 @@ import 'package:myapp/models/fasting_plan.dart';
 import 'package:myapp/providers/fasting_provider.dart';
 import 'package:myapp/services/time_format_service.dart';
 import 'package:myapp/widgets/sun_moon_timer.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
@@ -168,13 +170,14 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
           title: const Text('Editar Ayuno'),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
+              final timeFormatService = Provider.of<TimeFormatService>(context);
               return SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     ListTile(
                       title: Text(
-                        'Inicio: ${Provider.of<TimeFormatService>(context).formatDateTime(editedStartTime)}',
+                        'Inicio: ${timeFormatService.formatDateTime(editedStartTime)}',
                       ),
                       trailing: const Icon(Icons.edit_calendar),
                       onTap: () async {
@@ -188,7 +191,6 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                         if (date == null) return;
 
                         if (!context.mounted) return;
-                        final timeFormatService = Provider.of<TimeFormatService>(context, listen: false);
                         final time = await showTimePicker(
                           context: context,
                           initialTime: TimeOfDay.fromDateTime(editedStartTime),
@@ -197,7 +199,13 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                               data: MediaQuery.of(context).copyWith(
                                 alwaysUse24HourFormat: timeFormatService.use24HourFormat,
                               ),
-                              child: child!,
+                              child: Localizations.override(
+                                context: context,
+                                locale: timeFormatService.use24HourFormat
+                                    ? const Locale('es', 'ES')
+                                    : const Locale('en', 'US'),
+                                child: child!,
+                              ),
                             );
                           },
                         );
@@ -216,7 +224,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                     ),
                     ListTile(
                       title: Text(
-                        'Fin:      ${editedEndTime != null ? Provider.of<TimeFormatService>(context).formatDateTime(editedEndTime!) : 'N/A'}',
+                        'Fin:      ${editedEndTime != null ? timeFormatService.formatDateTime(editedEndTime!) : 'N/A'}',
                       ),
                       trailing: const Icon(Icons.edit_calendar),
                       onTap: () async {
@@ -230,7 +238,6 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                         if (date == null) return;
 
                         if (!context.mounted) return;
-                        final timeFormatService = Provider.of<TimeFormatService>(context, listen: false);
                         final time = await showTimePicker(
                           context: context,
                           initialTime: TimeOfDay.fromDateTime(
@@ -241,7 +248,13 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                               data: MediaQuery.of(context).copyWith(
                                 alwaysUse24HourFormat: timeFormatService.use24HourFormat,
                               ),
-                              child: child!,
+                              child: Localizations.override(
+                                context: context,
+                                locale: timeFormatService.use24HourFormat
+                                    ? const Locale('es', 'ES')
+                                    : const Locale('en', 'US'),
+                                child: child!,
+                              ),
                             );
                           },
                         );
@@ -380,27 +393,18 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
           builder: (context, fastingProvider, child) {
             return Column(
               children: [
-                Container(
-                  color: theme.colorScheme.surface,
-                  child: Material(
-                    color: theme.colorScheme.primary.withAlpha(25),
-                    child: TabBar(
-                      indicatorColor: theme.colorScheme.primary,
-                      labelColor: theme.colorScheme.primary,
-                      unselectedLabelColor: theme.textTheme.bodyLarge?.color,
-                      tabs: const [
-                        Tab(icon: Icon(Icons.timer_outlined), text: 'Ayuno'),
-                        Tab(
-                          icon: Icon(Icons.history_outlined),
-                          text: 'Historial',
-                        ),
-                        Tab(
-                          icon: Icon(Icons.bar_chart_outlined),
-                          text: 'Estadísticas',
-                        ),
-                      ],
+                const SubTabBar(
+                  tabs: [
+                    Tab(icon: Icon(Icons.timer_outlined), text: 'Ayuno'),
+                    Tab(
+                      icon: Icon(Icons.history_outlined),
+                      text: 'Historial',
                     ),
-                  ),
+                    Tab(
+                      icon: Icon(Icons.bar_chart_outlined),
+                      text: 'Estadísticas',
+                    ),
+                  ],
                 ),
                 Expanded(
                   child: TabBarView(
@@ -491,7 +495,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: provider.allPlans.map((plan) {
-              final isSelected = provider.selectedPlan.id == plan.id;
+              final isSelected = provider.selectedPlan.fastingHours == plan.fastingHours;
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6.0),
                 child: GestureDetector(
@@ -817,13 +821,15 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
     final history = provider.fastingHistory;
 
     if (history.isEmpty) {
-      return const Center(
-        child: Text(
-          'Aún no hay registros de ayuno.',
-          style: TextStyle(fontSize: 16),
-        ),
+      return EmptyStateWidget(
+        icon: Icons.history,
+        title: 'Aún no hay registros de ayuno',
+        subtitle: 'Inicia un período de ayuno para ver tu historial',
+        iconColor: Colors.amber[400],
       );
     }
+
+    final timeFormatService = Provider.of<TimeFormatService>(context);
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -892,7 +898,7 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text(
-                'Inicio: ${Provider.of<TimeFormatService>(context).formatDateTime(log.startTime)}\nFin:      ${Provider.of<TimeFormatService>(context).formatDateTime(log.endTime!)}',
+                'Inicio: ${timeFormatService.formatDateTime(log.startTime)}\nFin:      ${timeFormatService.formatDateTime(log.endTime!)}',
                 style: const TextStyle(fontSize: 12),
               ),
               trailing: Row(
@@ -1106,8 +1112,10 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
             const SizedBox(height: 8),
             Text(
               title,
-              style: theme.textTheme.titleMedium,
+              style: theme.textTheme.titleSmall,
               textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
             Text(
@@ -1115,6 +1123,9 @@ class _IntermittentFastingScreenState extends State<IntermittentFastingScreen> {
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

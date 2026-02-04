@@ -7,6 +7,8 @@ import 'package:myapp/screens/training/workout_history_screen.dart';
 import 'package:myapp/screens/training/workout_screen.dart';
 import 'package:myapp/utils/clear_routines.dart';
 import 'package:myapp/widgets/routine_preview_dialog.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class RoutinesScreen extends StatefulWidget {
@@ -20,7 +22,6 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
   @override
   void initState() {
     super.initState();
-    // Limpiar rutinas predeterminadas al iniciar
     _clearDefaultRoutines();
   }
 
@@ -48,87 +49,71 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return DefaultTabController(
+      length: 3,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8.0,
-              vertical: 12.0,
-            ),
-            child: Wrap(
-              spacing: 8.0,
-              runSpacing: 4.0,
-              children: [
-                ActionChip(
-                  avatar: Icon(PhosphorIcons.plusCircle(PhosphorIconsStyle.fill), 
-                               color: colorScheme.primary, size: 20),
-                  label: const Text('Crear Rutina'),
-                  onPressed: () => _navigateAndAddRoutine(context),
+          SubTabBar(
+            tabs: [
+              Tab(
+                icon: Icon(
+                  PhosphorIcons.plusCircle(PhosphorIconsStyle.fill),
+                  color: colorScheme.primary,
+                  size: 18,
                 ),
-                ActionChip(
-                  avatar: Icon(PhosphorIcons.star(PhosphorIconsStyle.fill), 
-                               color: Colors.amber, size: 20),
-                  label: const Text('Rutinas Predeterminadas'),
-                  onPressed: () => _navigateToPresetRoutines(context),
+                text: 'Crear Rutina',
+              ),
+              const Tab(
+                icon: Icon(Icons.star, color: Colors.amber, size: 18),
+                text: 'Predeterminadas',
+              ),
+              Tab(
+                icon: Icon(
+                  PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill),
+                  color: colorScheme.secondary,
+                  size: 18,
                 ),
-                ActionChip(
-                  avatar: Icon(PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill), 
-                               color: colorScheme.secondary, size: 20),
-                  label: const Text('Historial'),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const WorkoutHistoryScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
+                text: 'Historial',
+              ),
+            ],
+            onTap: (index) {
+              if (index == 0) {
+                _navigateAndAddRoutine(context);
+              } else if (index == 1) {
+                _navigateToPresetRoutines(context);
+              } else if (index == 2) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const WorkoutHistoryScreen(),
+                  ),
+                );
+              }
+            },
           ),
-          const Divider(),
+          const Divider(height: 1),
           Expanded(
             child: Consumer<RoutineProvider>(
               builder: (context, provider, child) {
                 debugPrint('[RoutinesScreen] Consumer rebuild - routines count=${provider.routines.length}');
                 final userRoutines = provider.routines;
-                
+
                 if (userRoutines.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(PhosphorIcons.folderOpen(), size: 80, color: Colors.grey),
-                          const SizedBox(height: 24),
-                          Text(
-                            'No tienes rutinas personalizadas',
-                            style: theme.textTheme.titleLarge?.copyWith(color: Colors.grey),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            '¡Crea tu primera rutina o elige una predeterminada!',
-                            style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
+                  return EmptyStateWidget(
+                    icon: PhosphorIcons.folderOpen(),
+                    title: 'No tienes rutinas personalizadas',
+                    subtitle: '¡Crea tu primera rutina o elige una predeterminada!',
+                    iconColor: Colors.grey,
                   );
                 }
-                
+
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                   itemCount: userRoutines.length,
                   itemBuilder: (context, index) {
                     final routine = userRoutines[index];
                     final exerciseCount = routine.exercises?.length ?? 0;
-                    
+
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 6.0),
                       elevation: 4,
@@ -138,12 +123,11 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(12),
                         onTap: () async {
-                          // Mostrar previsualización
                           final result = await showDialog<String>(
                             context: context,
                             builder: (context) => RoutinePreviewDialog(routine: routine),
                           );
-                          
+
                           if (result == 'start' && mounted) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -237,10 +221,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                                                 },
                                               ),
                                               TextButton(
-                                                child: Text(
-                                                  'Eliminar',
-                                                  style: TextStyle(color: colorScheme.error),
-                                                ),
+                                                child: const Text('Eliminar'),
                                                 onPressed: () {
                                                   provider.deleteRoutine(routine.id);
                                                   Navigator.of(ctx).pop();
@@ -252,22 +233,12 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                                       );
                                     }
                                   },
-                                  itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry<String>>[
-                                      PopupMenuItem<String>(
-                                        value: 'delete',
-                                        child: ListTile(
-                                          leading: Icon(
-                                            PhosphorIcons.trash(PhosphorIconsStyle.regular),
-                                            color: colorScheme.error,
-                                          ),
-                                          title: Text(
-                                            'Eliminar',
-                                            style: TextStyle(color: colorScheme.error),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                    const PopupMenuItem<String>(
+                                      value: 'delete',
+                                      child: Text('Eliminar'),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),

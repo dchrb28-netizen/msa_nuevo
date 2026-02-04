@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/screens/profile_screen.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
 import 'package:provider/provider.dart';
 
 class CaloricGoalsScreen extends StatefulWidget {
@@ -284,51 +286,59 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       color: details['color'].withAlpha(50),
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(14.0),
         child: Column(
           children: [
             Row(
               children: [
-                Icon(details['icon'], size: 40, color: details['darkColor']),
-                const SizedBox(width: 16),
+                Icon(details['icon'], size: 32, color: details['darkColor']),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         details['title'],
-                        style: textTheme.titleLarge?.copyWith(
+                        style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: details['darkColor'],
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(details['subtitle'], style: textTheme.bodyMedium),
+                      const SizedBox(height: 2),
+                      Text(
+                        details['subtitle'],
+                        style: textTheme.bodySmall,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            Text('Meta Sugerida', style: textTheme.labelLarge),
+            const SizedBox(height: 12),
+            Text('Meta Sugerida', style: textTheme.labelSmall),
             Text(
               '${calories.toStringAsFixed(0)} kcal',
-              style: textTheme.displayMedium?.copyWith(
+              style: textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w900,
                 color: details['darkColor'],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
             ElevatedButton.icon(
               onPressed: () => _applyCalorieGoal(calories),
-              icon: const Icon(Icons.check_circle_outline),
-              label: const Text('Aplicar esta Meta Calórica'),
+              icon: const Icon(Icons.check_circle_outline, size: 18),
+              label: const Text(
+                'Aplicar esta Meta Calórica',
+                style: TextStyle(fontSize: 12),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: details['darkColor'],
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 20,
+                  vertical: 8,
+                  horizontal: 16,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -432,49 +442,22 @@ class _CaloricGoalsScreenState extends State<CaloricGoalsScreen> {
   }
 
   Widget _buildProfileCompletionMessage(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.warning_amber_rounded,
-              size: 60,
-              color: Colors.amber,
+    return EmptyStateWidget(
+      icon: Icons.warning_amber_rounded,
+      title: 'Faltan datos en tu perfil',
+      subtitle: 'Por favor, completa tu peso, altura y edad en la sección de Perfil para poder calcular tus metas calóricas.',
+      iconColor: Colors.amber,
+      action: ElevatedButton.icon(
+        icon: const Icon(Icons.person_search_outlined),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ProfileScreen(),
             ),
-            const SizedBox(height: 20),
-            Text(
-              'Faltan datos en tu perfil',
-              style: textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Por favor, completa tu peso, altura y edad en la sección de Perfil para poder calcular tus metas calóricas.',
-              textAlign: TextAlign.center,
-              style: textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                try {
-                  DefaultTabController.of(context).animateTo(1);
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Navega a la pestaña de Perfil para completar tus datos.',
-                      ),
-                    ),
-                  );
-                }
-              },
-              child: const Text('Ir a mi Perfil'),
-            ),
-          ],
-        ),
+          );
+        },
+        label: const Text('Ir a mi Perfil'),
       ),
     );
   }

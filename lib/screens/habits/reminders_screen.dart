@@ -5,6 +5,7 @@ import 'package:myapp/screens/habits/add_reminder_screen.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:myapp/services/foreground_reminder_service.dart';
 import 'package:myapp/services/time_format_service.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -99,31 +100,11 @@ class _RemindersScreenState extends State<RemindersScreen> {
               builder: (context, Box<Reminder> box, _) {
                 final reminders = box.values.toList();
                 if (reminders.isEmpty) {
-                  return Stack(
-                    children: [
-                      Center(
-                        child: Opacity(
-                          opacity: 0.2,
-                          child: Image.asset(
-                            Theme.of(context).brightness == Brightness.dark
-                                ? 'assets/luna_png/luna_recordatorios_b.png'
-                                : 'assets/luna_png/luna_recordatorios_w.png',
-                            height: 250,
-                            errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
-                          ),
-                        ),
-                      ),
-                      const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(24.0),
-                          child: Text(
-                            'Aún no has creado ningún recordatorio. ¡Toca el botón (+) para empezar!',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 18, color: Colors.grey),
-                          ),
-                        ),
-                      ),
-                    ],
+                  return EmptyStateWidget(
+                    icon: Icons.notifications_none,
+                    title: 'Aún no has creado recordatorios',
+                    subtitle: 'Toca el botón (+) para crear tu primer recordatorio',
+                    iconColor: Colors.amber[400],
                   );
                 }
                 return Stack(

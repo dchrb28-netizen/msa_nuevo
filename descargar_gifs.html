@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descargador de GIFs de Ejercicios</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .stats {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #666;
+        }
+        .gif-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .gif-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            background: #f9f9f9;
+            transition: all 0.3s;
+        }
+        .gif-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+        .gif-card h3 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+            font-size: 16px;
+        }
+        .gif-preview {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 10px 0;
+            background: #ddd;
+        }
+        .btn-download {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .btn-download:hover {
+            transform: scale(1.05);
+        }
+        .btn-download:active {
+            transform: scale(0.95);
+        }
+        .category {
+            font-weight: bold;
+            color: #764ba2;
+            margin-top: 30px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-left: 4px solid #667eea;
+        }
+        .progress {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .btn-download-all {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .btn-download-all:hover {
+            transform: scale(1.02);
+        }
+        .instructions {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #f57c00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏋️ Descargador de GIFs de Ejercicios</h1>
+        <div class="stats">
+            📊 <span id="total">60</span> GIFs faltantes | 
+            ✅ <span id="downloaded">0</span> descargados | 
+            📈 Progreso: <span id="progress">0</span>%
+        </div>
+
+        <div class="instructions">
+            <h3>📋 Instrucciones:</h3>
+            <ol>
+                <li>Haz clic en "Descargar" en cada GIF que quieras obtener</li>
+                <li>El archivo se descargará automáticamente</li>
+                <li>Mueve todos los archivos descargados a: <code>assets/exercise_gifs/</code></li>
+                <li>Reinicia tu app Flutter para ver los GIFs</li>
+            </ol>
+        </div>
+
+        <button class="btn-download-all" onclick="downloadAll()">⚡ Descargar Todos (60 GIFs)</button>
+
+        <div id="gif-list"></div>
+    </div>
+
+    <script>
+        const gifs = {
+            "🔥 CARDIO (Alta Prioridad)": {
+                'crd_001': {name: 'Jumping jacks', url: 'https://i.pinimg.com/originals/7c/66/05/7c66055eb23c44daa8851de0b80f02bd.gif'},
+                'crd_003': {name: 'Butt kicks', url: 'https://thumbs.gfycat.com/EqualSardonicAfricanjacana-size_restricted.gif'},
+                'crd_004': {name: 'Burpees', url: 'https://i.pinimg.com/originals/f9/ce/1f/f9ce1f46e71a5a7c8584f96cdabcd3f5.gif'},
+                'crd_005': {name: 'Mountain climbers', url: 'https://thumbs.gfycat.com/GrotesqueShortBactrian-size_restricted.gif'},
+                'crd_006': {name: 'Skater hops', url: 'https://thumbs.gfycat.com/HeavenlyRecentBrahmancow-size_restricted.gif'},
+                'crd_007': {name: 'Saltar la cuerda', url: 'https://thumbs.gfycat.com/CheerfulUnequaledIndianglassfish-size_restricted.gif'},
+                'crd_008': {name: 'Box jumps', url: 'https://thumbs.gfycat.com/ChiefCoolEidolonhelvum-size_restricted.gif'},
+                'crd_009': {name: 'Inchworm', url: 'https://thumbs.gfycat.com/FortunateBasicHarborseal-size_restricted.gif'},
+                'crd_010': {name: 'Tuck jumps', url: 'https://thumbs.gfycat.com/WholeGrayAmericancrayfish-size_restricted.gif'},
+                'crd_011': {name: 'Escaleras corriendo', url: 'https://thumbs.gfycat.com/MiniatureOptimisticBongo-size_restricted.gif'},
+                'crd_012': {name: 'Shadow boxing', url: 'https://thumbs.gfycat.com/SpitefulSarcasticAmoeba-size_restricted.gif'}
+            },
+            "💪 PECHO": {
+                'chest_005': {name: 'Fondos entre sillas', url: 'https://i.pinimg.com/originals/6e/96/54/6e965473eb23c70dd8862961bc30f6c0.gif'},
+                'chest_006': {name: 'Press con mochila', url: 'https://i.pinimg.com/originals/e0/e6/3e/e0e63ea6ef99cb6c73f0dcf6e2a0c1e0.gif'},
+                'chest_008': {name: 'Flexión con rotación', url: 'https://thumbs.gfycat.com/IncredibleWarpedKookaburra-size_restricted.gif'},
+                'chest_009': {name: 'Flexiones explosivas', url: 'https://thumbs.gfycat.com/ConsciousFatalBoa-size_restricted.gif'},
+                'chest_010': {name: 'Flexiones a una mano', url: 'https://thumbs.gfycat.com/UncommonFearlessGar-size_restricted.gif'},
+                'chest_011': {name: 'Flexiones lentas', url: 'https://thumbs.gfycat.com/BountifulEachGrouse-size_restricted.gif'},
+                'chest_012': {name: 'Flexiones abiertas', url: 'https://thumbs.gfycat.com/AcademicJitteryAsiaticmouflon-size_restricted.gif'},
+                'chest_013': {name: 'Flexiones declinadas avanzadas', url: 'https://thumbs.gfycat.com/LeafyRevolvingGuanaco-size_restricted.gif'}
+            },
+            "🦾 ESPALDA": {
+                'back_001': {name: 'Dominadas', url: 'https://thumbs.gfycat.com/AgitatedCommonCattle-size_restricted.gif'},
+                'back_003': {name: 'Superman', url: 'https://i.pinimg.com/originals/7f/ba/ff/7fbaffb1c6e1b21ff0d3e0c7e7a5e2d0.gif'},
+                'back_004': {name: 'Bird dog', url: 'https://i.pinimg.com/originals/eb/8e/e9/eb8ee9d6cb1f1b9eaa1f24cfbb98c9db.gif'},
+                'back_008': {name: 'Remo a una mano', url: 'https://thumbs.gfycat.com/QuaintUnfitKoi-size_restricted.gif'},
+                'back_009': {name: 'Face pull con banda', url: 'https://thumbs.gfycat.com/FaithfulSharpIrishterrier-size_restricted.gif'},
+                'back_010': {name: 'Chin-ups', url: 'https://thumbs.gfycat.com/LegitimateJaggedChinchilla-size_restricted.gif'},
+                'back_011': {name: 'Remo con banda', url: 'https://thumbs.gfycat.com/FrighteningRipeAfricanhornbill-size_restricted.gif'}
+            },
+            "👐 HOMBROS": {
+                'shld_001': {name: 'Pike push-ups', url: 'https://thumbs.gfycat.com/GiftedGleefulBluebottle-size_restricted.gif'},
+                'shld_002': {name: 'Handstand hold', url: 'https://thumbs.gfycat.com/SmartAggravatingAlligatorgar-size_restricted.gif'},
+                'shld_005': {name: 'Elevaciones frontales', url: 'https://thumbs.gfycat.com/HonoredNastyGermanwirehairedpointer-size_restricted.gif'},
+                'shld_006': {name: 'Remo al mentón', url: 'https://thumbs.gfycat.com/SoftAdorableKagu-size_restricted.gif'},
+                'shld_007': {name: 'Elevaciones Y prone', url: 'https://thumbs.gfycat.com/CookedExcitableHornet-size_restricted.gif'},
+                'shld_008': {name: 'Shoulder taps', url: 'https://thumbs.gfycat.com/CalculatingGaseousAnt-size_restricted.gif'},
+                'shld_009': {name: 'Arnold press', url: 'https://thumbs.gfycat.com/CreepyMediocreIndianelephant-size_restricted.gif'},
+                'shld_010': {name: 'Handstand push-ups', url: 'https://thumbs.gfycat.com/UnhappyFlakyBarracuda-size_restricted.gif'},
+                'shld_011': {name: 'Band pull-apart', url: 'https://thumbs.gfycat.com/EverlastingWellwornFrenchbulldog-size_restricted.gif'}
+            },
+            "🦵 PIERNAS": {
+                'legs_001': {name: 'Sentadillas', url: 'https://i.pinimg.com/originals/8a/83/be/8a83be52c2c49a9c65b97e4a8ca2c05b.gif'},
+                'legs_002': {name: 'Sentadilla sumo', url: 'https://thumbs.gfycat.com/BlondActualBanteng-size_restricted.gif'},
+                'legs_004': {name: 'Sentadilla búlgara', url: 'https://thumbs.gfycat.com/FatalGoodnaturedBlobfish-size_restricted.gif'},
+                'legs_005': {name: 'Peso muerto a una pierna', url: 'https://thumbs.gfycat.com/FaintShorttermFeline-size_restricted.gif'},
+                'legs_006': {name: 'Step-ups', url: 'https://thumbs.gfycat.com/PeriodicSlightAfricanpiedkingfisher-size_restricted.gif'},
+                'legs_011': {name: 'Wall sit', url: 'https://thumbs.gfycat.com/SlowClutteredAmericanbittern-size_restricted.gif'}
+            },
+            "💪 BRAZOS": {
+                'arms_004': {name: 'Extensión de tríceps', url: 'https://thumbs.gfycat.com/BlondGiftedDrever-size_restricted.gif'},
+                'arms_005': {name: 'Curl de bíceps', url: 'https://thumbs.gfycat.com/VainAcclaimedAstrangiacoral-size_restricted.gif'},
+                'arms_008': {name: 'Fondos de tríceps', url: 'https://thumbs.gfycat.com/LimpWeirdGoa-size_restricted.gif'},
+                'arms_010': {name: 'Curl concentrado', url: 'https://thumbs.gfycat.com/FortunateImperturbableHarvestmouse-size_restricted.gif'},
+                'arms_011': {name: 'Extensión overhead', url: 'https://thumbs.gfycat.com/DecimalExemplaryBee-size_restricted.gif'}
+            },
+            "🔥 ABDOMEN": {
+                'abs_001': {name: 'Plancha frontal', url: 'https://i.pinimg.com/originals/85/3e/e6/853ee6e999327c3c0acd9c0cb2f39a75.gif'},
+                'abs_002': {name: 'Plancha lateral', url: 'https://thumbs.gfycat.com/SentimentalDearArmadillo-size_restricted.gif'},
+                'abs_003': {name: 'Elevación de piernas', url: 'https://thumbs.gfycat.com/ActiveGlassArizonaalligatorlizard-size_restricted.gif'},
+                'abs_004': {name: 'Crunches', url: 'https://i.pinimg.com/originals/0c/18/7f/0c187f30f3e83c72bfc9be9f0bdc9d7e.gif'},
+                'abs_006': {name: 'V-ups', url: 'https://thumbs.gfycat.com/GleamingTartHectorsdolphin-size_restricted.gif'},
+                'abs_008': {name: 'Mountain climbers', url: 'https://thumbs.gfycat.com/GrotesqueShortBactrian-size_restricted.gif'},
+                'abs_010': {name: 'Hollow body hold', url: 'https://thumbs.gfycat.com/UncomfortableCreativeAmericancicada-size_restricted.gif'}
+            },
+            "🧘 YOGA": {
+                'yoga_001': {name: 'Postura del perro', url: 'https://i.pinimg.com/originals/3d/79/5f/3d795faa3f5e3c6e8c9b1fb5e3e3e3e3.gif'},
+                'yoga_002': {name: 'Postura del guerrero', url: 'https://i.pinimg.com/originals/9f/c9/8a/9fc98ac2e1e83c9f3e7e3e3e3e3e3e3e.gif'},
+                'yoga_003': {name: 'Postura del árbol', url: 'https://thumbs.gfycat.com/RapidGraciousIndianglassfish-size_restricted.gif'},
+                'yoga_004': {name: 'Postura del niño', url: 'https://thumbs.gfycat.com/MeatyShimmeringDuckling-size_restricted.gif'},
+                'yoga_005': {name: 'Postura de la cobra', url: 'https://thumbs.gfycat.com/BlindImperturbableAmericancrayfish-size_restricted.gif'},
+                'yoga_006': {name: 'Postura del puente', url: 'https://thumbs.gfycat.com/ThankfulCaringHart-size_restricted.gif'}
+            }
+        };
+
+        let downloaded = 0;
+        const total = Object.values(gifs).reduce((sum, category) => sum + Object.keys(category).length, 0);
+
+        function updateProgress() {
+            downloaded++;
+            document.getElementById('downloaded').textContent = downloaded;
+            document.getElementById('progress').textContent = Math.round((downloaded / total) * 100);
+        }
+
+        function downloadGif(id, url) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = id + '.gif';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            updateProgress();
+        }
+
+        async function downloadAll() {
+            if (!confirm(`¿Descargar los ${total} GIFs? Esto puede tardar unos minutos.`)) return;
+            
+            for (const category in gifs) {
+                for (const [id, data] of Object.entries(gifs[category])) {
+                    downloadGif(id, data.url);
+                    await new Promise(resolve => setTimeout(resolve, 500)); // Delay entre descargas
+                }
+            }
+        }
+
+        // Renderizar lista
+        const listElement = document.getElementById('gif-list');
+        for (const [category, exercises] of Object.entries(gifs)) {
+            listElement.innerHTML += `<div class="category">${category} (${Object.keys(exercises).length} GIFs)</div>`;
+            listElement.innerHTML += '<div class="gif-grid">';
+            
+            for (const [id, data] of Object.entries(exercises)) {
+                listElement.innerHTML += `
+                    <div class="gif-card">
+                        <h3>${id}</h3>
+                        <p>${data.name}</p>
+                        <img class="gif-preview" src="${data.url}" alt="${data.name}" loading="lazy">
+                        <button class="btn-download" onclick="downloadGif('${id}', '${data.url}')">
+                            ⬇️ Descargar
+                        </button>
+                    </div>
+                `;
+            }
+            
+            listElement.innerHTML += '</div>';
+        }
+
+        document.getElementById('total').textContent = total;
+    </script>
+</body>
+</html>

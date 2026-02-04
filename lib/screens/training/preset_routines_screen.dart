@@ -8,6 +8,8 @@ import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/services/routine_recommendation_service.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class PresetRoutinesScreen extends StatefulWidget {
@@ -259,7 +261,7 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            bottom: TabBar(
+            bottom: SubTabBar(
               controller: _tabController,
               tabs: const [
                 Tab(text: 'Para Ti', icon: Icon(Icons.person)),
@@ -283,27 +285,11 @@ class _PresetRoutinesScreenState extends State<PresetRoutinesScreen> with Single
 
   Widget _buildPersonalizedTab(ThemeData theme, ColorScheme colorScheme) {
     if (_currentUser == null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              PhosphorIcons.user(PhosphorIconsStyle.regular),
-              size: 80,
-              color: Colors.grey,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'No se encontró usuario',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Completa tu perfil primero',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-          ],
-        ),
+      return EmptyStateWidget(
+        icon: PhosphorIcons.user(PhosphorIconsStyle.regular),
+        title: 'No se encontró usuario',
+        subtitle: 'Completa tu perfil primero',
+        iconColor: Colors.grey,
       );
     }
 

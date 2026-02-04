@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/water_history_screen.dart';
 import 'package:myapp/screens/water_today_screen.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 
 class WaterIntakeScreen extends StatelessWidget {
   const WaterIntakeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const DefaultTabController(
+    return DefaultTabController(
       length: 2,
       child: Column(
         children: [
-          TabBar(
+          const SubTabBar(
             tabs: [
               Tab(text: 'Hoy'),
               Tab(text: 'Historial'),

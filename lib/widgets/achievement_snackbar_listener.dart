@@ -11,21 +11,23 @@ class AchievementSnackbarListener extends StatefulWidget {
 }
 
 class _AchievementSnackbarListenerState extends State<AchievementSnackbarListener> {
+  late AchievementService _achievementService;
+
   @override
   void initState() {
     super.initState();
     // Usar post-frame callback para asegurarse de que el context está disponible
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // No es necesario llamar a Provider.of aquí si el listener hace todo el trabajo
-      final achievementService = Provider.of<AchievementService>(context, listen: false);
-      achievementService.addListener(_showAchievementSnackbar);
+      // Guardar la referencia al servicio
+      _achievementService = Provider.of<AchievementService>(context, listen: false);
+      _achievementService.addListener(_showAchievementSnackbar);
     });
   }
 
   @override
   void dispose() {
-    final achievementService = Provider.of<AchievementService>(context, listen: false);
-    achievementService.removeListener(_showAchievementSnackbar);
+    // Usar la referencia guardada en lugar de buscar el provider
+    _achievementService.removeListener(_showAchievementSnackbar);
     super.dispose();
   }
 

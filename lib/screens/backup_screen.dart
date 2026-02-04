@@ -1,7 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/main.dart' show restartApp;
 import 'package:myapp/models/user.dart';
+import 'package:myapp/providers/meal_plan_provider.dart';
+import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/services/backup_service.dart';
+import 'package:provider/provider.dart';
 
 class BackupScreen extends StatefulWidget {
   const BackupScreen({super.key});
@@ -89,6 +94,17 @@ class _BackupScreenState extends State<BackupScreen> {
               backgroundColor: Colors.orange),
         );
       } else {
+        // Recargar las preferencias del ThemeProvider después de restaurar
+        if (mounted) {
+          final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+          await themeProvider.loadPreferences();
+          if (kDebugMode) print('🎨 ThemeProvider recargado después de restauración');
+
+          final mealPlanProvider = Provider.of<MealPlanProvider>(context, listen: false);
+          await mealPlanProvider.reloadFromStorage();
+          if (kDebugMode) print('🍽️ MealPlanProvider recargado después de restauración');
+        }
+
         scaffoldMessenger.showSnackBar(
           const SnackBar(
               content: Text('✅ Restauración completada. Reiniciando...'),
@@ -110,6 +126,33 @@ class _BackupScreenState extends State<BackupScreen> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Widget _buildBackupItem(String text, {bool highlight = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(
+            Icons.check,
+            size: 16,
+            color: highlight ? Colors.amber.shade700 : Colors.green.shade600,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: GoogleFonts.lato(
+                fontSize: 13,
+                height: 1.4,
+                color: highlight ? Colors.amber.shade900 : Colors.green.shade700,
+                fontWeight: highlight ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -135,64 +178,249 @@ class _BackupScreenState extends State<BackupScreen> {
             )
           : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Icon(Icons.backup_sharp, size: 100, color: Colors.blue),
-                  const SizedBox(height: 32),
-                  const Text('Respaldo Local',
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center),
-                  const SizedBox(height: 16),
-                  const Text(
-                      'Exporta todos tus datos a un archivo JSON para guardar un respaldo local, o importa un respaldo previo para restaurar tus datos.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16)),
-                  const SizedBox(height: 48),
-                  ElevatedButton.icon(
-                    onPressed: _exportBackup,
-                    icon: const Icon(Icons.upload_file),
-                    label: const Text('Exportar Respaldo'),
-                    style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white),
-                  ),
-                  const SizedBox(height: 16),
-                  OutlinedButton.icon(
-                    onPressed: _importBackup,
-                    icon: const Icon(Icons.download_for_offline_sharp),
-                    label: const Text('Importar Respaldo'),
-                    style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        side: const BorderSide(color: Colors.blue, width: 2)),
-                  ),
-                  const Spacer(),
-                  Card(
-                    elevation: 0,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .secondaryContainer
-                        .withAlpha(128),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    child: const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          Icon(Icons.info_outline, color: Colors.blue, size: 30),
-                          SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                                'Al importar un respaldo, todos los datos actuales serán reemplazados. Se recomienda exportar uno primero.',
-                                textAlign: TextAlign.left),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Icono con gradiente
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.blue.shade300,
+                            Colors.cyan.shade400,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blue.withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
+                      child: const Icon(
+                        Icons.cloud_done_outlined,
+                        size: 80,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 32),
+                    
+                    // Título
+                    Text(
+                      'Respaldo Local',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // Descripción
+                    Text(
+                      'Protege tus datos exportando un respaldo o restaura tus registros importando uno anterior.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.lato(
+                        fontSize: 15,
+                        height: 1.6,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.7),
+                      ),
+                    ),
+                    const SizedBox(height: 48),
+                    
+                    // Botón Exportar
+                    ElevatedButton.icon(
+                      onPressed: _exportBackup,
+                      icon: const Icon(Icons.cloud_upload_outlined, size: 20),
+                      label: const Text(
+                        'Exportar Respaldo',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: Colors.blue.shade600,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        elevation: 4,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // Botón Importar
+                    OutlinedButton.icon(
+                      onPressed: _importBackup,
+                      icon: Icon(
+                        Icons.cloud_download_outlined,
+                        size: 20,
+                        color: Colors.blue.shade600,
+                      ),
+                      label: Text(
+                        'Importar Respaldo',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade600,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        side: BorderSide(color: Colors.blue.shade600, width: 2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    
+                    // Tarjeta informativa sobre qué se respalda
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.green.shade50,
+                              Colors.teal.shade50,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          border: Border.all(
+                            color: Colors.green.shade200,
+                            width: 1.5,
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.shade100,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    Icons.check_circle_outline,
+                                    color: Colors.green.shade700,
+                                    size: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Datos Respaldados',
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green.shade700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            _buildBackupItem('Perfiles y usuarios'),
+                            _buildBackupItem('Registros de comida y agua'),
+                            _buildBackupItem('Entrenamientos y rutinas'),
+                            _buildBackupItem('Mediciones corporales'),
+                            _buildBackupItem('Ayunos y meditaciones'),
+                            _buildBackupItem('Tareas diarias y recordatorios'),
+                            _buildBackupItem('Rachas de todas las actividades', highlight: true),
+                            _buildBackupItem('Logros, XP y nivel', highlight: true),
+                            _buildBackupItem('Recetas personalizadas'),
+                            _buildBackupItem('Preferencias y tema'),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Tarjeta informativa mejorada
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.blue.shade50,
+                              Colors.cyan.shade50,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          border: Border.all(
+                            color: Colors.blue.shade200,
+                            width: 1.5,
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade100,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Icon(
+                                Icons.info_outline,
+                                color: Colors.blue.shade700,
+                                size: 28,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Importante',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue.shade700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Al importar un respaldo, todos tus datos serán reemplazados. Exporta primero para no perder tu información.',
+                                    style: GoogleFonts.lato(
+                                      fontSize: 13,
+                                      height: 1.5,
+                                      color: Colors.blue.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
     );

@@ -41,6 +41,7 @@ class _StreaksScreenState extends State<StreaksScreen> {
     final calorieData = await _streaksService.getCalorieStreak();
     final fastingData = await _streaksService.getFastingStreak();
     final meditationData = await _streaksService.getMeditationStreak();
+    final dailyTasksData = await _streaksService.getDailyTasksStreak();
 
     return [
       StreakInfo(
@@ -54,6 +55,12 @@ class _StreaksScreenState extends State<StreaksScreen> {
         description: 'Días seguidos registrando al menos una comida.',
         icon: PhosphorIcons.notebook(),
         data: mealData,
+      ),
+      StreakInfo(
+        title: 'Racha de Tareas Diarias',
+        description: 'Días seguidos completando al menos una tarea.',
+        icon: PhosphorIcons.listChecks(),
+        data: dailyTasksData,
       ),
       StreakInfo(
         title: 'Racha de Entrenamiento',

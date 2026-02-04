@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/providers/user_provider.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
 import 'package:provider/provider.dart';
 
 class FavoriteRecipesScreen extends StatelessWidget {
@@ -13,27 +13,16 @@ class FavoriteRecipesScreen extends StatelessWidget {
         final favoriteRecipes = userProvider.user?.favoriteRecipes ?? [];
 
         if (favoriteRecipes.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(PhosphorIcons.star(), size: 80, color: Colors.grey),
-                const SizedBox(height: 20),
-                const Text(
-                  'No tienes recetas favoritas',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Busca recetas y guárdalas para verlas aquí.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              ],
-            ),
+          return EmptyStateWidget(
+            icon: Icons.favorite_border,
+            title: 'Sin recetas favoritas',
+            subtitle: 'Busca recetas y guárdalas para verlas aquí.',
+            iconColor: Colors.red[400],
           );
         }
 
+        final colors = Theme.of(context).colorScheme;
+        
         return ListView.builder(
           padding: const EdgeInsets.all(12.0),
           itemCount: favoriteRecipes.length,
@@ -45,7 +34,7 @@ class FavoriteRecipesScreen extends StatelessWidget {
                 title: Text(recipe.title, style: const TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(recipe.snippet),
                 trailing: IconButton(
-                  icon: Icon(PhosphorIcons.trash(), color: Colors.redAccent),
+                  icon: Icon(Icons.delete_outline, color: colors.error),
                   onPressed: () {
                     userProvider.removeFavoriteRecipe(recipe);
                     ScaffoldMessenger.of(context).showSnackBar(

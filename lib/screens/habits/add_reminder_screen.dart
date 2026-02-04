@@ -103,6 +103,9 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   }
 
   Widget _buildRepeatSelector() {
+    final predefinedMinutes = [0, 5, 10, 15, 30, 60];
+    final isCustom = !predefinedMinutes.contains(_repeatMinutes);
+    
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -160,13 +163,23 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                     if (selected) setState(() => _repeatMinutes = 60);
                   },
                 ),
+                ChoiceChip(
+                  avatar: const Icon(Icons.edit, size: 18),
+                  label: Text(isCustom 
+                    ? _formatCustomTime(_repeatMinutes)
+                    : 'Personalizar'),
+                  selected: isCustom,
+                  onSelected: (selected) {
+                    _showCustomTimeDialog();
+                  },
+                ),
               ],
             ),
             if (_repeatMinutes > 0)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  'ℹ️ Se repetirá cada $_repeatMinutes minutos hasta el final del día',
+                  'ℹ️ Se repetirá cada ${_formatCustomTime(_repeatMinutes)} hasta el final del día',
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ),
@@ -174,6 +187,119 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         ),
       ),
     );
+  }
+
+  String _formatCustomTime(int minutes) {
+    if (minutes < 60) {
+      return '$minutes min';
+    } else if (minutes % 60 == 0) {
+      final hours = minutes ~/ 60;
+      return '$hours ${hours == 1 ? 'hora' : 'horas'}';
+    } else {
+      final hours = minutes ~/ 60;
+      final mins = minutes % 60;
+      return '$hours${mins > 0 ? '.5' : ''} ${hours == 1 && mins == 0 ? 'hora' : 'horas'}';
+    }
+  }
+
+  Future<void> _showCustomTimeDialog() async {
+    final hoursController = TextEditingController();
+    final minutesController = TextEditingController();
+    
+    // Si hay un valor personalizado actual, mostrarlo
+    if (_repeatMinutes > 0) {
+      final hours = _repeatMinutes ~/ 60;
+      final mins = _repeatMinutes % 60;
+      if (hours > 0) hoursController.text = hours.toString();
+      if (mins > 0) minutesController.text = mins.toString();
+    }
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Tiempo personalizado'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Ingresa el tiempo de repetición:',
+              style: TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: hoursController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Horas',
+                      border: OutlineInputBorder(),
+                      hintText: '0',
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: minutesController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Minutos',
+                      border: OutlineInputBorder(),
+                      hintText: '0',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Ejemplos: 1h 30min, 2h 0min, 0h 90min',
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              final hours = int.tryParse(hoursController.text) ?? 0;
+              final minutes = int.tryParse(minutesController.text) ?? 0;
+              final totalMinutes = (hours * 60) + minutes;
+              
+              if (totalMinutes > 0) {
+                Navigator.of(context).pop(true);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Por favor ingresa un valor mayor a 0'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+            child: const Text('Aceptar'),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      final hours = int.tryParse(hoursController.text) ?? 0;
+      final minutes = int.tryParse(minutesController.text) ?? 0;
+      final totalMinutes = (hours * 60) + minutes;
+      
+      setState(() {
+        _repeatMinutes = totalMinutes;
+      });
+    }
+    
+    hoursController.dispose();
+    minutesController.dispose();
   }
 
   Widget _buildDaySelector() {

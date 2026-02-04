@@ -33,10 +33,12 @@ import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/providers/water_intake_provider.dart';
 import 'package:myapp/providers/workout_history_provider.dart';
+import 'package:myapp/screens/habits/habits_screen.dart';
 import 'package:myapp/screens/splash_screen.dart';
 import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:myapp/services/reminder_checker_service.dart';
+import 'package:myapp/services/task_notification_service.dart';
 import 'package:myapp/services/time_format_service.dart';
 import 'package:myapp/services/foreground_reminder_service.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -66,6 +68,17 @@ void main() async {
   
   await NotificationService().init();
 
+  // Configurar callback para notificaciones de hábitos
+  await TaskNotificationService().init(
+    onSelectNotification: (payload) {
+      // Navegar a HabitsScreen cuando se toque una notificación
+      navigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const HabitsScreen()),
+        (route) => false,
+      );
+    },
+  );
+
   if (!kIsWeb) {
     await ReminderCheckerService.initialize();
     await _autoStartReminderService();
@@ -85,6 +98,10 @@ void main() async {
   final timeFormatService = TimeFormatService();
   await timeFormatService.loadPreference();
 
+  // Crear ThemeProvider y cargar preferencias
+  final themeProvider = ThemeProvider();
+  await themeProvider.loadPreferences();
+
   // NO crear rutinas predeterminadas automáticamente
   // await DefaultRoutines.createAll();
 
@@ -96,7 +113,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider.value(value: achievementService),
         ChangeNotifierProvider.value(value: timeFormatService),
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => FastingProvider()),
         ChangeNotifierProvider(create: (context) => MealPlanProvider()),
@@ -162,10 +179,12 @@ Future<void> _openHiveBoxes() async {
   await Hive.openBox<FoodLog>('food_logs');
   await Hive.openBox<BodyMeasurement>('body_measurements');
   await Hive.openBox<DailyMealPlan>('daily_meal_plans');
+  await Hive.openBox('daily_plans');
   await Hive.openBox('settings');
   await Hive.openBox<Recipe>('favorite_recipes');
   await Hive.openBox<UserRecipe>('user_recipes');
   await Hive.openBox<Reminder>('reminders');
+  await Hive.openBox('daily_tasks');
   await Hive.openBox<FastingLog>('fasting_logs');
   await Hive.openBox<Routine>('routines');
   await Hive.openBox<RoutineLog>('routine_logs');
@@ -275,8 +294,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return KeyedSubtree(
       key: _appKey,
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
+      child: Consumer2<ThemeProvider, TimeFormatService>(
+        builder: (context, themeProvider, timeFormatService, child) {
         final textTheme = GoogleFonts.montserratTextTheme(Theme.of(context).textTheme).copyWith(
           displayLarge: const TextStyle(fontSize: 57, fontWeight: FontWeight.bold),
           displayMedium: const TextStyle(fontSize: 45, fontWeight: FontWeight.bold),
@@ -426,6 +445,15 @@ class MyApp extends StatelessWidget {
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: themeProvider.themeMode,
+          builder: (context, child) {
+            final media = MediaQuery.of(context);
+            return MediaQuery(
+              data: media.copyWith(
+                alwaysUse24HourFormat: timeFormatService.use24HourFormat,
+              ),
+              child: child ?? const SizedBox.shrink(),
+            );
+          },
           home: const SplashScreen(),
         );
       },

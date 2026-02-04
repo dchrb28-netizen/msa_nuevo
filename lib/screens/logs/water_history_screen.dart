@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/water_log.dart';
 import 'package:myapp/providers/user_provider.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
 import 'package:provider/provider.dart';
 
 class WaterHistoryScreen extends StatelessWidget {
@@ -23,15 +24,11 @@ class WaterHistoryScreen extends StatelessWidget {
           ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
         if (logs.isEmpty) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Text(
-                'No hay registros de agua.\n¡Empieza a registrar tu hidratación!',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            ),
+          return EmptyStateWidget(
+            icon: Icons.water_drop,
+            title: 'No hay registros de agua',
+            subtitle: '¡Empieza a registrar tu hidratación!',
+            iconColor: Colors.blue[400],
           );
         }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/screens/settings/caloric_goals_screen.dart';
 import 'package:myapp/screens/achievements/objectives_screen.dart';
 import 'package:myapp/screens/settings/theme_settings_screen.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 
 class GoalsScreen extends StatelessWidget {
   const GoalsScreen({super.key});
@@ -12,7 +13,7 @@ class GoalsScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          bottom: const TabBar(
+          bottom: const SubTabBar(
             tabs: [
               Tab(icon: Icon(Icons.flag_outlined), text: 'Objetivos'),
               Tab(

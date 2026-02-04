@@ -67,6 +67,21 @@ class User extends HiveObject {
   @HiveField(19)
   bool? showProfileFrame; // Puede ser nulo para retrocompatibilidad
 
+  @HiveField(20)
+  String? goal; // Objetivo del usuario (Pérdida de peso, Ganancia muscular, etc.)
+
+  @HiveField(21)
+  String? dietaryPreferences; // Preferencias dietéticas (Vegano, Keto, etc.)
+
+  @HiveField(22)
+  List<String> favoriteRawFoods; // Alimentos que le encantan (pollo, salmón, etc.)
+
+  @HiveField(23)
+  List<String> dislikedFoods; // Alimentos que no le gustan
+
+  @HiveField(24)
+  List<String> allergens; // Alergias/Intolerancias
+
   User({
     required this.id,
     required this.name,
@@ -88,7 +103,15 @@ class User extends HiveObject {
     this.initialWeight,
     this.level,
     this.showProfileFrame,
-  }) : favoriteRecipes = favoriteRecipes ?? [];
+    this.goal,
+    this.dietaryPreferences,
+    List<String>? favoriteRawFoods,
+    List<String>? dislikedFoods,
+    List<String>? allergens,
+  }) : favoriteRecipes = favoriteRecipes ?? [],
+       favoriteRawFoods = favoriteRawFoods ?? [],
+       dislikedFoods = dislikedFoods ?? [],
+       allergens = allergens ?? [];
 
   User copyWith({
     String? id,
@@ -111,6 +134,11 @@ class User extends HiveObject {
     double? initialWeight,
     String? level,
     bool? showProfileFrame,
+    String? goal,
+    String? dietaryPreferences,
+    List<String>? favoriteRawFoods,
+    List<String>? dislikedFoods,
+    List<String>? allergens,
   }) {
     return User(
       id: id ?? this.id,
@@ -133,6 +161,11 @@ class User extends HiveObject {
       initialWeight: initialWeight ?? this.initialWeight,
       level: level ?? this.level,
       showProfileFrame: showProfileFrame ?? this.showProfileFrame,
+      goal: goal ?? this.goal,
+      dietaryPreferences: dietaryPreferences ?? this.dietaryPreferences,
+      favoriteRawFoods: favoriteRawFoods ?? this.favoriteRawFoods,
+      dislikedFoods: dislikedFoods ?? this.dislikedFoods,
+      allergens: allergens ?? this.allergens,
     );
   }
 
@@ -158,6 +191,11 @@ class User extends HiveObject {
         'initialWeight': initialWeight,
         'level': level,
         'showProfileFrame': showProfileFrame,
+        'goal': goal,
+        'dietaryPreferences': dietaryPreferences,
+        'favoriteRawFoods': favoriteRawFoods,
+        'dislikedFoods': dislikedFoods,
+        'allergens': allergens,
       };
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -185,5 +223,14 @@ class User extends HiveObject {
         initialWeight: json['initialWeight']?.toDouble(),
         level: json['level'],
         showProfileFrame: json['showProfileFrame'],
+        goal: json['goal'],
+        dietaryPreferences: json['dietaryPreferences'],
+        favoriteRawFoods: json['favoriteRawFoods'] != null
+            ? List<String>.from(json['favoriteRawFoods'])
+            : [],
+        dislikedFoods: json['dislikedFoods'] != null
+            ? List<String>.from(json['dislikedFoods'])
+            : [],
+        allergens: json['allergens'] != null ? List<String>.from(json['allergens']) : [],
       );
 }

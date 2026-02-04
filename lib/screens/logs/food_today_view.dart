@@ -59,7 +59,6 @@ class _FoodTodayViewState extends State<FoodTodayView> {
         _buildCaloriesSummaryCard(context),
         const SizedBox(height: 16),
         Expanded(child: FoodLogListView(date: _selectedDate)),
-        const SizedBox(height: 80), // Padding for the FAB
       ],
     );
   }

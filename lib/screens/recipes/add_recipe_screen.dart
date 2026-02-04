@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myapp/models/user_recipe.dart';
@@ -172,7 +173,14 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
 
       await userRecipesBox.put(newRecipe.id, newRecipe);
 
+      // Update achievements
       achievementService.updateProgress('create_recipe', 1);
+      achievementService.grantExperience(15); // Grant XP for creating recipe
+      
+      // Update cumulative achievements
+      final totalRecipes = userRecipesBox.length;
+      achievementService.updateProgress('cum_recipes_25', totalRecipes, cumulative: true);
+      achievementService.updateProgress('cum_recipes_100', totalRecipes, cumulative: true);
 
       messenger.showSnackBar(
         const SnackBar(content: Text('Receta guardada con éxito')),
@@ -199,20 +207,39 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
+        elevation: 2,
+        backgroundColor: colors.primary,
+        foregroundColor: Colors.white,
         actions: [
-          IconButton(icon: const Icon(Icons.save), onPressed: _saveRecipe, tooltip: 'Guardar'),
+          IconButton(
+            icon: const Icon(Icons.check, size: 24),
+            onPressed: _saveRecipe,
+            tooltip: 'Guardar',
+          ),
         ],
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.fromLTRB(14, 16, 14, 20),
           children: [
             TextFormField(
               controller: _titleController,
-              decoration: const InputDecoration(labelText: 'Título'),
+              decoration: InputDecoration(
+                labelText: 'Título',
+                filled: true,
+                fillColor: colors.surfaceContainer,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: colors.outlineVariant),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              ),
+              style: GoogleFonts.lato(),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Por favor, introduce un título';
@@ -220,40 +247,82 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                 return null;
               },
             ),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _descriptionController,
-              decoration: const InputDecoration(labelText: 'Descripción'),
+              decoration: InputDecoration(
+                labelText: 'Descripción',
+                filled: true,
+                fillColor: colors.surfaceContainer,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: colors.outlineVariant),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              ),
+              maxLines: 3,
+              style: GoogleFonts.lato(),
             ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: TextFormField(
                     controller: _cookingTimeController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Tiempo (min)',
+                      filled: true,
+                      fillColor: colors.surfaceContainer,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: colors.outlineVariant),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     ),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
                     ],
+                    style: GoogleFonts.lato(),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
                   child: TextFormField(
                     controller: _servingsController,
-                    decoration: const InputDecoration(labelText: 'Porciones'),
+                    decoration: InputDecoration(
+                      labelText: 'Porciones',
+                      filled: true,
+                      fillColor: colors.surfaceContainer,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: colors.outlineVariant),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                     inputFormatters: <TextInputFormatter>[
+                    inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
                     ],
+                    style: GoogleFonts.lato(),
                   ),
                 ),
               ],
             ),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _categoryController,
-              decoration: const InputDecoration(labelText: 'Categoría'),
+              decoration: InputDecoration(
+                labelText: 'Categoría',
+                filled: true,
+                fillColor: colors.surfaceContainer,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: colors.outlineVariant),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              ),
+              style: GoogleFonts.lato(),
             ),
             const SizedBox(height: 20),
             _buildDynamicList(
@@ -271,10 +340,52 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
             ),
             const SizedBox(height: 20),
             _imageBytes == null
-                ? OutlinedButton.icon(
-                    onPressed: _pickImage,
-                    icon: const Icon(Icons.image),
-                    label: const Text('Seleccionar Imagen'),
+                ? Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: colors.primary,
+                        width: 2,
+                        style: BorderStyle.solid,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _pickImage,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.image_outlined,
+                                size: 48,
+                                color: colors.primary,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Seleccionar Imagen',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: colors.primary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Toca para seleccionar una imagen',
+                                style: GoogleFonts.lato(
+                                  fontSize: 12,
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   )
                 : Center(
                     child: Stack(
@@ -282,12 +393,17 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.memory(_imageBytes!, height: 200, width: double.infinity, fit: BoxFit.cover),
+                          child: Image.memory(
+                            _imageBytes!,
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                         Positioned.fill(
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.black.withAlpha((255 * 0.4).round()),
+                              color: Colors.black.withValues(alpha: 0.4),
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
@@ -311,38 +427,78 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     VoidCallback onAdd,
     Function(int) onRemove,
   ) {
+    final colors = Theme.of(context).colorScheme;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          title,
+          style: GoogleFonts.montserrat(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: colors.onSurface,
+          ),
+        ),
+        const SizedBox(height: 12),
         ...controllers.asMap().entries.map((entry) {
           int idx = entry.key;
           TextEditingController controller = entry.value;
-          return Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    labelText:
-                        '${title.singularize()} ${idx + 1}',
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: controller,
+                    decoration: InputDecoration(
+                      labelText: '${title.singularize()} ${idx + 1}',
+                      filled: true,
+                      fillColor: colors.surfaceContainer,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: colors.outlineVariant),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    maxLines: 2,
+                    style: GoogleFonts.lato(),
                   ),
                 ),
-              ),
-              if (controllers.length > 1)
-                IconButton(
-                  icon: const Icon(Icons.remove_circle_outline),
-                  onPressed: () => onRemove(idx),
-                  tooltip: 'Eliminar campo',
-                ),
-            ],
+                if (controllers.length > 1) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: colors.error.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.close, color: colors.error, size: 20),
+                      onPressed: () => onRemove(idx),
+                      tooltip: 'Eliminar',
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           );
         }),
         const SizedBox(height: 8),
         ElevatedButton.icon(
           onPressed: onAdd,
-          icon: const Icon(Icons.add),
-          label: Text('Añadir ${title.singularize()}'),
+          icon: const Icon(Icons.add, size: 20),
+          label: Text(
+            'Añadir ${title.singularize()}',
+            style: GoogleFonts.montserrat(fontWeight: FontWeight.w600),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: colors.primary,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          ),
         ),
       ],
     );

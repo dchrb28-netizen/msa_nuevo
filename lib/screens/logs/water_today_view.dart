@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/water_log.dart';
@@ -7,10 +8,67 @@ import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/providers/water_intake_provider.dart';
 import 'package:myapp/services/time_format_service.dart';
 import 'package:myapp/widgets/dashboard/aquarium_widget.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
 import 'package:provider/provider.dart';
 
 class WaterTodayView extends StatelessWidget {
   const WaterTodayView({super.key});
+
+  static const String _waterViewModeKey = 'water_view_mode';
+  static const String _waterViewAquarium = 'aquarium';
+  static const String _waterViewSimple = 'simple';
+
+  String _viewLabel(String mode) {
+    switch (mode) {
+      case _waterViewAquarium:
+        return 'Pecera';
+      case _waterViewSimple:
+        return 'Vista simple';
+      default:
+        return 'Pecera';
+    }
+  }
+
+  void _showViewModeDialog(BuildContext context, Box settingsBox) {
+    final current = settingsBox.get(_waterViewModeKey, defaultValue: _waterViewAquarium) as String;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Visualización de agua'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              value: _waterViewAquarium,
+              groupValue: current,
+              title: const Text('Pecera'),
+              onChanged: (value) {
+                if (value == null) return;
+                settingsBox.put(_waterViewModeKey, value);
+                Navigator.pop(context);
+              },
+            ),
+            RadioListTile<String>(
+              value: _waterViewSimple,
+              groupValue: current,
+              title: const Text('Simple'),
+              onChanged: (value) {
+                if (value == null) return;
+                settingsBox.put(_waterViewModeKey, value);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar'),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _showAddWaterDialog(BuildContext context, WaterIntakeProvider provider) {
     final TextEditingController controller = TextEditingController();
@@ -93,9 +151,18 @@ class WaterTodayView extends StatelessWidget {
         ? 'assets/images/gato_agua_dark.png'
         : 'assets/images/gato_agua_light.png';
 
+    final settingsBox = Hive.box('settings');
+
     return ValueListenableBuilder(
-      valueListenable: waterProvider.waterLogBox.listenable(),
-      builder: (context, Box<WaterLog> box, _) {
+      valueListenable: settingsBox.listenable(),
+      builder: (context, Box settingsBox, _) {
+        return ValueListenableBuilder(
+          valueListenable: waterProvider.waterLogBox.listenable(),
+          builder: (context, Box<WaterLog> box, _) {
+            final viewMode = settingsBox.get(
+              _waterViewModeKey,
+              defaultValue: _waterViewAquarium,
+            ) as String;
         if (currentUser == null) {
           return const Center(
             child: Padding(
@@ -112,26 +179,52 @@ class WaterTodayView extends StatelessWidget {
             waterProvider.getWaterIntakeForDate(waterProvider.selectedDate);
         final logsForSelectedDate = waterProvider.getLogsForSelectedDate();
 
-        return SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  height: 250,
-                  child: Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                Row(
+                  children: [
+                    Text(
+                      _viewLabel(viewMode),
+                      style: GoogleFonts.lato(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      ),
                     ),
-                    clipBehavior: Clip.antiAlias,
-                    child: AquariumWidget(
-                      totalWater: intakeForSelectedDate,
-                      dailyGoal: waterProvider.dailyGoal,
+                    const Spacer(),
+                    IconButton(
+                      tooltip: 'Cambiar vista',
+                      icon: const Icon(Icons.settings),
+                      onPressed: () => _showViewModeDialog(context, settingsBox),
                     ),
-                  ),
+                  ],
                 ),
+                const SizedBox(height: 8),
+                if (viewMode == _waterViewAquarium)
+                  SizedBox(
+                    height: 250,
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: AquariumWidget(
+                        totalWater: intakeForSelectedDate,
+                        dailyGoal: waterProvider.dailyGoal,
+                      ),
+                    ),
+                  )
+                else
+                  _buildSimpleWaterCard(
+                    context,
+                    intakeForSelectedDate,
+                    waterProvider.dailyGoal,
+                  ),
                 const SizedBox(height: 12),
                 if (waterProvider.dailyGoal > 0)
                   Column(
@@ -233,10 +326,14 @@ class WaterTodayView extends StatelessWidget {
                 Stack(
                   children: [
                     if (logsForSelectedDate.isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 60.0),
-                        child: Center(
-                          child: Text('Aún no has añadido agua hoy.'),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 60.0),
+                        child: EmptyStateWidget(
+                          icon: Icons.water_drop,
+                          title: 'Aún no has añadido agua hoy',
+                          subtitle: 'Comienza a registrar tu hidratación',
+                          iconColor: Colors.blue[400],
+                          padding: const EdgeInsets.all(24),
                         ),
                       )
                     else
@@ -299,11 +396,160 @@ class WaterTodayView extends StatelessWidget {
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
+    );
+  }
+
+  Widget _buildSimpleWaterCard(
+    BuildContext context,
+    double intake,
+    double goal,
+  ) {
+    final theme = Theme.of(context);
+    final progress = goal <= 0 ? 0.0 : (intake / goal).clamp(0.0, 1.0);
+    final remaining = (goal - intake).clamp(0.0, double.infinity);
+
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.local_drink,
+                    size: 18,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Progreso de hoy',
+                    style: GoogleFonts.lato(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Text(
+                  '${(progress * 100).toInt()}%',
+                  style: GoogleFonts.lato(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _buildWaterStatChip(
+                  context,
+                  label: 'Actual',
+                  value: '${intake.toInt()} ml',
+                  fillProgress: progress,
+                ),
+                const SizedBox(width: 8),
+                _buildWaterStatChip(
+                  context,
+                  label: 'Meta',
+                  value: '${goal.toInt()} ml',
+                  fillProgress: 1.0,
+                ),
+                const SizedBox(width: 8),
+                _buildWaterStatChip(
+                  context,
+                  label: remaining == 0 ? 'Logrado' : 'Faltan',
+                  value: remaining == 0 ? '✓' : '${remaining.toInt()} ml',
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 12,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              remaining == 0
+                  ? 'Meta alcanzada'
+                  : 'Faltan ${remaining.toInt()} ml para la meta',
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  Widget _buildWaterStatChip(
+    BuildContext context, {
+    required String label,
+    required String value,
+    double? fillProgress,
+  }) {
+    final theme = Theme.of(context);
+    final fill = (fillProgress ?? 0).clamp(0.0, 1.0);
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: fillProgress == null
+              ? theme.colorScheme.surfaceContainerHighest
+              : theme.colorScheme.primary.withValues(alpha: 0.15 + (0.45 * fill)),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.08),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: theme.colorScheme.onSurface.withOpacity(0.6),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: GoogleFonts.lato(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

@@ -51,25 +51,16 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     if (mealPlan != null) {
       mealPlan.meals[widget.mealType] = List<Food>.from(_foods);
       await mealPlan.save();
+      print('🍽️ Plan de comida actualizado: ${widget.date} - ${widget.mealType} (${_foods.length} alimentos)');
+      print('✅ Total planes en caja: ${_mealPlanBox.length}');
     } else {
       final newMealPlan = DailyMealPlan(
         date: widget.date,
         meals: {widget.mealType: List<Food>.from(_foods)},
       );
       await _mealPlanBox.add(newMealPlan);
-    }
-  }
-
-  String _getMealTypeTitle(MealType mealType) {
-    switch (mealType) {
-      case MealType.breakfast:
-        return 'Desayuno';
-      case MealType.lunch:
-        return 'Almuerzo';
-      case MealType.dinner:
-        return 'Cena';
-      case MealType.snacks:
-        return 'Snacks';
+      print('🍽️ Nuevo plan de comida guardado: ${widget.date} - ${widget.mealType} (${_foods.length} alimentos)');
+      print('✅ Total planes en caja: ${_mealPlanBox.length}');
     }
   }
 

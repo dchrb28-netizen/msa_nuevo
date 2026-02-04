@@ -15,7 +15,7 @@ class SetLog extends HiveObject {
   @HiveField(2)
   bool isCompleted;
 
-  SetLog({required this.reps, required this.weight, this.isCompleted = false});
+  SetLog({int? reps, required this.weight, this.isCompleted = false}) : reps = reps ?? 0;
 
   factory SetLog.fromJson(Map<String, dynamic> json) => _$SetLogFromJson(json);
   Map<String, dynamic> toJson() => _$SetLogToJson(this);

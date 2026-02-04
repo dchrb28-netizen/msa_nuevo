@@ -7,6 +7,7 @@ import 'package:myapp/screens/food/food_log_screen.dart';
 import 'package:myapp/screens/logs/food_today_view.dart';
 import 'package:myapp/services/streaks_service.dart';
 import 'package:provider/provider.dart';
+import 'package:myapp/providers/meal_plan_provider.dart';
 
 class FoodTodayScreen extends StatefulWidget {
   const FoodTodayScreen({super.key});
@@ -60,42 +61,17 @@ class _FoodTodayScreenState extends State<FoodTodayScreen> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: PageView(
-        controller: _pageController,
-        children: const <Widget>[
-          FoodTodayView(),
-          // Se pueden añadir más vistas aquí en el futuro
+      body: Stack(
+        children: [
+          PageView(
+            controller: _pageController,
+            children: const <Widget>[
+              FoodTodayView(),
+              // Se pueden añadir más vistas aquí en el futuro
+            ],
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => FoodLogScreen(
-                onAddFoodLog: (foodLog) {
-                  // Guardar el registro de comida
-                  Hive.box<FoodLog>('food_logs').add(foodLog).then((_) {
-                    // Después de guardar, comprobar la racha
-                    _checkCalorieStreak();
-                    // Forzar actualización de la UI
-                    setState(() {});
-                  });
-                },
-              ),
-            ),
-          );
-          // Actualizar la UI después de cerrar la pantalla de registro
-          if (result != null || mounted) {
-            setState(() {});
-          }
-        },
-        label: const Text('Registrar'),
-        icon: const Icon(Icons.add_circle_outline),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

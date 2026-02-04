@@ -15,12 +15,20 @@ class ExerciseLibraryScreen extends StatefulWidget {
 class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
   String _searchQuery = '';
   String _selectedDifficulty = 'Todos';
+  Set<String> _selectedMuscleGroups = {}; // Multi-selección de músculos
   final List<String> _difficultyLevels = [
     'Todos',
     'Principiante',
     'Intermedio',
     'Avanzado',
   ];
+
+  final Map<String, IconData> _difficultyIcons = {
+    'Todos': Icons.done_all,
+    'Principiante': Icons.trending_up,
+    'Intermedio': Icons.bar_chart,
+    'Avanzado': Icons.whatshot,
+  };
 
   void _navigateToDetail(Exercise exercise) {
     Navigator.push(
@@ -91,16 +99,22 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
   IconData _getIconForMuscleGroup(String muscleGroup) {
     switch (muscleGroup.toLowerCase()) {
       case 'pecho':
-        return Icons.fitness_center;
+        return Icons.favorite;
       case 'piernas':
-        return Icons.airline_seat_legroom_extra;
+        return Icons.directions_run;
       case 'espalda':
-        return Icons.back_hand;
+        return Icons.architecture;
       case 'brazos':
         return Icons.fitness_center;
       case 'abdomen':
-        return Icons.self_improvement;
+        return Icons.shield;
       case 'glúteos':
+        return Icons.emoji_nature;
+      case 'hombros':
+        return Icons.accessibility;
+      case 'cardio':
+        return Icons.favorite_border;
+      case 'yoga':
         return Icons.self_improvement;
       default:
         return Icons.fitness_center;
@@ -120,6 +134,136 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
     }
   }
 
+  void _showFiltersModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final exerciseProvider = Provider.of<ExerciseProvider>(context);
+            final allMuscleGroups = <String>{};
+            for (var exercise in exerciseProvider.exercises) {
+              if (exercise.muscleGroup != null) {
+                allMuscleGroups.add(exercise.muscleGroup!);
+              }
+            }
+            final sortedMuscles = allMuscleGroups.toList()..sort();
+
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Filtrar por Dificultad',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 12.0,
+                        crossAxisSpacing: 12.0,
+                        childAspectRatio: 2.5,
+                      ),
+                      itemCount: _difficultyLevels.length,
+                      itemBuilder: (context, index) {
+                        final level = _difficultyLevels[index];
+                        final isSelected = _selectedDifficulty == level;
+                        final icon = _difficultyIcons[level] ?? Icons.fitness_center;
+                        return _FilterButton(
+                          label: level,
+                          icon: icon,
+                          isSelected: isSelected,
+                          onTap: () {
+                            setModalState(() {
+                              setState(() {
+                                _selectedDifficulty = level;
+                              });
+                            });
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Filtrar por Grupo Muscular',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 12.0,
+                        crossAxisSpacing: 12.0,
+                        childAspectRatio: 2.5,
+                      ),
+                      itemCount: sortedMuscles.length,
+                      itemBuilder: (context, index) {
+                        final muscle = sortedMuscles[index];
+                        final isSelected = _selectedMuscleGroups.contains(muscle);
+                        final icon = _getIconForMuscleGroup(muscle);
+                        return _FilterButton(
+                          label: muscle,
+                          icon: icon,
+                          isSelected: isSelected,
+                          onTap: () {
+                            setModalState(() {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedMuscleGroups.remove(muscle);
+                                } else {
+                                  _selectedMuscleGroups.add(muscle);
+                                }
+                              });
+                            });
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Listo'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -128,35 +272,28 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: TextField(
-            onChanged: (value) {
-              setState(() {
-                _searchQuery = value;
-              });
-            },
-            decoration: const InputDecoration(
-              labelText: 'Buscar ejercicio',
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Wrap(
-            spacing: 8.0,
-            runSpacing: 4.0,
-            children: _difficultyLevels.map((level) {
-              return ChoiceChip(
-                label: Text(level),
-                selected: _selectedDifficulty == level,
-                onSelected: (selected) {
-                  setState(() {
-                    _selectedDifficulty = level;
-                  });
-                },
-              );
-            }).toList(),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Buscar ejercicio',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              FloatingActionButton.small(
+                onPressed: () => _showFiltersModal(context),
+                child: const Icon(Icons.filter_list),
+              ),
+            ],
           ),
         ),
         Expanded(
@@ -183,14 +320,21 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                       return exercise.difficulty == _selectedDifficulty;
                     }).toList();
 
-              if (filteredExercises.isEmpty) {
+              // Aplicar filtro de grupos musculares si hay seleccionados
+              final exercisesAfterMuscleFilter = _selectedMuscleGroups.isEmpty
+                  ? filteredExercises
+                  : filteredExercises.where((exercise) {
+                      return _selectedMuscleGroups.contains(exercise.muscleGroup);
+                    }).toList();
+
+              if (exercisesAfterMuscleFilter.isEmpty) {
                 return const Center(
                   child: Text('No se encontraron ejercicios.'),
                 );
               }
 
               final groupedExercises = <String, List<Exercise>>{};
-              for (final exercise in filteredExercises) {
+              for (final exercise in exercisesAfterMuscleFilter) {
                 final muscleGroup = exercise.muscleGroup ?? 'Otros';
                 if (groupedExercises.containsKey(muscleGroup)) {
                   groupedExercises[muscleGroup]!.add(exercise);
@@ -235,8 +379,11 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                       children: exercisesInGroup.map((exercise) {
                         return ListTile(
                           isThreeLine: true,
-                          leading: exercise.imageUrl != null &&
-                                  exercise.imageUrl!.isNotEmpty
+                            leading: exercise.imageUrl != null &&
+                                exercise.imageUrl!.isNotEmpty &&
+                                !exercise.imageUrl!
+                                  .toLowerCase()
+                                  .endsWith('.gif')
                               ? ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: exercise.imageUrl!.startsWith('http')
@@ -384,3 +531,81 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
     );
   }
 }
+
+class _FilterButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _FilterButton({
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12.0),
+        splashColor: colorScheme.primary.withAlpha(51),
+        highlightColor: colorScheme.primary.withAlpha(26),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+          decoration: BoxDecoration(
+            color: isSelected ? colorScheme.primary : colorScheme.surface,
+            borderRadius: BorderRadius.circular(12.0),
+            border: Border.all(
+              color: isSelected
+                  ? colorScheme.primary
+                  : Theme.of(context).dividerColor,
+              width: 1.5,
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: colorScheme.primary.withAlpha(77),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : [],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color:
+                    isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+                size: 18,
+              ),
+              const SizedBox(width: 8.0),
+              Flexible(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: isSelected
+                        ? colorScheme.onPrimary
+                        : colorScheme.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+

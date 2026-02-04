@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/services/edamam_service.dart';
 import 'package:myapp/models/food_log.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
 
 class FoodSearchScreen extends StatefulWidget {
   final Function(FoodLog) onFoodSelected;
@@ -177,48 +179,24 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
     }
 
     if (_errorMessage != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
-              Text(
-                _errorMessage!,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => _searchFood(_searchController.text),
-                child: const Text('Reintentar'),
-              ),
-            ],
-          ),
+      return EmptyStateWidget(
+        icon: Icons.error_outline,
+        title: 'Error en la búsqueda',
+        subtitle: _errorMessage,
+        action: ElevatedButton(
+          onPressed: () => _searchFood(_searchController.text),
+          child: const Text('Reintentar'),
         ),
+        iconColor: Colors.red[400],
       );
     }
 
     if (_searchResults.isEmpty && _searchController.text.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.restaurant_menu, size: 80, color: Colors.grey[400]),
-            const SizedBox(height: 16),
-            Text(
-              'Busca un alimento para comenzar',
-              style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Ejemplo: "manzana", "pollo", "arroz"',
-              style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
-            ),
-          ],
-        ),
+      return EmptyStateWidget(
+        icon: Icons.restaurant_menu,
+        title: 'Busca un alimento para comenzar',
+        subtitle: 'Ejemplo: "manzana", "pollo", "arroz"',
+        iconColor: Colors.orange[400],
       );
     }
 
@@ -306,10 +284,7 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${nutrients['calories'].toStringAsFixed(0)} kcal | '
-                  'P: ${nutrients['protein'].toStringAsFixed(1)}g | '
-                  'C: ${nutrients['carbs'].toStringAsFixed(1)}g | '
-                  'G: ${nutrients['fat'].toStringAsFixed(1)}g',
+                  '${nutrients['calories'].toStringAsFixed(0)} kcal | 🥩 ${nutrients['protein'].toStringAsFixed(1)}g | 🍞 ${nutrients['carbs'].toStringAsFixed(1)}g | 🧈 ${nutrients['fat'].toStringAsFixed(1)}g',
                   style: const TextStyle(fontSize: 12),
                 ),
               ],

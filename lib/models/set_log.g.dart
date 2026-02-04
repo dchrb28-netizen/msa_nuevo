@@ -17,7 +17,7 @@ class SetLogAdapter extends TypeAdapter<SetLog> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return SetLog(
-      reps: fields[0] as String,
+      reps: fields[0] as int,
       weight: fields[1] as double,
       isCompleted: fields[2] as bool,
     );
@@ -51,7 +51,7 @@ class SetLogAdapter extends TypeAdapter<SetLog> {
 // **************************************************************************
 
 SetLog _$SetLogFromJson(Map<String, dynamic> json) => SetLog(
-      reps: json['reps'] as String,
+      reps: (json['reps'] as num).toInt(),
       weight: (json['weight'] as num).toDouble(),
       isCompleted: json['isCompleted'] as bool? ?? false,
     );

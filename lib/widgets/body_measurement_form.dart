@@ -4,6 +4,7 @@ import 'package:myapp/models/body_measurement.dart';
 import 'package:myapp/models/user.dart';
 import 'package:myapp/providers/user_provider.dart';
 import 'package:myapp/services/achievement_service.dart';
+import 'package:myapp/services/streaks_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -35,7 +36,7 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
     super.dispose();
   }
 
-  void _saveMeasurement() {
+  void _saveMeasurement() async {
     FocusScope.of(context).unfocus();
 
     if (!_formKey.currentState!.validate()) {
@@ -65,6 +66,7 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
 
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final achievementService = Provider.of<AchievementService>(context, listen: false);
+    final streaksService = StreaksService();
     final User? currentUser = userProvider.user;
 
     if (currentUser != null) {
@@ -83,6 +85,9 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
         initialWeight: currentUser.initialWeight ?? weight, // Guardar el peso inicial si no existe
       );
       userProvider.updateUser(updatedUser);
+      
+      // Actualizar racha de medidas
+      await streaksService.updateMeasurementStreak();
     }
 
     _formKey.currentState!.reset();
@@ -104,8 +109,11 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
       elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: theme.colorScheme.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -113,17 +121,54 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildTextField(_weightController, 'Peso (kg)', isRequired: true),
+              _buildTextField(
+                context,
+                _weightController,
+                'Peso',
+                isRequired: true,
+                icon: Icons.scale,
+                suffix: 'kg',
+              ),
               const SizedBox(height: 12),
-              _buildTextField(_chestController, 'Pecho (cm)'),
+              _buildTextField(
+                context,
+                _chestController,
+                'Pecho',
+                icon: Icons.fitness_center,
+                suffix: 'cm',
+              ),
               const SizedBox(height: 12),
-              _buildTextField(_armController, 'Brazo (cm)'),
+              _buildTextField(
+                context,
+                _armController,
+                'Brazo',
+                icon: Icons.front_hand,
+                suffix: 'cm',
+              ),
               const SizedBox(height: 12),
-              _buildTextField(_waistController, 'Cintura (cm)'),
+              _buildTextField(
+                context,
+                _waistController,
+                'Cintura',
+                icon: Icons.straighten,
+                suffix: 'cm',
+              ),
               const SizedBox(height: 12),
-              _buildTextField(_hipsController, 'Caderas (cm)'),
+              _buildTextField(
+                context,
+                _hipsController,
+                'Caderas',
+                icon: Icons.crop_free,
+                suffix: 'cm',
+              ),
               const SizedBox(height: 12),
-              _buildTextField(_thighController, 'Muslo (cm)'),
+              _buildTextField(
+                context,
+                _thighController,
+                'Muslo',
+                icon: Icons.unfold_more_outlined,
+                suffix: 'cm',
+              ),
               const SizedBox(height: 24),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -140,15 +185,42 @@ class _BodyMeasurementFormState extends State<BodyMeasurementForm> {
   }
 
   Widget _buildTextField(
+    BuildContext context,
     TextEditingController controller,
     String label, {
     bool isRequired = false,
+    IconData? icon,
+    String? suffix,
   }) {
+    final theme = Theme.of(context);
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        border: const OutlineInputBorder(),
+        prefixIcon: icon != null ? Icon(icon) : null,
+        suffixText: suffix,
+        filled: true,
+        fillColor: theme.colorScheme.surface.withOpacity(0.6),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: theme.colorScheme.onSurface.withOpacity(0.15),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: theme.colorScheme.primary,
+            width: 1.5,
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       validator: (value) {

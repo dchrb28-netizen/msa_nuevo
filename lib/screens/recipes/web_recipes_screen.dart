@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/recipe.dart';
 import 'package:myapp/providers/user_provider.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
 import 'package:provider/provider.dart';
 
 class WebRecipesScreen extends StatefulWidget {
@@ -76,11 +76,22 @@ class _WebRecipesScreenState extends State<WebRecipesScreen> {
   }
 
   Widget _buildResultsList(UserProvider userProvider) {
+    final colors = Theme.of(context).colorScheme;
+    
     if (_searchController.text.isEmpty) {
-      return const Center(child: Text('Escribe algo para buscar recetas.'));
+      return EmptyStateWidget(
+        icon: Icons.search,
+        title: 'Busca recetas',
+        subtitle: 'Escribe el nombre de una receta para comenzar.',
+      );
     }
     if (_searchResults.isEmpty) {
-      return const Center(child: Text('No se encontraron recetas.'));
+      return EmptyStateWidget(
+        icon: Icons.search_off,
+        title: 'Sin resultados',
+        subtitle: 'No encontramos recetas con ese nombre.\nIntenta con otro término de búsqueda.',
+        iconColor: Colors.red[400],
+      );
     }
 
     final favoriteTitles = userProvider.user?.favoriteRecipes.map((r) => r.title).toSet() ?? {};
@@ -98,11 +109,10 @@ class _WebRecipesScreenState extends State<WebRecipesScreen> {
             subtitle: Text(recipe.snippet),
             trailing: IconButton(
               icon: Icon(
-                isFavorite ? PhosphorIcons.star(PhosphorIconsStyle.fill) : PhosphorIcons.star(),
-                color: isFavorite ? Colors.amber : Colors.grey,
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? Colors.red : colors.onSurfaceVariant,
               ),
               onPressed: () async {
-                // Capture the messenger before the async gap
                 final messenger = ScaffoldMessenger.of(context);
                 
                 if (isFavorite) {

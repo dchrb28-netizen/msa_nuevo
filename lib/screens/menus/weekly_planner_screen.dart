@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:myapp/providers/meal_plan_provider.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/screens/menus/edit_meal_screen.dart';
+import 'package:myapp/screens/menus/meal_plan_suggestions_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -30,6 +31,131 @@ class _WeeklyPlannerScreenState extends State<WeeklyPlannerScreen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
+      appBar: AppBar(
+        title: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MealPlanSuggestionsScreen(),
+              ),
+            );
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.event_note, size: 24),
+              const Text('Planes Sugeridos', style: TextStyle(fontSize: 12)),
+            ],
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          // Opciones para repetir semana + export/import + undo
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              final mealPlan = Provider.of<MealPlanProvider>(context, listen: false);
+              final visibleStart = _focusedDay.subtract(Duration(days: _focusedDay.weekday - 1)); // lunes visible
+              if (value == 'repeat_visible') {
+                final source = visibleStart;
+                final target = source.add(const Duration(days: 7));
+                mealPlan.repeatWeekDates(source, target, overwrite: true);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Semana mostrada repetida a la siguiente semana')));
+              } else if (value == 'repeat_previous') {
+                final source = visibleStart.subtract(const Duration(days: 7));
+                final target = visibleStart;
+                mealPlan.repeatWeekDates(source, target, overwrite: true);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Semana anterior repetida a la semana mostrada')));
+              } else if (value == 'export') {
+                final json = mealPlan.exportDailyPlanJson();
+                // Mostrar dialog con JSON y opción copiar
+                await showDialog(
+                  context: context,
+                  builder: (ctx) {
+                    return AlertDialog(
+                      title: const Text('Exportar planes (JSON)'),
+                      content: SizedBox(
+                        width: double.maxFinite,
+                        child: SingleChildScrollView(
+                          child: SelectableText(json),
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                          },
+                          child: const Text('Cerrar'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              } else if (value == 'import') {
+                final controller = TextEditingController();
+                bool overwrite = true;
+                await showDialog(
+                  context: context,
+                  builder: (ctx) {
+                    return StatefulBuilder(builder: (ctx, setState) {
+                      return AlertDialog(
+                        title: const Text('Importar planes (pega JSON)'),
+                        content: SizedBox(
+                          width: double.maxFinite,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                                controller: controller,
+                                maxLines: 12,
+                                decoration: const InputDecoration(hintText: 'Pega aquí el JSON exportado'),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Checkbox(
+                                      value: overwrite,
+                                      onChanged: (v) {
+                                        setState(() {
+                                          overwrite = v ?? true;
+                                        });
+                                      }),
+                                  const Expanded(child: Text('Sobrescribir entradas existentes (si no marcado, solo rellenar huecos)')),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancelar')),
+                          TextButton(
+                              onPressed: () {
+                                mealPlan.importDailyPlanJson(controller.text, overwrite: overwrite);
+                                Navigator.of(ctx).pop();
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Importación completada')));
+                              },
+                              child: const Text('Importar')),
+                        ],
+                      );
+                    });
+                  },
+                );
+              } else if (value == 'undo') {
+                mealPlan.undoLastChange();
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Último cambio deshecho')));
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(value: 'repeat_visible', child: Text('Repetir semana mostrada → siguiente semana')),
+              const PopupMenuItem(value: 'repeat_previous', child: Text('Repetir semana anterior → mostrada')),
+              const PopupMenuDivider(),
+              const PopupMenuItem(value: 'export', child: Text('Exportar planes (JSON)')),
+              const PopupMenuItem(value: 'import', child: Text('Importar planes (JSON)')),
+              const PopupMenuItem(value: 'undo', child: Text('Deshacer último cambio')),
+            ],
+          ),
+        ],
+      ),
       body: Column(
         children: [
           TableCalendar(

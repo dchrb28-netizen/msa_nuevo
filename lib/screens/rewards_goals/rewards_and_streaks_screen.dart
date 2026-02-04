@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/achievements_screen.dart';
 import 'package:myapp/screens/rewards_goals/streaks_screen.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class RewardsAndStreaksScreen extends StatelessWidget {
@@ -16,9 +17,7 @@ class RewardsAndStreaksScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           // Se elimina el título
-          bottom: TabBar(
-            indicatorColor: Theme.of(context).colorScheme.onPrimary,
-            indicatorSize: TabBarIndicatorSize.tab,
+          bottom: SubTabBar(
             tabs: [
               Tab(
                 icon: Icon(PhosphorIcons.trophy()),

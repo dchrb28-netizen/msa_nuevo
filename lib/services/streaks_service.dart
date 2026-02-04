@@ -26,14 +26,17 @@ class StreaksService {
   static const String _calorieKey = 'calorie';
   static const String _fastingKey = 'fasting';
   static const String _meditationKey = 'meditation';
+  static const String _dailyTasksKey = 'daily_tasks';
 
   // --- MÉTODOS PÚBLICOS PARA ACTUALIZAR RACHAS ---
 
-  Future<void> updateHydrationStreak() => _updateStreak(_hydrationKey);
+  Future<void> updateHydrationStreak([DateTime? eventDate]) => _updateStreak(_hydrationKey, eventDate);
   Future<void> updateMealStreak() => _updateStreak(_mealKey);
   Future<void> updateWorkoutStreak() => _updateStreak(_workoutKey);
   Future<void> updateCalorieStreak() => _updateStreak(_calorieKey);
   Future<void> updateFastingStreak() => _updateStreak(_fastingKey);
+  Future<void> updateDailyTasksStreak() => _updateStreak(_dailyTasksKey);
+  Future<void> updateMeasurementStreak() => _updateStreak('measurement');
 
   Future<void> updateMeditationStreak(MeditationLog log) async {
     final prefs = await SharedPreferences.getInstance();
@@ -76,23 +79,31 @@ class StreaksService {
   Future<StreakData> getCalorieStreak() => _getStreakData(_calorieKey);
   Future<StreakData> getFastingStreak() => _getStreakData(_fastingKey);
   Future<StreakData> getMeditationStreak() => _getStreakData(_meditationKey);
+  Future<StreakData> getDailyTasksStreak() => _getStreakData(_dailyTasksKey);
+  Future<StreakData> getMeasurementStreak() => _getStreakData('measurement');
 
   // --- LÓGICA INTERNA ---
 
-  Future<void> _updateStreak(String key) async {
+  Future<void> _updateStreak(String key, [DateTime? eventDate]) async {
     final prefs = await SharedPreferences.getInstance();
-    final now = DateTime.now();
-    final today = DateUtils.dateOnly(now);
+    final event = eventDate ?? DateTime.now();
+    final eventDay = DateUtils.dateOnly(event);
+    final today = DateUtils.dateOnly(DateTime.now());
+
+    // No permitir actualizar racha para fechas futuras
+    if (eventDay.isAfter(today)) {
+      return;
+    }
 
     final data = await _getStreakData(key);
     final lastUpdateDate = DateUtils.dateOnly(data.lastUpdate);
 
-    if (lastUpdateDate.isAtSameMomentAs(today)) {
-      return; // Ya se actualizó hoy
+    if (lastUpdateDate.isAtSameMomentAs(eventDay)) {
+      return; // Ya se actualizó para este día
     }
 
     int newCurrentStreak;
-    final yesterday = today.subtract(const Duration(days: 1));
+    final yesterday = eventDay.subtract(const Duration(days: 1));
 
     if (lastUpdateDate.isAtSameMomentAs(yesterday)) {
       // La racha continúa
@@ -107,7 +118,7 @@ class StreaksService {
     // Guardar los nuevos valores
     await prefs.setInt('streak_${key}_current', newCurrentStreak);
     await prefs.setInt('streak_${key}_record', newRecordStreak);
-    await prefs.setInt('streak_${key}_lastUpdate', now.millisecondsSinceEpoch);
+    await prefs.setInt('streak_${key}_lastUpdate', event.millisecondsSinceEpoch);
   }
 
   Future<StreakData> _getStreakData(String key) async {

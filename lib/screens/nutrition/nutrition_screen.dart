@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/recipes/favorite_recipes_screen.dart';
 import 'package:myapp/screens/recipes/web_recipes_screen.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 
 class NutritionScreen extends StatefulWidget {
   const NutritionScreen({super.key});
@@ -28,7 +29,7 @@ class NutritionScreenState extends State<NutritionScreen> with SingleTickerProvi
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        bottom: TabBar(
+        bottom: SubTabBar(
           controller: _tabController,
           tabs: const [
             Tab(text: 'Mis Favoritas'),

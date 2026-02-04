@@ -1,6 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/routine.dart';
-import 'package:myapp/models/routine_exercise.dart';
 
 /// Servicio para ajustar rutinas cuando el peso corporal cambia
 class RoutineAdjustmentService {

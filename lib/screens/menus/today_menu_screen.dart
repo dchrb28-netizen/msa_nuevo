@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/providers/meal_plan_provider.dart';
-import 'package:myapp/screens/menus/edit_meal_screen.dart';
+import 'package:myapp/screens/menus/meal_details_screen.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
 import 'package:provider/provider.dart';
 
 class TodayMenuScreen extends StatelessWidget {
@@ -36,36 +37,11 @@ class TodayMenuScreen extends StatelessWidget {
             .toList();
 
         if (activeMealTypes.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.restaurant_menu_outlined,
-                    size: 80,
-                    color: Colors.grey,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'No has planificado comidas para hoy',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Ve al planificador semanal para añadir tus menús.',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          return EmptyStateWidget(
+            icon: Icons.restaurant_menu_outlined,
+            title: 'No has planificado comidas para hoy',
+            subtitle: 'Ve al planificador semanal para añadir tus menús.',
+            iconColor: Colors.purple[400],
           );
         }
 
@@ -132,7 +108,7 @@ class TodayMenuScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            EditMealScreen(mealType: mealType, date: today),
+                            MealDetailScreen(mealType: mealType, date: today),
                       ),
                     );
                   },

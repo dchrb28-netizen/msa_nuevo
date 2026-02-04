@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/logs/water_history_screen.dart';
 import 'package:myapp/screens/logs/water_today_view.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 
 class WaterTodayScreen extends StatefulWidget {
   const WaterTodayScreen({super.key});
@@ -28,7 +29,7 @@ class _WaterTodayScreenState extends State<WaterTodayScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TabBar(
+      appBar: SubTabBar(
         controller: _tabController,
         tabs: const [
           Tab(text: 'Hoy'),

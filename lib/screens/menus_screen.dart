@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/screens/menus/today_menu_screen.dart';
 import 'package:myapp/screens/menus/weekly_planner_screen.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class MenusScreen extends StatefulWidget {
@@ -35,13 +36,8 @@ class MenusScreenState extends State<MenusScreen> with TickerProviderStateMixin 
 
     return Column(
       children: [
-        TabBar(
+        SubTabBar(
           controller: _tabController,
-          labelColor: Theme.of(context).colorScheme.onSurface,
-          unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.6).round()),
-          indicatorColor: Theme.of(context).colorScheme.primary,
-          labelStyle: GoogleFonts.lato(fontWeight: FontWeight.bold),
-          unselectedLabelStyle: GoogleFonts.lato(),
           tabs: [
             Tab(
               icon: Icon(
@@ -60,6 +56,8 @@ class MenusScreenState extends State<MenusScreen> with TickerProviderStateMixin 
               text: 'Planificador Semanal',
             ),
           ],
+          labelStyle: GoogleFonts.lato(fontWeight: FontWeight.bold),
+          unselectedLabelStyle: GoogleFonts.lato(),
         ),
         Expanded(
           child: TabBarView(

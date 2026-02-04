@@ -3,6 +3,7 @@ import 'package:myapp/models/exercise.dart';
 import 'package:myapp/providers/exercise_provider.dart';
 import 'package:myapp/screens/training/routines_screen.dart';
 import 'package:myapp/screens/training/exercise_library_screen.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 import 'package:myapp/screens/training/edit_exercise_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
@@ -72,13 +73,13 @@ class _TrainingScreenState extends State<TrainingScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(icon: Icon(PhosphorIcons.listChecks()), text: 'Rutinas'),
-            Tab(icon: Icon(PhosphorIcons.books()), text: 'Biblioteca'),
-          ],
-        ),
+          bottom: SubTabBar(
+            controller: _tabController,
+            tabs: [
+              Tab(icon: Icon(PhosphorIcons.listChecks()), text: 'Rutinas'),
+              Tab(icon: Icon(PhosphorIcons.books()), text: 'Biblioteca'),
+            ],
+          ),
       ),
       body: TabBarView(
         controller: _tabController,

@@ -3,6 +3,7 @@ import 'package:myapp/models/routine.dart';
 import 'package:myapp/providers/routine_provider.dart';
 import 'package:myapp/screens/training/create_routine_screen.dart';
 import 'package:myapp/screens/training/workout_screen.dart';
+import 'package:myapp/widgets/empty_state_widget.dart';
 import 'package:provider/provider.dart';
 
 class TrainingScreen extends StatelessWidget {
@@ -27,45 +28,22 @@ class TrainingScreen extends StatelessWidget {
         icon: const Icon(Icons.add),
       ),
       body: routines.isEmpty
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.fitness_center_outlined,
-                      size: 80,
-                      color: Colors.grey,
+          ? EmptyStateWidget(
+              icon: Icons.fitness_center_outlined,
+              title: 'No hay rutinas',
+              subtitle: 'Crea tu primera rutina de entrenamiento para empezar a registrar tu progreso.',
+              iconColor: Colors.grey,
+              action: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CreateRoutineScreen(),
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'No hay rutinas',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Crea tu primera rutina de entrenamiento para empezar a registrar tu progreso.',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
-                    ),
-                    const SizedBox(height: 30),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CreateRoutineScreen(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.add_circle_outline),
-                      label: const Text('Crea tu primera rutina'),
-                    ),
-                  ],
-                ),
+                  );
+                },
+                icon: const Icon(Icons.add_circle_outline),
+                label: const Text('Crea tu primera rutina'),
               ),
             )
           : ListView.builder(

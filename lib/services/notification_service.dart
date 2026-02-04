@@ -1,3 +1,9 @@
+// Implementación removida: el proyecto ahora usa `TaskNotificationService`.
+// Este archivo se mantiene vacío intencionalmente para evitar conflictos.
+
+// Si desea restaurar una implementación global de notificaciones,
+// cree una clase dedicada y asegúrese de no duplicar definiciones.
+
 import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

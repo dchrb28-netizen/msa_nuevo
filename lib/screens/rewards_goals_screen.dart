@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/rewards_goals/rewards_screen.dart';
 import 'package:myapp/screens/rewards_goals/streaks_screen.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class RewardsGoalsScreen extends StatefulWidget {
@@ -34,7 +35,7 @@ class _RewardsGoalsScreenState extends State<RewardsGoalsScreen>
       appBar: AppBar(
         // By leaving the title property null, the back button is still rendered,
         // but no title text is shown.
-        bottom: TabBar(
+        bottom: SubTabBar(
           controller: _tabController,
           tabs: [
             Tab(

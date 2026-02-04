@@ -1,6 +1,6 @@
 import 'package:myapp/models/exercise.dart';
 
-final List<Exercise> exercises = [
+final List<Exercise> exercises = _ensureUniqueDescriptions([
   // PECHO (11 ejercicios caseros)
   Exercise(
     id: 'chest_001',
@@ -2005,5 +2005,59 @@ final List<Exercise> exercises = [
     advancedReps: '12-15',
     recommendations: 'Ejercicio muy exigente, combina varios movimientos.',
   ),
-];
+]);
+
+List<Exercise> _ensureUniqueDescriptions(List<Exercise> list) {
+  final seen = <String, int>{};
+
+  String normalize(String value) =>
+      value.toLowerCase().replaceAll(RegExp(r'\s+'), ' ').trim();
+
+  String ensurePeriod(String value) => value.endsWith('.') ? value : '$value.';
+
+  Exercise withDescription(Exercise exercise, String description) {
+    return Exercise(
+      id: exercise.id,
+      name: exercise.name,
+      description: description,
+      type: exercise.type,
+      muscleGroup: exercise.muscleGroup,
+      equipment: exercise.equipment,
+      measurement: exercise.measurement,
+      imageUrl: exercise.imageUrl,
+      videoUrl: exercise.videoUrl,
+      difficulty: exercise.difficulty,
+      beginnerSets: exercise.beginnerSets,
+      beginnerReps: exercise.beginnerReps,
+      intermediateSets: exercise.intermediateSets,
+      intermediateReps: exercise.intermediateReps,
+      advancedSets: exercise.advancedSets,
+      advancedReps: exercise.advancedReps,
+      recommendations: exercise.recommendations,
+    );
+  }
+
+  return list.map((exercise) {
+    final base = (exercise.description ?? '').trim();
+    final fallbackGroup = exercise.muscleGroup ?? 'entrenamiento general';
+    String desc = base.isEmpty
+        ? 'Ejercicio de $fallbackGroup: ${exercise.name}'
+        : base;
+
+    desc = ensurePeriod(desc);
+    final key = normalize(desc);
+    final count = seen.update(key, (value) => value + 1, ifAbsent: () => 1);
+
+    if (count > 1) {
+      desc = ensurePeriod('${desc.substring(0, desc.length - 1)} (${exercise.name})');
+    }
+
+    final finalKey = normalize(desc);
+    if (seen.containsKey(finalKey)) {
+      desc = ensurePeriod('${desc.substring(0, desc.length - 1)} (${exercise.id})');
+    }
+
+    return withDescription(exercise, desc);
+  }).toList();
+}
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/screens/food/food_screen.dart';
 import 'package:myapp/screens/logs/body_measurement_screen.dart';
 import 'package:myapp/screens/water_screen.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class LogsScreen extends StatefulWidget {
@@ -31,7 +32,7 @@ class _LogsScreenState extends State<LogsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        bottom: TabBar(
+        bottom: SubTabBar(
           controller: _tabController,
           tabs: [
             Tab(

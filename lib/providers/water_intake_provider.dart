@@ -44,8 +44,16 @@ class WaterIntakeProvider with ChangeNotifier {
   }
 
   void goToNextDay() {
-    _selectedDate = _selectedDate.add(const Duration(days: 1));
-    notifyListeners();
+    final nextDate = _selectedDate.add(const Duration(days: 1));
+    final today = DateTime.now();
+    final todayOnly = DateTime(today.year, today.month, today.day);
+    final nextDateOnly = DateTime(nextDate.year, nextDate.month, nextDate.day);
+    
+    // No permitir navegar a fechas futuras
+    if (!nextDateOnly.isAfter(todayOnly)) {
+      _selectedDate = nextDate;
+      notifyListeners();
+    }
   }
 
   void goToPreviousDay() {
@@ -55,6 +63,18 @@ class WaterIntakeProvider with ChangeNotifier {
 
   Future<void> addWaterLog(double amount) async {
     if (_currentUser == null) return;
+    
+    // Validar que la fecha no sea una fecha futura
+    final today = DateTime.now();
+    final selectedDateOnly = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+    final todayOnly = DateTime(today.year, today.month, today.day);
+    
+    if (selectedDateOnly.isAfter(todayOnly)) {
+      // No permitir registrar agua de fechas futuras
+      print('No se permite registrar agua de fechas futuras');
+      return;
+    }
+    
     final log = WaterLog(
       id: DateTime.now().toString(),
       userId: _currentUser!.id,
@@ -75,10 +95,10 @@ class WaterIntakeProvider with ChangeNotifier {
 
     notifyListeners();
 
-    // Actualiza la racha de hidratación si se cumple la meta
+    // Actualiza la racha de hidratación solo si es hoy o fecha pasada y se cumple la meta
     final totalTodayForStreak = getWaterIntakeForDate(_selectedDate);
-    if (totalTodayForStreak >= _dailyGoal) {
-      await _streaksService.updateHydrationStreak();
+    if (totalTodayForStreak >= _dailyGoal && !selectedDateOnly.isAfter(todayOnly)) {
+      await _streaksService.updateHydrationStreak(_selectedDate);
     }
   }
 

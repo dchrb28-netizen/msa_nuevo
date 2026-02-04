@@ -132,22 +132,35 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                   'Calorías',
                   isNumber: true,
                 ),
-                _buildTextField(
+                _buildTextFieldWithIcon(
                   _proteinController,
                   'Proteínas (g)',
+                  Icons.egg_alt_outlined,
+                  Colors.green,
                   isNumber: true,
+                  emoji: '🥩',
                 ),
-                _buildTextField(
+                _buildTextFieldWithIcon(
                   _carbohydratesController,
                   'Carbohidratos (g)',
+                  Icons.grain,
+                  Colors.orange,
                   isNumber: true,
+                  emoji: '🍞',
                 ),
-                _buildTextField(_fatController, 'Grasas (g)', isNumber: true),
+                _buildTextFieldWithIcon(
+                  _fatController,
+                  'Grasas (g)',
+                  Icons.opacity,
+                  Colors.redAccent,
+                  isNumber: true,
+                  emoji: '🧈',
+                ),
                 const SizedBox(height: 24),
                 _buildMealTypeDropdown(),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
                 _buildDatePicker(context),
-                const SizedBox(height: 32),
+                const SizedBox(height: 80),
                 ElevatedButton(
                   onPressed: _submitForm,
                   style: ElevatedButton.styleFrom(
@@ -159,6 +172,7 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                   ),
                   child: const Text('Guardar Registro'),
                 ),
+                const SizedBox(height: 40),
               ],
             ),
           ),
@@ -334,24 +348,129 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
     );
   }
 
-  Widget _buildMealTypeDropdown() {
-    return DropdownButtonFormField<String>(
-      initialValue: _selectedMealType,
-      decoration: InputDecoration(
-        labelText: 'Tipo de Comida',
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+  Widget _buildTextFieldWithIcon(
+    TextEditingController controller,
+    String label,
+    IconData icon,
+    Color iconColor, {
+    bool isNumber = false,
+    String? emoji,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: emoji != null
+              ? SizedBox(
+                  width: 48,
+                  child: Center(
+                    child: Text(
+                      emoji,
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  ),
+                )
+              : Icon(icon, color: iconColor),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        keyboardType: isNumber
+            ? const TextInputType.numberWithOptions(decimal: true)
+            : TextInputType.text,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor, ingrese un valor';
+          }
+          if (isNumber && double.tryParse(value) == null) {
+            return 'Por favor, ingrese un número válido';
+          }
+          return null;
+        },
       ),
-      items: _mealTypes.map((String type) {
-        return DropdownMenuItem<String>(value: type, child: Text(type));
-      }).toList(),
-      onChanged: (newValue) {
-        if (newValue != null) {
-          setState(() {
-            _selectedMealType = newValue;
-          });
-        }
-      },
     );
+  }
+
+  Widget _buildMealTypeDropdown() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<String>(
+        initialValue: _selectedMealType,
+        decoration: InputDecoration(
+          labelText: 'Tipo de Comida',
+          prefixIcon: Icon(
+            _getMealIcon(_selectedMealType),
+            color: _getMealColor(_selectedMealType),
+          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          filled: true,
+          fillColor: Colors.transparent,
+        ),
+        items: _mealTypes.map((String type) {
+          return DropdownMenuItem<String>(
+            value: type,
+            child: Row(
+              children: [
+                Icon(
+                  _getMealIcon(type),
+                  size: 20,
+                  color: _getMealColor(type),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  type,
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+        onChanged: (newValue) {
+          if (newValue != null) {
+            setState(() {
+              _selectedMealType = newValue;
+            });
+          }
+        },
+        isExpanded: true,
+      ),
+    );
+  }
+
+  IconData _getMealIcon(String mealType) {
+    switch (mealType) {
+      case 'Desayuno':
+        return Icons.free_breakfast;
+      case 'Almuerzo':
+        return Icons.lunch_dining;
+      case 'Cena':
+        return Icons.dinner_dining;
+      case 'Snack (Mañana)':
+      case 'Snack (Tarde)':
+      case 'Snack (Noche)':
+      case 'Snack':
+        return Icons.fastfood;
+      default:
+        return Icons.food_bank_outlined;
+    }
+  }
+
+  Color _getMealColor(String mealType) {
+    switch (mealType) {
+      case 'Desayuno':
+        return Colors.orange;
+      case 'Almuerzo':
+        return Colors.green;
+      case 'Cena':
+        return Colors.indigo;
+      case 'Snack (Mañana)':
+      case 'Snack (Tarde)':
+      case 'Snack (Noche)':
+      case 'Snack':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 
   Widget _buildDatePicker(BuildContext context) {

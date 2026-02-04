@@ -5,7 +5,11 @@ import 'package:myapp/models/food_log.dart';
 import 'package:myapp/screens/food/food_today_screen.dart';
 import 'package:myapp/screens/register_food_screen.dart';
 import 'package:myapp/services/achievement_service.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/providers/meal_plan_provider.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class FoodScreen extends StatefulWidget {
   const FoodScreen({super.key});
@@ -33,17 +37,12 @@ class _FoodScreenState extends State<FoodScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TabBar(
+        SubTabBar(
           controller: _tabController,
           tabs: const [
             Tab(icon: Icon(Icons.today), text: 'Hoy'),
             Tab(icon: Icon(Icons.history), text: 'Historial'),
           ],
-          labelColor: Theme.of(context).brightness == Brightness.dark
-              ? Colors.white
-              : Colors.black,
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: Theme.of(context).colorScheme.primary,
         ),
         Expanded(
           child: TabBarView(
@@ -91,6 +90,19 @@ class _FoodHistoryTabState extends State<FoodHistoryTab> {
 
     if (result != null) {
       await _foodLogBox.add(result);
+
+      // Marcar como consumida la comida correspondiente en el plan semanal si aplica
+      try {
+        final mealPlanProvider = Provider.of<MealPlanProvider>(context, listen: false);
+        final planMeal = mealPlanProvider.getPlanForDay(result.date)[result.mealType];
+        final alreadyCompleted = planMeal?.isCompleted ?? false;
+        if (!alreadyCompleted) {
+          mealPlanProvider.toggleMealCompletion(result.date, result.mealType);
+        }
+      } catch (_) {
+        // Ignorar si no hay provider
+      }
+
       final achievementService = AchievementService();
       achievementService.grantExperience(10);
       achievementService.updateProgress('first_meal', 1);
@@ -186,7 +198,7 @@ class _FoodHistoryTabState extends State<FoodHistoryTab> {
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
           itemCount: dailyLogs.length,
           itemBuilder: (context, index) {
             final log = dailyLogs[index];
@@ -197,7 +209,7 @@ class _FoodHistoryTabState extends State<FoodHistoryTab> {
               child: ListTile(
                 title: Text(log.foodName, style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
                 subtitle: Text(
-                  '${log.calories.toStringAsFixed(0)} kcal | P: ${log.protein.toStringAsFixed(0)}g, C: ${log.carbohydrates.toStringAsFixed(0)}g, G: ${log.fat.toStringAsFixed(0)}g',
+                  '${log.calories.toStringAsFixed(0)} kcal | 🥩 ${log.protein.toStringAsFixed(0)}g, 🍞 ${log.carbohydrates.toStringAsFixed(0)}g, 🧈 ${log.fat.toStringAsFixed(0)}g',
                   style: GoogleFonts.lato(fontSize: 12, color: Colors.black54),
                 ),
                 trailing: IconButton(

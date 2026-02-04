@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/logs/food_history_screen.dart';
 import 'package:myapp/screens/logs/food_today_view.dart';
+import 'package:myapp/widgets/sub_tab_bar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class FoodIntakeScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _FoodIntakeScreenState extends State<FoodIntakeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TabBar(
+      appBar: SubTabBar(
         controller: _tabController,
         tabs: [
           Tab(icon: Icon(PhosphorIcons.calendar(PhosphorIconsStyle.regular)), text: 'Hoy'),
